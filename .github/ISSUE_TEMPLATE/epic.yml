@@ -1,0 +1,29 @@
+name: Epic
+description: Major product or platform workstream
+title: "[EXX] "
+labels: ["type:epic"]
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+    validations:
+      required: true
+  - type: textarea
+    id: outcomes
+    attributes:
+      label: Success criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / risks
+  - type: textarea
+    id: children
+    attributes:
+      label: Child stories
+      description: Link child issues after creation.
