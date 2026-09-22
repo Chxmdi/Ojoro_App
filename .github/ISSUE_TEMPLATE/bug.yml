@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible defect
+title: "[BUG] "
+labels: ["needs-qa"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Exact steps, environment and test data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: [P0, P1, P2, P3]
+    validations:
+      required: true
+  - type: checkboxes
+    id: risk
+    attributes:
+      label: Risk flags
+      options:
+        - label: Privacy/location affected
+        - label: Security affected
+        - label: Payments affected
+        - label: Minor/youth safety affected
