@@ -1,60 +1,72 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { ActionButton } from '@/components/ActionButton';
+import { ActionCard } from '@/components/ActionCard';
 import { OjoroScreen } from '@/components/OjoroScreen';
-import { colors, radius, spacing } from '@/theme/tokens';
+import { StatusChip } from '@/components/StatusChip';
+import { colors, spacing } from '@/theme/tokens';
 
 export default function HomeScreen() {
   return (
     <OjoroScreen
       eyebrow="Ojoro Now"
       title="WHAT ARE YOU DOWN FOR?"
-      description="The production shell is ready for the D0 designs. This screen will become the action-first Ojoro home."
+      description="Your city, friends and intent become plans you can actually join."
     >
-      <View style={styles.intentCard}>
-        <Text style={styles.intentLabel}>Tonight</Text>
-        <Text style={styles.intentTitle}>Football around 7?</Text>
-        <Text style={styles.intentMeta}>Plan Forming · 4 of 8 down</Text>
+      <View style={styles.chips}>
+        <StatusChip label="Tonight" active />
+        <StatusChip label="Near me" />
+        <StatusChip label="Friends" />
       </View>
-      <Pressable style={styles.button} accessibilityRole="button">
-        <Text style={styles.buttonText}>I’M DOWN</Text>
-      </Pressable>
+
+      <ActionCard
+        eyebrow="Plan forming"
+        title="Football tonight?"
+        meta="Jeanne-Mance Park · around 7:30 PM · social/balanced"
+        dark
+      >
+        <Text style={styles.darkMeta}>4 people are already down.</Text>
+        <ActionButton
+          label="I’M DOWN"
+          onPress={() => router.push('/plan/football-tonight')}
+        />
+      </ActionCard>
+
+      <ActionCard
+        eyebrow="Crew"
+        title="Inner Circle"
+        meta="5 friends are free after 7. Turn the chat into a plan."
+      >
+        <ActionButton
+          label="OPEN CREW"
+          variant="secondary"
+          onPress={() => router.push('/crew/inner-circle')}
+        />
+      </ActionCard>
+
+      <ActionCard
+        eyebrow="Challenge"
+        title="Marcus called you out."
+        meta="5K · this weekend · friendly rivalry"
+      >
+        <ActionButton
+          label="VIEW CALL-OUT"
+          variant="dark"
+          onPress={() => router.push('/challenge/marcus-5k')}
+        />
+      </ActionCard>
+
+      <ActionButton
+        label="SEE THE FULL CORE PROTOTYPE"
+        variant="ghost"
+        onPress={() => router.push('/prototype')}
+      />
     </OjoroScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  intentCard: {
-    marginTop: spacing.md,
-    backgroundColor: colors.ink,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: spacing.sm,
-  },
-  intentLabel: {
-    color: colors.taupe,
-    fontSize: 13,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-  },
-  intentTitle: {
-    color: colors.white,
-    fontSize: 28,
-    fontWeight: '900',
-  },
-  intentMeta: {
-    color: colors.white,
-    fontSize: 14,
-  },
-  button: {
-    alignItems: 'center',
-    backgroundColor: colors.maroon,
-    borderRadius: radius.pill,
-    paddingVertical: 16,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 15,
-    fontWeight: '900',
-    letterSpacing: 0.8,
-  },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  darkMeta: { color: colors.white, opacity: 0.86 },
 });
