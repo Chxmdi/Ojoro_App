@@ -2,10 +2,12 @@
   "name": "@ojoro/api",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "lint": "node -e \"console.log('lint api: scaffold OK')\"",
-    "typecheck": "node -e \"console.log('typecheck api: scaffold OK')\"",
-    "test": "node -e \"console.log('test api: scaffold OK')\"",
-    "build": "node -e \"console.log('build api: scaffold OK')\""
+    "lint": "eslint src --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run src",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js"
   }
 }

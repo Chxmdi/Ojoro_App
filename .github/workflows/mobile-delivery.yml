@@ -1,0 +1,67 @@
+name: Mobile Delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: preview
+        type: choice
+        options: [development, preview, production]
+      platform:
+        description: "Target platform"
+        required: true
+        default: all
+        type: choice
+        options: [all, ios, android]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-delivery-${{ inputs.profile }}-${{ inputs.platform }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm --filter @ojoro/mobile typecheck
+      - run: pnpm --filter @ojoro/mobile build
+
+  eas-build:
+    if: ${{ vars.MOBILE_DELIVERY_ENABLED == 'true' }}
+    needs: [validate]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.profile }}
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - name: Install workspace
+        working-directory: ../..
+        run: pnpm install --no-frozen-lockfile
+      - name: EAS build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_OWNER: ${{ vars.EXPO_OWNER }}
+          EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+        run: pnpm dlx eas-cli@latest build --non-interactive --profile "${{ inputs.profile }}" --platform "${{ inputs.platform }}

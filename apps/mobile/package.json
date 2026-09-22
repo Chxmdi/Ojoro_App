@@ -1,11 +1,48 @@
 {
   "name": "@ojoro/mobile",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "main": "expo-router/entry",
   "scripts": {
-    "lint": "node -e \"console.log('lint mobile: scaffold OK')\"",
-    "typecheck": "node -e \"console.log('typecheck mobile: scaffold OK')\"",
-    "test": "node -e \"console.log('test mobile: scaffold OK')\"",
-    "build": "node -e \"console.log('build mobile: scaffold OK')\""
+    "start": "expo start",
+    "dev": "expo start --dev-client",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run src",
+    "build": "expo export --platform web --output-dir dist",
+    "doctor": "pnpm dlx expo-doctor@latest",
+    "eas:build:dev": "pnpm dlx eas-cli@latest build --profile development --platform all",
+    "eas:build:preview": "pnpm dlx eas-cli@latest build --profile preview --platform all",
+    "eas:build:production": "pnpm dlx eas-cli@latest build --profile production --platform all",
+    "eas:update:preview": "pnpm dlx eas-cli@latest update --channel preview",
+    "eas:update:production": "pnpm dlx eas-cli@latest update --channel production",
+    "eas:submit:production": "pnpm dlx eas-cli@latest submit --profile production --platform all"
+  },
+  "dependencies": {
+    "expo": "~57.0.24",
+    "expo-constants": "~57.0.19",
+    "expo-dev-client": "~57.0.19",
+    "expo-font": "~57.0.4",
+    "expo-linking": "~57.0.10",
+    "expo-router": "~57.0.22",
+    "expo-splash-screen": "~57.0.9",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.10.1"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~7.0.2"
   }
 }

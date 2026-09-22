@@ -1,2 +1,5 @@
-export const appName = 'Ojoro Web';
-export const surface = 'host-admin-web';
+export const serviceName = 'web' as const;
+
+export function describeService() {
+  return { name: serviceName, status: 'ready' as const };
+}

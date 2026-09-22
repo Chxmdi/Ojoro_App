@@ -1,22 +1,33 @@
 {
   "name": "ojoro",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "packageManager": "pnpm@10.17.1",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.13.0"
   },
   "scripts": {
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",
-    "lint": "turbo run lint",
+    "format": "prettier --write package.json apps/mobile/package.json apps/mobile/eas.json",
+    "format:check": "prettier --check package.json apps/mobile/package.json apps/mobile/eas.json",
+    "lint": "eslint apps packages --max-warnings=0",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "test": "vitest run --coverage",
+    "test:unit": "vitest run --coverage",
     "build": "turbo run build",
-    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "ci:migrations": "node scripts/ci/validate-migrations.mjs",
+    "ci:env": "node scripts/ci/validate-env-contract.mjs",
+    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm ci:migrations && pnpm ci:env && pnpm build"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.2",
+    "@vitest/coverage-v8": "^5.0.1",
+    "eslint": "^10.11.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.6",
-    "typescript": "^5.9.2"
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.42.0",
+    "vitest": "^5.0.1"
   }
 }

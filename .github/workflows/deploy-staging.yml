@@ -1,0 +1,40 @@
+name: Deploy Staging
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (github.event.workflow_run.conclusion == 'success' && vars.STAGING_DEPLOY_ENABLED == 'true')
+      }}
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: Trigger staging deployment
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.STAGING_DEPLOY_HOOK_URL }}
+          DEPLOY_REF: ${{ github.event.workflow_run.head_sha || github.sha }}
+          DEPLOY_ENVIRONMENT: staging
+        run: bash scripts/deploy/deploy-hook.sh
+      - name: Verify staging health
+        if: ${{ vars.STAGING_BASE_URL != '' }}
+        env:
+          BASE_URL: ${{ vars.STAGING_BASE_URL }}
+        run: bash scripts/deploy/verify-health.sh
