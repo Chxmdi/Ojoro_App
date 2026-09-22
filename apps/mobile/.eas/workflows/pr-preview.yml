@@ -1,0 +1,17 @@
+name: Ojoro PR Preview
+
+on:
+  pull_request:
+    branches: ['*']
+
+jobs:
+  publish_preview:
+    name: Publish PR preview update
+    type: update
+    environment: preview
+    params:
+      channel: preview
+
+  comment:
+    needs: [publish_preview]
+    type: github-comment

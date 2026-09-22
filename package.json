@@ -5,13 +5,13 @@
   "type": "module",
   "packageManager": "pnpm@10.17.1",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.13.0"
   },
   "scripts": {
-    "format": "prettier --write \"apps/**/*.{ts,json}\" \"packages/**/*.{ts,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
-    "format:check": "prettier --check \"apps/**/*.{ts,json}\" \"packages/**/*.{ts,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,json}\" \"packages/**/*.{ts,tsx,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,json}\" \"packages/**/*.{ts,tsx,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
     "lint": "eslint apps packages --max-warnings=0",
-    "typecheck": "tsc -p tsconfig.ci.json --noEmit",
+    "typecheck": "turbo run typecheck",
     "test": "vitest run --coverage",
     "test:unit": "vitest run --coverage",
     "build": "turbo run build",
