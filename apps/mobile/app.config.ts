@@ -9,7 +9,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   scheme: 'ojoro',
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: process.env.OJORO_IOS_BUNDLE_ID ?? 'com.ojoro.app',
