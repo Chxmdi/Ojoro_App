@@ -1,0 +1,22 @@
+name: PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "$TITLE" | grep -Eq '^(feat|fix|chore|docs|refactor|test|perf|build|ci|security)(\([a-z0-9-]+\))?: .+' || {
+            echo "Use Conventional Commits, e.g. feat(activity): add waitlist promotion"
+            exit 1
+          }

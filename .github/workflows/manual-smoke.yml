@@ -1,0 +1,21 @@
+name: Manual Staging Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Staging base URL"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health check
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+        run: curl --fail --retry 3 --retry-delay 3 "${BASE_URL%/}/health"
