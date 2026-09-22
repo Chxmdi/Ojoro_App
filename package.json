@@ -8,9 +8,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write \"apps/**/*.{ts,json}\" \"packages/**/*.{ts,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,json}\" \"packages/**/*.{ts,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
+    "lint": "eslint apps packages --max-warnings=0",
     "typecheck": "tsc -p tsconfig.ci.json --noEmit",
     "test": "vitest run --coverage",
     "test:unit": "vitest run --coverage",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@types/node": "^22.18.0",
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
