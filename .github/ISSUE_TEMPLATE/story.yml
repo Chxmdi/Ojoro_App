@@ -1,0 +1,36 @@
+name: Product / engineering story
+description: Create a user story or implementation story
+title: "[SXX.X] "
+labels: ["type:story", "needs-qa"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: User or system outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use testable checkbox items.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: telemetry
+    attributes:
+      label: Analytics / observability
+      description: Events, logs, metrics, traces or dashboards required.
+  - type: textarea
+    id: safety
+    attributes:
+      label: Security / privacy / safety considerations
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence
+      placeholder: Tests, screenshots, E2E, API proof, evaluation report...
