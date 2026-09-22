@@ -1,0 +1,20 @@
+area:mobile:
+  - changed-files:
+      - any-glob-to-any-file: "apps/mobile/**"
+area:web:
+  - changed-files:
+      - any-glob-to-any-file: "apps/web/**"
+area:backend:
+  - changed-files:
+      - any-glob-to-any-file: "apps/api/**"
+area:data:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "packages/contracts/**"
+          - "**/migrations/**"
+area:infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "turbo.json"
+          - "pnpm-workspace.yaml"
