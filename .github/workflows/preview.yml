@@ -1,0 +1,49 @@
+name: Preview
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preview-build-${{ github.event.pull_request.number }}
+          path: |
+            apps/*/dist/
+            packages/*/dist/
+          retention-days: 7
+
+  deploy-preview:
+    if: ${{ vars.PREVIEW_DEPLOY_ENABLED == 'true' }}
+    needs: [build-preview]
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger preview deployment
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.PREVIEW_DEPLOY_HOOK_URL }}
+          DEPLOY_REF: ${{ github.event.pull_request.head.sha }}
+          DEPLOY_ENVIRONMENT: preview
+        run: bash scripts/deploy/deploy-hook.sh

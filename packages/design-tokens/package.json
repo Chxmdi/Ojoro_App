@@ -2,10 +2,11 @@
   "name": "@ojoro/design-tokens",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "lint": "node -e \"console.log('lint design tokens: scaffold OK')\"",
-    "typecheck": "node -e \"console.log('typecheck design tokens: scaffold OK')\"",
-    "test": "node -e \"console.log('test design tokens: scaffold OK')\"",
-    "build": "node -e \"console.log('build design tokens: scaffold OK')\""
+    "lint": "eslint src --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run src",
+    "build": "tsc -p tsconfig.json"
   }
 }

@@ -1,20 +1,32 @@
 {
   "name": "ojoro",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "packageManager": "pnpm@10.17.1",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.ci.json --noEmit",
+    "test": "vitest run --coverage",
+    "test:unit": "vitest run --coverage",
     "build": "turbo run build",
-    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "ci:migrations": "node scripts/ci/validate-migrations.mjs",
+    "ci:env": "node scripts/ci/validate-env-contract.mjs",
+    "ci": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm ci:migrations && pnpm ci:env && pnpm build"
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.6",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0",
+    "vitest": "^3.2.4"
   }
 }

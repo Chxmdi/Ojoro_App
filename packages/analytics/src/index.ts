@@ -1,2 +1,5 @@
-export const northStarMetric = 'ojoro_hours';
-export const healthyEngagementMetric = 'real_world_hours_per_app_minute';
+export const serviceName = 'analytics' as const;
+
+export function describeService() {
+  return { name: serviceName, status: 'ready' as const };
+}

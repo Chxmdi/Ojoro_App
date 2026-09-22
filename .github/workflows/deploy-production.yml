@@ -1,0 +1,38 @@
+name: Deploy Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Commit SHA or tag to deploy"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ vars.PRODUCTION_DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.event.release.tag_name }}
+      - name: Trigger production deployment
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.PRODUCTION_DEPLOY_HOOK_URL }}
+          DEPLOY_REF: ${{ inputs.ref || github.event.release.tag_name }}
+          DEPLOY_ENVIRONMENT: production
+        run: bash scripts/deploy/deploy-hook.sh
+      - name: Verify production health
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_BASE_URL }}
+        run: bash scripts/deploy/verify-health.sh

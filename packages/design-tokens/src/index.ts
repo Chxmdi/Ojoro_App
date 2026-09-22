@@ -1,8 +1,5 @@
-export const colors = {
-  black: '#000000',
-  ink: '#141515',
-  maroon: '#290000',
-  charcoal: '#45484A',
-  taupe: '#A7A08B',
-  white: '#FFFFFF',
-} as const;
+export const serviceName = 'design-tokens' as const;
+
+export function describeService() {
+  return { name: serviceName, status: 'ready' as const };
+}

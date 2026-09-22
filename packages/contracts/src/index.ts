@@ -1,18 +1,5 @@
-export type OjoroIntent = {
-  activity: string;
-  startsAfter?: string;
-  startsBefore?: string;
-  radiusKm?: number;
-};
+export const serviceName = 'contracts' as const;
 
-export type PlanState =
-  | 'idea'
-  | 'intent'
-  | 'forming'
-  | 'proposed'
-  | 'confirmed'
-  | 'live'
-  | 'completed'
-  | 'verified'
-  | 'recap'
-  | 'archived';
+export function describeService() {
+  return { name: serviceName, status: 'ready' as const };
+}
