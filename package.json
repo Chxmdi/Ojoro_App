@@ -2,7 +2,9 @@
   "name": "ojoro",
   "private": true,
   "packageManager": "pnpm@10.17.1",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,yml,yaml}\"",

@@ -1,7 +1,7 @@
 name: Epic
 description: Major product or platform workstream
-title: "[EXX] "
-labels: ["type:epic"]
+title: '[EXX] '
+labels: ['type:epic']
 body:
   - type: textarea
     id: objective

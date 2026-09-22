@@ -1,7 +1,7 @@
 name: Product / engineering story
 description: Create a user story or implementation story
-title: "[SXX.X] "
-labels: ["type:story", "needs-qa"]
+title: '[SXX.X] '
+labels: ['type:story', 'needs-qa']
 body:
   - type: textarea
     id: goal

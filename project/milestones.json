@@ -1,14 +1,14 @@
 [
-  {"key":"M0","title":"M0 — Foundation"},
-  {"key":"M1","title":"M1 — Identity"},
-  {"key":"M2","title":"M2 — Crews & Intent"},
-  {"key":"M3","title":"M3 — Activity Core"},
-  {"key":"M4","title":"M4 — Ojoro Now"},
-  {"key":"M5","title":"M5 — Social Layer"},
-  {"key":"M6","title":"M6 — Challenges"},
-  {"key":"M7","title":"M7 — Clans & Hosts"},
-  {"key":"M8","title":"M8 — Places & Progress"},
-  {"key":"M9","title":"M9 — AI / Trust / Monetization"},
-  {"key":"M10","title":"M10 — Connected Movement Beta"},
-  {"key":"M11","title":"M11 — City Scale / GA"}
+  { "key": "M0", "title": "M0 — Foundation" },
+  { "key": "M1", "title": "M1 — Identity" },
+  { "key": "M2", "title": "M2 — Crews & Intent" },
+  { "key": "M3", "title": "M3 — Activity Core" },
+  { "key": "M4", "title": "M4 — Ojoro Now" },
+  { "key": "M5", "title": "M5 — Social Layer" },
+  { "key": "M6", "title": "M6 — Challenges" },
+  { "key": "M7", "title": "M7 — Clans & Hosts" },
+  { "key": "M8", "title": "M8 — Places & Progress" },
+  { "key": "M9", "title": "M9 — AI / Trust / Monetization" },
+  { "key": "M10", "title": "M10 — Connected Movement Beta" },
+  { "key": "M11", "title": "M11 — City Scale / GA" }
 ]
