@@ -47,3 +47,27 @@ The fundamental unit of Ojoro is not content. It is **shared real-world action**
 6. Optimize for real-world movement, not app time.
 
 See `docs/ENGINEERING.md`, `docs/PROJECT_STRUCTURE.md` and `docs/RELEASE_GATES.md`.
+
+
+## Delivery system
+
+The repository is wired for PRD-driven delivery:
+
+- **12 release milestones** from M0 Foundation through M11 City Scale / GA
+- **16 epics** tracked as GitHub issues
+- **64 implementation stories** with four engineering tasks each
+- **256 implementation tasks** represented inside story checklists
+- CI, CodeQL, dependency review, PR labeling, release automation and staging smoke workflows
+- structured Epic, Story and Bug issue forms
+- pull-request template, CODEOWNERS, Dependabot and security policy
+
+Useful links:
+
+- [Issues](https://github.com/Chxmdi/Ojoro_App/issues)
+- [Actions](https://github.com/Chxmdi/Ojoro_App/actions)
+- [Pull requests](https://github.com/Chxmdi/Ojoro_App/pulls)
+- [Repository setup guide](docs/GITHUB_SETUP.md)
+- [Project structure](docs/PROJECT_STRUCTURE.md)
+- [PRD traceability](docs/PRD_TRACEABILITY.md)
+
+> GitHub Project fields, custom labels, milestones, rulesets and branch protection are repository-administration operations. The canonical definitions and bootstrap commands are stored in `project/` and `scripts/bootstrap-github.sh`.
