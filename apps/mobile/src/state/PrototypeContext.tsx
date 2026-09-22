@@ -25,6 +25,7 @@ type PrototypeContextValue = {
   acceptChallenge: () => void;
   counterChallenge: () => void;
   completeChallenge: () => void;
+  resetChallenge: () => void;
 };
 
 const PrototypeContext = createContext<PrototypeContextValue | null>(null);
@@ -97,6 +98,9 @@ export function PrototypeProvider({ children }: PropsWithChildren) {
       completeChallenge() {
         setChallengeState('complete');
         track('challenge_completed', { challengeId: 'marcus-5k' });
+      },
+      resetChallenge() {
+        setChallengeState('pending');
       },
     }),
     [challengeState, joined, participantCount, planState],

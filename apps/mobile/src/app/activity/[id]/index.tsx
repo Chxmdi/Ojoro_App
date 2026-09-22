@@ -10,6 +10,7 @@ import { colors, radius, spacing } from '@/theme/tokens';
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { participantCount, planState, startActivity } = usePrototype();
+  const activityId = id ?? 'football-tonight';
 
   return (
     <OjoroScreen
@@ -30,7 +31,10 @@ export default function ActivityDetailScreen() {
         label={planState === 'live' ? 'VIEW LIVE' : 'START LIVE PROTOTYPE'}
         onPress={() => {
           startActivity();
-          router.push(`/activity/${id ?? 'football-tonight'}/live`);
+          router.push({
+            pathname: '/activity/[id]/live',
+            params: { id: activityId },
+          });
         }}
       />
       <ActionButton

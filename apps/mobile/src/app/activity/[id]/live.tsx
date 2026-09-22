@@ -9,6 +9,7 @@ import { colors, spacing } from '@/theme/tokens';
 export default function LiveActivityScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { finishActivity } = usePrototype();
+  const activityId = id ?? 'football-tonight';
 
   return (
     <OjoroScreen
@@ -22,12 +23,17 @@ export default function LiveActivityScreen() {
         <Text style={styles.number}>3 — 2</Text>
         <Text style={styles.team}>WHITE</Text>
       </View>
-      <Text style={styles.detail}>62 min · 8 players checked in · participant confirmed</Text>
+      <Text style={styles.detail}>
+        62 min · 8 players checked in · participant confirmed
+      </Text>
       <ActionButton
         label="FINISH ACTIVITY"
         onPress={() => {
           finishActivity();
-          router.replace(`/activity/${id ?? 'football-tonight'}/recap`);
+          router.replace({
+            pathname: '/activity/[id]/recap',
+            params: { id: activityId },
+          });
         }}
       />
     </OjoroScreen>

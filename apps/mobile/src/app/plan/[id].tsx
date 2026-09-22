@@ -20,6 +20,7 @@ export default function PlanScreen() {
   } = usePrototype();
 
   const gameOn = planState === 'game-on' || participantCount >= 8;
+  const planId = id ?? 'football-tonight';
 
   return (
     <OjoroScreen
@@ -45,7 +46,11 @@ export default function PlanScreen() {
       {!gameOn ? (
         <>
           <ActionButton
-            label={participantCount === 7 ? 'PULL IN ONE FRIEND' : 'SIMULATE A FRIEND JOINING'}
+            label={
+              participantCount === 7
+                ? 'PULL IN ONE FRIEND'
+                : 'SIMULATE A FRIEND JOINING'
+            }
             variant="dark"
             onPress={addFriend}
           />
@@ -58,7 +63,12 @@ export default function PlanScreen() {
       ) : (
         <ActionButton
           label="OPEN ACTIVITY"
-          onPress={() => router.push(`/activity/${id ?? 'football-tonight'}`)}
+          onPress={() =>
+            router.push({
+              pathname: '/activity/[id]',
+              params: { id: planId },
+            })
+          }
         />
       )}
     </OjoroScreen>

@@ -3,9 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
 import { OjoroScreen } from '@/components/OjoroScreen';
+import { usePrototype } from '@/state/PrototypeContext';
 import { colors, radius, spacing } from '@/theme/tokens';
 
 export default function ChallengeResultScreen() {
+  const { resetChallenge } = usePrototype();
+
   return (
     <OjoroScreen
       eyebrow="Verified result"
@@ -20,7 +23,13 @@ export default function ChallengeResultScreen() {
       </View>
       <ActionButton
         label="REMATCH"
-        onPress={() => router.replace('/challenge/marcus-5k')}
+        onPress={() => {
+          resetChallenge();
+          router.replace({
+            pathname: '/challenge/[id]',
+            params: { id: 'marcus-5k' },
+          });
+        }}
       />
       <ActionButton
         label="BACK THIS RIVALRY"

@@ -12,10 +12,7 @@ export default function PrototypeIndex() {
       description="These are the interaction contracts D0 must prove before deep production implementation."
     >
       <ActionCard title="Movement" meta="I’M DOWN → GAME ON → Live → Recap">
-        <ActionButton
-          label="START"
-          onPress={() => router.push('/down-for')}
-        />
+        <ActionButton label="START" onPress={() => router.push('/down-for')} />
       </ActionCard>
       <ActionCard title="Crew" meta="Chat → Make This a Game → Plan">
         <ActionButton
@@ -38,7 +35,17 @@ export default function PrototypeIndex() {
           onPress={() => router.push('/onboarding')}
         />
       </ActionCard>
-      <ActionCard title="Ojoro Now" meta="Nothing exists → create from latent demand">
+      <ActionCard title="Clan" meta="Mission → rivalry → roster → Clash">
+        <ActionButton
+          label="OPEN CLAN"
+          variant="secondary"
+          onPress={() => router.push('/clan/mcgill')}
+        />
+      </ActionCard>
+      <ActionCard
+        title="Ojoro Now"
+        meta="Nothing exists → create from latent demand"
+      >
         <ActionButton
           label="OPEN MAP"
           variant="secondary"
