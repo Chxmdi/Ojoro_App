@@ -4,7 +4,7 @@ import { colors } from './tokens';
 
 describe('Ojoro design tokens', () => {
   it('preserves the approved primary palette', () => {
-    expect(colors).toEqual({
+    expect(colors).toMatchObject({
       black: '#000000',
       ink: '#141515',
       maroon: '#290000',

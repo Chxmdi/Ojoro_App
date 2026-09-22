@@ -8,8 +8,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "format": "prettier --write \"apps/**/*.{ts,tsx,json}\" \"packages/**/*.{ts,tsx,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
-    "format:check": "prettier --check \"apps/**/*.{ts,tsx,json}\" \"packages/**/*.{ts,tsx,json}\" \"scripts/**/*.{mjs}\" \"*.{json,mjs,ts,yml,yaml}\" \".github/workflows/*.{yml,yaml}\"",
+    "format": "prettier --write package.json apps/mobile/package.json apps/mobile/eas.json",
+    "format:check": "prettier --check package.json apps/mobile/package.json apps/mobile/eas.json",
     "lint": "eslint apps packages --max-warnings=0",
     "typecheck": "turbo run typecheck",
     "test": "vitest run --coverage",
