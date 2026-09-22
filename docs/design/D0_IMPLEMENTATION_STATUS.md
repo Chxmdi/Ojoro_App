@@ -1,6 +1,6 @@
 # D0 Implementation Status
 
-## Implemented now
+## Implemented in repository
 
 ### D00.1 — Information Architecture
 - five-tab mobile IA
@@ -9,7 +9,7 @@
 - screen/sheet/dialog rules
 - back-stack principles
 - six core user journeys
-- canonical 272-screen/state inventory already retained
+- canonical 272-screen/state inventory
 
 ### D00.2 — Design System
 - approved palette encoded in code
@@ -20,13 +20,18 @@
 - StatusChip
 - AvatarCluster
 - PlanProgress
+- PollCard
+- PermissionCard
+- SystemState
 - dark/live/competition language
-- motion / haptic / accessibility principles documented
+- motion / accessibility principles documented
 
 ### D00.3 — Onboarding / Home / Identity
 - onboarding review prototype
+- explicit privacy-first permission primer sequence
 - action-first Home
 - finite object model rather than content-only feed
+- actionable Notifications prototype
 - Physical Identity prototype
 - Passport prototype
 
@@ -41,8 +46,10 @@ Activity detail → Live → Finish → Recap → Run It Back.
 ### D00.6 — Friends / Crews / Clans
 - Crew prototype
 - chat intent → MAKE THIS A GAME
+- detailed time and place polls
 - Crew Momentum language
 - Clan mission/rivalry prototype
+- Clan Clash score, roster and recap prototype
 
 ### D00.7 — Challenges / Map / Progress
 - Call-Out
@@ -50,27 +57,28 @@ Activity detail → Live → Finish → Recap → Run It Back.
 - result
 - Rematch
 - Ojoro Pulse aggregate map
+- Ojoro Now latent-demand empty-state recovery
 - privacy-safe presence language
 - Passport / identity surfaces
 
 ### D00.8 — Handoff
 - state matrix
-- analytics contract
+- reusable loading/error/offline/privacy/expired visual components
+- Tier-A API/data/realtime/analytics contracts
+- analytics prototype events
 - accessibility QA
 - engineering handoff contract
 - Expo Router deep-linkable prototype routes
 
-## Still required before D00 closes
+## Remaining before D00 can be formally closed
 
-1. visual review of all implemented routes on real iOS and Android development builds;
-2. replace prototype system-font display type with the final licensed typography decision;
-3. add complete loading/error/offline/permission-denied visual components;
-4. implement detailed time/place poll surfaces for Crew;
-5. implement full Clan Clash score/roster/recap screens;
-6. add the first-use permissions sequence rather than the compressed onboarding review;
-7. perform accessibility test with VoiceOver/TalkBack and large text;
-8. annotate API/data contracts per Tier-A screen before the production vertical slice;
-9. validate motion/haptics on device;
-10. generate and commit visual regression references after D0 visual approval.
+These require human/device/platform validation rather than more planning documents:
 
-D00 remains open until those validations are complete.
+1. visual review on real iOS and Android development builds;
+2. final licensed display-typeface decision;
+3. VoiceOver/TalkBack + large-text accessibility pass;
+4. motion/haptic validation on device;
+5. visual-regression baselines after visual approval;
+6. final D0 design approval before production backend contracts are frozen.
+
+The product architecture, prototype routes, state system and engineering contracts are now implemented enough for engineering to begin the first vertical production slice while D00.8 device QA remains open.

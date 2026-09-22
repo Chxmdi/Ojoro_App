@@ -26,7 +26,7 @@ export default function CrewScreen() {
           label="MAKE THIS A GAME"
           onPress={() => {
             track('crew_make_this_a_game', { crewId: 'inner-circle' });
-            router.push('/plan/football-tonight');
+            router.push('/crew/inner-circle/poll');
           }}
         />
       </ActionCard>

@@ -11,7 +11,7 @@ export default function OnboardingScreen() {
     <OjoroScreen
       eyebrow="Welcome"
       title="BUILD YOUR PHYSICAL IDENTITY."
-      description="The prototype compresses onboarding into one review screen. Production will progressively capture these choices."
+      description="Ojoro learns enough to create relevant real-world opportunities without turning onboarding into a questionnaire."
     >
       <View style={styles.section}>
         <Text style={styles.label}>SPORTS</Text>
@@ -34,8 +34,8 @@ export default function OnboardingScreen() {
         <Text style={styles.value}>Weeknights after 7 · within 5 km</Text>
       </View>
       <ActionButton
-        label="SHOW ME WHAT’S HAPPENING"
-        onPress={() => router.replace('/(tabs)')}
+        label="CONTINUE TO PERMISSIONS"
+        onPress={() => router.push('/permissions')}
       />
     </OjoroScreen>
   );

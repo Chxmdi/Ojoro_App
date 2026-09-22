@@ -32,8 +32,8 @@ export default function ClanScreen() {
         dark
       >
         <ActionButton
-          label="JOIN THE ROSTER"
-          onPress={() => router.push('/challenge/marcus-5k')}
+          label="OPEN CLASH"
+          onPress={() => router.push('/clan/mcgill/clash')}
         />
       </ActionCard>
     </OjoroScreen>

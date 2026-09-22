@@ -9,6 +9,7 @@ export type PrototypeEvent =
   | 'activity_completed'
   | 'run_it_back'
   | 'crew_make_this_a_game'
+  | 'crew_plan_poll_confirmed'
   | 'challenge_accepted'
   | 'challenge_countered'
   | 'challenge_completed';
