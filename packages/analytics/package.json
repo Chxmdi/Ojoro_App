@@ -1,0 +1,11 @@
+{
+  "name": "@ojoro/analytics",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "node -e \"console.log('lint analytics: scaffold OK')\"",
+    "typecheck": "node -e \"console.log('typecheck analytics: scaffold OK')\"",
+    "test": "node -e \"console.log('test analytics: scaffold OK')\"",
+    "build": "node -e \"console.log('build analytics: scaffold OK')\""
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@ojoro/config",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "node -e \"console.log('lint config: scaffold OK')\"",
+    "typecheck": "node -e \"console.log('typecheck config: scaffold OK')\"",
+    "test": "node -e \"console.log('test config: scaffold OK')\"",
+    "build": "node -e \"console.log('build config: scaffold OK')\""
+  }
+}
