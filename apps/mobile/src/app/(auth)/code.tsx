@@ -134,7 +134,7 @@ function CodeForm({ phone, sentAt: initialSentAt }: { phone: string; sentAt: num
         >
           SIGN IN
         </Button>
-        <View className="items-center gap-space-1">
+        <View className="items-start gap-space-1">
           <TextButton
             onPress={() => void resend()}
             disabled={waitS > 0 || !online}

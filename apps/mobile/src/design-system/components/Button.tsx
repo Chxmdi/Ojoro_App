@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Platform,
   Pressable,
+  StyleSheet,
   View,
   type GestureResponderEvent,
   type PressableProps,
@@ -201,11 +202,12 @@ export function Button({
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
       className={[block ? 'self-stretch' : 'self-start', className].filter(Boolean).join(' ')}
-      style={[
+      // Flattened: <Link asChild> (href) can't pass a style array to its child on web.
+      style={StyleSheet.flatten([
         noBrowserOutline,
         inactive && !loading ? { opacity: opacity['opacity-disabled'] } : null,
         style,
-      ]}
+      ])}
     >
       <Animated.View style={press.style}>
         <View

@@ -105,7 +105,10 @@ export function FullBlock({
     track('cta_tapped', { cta: 'join_waitlist', plan_id: planId });
     setError(null);
     waitlist.tap(activityId, {
-      onSuccess: (state) => toast.show({ kind: 'success', message: waitlistResult(state) }),
+      onSuccess: (state) => {
+        track('waitlist_joined', { plan_id: planId, status: state.status, position: state.waitlist_position });
+        toast.show({ kind: 'success', message: waitlistResult(state) });
+      },
       onError: (e) => setError(errorMessage(ojoroErrorOf(e))),
     });
   };
