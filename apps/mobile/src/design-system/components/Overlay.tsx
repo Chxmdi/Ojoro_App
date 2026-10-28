@@ -26,9 +26,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { motion, REDUCED_MOTION_FADE } from '../motion';
-import { Icon } from './Icon';
 import { overlayGate } from './Overlay.logic';
-import { FocusRing, useFocusVisible, usePressScale } from './pressFeedback';
 
 export type Timing = { duration: number; easing: (typeof motion)['commit']['easing'] };
 
@@ -74,7 +72,10 @@ export function useOverlayPresence(
     if (!mounted) return;
     if (visible) {
       if (allowed && ready)
-        progress.value = withTiming(1, reduced ? REDUCED_FADE : { ...enter, reduceMotion: ReduceMotion.Never });
+        progress.value = withTiming(
+          1,
+          reduced ? REDUCED_FADE : { ...enter, reduceMotion: ReduceMotion.Never },
+        );
       return;
     }
     progress.value = withTiming(
@@ -92,7 +93,11 @@ export function useOverlayPresence(
 /** Asks the app-wide gate for the screen while `wanted`; true once this overlay holds it. */
 function useOverlaySlot(wanted: boolean): boolean {
   const id = useId();
-  const active = useSyncExternalStore(overlayGate.subscribe, overlayGate.active, overlayGate.active);
+  const active = useSyncExternalStore(
+    overlayGate.subscribe,
+    overlayGate.active,
+    overlayGate.active,
+  );
   useEffect(() => {
     if (!wanted) return;
     overlayGate.request(id);
@@ -159,37 +164,10 @@ export function useReturnFocus(shown: boolean) {
   }, [shown]);
 }
 
-/** `tabIndex={-1}` on web so a heading can take programmatic focus; nothing on native. */
-export const programmaticFocus = Platform.OS === 'web' ? ({ tabIndex: -1 } as object) : null;
-
 /**
- * The sheet's close control: a 44pt round hit area with the close icon,
- * labelled "Close" (the web reference's IconButton icon="close").
+ * `tabIndex={-1}` on web so a heading can take programmatic focus, without the
+ * browser's outline (a heading isn't a control, so it gets no focus ring).
+ * Nothing on native.
  */
-export function CloseButton({ onPress }: { onPress?: (() => void) | undefined }) {
-  const press = usePressScale(ICON_PRESS_SCALE);
-  const focus = useFocusVisible({});
-  return (
-    <Pressable
-      role="button"
-      accessibilityLabel="Close"
-      hitSlop={0}
-      onPress={onPress}
-      onPressIn={(event) => {
-        press.pressIn();
-        focus.onPressIn(event);
-      }}
-      onPressOut={press.pressOut}
-      onFocus={focus.onFocus}
-      onBlur={focus.onBlur}
-    >
-      <Animated.View style={press.style} className="size-touch items-center justify-center rounded-pill">
-        <Icon name="close" />
-        {focus.focusVisible ? <FocusRing /> : null}
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-/** `.oj-iconbtn:active` scale. */
-const ICON_PRESS_SCALE = 0.92;
+export const programmaticFocus =
+  Platform.OS === 'web' ? ({ tabIndex: -1, style: { outlineStyle: 'none' } } as object) : null;

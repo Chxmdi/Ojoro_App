@@ -1,5 +1,5 @@
 import { Link, type Href } from 'expo-router';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, View, type GestureResponderEvent, type ViewProps } from 'react-native';
 
 import { useThemeColor } from '../useThemeColor';
@@ -41,6 +41,12 @@ export type StripProps = {
   rule?: boolean;
   /** Overrides the label read from leading, title, meta and trailing in visual order. */
   accessibilityLabel?: string | undefined;
+  /**
+   * A strip without `href`/`onPress` is one screen-reader element by default.
+   * Pass false when the trailing slot holds its own control (a TextButton), so
+   * that control stays reachable; the parts are then read one by one, in order.
+   */
+  accessible?: boolean | undefined;
   /** For a pressable strip: what happens ("Opens the plan"). */
   accessibilityHint?: string | undefined;
   testID?: string | undefined;
@@ -69,6 +75,7 @@ export function Strip({
   onPress,
   rule = true,
   accessibilityLabel,
+  accessible = true,
   accessibilityHint,
   testID,
 }: StripProps) {
@@ -86,6 +93,7 @@ export function Strip({
       trailing === 'chevron' ? undefined : (trailingLabel ?? textOf(trailing)),
     ]);
   const focus = useFocusVisible({});
+  const [pressed, setPressed] = useState(false);
 
   const row = (
     <>
@@ -116,19 +124,27 @@ export function Strip({
     </>
   );
 
-  const rowClass = [
-    'relative min-h-touch flex-row items-center',
-    rule ? 'border-b border-line' : null,
-  ]
-    .filter(Boolean)
-    .join(' ');
-  const rowStyle = { paddingVertical: layout.paddingY, gap: layout.gap };
+  // The rule sits on the outer element; layout on an inner View, because
+  // `<Link asChild>` on web replaces a Pressable's `style` with its own.
+  const outerClass = ['relative', rule ? 'border-b border-line' : null].filter(Boolean).join(' ');
+  const inner = (pressedNow: boolean) => (
+    <View
+      className="min-h-touch flex-row items-center"
+      style={[
+        { paddingVertical: layout.paddingY, gap: layout.gap },
+        // Pressed: a ground change (surface-raised), not a shadow or ripple.
+        pressedNow ? { backgroundColor: pressedGround } : null,
+      ]}
+    >
+      {row}
+    </View>
+  );
 
   if (!href && !onPress) {
-    const props: ViewProps = { accessible: true, accessibilityLabel: label };
+    const props: ViewProps = accessible ? { accessible: true, accessibilityLabel: label } : {};
     return (
-      <View className={rowClass} style={rowStyle} testID={testID} {...props}>
-        {row}
+      <View className={outerClass} testID={testID} {...props}>
+        {inner(false)}
       </View>
     );
   }
@@ -136,18 +152,20 @@ export function Strip({
   const pressable = (
     <Pressable
       onPress={onPress}
-      onPressIn={focus.onPressIn}
+      onPressIn={(event) => {
+        setPressed(true);
+        focus.onPressIn(event);
+      }}
+      onPressOut={() => setPressed(false)}
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
       accessibilityRole={href ? 'link' : 'button'}
       accessibilityLabel={label}
       accessibilityHint={accessibilityHint}
       testID={testID}
-      className={rowClass}
-      // Pressed: a ground change (surface-raised), not a shadow or ripple.
-      style={({ pressed }) => [rowStyle, pressed ? { backgroundColor: pressedGround } : null]}
+      className={outerClass}
     >
-      {row}
+      {inner(pressed)}
       {focus.focusVisible ? <FocusRing shape="square" /> : null}
     </Pressable>
   );

@@ -6,7 +6,7 @@ import { uiFamily } from '../fonts';
 import { useThemeColor } from '../useThemeColor';
 import { formatCount } from './formatCount';
 import { Icon, type IconName } from './Icon';
-import { FocusRing, useFocusVisible, usePressScale } from './pressFeedback';
+import { FocusRing, useFocusVisible, usePressScale, noBrowserOutline } from './pressFeedback';
 import { Text } from './Text';
 
 export type IconButtonVariant = 'plain' | 'outline' | 'solid';
@@ -91,7 +91,7 @@ export function IconButton({
       onBlur={focus.onBlur}
       testID={testID}
       className={['self-start', className].filter(Boolean).join(' ')}
-      style={disabled ? { opacity: opacity['opacity-disabled'] } : undefined}
+      style={[noBrowserOutline, disabled ? { opacity: opacity['opacity-disabled'] } : null]}
     >
       <Animated.View style={press.style}>
         <View

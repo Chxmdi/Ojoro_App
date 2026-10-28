@@ -59,6 +59,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     ? {
         'aria-label': label,
         'aria-invalid': !!error,
+        'aria-disabled': !!isDisabled,
         ...(message ? { 'aria-describedby': messageId } : null),
       }
     : {

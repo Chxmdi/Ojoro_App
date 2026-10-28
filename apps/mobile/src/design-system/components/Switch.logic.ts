@@ -28,3 +28,11 @@ export function knobOffset(value: boolean): number {
   const inner = SWITCH.width - 2 * SWITCH.border;
   return value ? inner - SWITCH.knobInset - SWITCH.knob : SWITCH.knobInset;
 }
+
+/**
+ * Oxblood and black merge at 1.09:1, so a filled pill on a ground it can't be
+ * told from needs the 2px `mark-ring` (design rules). Below 1.5:1 counts as merged.
+ */
+export function needsMarkRing(contrast: number): boolean {
+  return contrast < 1.5;
+}

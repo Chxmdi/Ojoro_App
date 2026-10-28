@@ -14,3 +14,7 @@ export { initials } from './components/initials';
 export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
 export { Divider, type DividerProps, type DividerKind } from './components/Divider';
 export { Graphic, Check, GRAPHIC_KINDS, type GraphicProps, type GraphicKind, type CheckProps } from './components/Graphic';
+export { Input, type InputProps } from './components/Input';
+export { Switch, type SwitchProps } from './components/Switch';
+export { Stepper, type StepperProps } from './components/Stepper';
+export { Progress, type ProgressProps } from './components/Progress';

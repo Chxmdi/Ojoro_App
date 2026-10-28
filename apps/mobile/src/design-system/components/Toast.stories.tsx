@@ -39,7 +39,12 @@ function AllKinds() {
       {kinds.map((kind) => (
         <View key={kind} className="gap-space-3">
           <Toast kind={kind} message={samples[kind].message} announce={false} />
-          <Toast kind={kind} message={samples[kind].message} action={samples[kind].action} announce={false} />
+          <Toast
+            kind={kind}
+            message={samples[kind].message}
+            action={samples[kind].action}
+            announce={false}
+          />
         </View>
       ))}
     </View>
@@ -77,8 +82,8 @@ function Triggers() {
   return (
     <View className="gap-space-3">
       <Text variant="body-sm" muted>
-        One toast at a time: a new one replaces the one on screen. 4s, or 8s with an action (doubled with a screen
-        reader on).
+        One toast at a time: a new one replaces the one on screen. 4s, or 8s with an action (doubled
+        with a screen reader on).
       </Text>
       {kinds.map((kind) => (
         <View key={kind} className="flex-row flex-wrap gap-space-2">

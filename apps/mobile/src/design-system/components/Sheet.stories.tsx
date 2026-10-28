@@ -63,7 +63,8 @@ function OpenSheet({
   return (
     <View className="gap-space-4">
       <Text variant="body-sm" muted>
-        Dismiss with the close button, a tap on the scrim, a swipe down on the header, Android back or Escape.
+        Dismiss with the close button, a tap on the scrim, a swipe down on the header, Android back
+        or Escape.
       </Text>
       <Button variant="secondary" onPress={() => setOpen(true)}>
         OPEN SHEET
@@ -151,7 +152,12 @@ export const Anatomy: Story = {
   parameters: onSituation('calm', { padded: false }),
   render: () => (
     <EachSituation>
-      <Sheet inline title="Pull someone in" onClose={() => {}} actions={<Button block>SEND 1 INVITE</Button>}>
+      <Sheet
+        inline
+        title="Pull someone in"
+        onClose={() => {}}
+        actions={<Button block>SEND 1 INVITE</Button>}
+      >
         <PeopleList count={2} />
       </Sheet>
     </EachSituation>

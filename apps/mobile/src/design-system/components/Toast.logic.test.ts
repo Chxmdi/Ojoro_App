@@ -29,7 +29,12 @@ describe('toastDuration', () => {
 
 describe('toast kind', () => {
   it('is told by icon, not colour', () => {
-    expect(TOAST_ICON).toEqual({ neutral: null, success: 'check', offline: 'offline', error: 'alert' });
+    expect(TOAST_ICON).toEqual({
+      neutral: null,
+      success: 'check',
+      offline: 'offline',
+      error: 'alert',
+    });
   });
 
   it('is assertive only for errors', () => {
@@ -51,7 +56,11 @@ describe('toastReducer', () => {
   });
 
   it('shows one toast and gives it an id', () => {
-    const s = toastReducer(initialToastState<T>(), { type: 'show', toast: { message: 'a' }, id: 1 });
+    const s = toastReducer(initialToastState<T>(), {
+      type: 'show',
+      toast: { message: 'a' },
+      id: 1,
+    });
     expect(s.current).toEqual({ message: 'a', id: 1 });
   });
 
