@@ -18,7 +18,18 @@ Current top-level product shell:
 - Compete
 - You
 
-The D0 design phase owns the final interaction design, but engineering now has a real routable shell to build against.
+The design for every tab and stack lives in `design-handoff/` (`SCREENS.md` lists suggested routes). The tab bar is Ojoro's own `TabBar` component; each tab sets its situation (Home, Discover, Create and You are calm; Compete is live).
+
+## Styling and design system
+
+- NativeWind v5 (Tailwind v4 via `react-native-css`), themed from `design-handoff/design-system/tokens.json` through `scripts/build-tokens.mjs`.
+- One CSS-variable scope per situation via `<Situation id>`, not light/dark mode.
+- Reanimated 4 for the four motion families, `expo-haptics` for the haptics table, `react-native-svg` for icons and brand graphics, `expo-image` for images.
+- No third-party UI kit or icon font.
+
+## Backend
+
+Supabase (see `docs/adr/0001-backend-supabase.md`). The client lives in `src/lib/supabase.ts`.
 
 ## Project location
 
