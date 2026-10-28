@@ -44,6 +44,8 @@ const surfaceClass: Record<IconButtonVariant, string> = {
  * as a 2px border on a 22px box, so the oxblood inside stays 18px.
  */
 const COUNT_RING = 2;
+/** The web positions the badge inside the button's 1px border (CSS absolute offsets start at the padding edge). */
+const HAIR = 1;
 const countText: TextStyle = {
   fontFamily: uiFamily(700),
   fontSize: 10,
@@ -105,8 +107,8 @@ export function IconButton({
             aria-hidden
             className="absolute rounded-pill border-mark-ring"
             style={{
-              top: 4 - COUNT_RING,
-              right: 2 - COUNT_RING,
+              top: HAIR + 4 - COUNT_RING,
+              right: HAIR + 2 - COUNT_RING,
               minWidth: 18 + COUNT_RING * 2,
               height: 18 + COUNT_RING * 2,
               paddingHorizontal: 4,

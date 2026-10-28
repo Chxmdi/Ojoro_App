@@ -282,3 +282,18 @@ export const OnLive: Story = {
     </StripList>
   ),
 };
+
+/** With `href`: an Expo Router `<Link asChild>` around the row, read as a link. */
+export const WithHref: Story = {
+  render: () => (
+    <StripList>
+      <Strip
+        leading="SAT"
+        title="Chimdi vs Marcus · 5K"
+        meta="142 following · build-up"
+        trailing={<Badge tone="signal">3 DAYS</Badge>}
+        href="/"
+      />
+    </StripList>
+  ),
+};
