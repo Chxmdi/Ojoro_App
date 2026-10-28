@@ -17,6 +17,7 @@ import {
   isBreakthrough,
   isGather,
   PLAN_CLUSTER_MAX,
+  planButtons,
   planModel,
   type PlanModel,
   type PlanVariant,
@@ -108,6 +109,7 @@ function PlanBody({
   headIn,
   reduced,
 }: BodyProps) {
+  const buttons = planButtons(model.action, joined);
   const fallback = useSharedValue(1);
   const k = headIn ?? fallback;
   const headStyle = useAnimatedStyle(() =>
@@ -153,16 +155,22 @@ function PlanBody({
           </Text>
         </View>
       </View>
-      {model.action === 'invite' ? (
-        <Button variant="primary" block onPress={onInvite}>
-          PULL SOMEONE IN
-        </Button>
-      ) : model.action === 'open' ? (
-        <Button variant="primary" block onPress={onOpen}>
-          OPEN GAME
-        </Button>
-      ) : model.action === 'commit' ? (
-        <Button variant="commit" block committed={joined} onPress={onJoin} />
+      {buttons.length > 0 ? (
+        <View className="gap-space-3">
+          {buttons.map((button) =>
+            button === 'commit' ? (
+              <Button key="commit" variant="commit" block committed={joined} onPress={onJoin} />
+            ) : button === 'invite' ? (
+              <Button key="invite" variant="primary" block onPress={onInvite}>
+                PULL SOMEONE IN
+              </Button>
+            ) : (
+              <Button key="open" variant="primary" block onPress={onOpen}>
+                OPEN GAME
+              </Button>
+            ),
+          )}
+        </View>
       ) : null}
     </Situation>
   );
@@ -217,8 +225,7 @@ export function PlanForming({
     if (isBreakthrough(prev.model.variant, model.variant)) {
       // Underneath, nobody is new any more: the gather has already played.
       setUnder({ ...prev, participants: prev.participants.map((p) => ({ ...p, isNew: false })) });
-    }
-    else if (model.variant !== 'game-on') setUnder(null);
+    } else if (model.variant !== 'game-on') setUnder(null);
     setPrev(snapshot);
   }
 
@@ -238,9 +245,7 @@ export function PlanForming({
   // Clip from the bottom without moving layout: the clip box slides up by (1 − t)·H and its
   // content slides back down by the same amount, so only the top t·H of the plan shows.
   const clipBox = useAnimatedStyle(() =>
-    reduced
-      ? { opacity: t.value }
-      : { transform: [{ translateY: -(1 - t.value) * height.value }] },
+    reduced ? { opacity: t.value } : { transform: [{ translateY: -(1 - t.value) * height.value }] },
   );
   const clipContent = useAnimatedStyle(() =>
     reduced ? {} : { transform: [{ translateY: (1 - t.value) * height.value }] },

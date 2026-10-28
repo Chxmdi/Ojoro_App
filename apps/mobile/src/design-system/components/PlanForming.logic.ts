@@ -5,7 +5,14 @@
  */
 import { capitalize, word } from './word';
 
-export const PLAN_VARIANTS = ['early', 'viable', 'almost', 'need-one-more', 'game-on', 'expired'] as const;
+export const PLAN_VARIANTS = [
+  'early',
+  'viable',
+  'almost',
+  'need-one-more',
+  'game-on',
+  'expired',
+] as const;
 export type PlanVariant = (typeof PLAN_VARIANTS)[number];
 
 export type PlanSituation = 'forming' | 'confirmed' | 'calm';
@@ -67,7 +74,14 @@ export type PlanModel = {
   dimmed: boolean;
 };
 
-export function planModel({ activity, count, capacity, time, variant, expired }: PlanModelInput): PlanModel {
+export function planModel({
+  activity,
+  count,
+  capacity,
+  time,
+  variant,
+  expired,
+}: PlanModelInput): PlanModel {
   const v = variant ?? planVariant(count, capacity, expired);
   const left = Math.max(0, capacity - count);
   const gameOn = v === 'game-on';
@@ -79,7 +93,13 @@ export function planModel({ activity, count, capacity, time, variant, expired }:
     overline: gameOn ? 'CONFIRMED' : isExpired ? 'PLAN' : 'PLAN FORMING',
     meta: `${activity} · ${time}`,
     countText: `${count} / ${capacity}`,
-    head: gameOn ? 'GAME ON' : v === 'need-one-more' ? 'NEED ONE MORE' : isExpired ? 'EXPIRED' : `${left} MORE`,
+    head: gameOn
+      ? 'GAME ON'
+      : v === 'need-one-more'
+        ? 'NEED ONE MORE'
+        : isExpired
+          ? 'EXPIRED'
+          : `${left} MORE`,
     headSize: gameOn || v === 'need-one-more' ? 'display-md' : 'display-sm',
     openSpots: gameOn || isExpired ? 0 : Math.min(left, PLAN_OPEN_SPOTS_MAX),
     action: v === 'need-one-more' ? 'invite' : gameOn ? 'open' : isExpired ? null : 'commit',
@@ -100,7 +120,8 @@ export function planAccessibilityLabel(
   variant: PlanVariant,
 ): string {
   const left = Math.max(0, capacity - count);
-  const state = variant === 'game-on' ? 'confirmed. Game on.' : variant === 'expired' ? 'expired.' : 'forming.';
+  const state =
+    variant === 'game-on' ? 'confirmed. Game on.' : variant === 'expired' ? 'expired.' : 'forming.';
   const committed = `${capitalize(word(count))} of ${word(capacity)} participants committed.`;
   const needed =
     left && variant !== 'expired'
@@ -114,10 +135,27 @@ export function planAccessibilityLabel(
  * becomes GAME ON. Not on first render, not from expired, not GAME ON → GAME ON.
  */
 export function isBreakthrough(previous: PlanVariant | undefined, next: PlanVariant): boolean {
-  return previous !== undefined && next === 'game-on' && previous !== 'game-on' && previous !== 'expired';
+  return (
+    previous !== undefined && next === 'game-on' && previous !== 'game-on' && previous !== 'expired'
+  );
 }
 
 /** Gather plays on the count when it goes up and the plan is still gathering. */
 export function isGather(previous: number | undefined, next: number): boolean {
   return previous !== undefined && next > previous;
+}
+
+export type PlanButton = 'commit' | 'invite' | 'open';
+
+/**
+ * The buttons under the plan, in order. At NEED ONE MORE the web reference shows only PULL SOMEONE
+ * IN, which leaves someone not yet in unable to take the last spot and hides YOU'RE DOWN from
+ * someone who is in. PRD §9.3 wins on behaviour: people not in get I'M DOWN; people in keep YOU'RE
+ * DOWN and get PULL SOMEONE IN under it (docs/DESIGN_DECISIONS.md).
+ */
+export function planButtons(action: PlanAction, joined: boolean): PlanButton[] {
+  if (action === 'invite') return joined ? ['commit', 'invite'] : ['commit'];
+  if (action === 'open') return ['open'];
+  if (action === 'commit') return ['commit'];
+  return [];
 }
