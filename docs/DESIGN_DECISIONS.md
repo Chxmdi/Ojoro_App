@@ -87,3 +87,62 @@ why, so it can be reviewed and reversed. Newest at the bottom of each section.
 | STILL ON TONIGHT looks twice as far as your radius | States shows Parc Jarry at 4 km for a 3 km radius ("a bit further out", FirstHome). |
 | Hosts can start and end a game early | CheckIn: "Ade starts the game once the teams are set"; Live: FULL TIME (host). Without the host, times decide. |
 | Live score updates, chat, notifications and payments are out of the backend for now | Not in Slice 01 (PRD §18.3) or not decided (payments). Cost is stored for display only. |
+
+## Slice 01 screens
+
+### Activity, Check-in, After, Recap, Run It Back
+
+| Decision | Why |
+|---|---|
+| Activity has no chat preview and no chat button | Chat isn't in Slice 01 (contract, "Not in Slice 01"). Showing fake comments would be dishonest; an empty "chat coming" block is noise. The header's right slot holds the overflow (report the game, block the host) instead. |
+| LiveActivity isn't built; Activity shows live minimally | LiveActivity is M5. While live, Activity keeps the ActivityObject (LIVE tag), adds "Live now. Started at 7:30, ends at 9:00.", CHECK IN while the window is open, and FULL TIME for the host (with a confirm modal). CheckIn's GO TO THE GAME opens Activity. |
+| Finished games: Activity shows FULL TIME. / GAME OVER. / CALLED OFF. instead of the ActivityObject | The object's only states are forming, GAME ON and LIVE; a finished game wearing GAME ON would be wrong. The header links to After (CONFIRM THE SCORE) or the Recap. |
+| CHECK IN on Activity checks in directly, then opens Check-in | The tap is the intent, so location is asked for then (once). Before the window it looks ready (as designed) with "Opens at 7:00 when you're within 150 m of the pitch." under it; a tap says when it opens, without asking for location. Check-in opened directly (a link) shows a CHECK IN. pre-state with the same action rather than prompting for location unasked. |
+| Failed check-in: words plus one next step | too_far: "You're about 400 m away. Check in when you're within 150 m of the pitch." + TRY AGAIN. Denied permission: why we need it, "We don't keep it", OPEN SETTINGS (TRY AGAIN on web). check_in_not_open: when it opens. Offline: blocked, not queued, because check-in proves you're here now. |
+| Both-checked-in haptic = you and the host are both checked in | Head-to-head Challenges aren't in Slice 01. For a game, the meaningful pair is you and the host. It fires once, on the change from not-both to both while Check-in is on screen (a revisit doesn't buzz). |
+| Check-in shows "On the way · about 5 min" only when known | There's no ETA in Slice 01; others read "Not checked in yet". Hosts get a CHECK IN action on each row (host_check_in, "Host confirms"). |
+| Location sharing is opt-in on Check-in, never automatic | The design shows sharing already on. We start it only on SHARE MY LOCATION, with "shared with this game only, until 9:30 at the latest. It stops by itself." While on, the screen moves the share when you move 50 m (foreground only); others' positions aren't drawn (no maps provider). |
+| MEET AT (the exact spot) is in the details grid for people in the game only | The design's grid has four items; the meeting point is needed at check-in and is private (RLS). Others see "The exact pitch is shared with people in the game only." |
+| Activity roster: four rows, then "+ Lena, Sam, Yara and Tolu · 2 on the waitlist" | As in the design; tapping the line shows everyone. Rows read Host · team, You · team, team · joined from your invite or n games with you. Hosts also see the waitlist in order. |
+| Waitlist position shows only right after joining | The roster and activity_cards don't carry your position, so after a reload the box says "You're on the waitlist. 2 on it." (backend gap reported). Copy drops States' "and we tell you straight away": notifications aren't in Slice 01. |
+| Non-members see JOIN WAITLIST or TAKE THE SPOT | join_waitlist confirms you when a spot is free before check-in opens, so the label says what will happen. |
+| After: LOG THE SCORE when nothing is logged; SUGGEST A FIX edits in place with two Steppers | Not designed. Steppers 0–99 per team, labelled with the team names. The fix restarts confirmations ("confirmations start again from yours"). |
+| After: the body line is facts only | "90 minutes, 8 players." replaces "one very late winner", which is authored content we can't know. |
+| After: result verified plays haptics.resultVerified once | On your own CONFIRM that reaches the threshold, or when realtime shows proposed → verified while on screen. |
+| Moments: ADD PHOTOS asks for a description before upload | Alt text is required (Image reads it). A minimal sheet ("Describe the photo") with a preview and one Input; tagging others isn't built. Each photo has UNTAG ME (when you're tagged), REMOVE (yours) or REPORT (others'). |
+| Recap: no authored body line, numbers from the recap, stamp from recap_for_me | "Marcus with the late one." is authored content. The poster uses the first moment as its photo, or the O. Without a recap yet: "THE RECAP IS ON ITS WAY." and when After closes. |
+| SHARE RECAP is the OS share sheet with words only | Recaps have no public page in Slice 01, so the text is "LIGHTS WIN 5–4. Football at Jeanne-Mance Park, Tue 6 Oct. 8 played. On Ojoro." Where sharing isn't available, an error toast says so. |
+| No reputation giving on Recap | give_reputation exists but no screen designs it. |
+| Run It Back time chips: same weekday and time next week, then the next two days | Wall-clock in the place's time zone (7:30 stays 7:30 across a daylight-saving change), at least an hour ahead as the RPC requires. CHANGE TIME opens a minimal "Pick a time" sheet: 14 day chips and half-hour time chips, validated the same way. |
+| Run It Back drops the Ritual line | Rituals aren't in Slice 01; promising "Ojoro offers to make it a Ritual" would be false. The list says "Nobody is in until they tap I'M DOWN, you included." The crew line is first names ("Kemi, Marcus + 6"): Crews don't exist yet. |
+| Offline on these screens | The last state stays with "Offline. Showing the game as of 7:02 PM." Cancel, waitlist, confirm, propose and Run It Back queue with their idempotency key and say "… is waiting for a connection"; check-in, location sharing and photo upload are blocked with words. |
+| Each activity screen subscribes on its own realtime topic | Activity and Check-in are both mounted in the stack; supabase-js returns the existing channel for a topic and throws when callbacks are added after subscribe(). Topic `activity:{id}:{instance}`, same filters. |
+| Buttons navigate with router.push, not `href` | Button's `href` (Link asChild) throws on web: Slot gets an array style. Reported as a design-system bug. |
+
+### Auth, onboarding, You, profiles, report/block
+
+| Decision | Why |
+|---|---|
+| The auth gate wraps every root screen by route name (Stack `screenLayout`) | Signed-in screens never mount while signed out or onboarding, so there's no flash of the wrong screen and new routes are protected without being listed. `(auth)` is signed-out only, `(onboarding)` is unfinished accounts only, `storybook` and `+not-found` are public, everything else needs a finished profile. Rules in `features/auth/gate.ts`. |
+| Deep links survive sign-in, in memory | A signed-out (or onboarding) visit to any app route other than Home is remembered and opened when the gate lets the person through. Memory only: a cold restart mid-sign-in lands on Home. |
+| Apple and Google buttons show only when the build says the provider is configured | `EXPO_PUBLIC_AUTH_APPLE=on`, `EXPO_PUBLIC_AUTH_GOOGLE=on`. Neither is configured locally (contract, "Not in Slice 01"). Without them USE A PHONE NUMBER is the primary button, so the one way in leads. On web they call `signInWithOAuth`; native needs `expo-apple-authentication` / a browser session (new dependencies: ask first). |
+| Phone entry: one field, +1 assumed for 10-digit numbers | Ojoro starts in Montréal; other countries type `+` or `00`. No country picker (it would be a UI dependency or a large undesigned control). |
+| The code verifies itself at six digits; new code after 30 s | Fewer taps; the 30 s wait keeps people inside Auth's SMS limits. Errors are words with the alert icon (Input's error state). |
+| A name step before OnboardSports, only when the profile has no name | Phone sign-ups have no name, and plans, rosters and profiles show one. Not designed; no progress bar so the 1 OF 3 steps stay as designed. Sent as `p_display_name` with LET'S MOVE. |
+| No "Something else" chip on OnboardSports | The backend has no field for an unlisted sport; a chip that saves nothing would be dishonest. Sports come from the `sports` catalog (which includes Beach volleyball, not drawn). |
+| The first sport picked is the main sport; no position asked | The design has no control for either. MAIN on You follows the first pick; position stays empty until profile editing is designed. |
+| Every picked sport needs a level to continue | The design shows one per sport; "Pick a rough level for Boxing." in words. SKIP FOR NOW sends no sports. |
+| Pull Me In starts off | PRD §9.5: a standing permission the person expresses. The design's checked Football is sample state. Scope is `connections` ("your Crews can invite you"). |
+| No area is asked in onboarding | Not in the designs, and a coarse point needs location permission (undesigned). Without one, `plans_nearby` shows all visible plans and `down_for_nearby` is empty. See the gap in the report. |
+| Privacy step reads the defaults from `privacy_settings` | Contract. Until the person taps a chip, the row's values show (they equal the product defaults). |
+| Settings → Who sees what saves each tap to `privacy_settings` | The one direct write the contract allows; `save_onboarding` would have to resend sports and times. Optimistic, rolled back with a toast on error. |
+| You: no ID VERIFIED badge, goal or Crews/Clans/hosting section | No Slice 01 data: identity verification, goals, Crews and Clans don't exist. The "Usually free…" line from that section stays, at the end. |
+| You: EDIT VISIBILITY is a TextButton under the line, not an inline link | An inline caption link is under 44pt. Same words. |
+| You: the Passport block has no OPEN PASSPORT | Passport detail isn't designed (HANDOFF.md). Stamps show the two latest games: "N GAMES" at the place (FIRST GAME at one), sport as the small line. |
+| You: LEARNING badge for sports at the learning level, own profile only | The design's RACING tag has no data; LEARNING is the level, and levels show to the owner only. |
+| Other profiles: one "unavailable" state for blocked-by-them and missing | `profile_view` returns nothing for both; saying which would reveal a block. If you blocked them (from `my_blocks`) the screen says so and offers UNBLOCK. |
+| Other profiles: privacy states in words | "Ade keeps their games and Passport to a smaller circle." and "…shares their sports with fewer people." instead of empty sections. |
+| Report/block sheet: reasons as chips, an optional note, block behind a Modal | Not designed. Report sends at once (not costly, private); block is socially costly, so it asks with its consequences. "Something else" needs a note. Copy says the person isn't told. |
+| Report and block go through when offline | TanStack Query pauses them and sends on reconnect; a toast says so. A report is a safety action, so it shouldn't be lost to a bad signal. |
+| The block confirmation waits for the sheet to leave | Overlays never stack. The sheet subscribes to the design system's overlay gate (`Overlay.logic`) and opens the Modal once nothing holds the screen. |
+| Settings: Blocked people | Not designed; a strip per person with UNBLOCK (`my_blocks`, `unblock_user`). Reached from the You header's more button, with sign out. |

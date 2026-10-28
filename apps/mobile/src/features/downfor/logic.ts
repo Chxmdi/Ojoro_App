@@ -164,11 +164,9 @@ export function hasErrors(errors: DownForErrors): boolean {
 export function downForArgs(
   form: DownForForm,
   windows: readonly TimeWindow[],
-  key: string,
   now: Date,
   timeZone: string = DEFAULT_TIME_ZONE,
 ): {
-  p_idempotency_key: string;
   p_sport_id: string;
   p_window_start: string;
   p_window_end: string;
@@ -180,7 +178,6 @@ export function downForArgs(
   const expiry = window ? expiryOptions(window, now, timeZone).find((e) => e.id === form.expiryId) : undefined;
   if (!form.sportId || !window || !expiry) return null;
   return {
-    p_idempotency_key: key,
     p_sport_id: form.sportId,
     // A window that already started begins now; the server rejects a start in the past.
     p_window_start: new Date(Math.max(Date.parse(window.start), now.getTime())).toISOString(),
@@ -194,12 +191,10 @@ export function downForArgs(
 /** The Tonight window for a one-tap I'M DOWN on Home, ending when the people down stop being down. */
 export function tonightArgs(
   sportId: string,
-  key: string,
   latestEnd: string | null,
   now: Date,
   timeZone: string = DEFAULT_TIME_ZONE,
 ): {
-  p_idempotency_key: string;
   p_sport_id: string;
   p_window_start: string;
   p_window_end: string;
@@ -213,7 +208,6 @@ export function tonightArgs(
   const windowStart = Math.min(start, end - MIN_WINDOW_LEFT);
   const endIso = new Date(end).toISOString();
   return {
-    p_idempotency_key: key,
     p_sport_id: sportId,
     p_window_start: new Date(Math.max(windowStart, now.getTime())).toISOString(),
     p_window_end: endIso,

@@ -83,8 +83,7 @@ describe('validation and arguments', () => {
   });
 
   it('builds the call', () => {
-    expect(downForArgs(form, windows, 'k', NOW, TZ)).toEqual({
-      p_idempotency_key: 'k',
+    expect(downForArgs(form, windows, NOW, TZ)).toEqual({
       p_sport_id: 'football',
       p_window_start: '2026-10-28T22:00:00.000Z',
       p_window_end: '2026-10-29T03:00:00.000Z',
@@ -92,15 +91,14 @@ describe('validation and arguments', () => {
       p_audience: 'public',
       p_radius_km: 3,
     });
-    expect(downForArgs({ ...form, sportId: null }, windows, 'k', NOW, TZ)).toBeNull();
-    expect(downForArgs({ ...form, windowId: null }, windows, 'k', NOW, TZ)).toBeNull();
+    expect(downForArgs({ ...form, sportId: null }, windows, NOW, TZ)).toBeNull();
+    expect(downForArgs({ ...form, windowId: null }, windows, NOW, TZ)).toBeNull();
   });
 });
 
 describe('one-tap tonight', () => {
   it('matches the people already down', () => {
-    expect(tonightArgs('football', 'k', '2026-10-29T01:30:00Z', NOW, TZ)).toEqual({
-      p_idempotency_key: 'k',
+    expect(tonightArgs('football', '2026-10-29T01:30:00Z', NOW, TZ)).toEqual({
       p_sport_id: 'football',
       p_window_start: '2026-10-28T22:00:00.000Z',
       p_window_end: '2026-10-29T01:30:00.000Z',
@@ -109,9 +107,9 @@ describe('one-tap tonight', () => {
   });
 
   it('falls back to 11 PM and refuses when too little is left', () => {
-    expect(tonightArgs('football', 'k', null, NOW, TZ)?.p_window_end).toBe('2026-10-29T03:00:00.000Z');
-    expect(tonightArgs('football', 'k', '2026-10-28T20:20:00Z', NOW, TZ)).toBeNull();
-    expect(tonightArgs('football', 'k', null, new Date('2026-10-29T02:45:00Z'), TZ)).toBeNull();
+    expect(tonightArgs('football', null, NOW, TZ)?.p_window_end).toBe('2026-10-29T03:00:00.000Z');
+    expect(tonightArgs('football', '2026-10-28T20:20:00Z', NOW, TZ)).toBeNull();
+    expect(tonightArgs('football', null, new Date('2026-10-29T02:45:00Z'), TZ)).toBeNull();
   });
 });
 

@@ -105,10 +105,9 @@ export function bestMove(plans: readonly NearbyPlan[], now: Date, timeZone: stri
 export function dailyBody(input: {
   downCount: number;
   best: NearbyPlan | null;
-  now: Date;
   timeZone?: string;
 }): string {
-  const { downCount, best, now } = input;
+  const { downCount, best } = input;
   const tz = input.timeZone ?? DEFAULT_TIME_ZONE;
   const want =
     downCount === 0
@@ -133,7 +132,6 @@ export function downForWhen(earliestStart: string, now: Date, timeZone: string =
 export function downForWhere(
   plan: NearbyPlan | null,
   latestEnd: string,
-  now: Date,
   timeZone: string = DEFAULT_TIME_ZONE,
 ): string {
   if (plan) {
@@ -141,7 +139,6 @@ export function downForWhere(
     if (plan.distance_km !== null) parts.push(`${plan.distance_km} km`);
     return parts.join(' · ');
   }
-  void now;
   return `Near you · until ${clock(latestEnd, timeZone)}`;
 }
 

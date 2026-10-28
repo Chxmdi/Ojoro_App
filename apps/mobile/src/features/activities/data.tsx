@@ -107,7 +107,15 @@ export function useMyArea(activityId: string, userId: string | null) {
 
 /** Realtime for the activity channel: every hint refetches every read of this activity. */
 export function useActivityRealtime(id: string) {
-  useRealtimeRefetch(id ? activitySubscription(id) : null, [activityKeys.all(id)]);
+  // Activity and CheckIn are both mounted in the stack. supabase.channel() hands back the existing
+  // channel for a topic it already has, and adding callbacks after subscribe() throws, so each
+  // screen subscribes on its own topic name (filters are unchanged; RLS still applies).
+  const [instance] = useState(() => Math.random().toString(36).slice(2, 10));
+  const subscription = id ? activitySubscription(id) : null;
+  useRealtimeRefetch(
+    subscription ? { ...subscription, channel: `${subscription.channel}:${instance}` } : null,
+    [activityKeys.all(id)],
+  );
 }
 
 /** Re-renders every `ms`, so time-based status (check-in opens, live, after) moves without a fetch. */
