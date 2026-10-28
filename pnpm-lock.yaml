@@ -46,6 +46,9 @@ importers:
       '@expo-google-fonts/inter':
         specifier: ^0.4.2
         version: 0.4.2
+      '@ojoro/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
       '@ojoro/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
@@ -6395,7 +6398,9 @@ snapshots:
       metro-runtime: 0.84.6
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

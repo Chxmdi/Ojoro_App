@@ -5,7 +5,6 @@ import { View } from 'react-native';
 import { Icon } from '../components/Icon';
 import { Text } from '../components/Text';
 import { Situation, useSituation } from '../Situation';
-import { useThemeColor } from '../useThemeColor';
 import { Section, situationNames } from './storyKit';
 
 /** What each ground is for (design-system README). */
@@ -20,8 +19,6 @@ const purpose: Record<SituationId, string> = {
 /** A sample object on the nearest situation: overline, headline, body, signal block. */
 function Ground() {
   const id = useSituation();
-  // Text's default text-text class wins over a text-on-signal className, so the colour goes in style.
-  const onSignal = useThemeColor('on-signal');
   return (
     <View className="gap-space-3">
       <View className="flex-row items-center justify-between">
@@ -39,7 +36,7 @@ function Ground() {
         </Text>
       </View>
       <View className="h-touch items-center justify-center rounded-pill bg-signal px-space-6 self-start">
-        <Text variant="label" style={{ color: onSignal }}>
+        <Text variant="label" tone="on-signal">
           I&apos;M DOWN
         </Text>
       </View>
