@@ -38,3 +38,7 @@ export {
   type ToastApi,
   type ToastProviderProps,
 } from './components/Toast';
+export { word, capitalize } from './components/word';
+export { AvatarCluster, clusterModel, CLUSTER_DEFAULT_MAX, type AvatarClusterProps, type Person } from './components/AvatarCluster';
+export { PlanForming, planVariant, planModel, PLAN_VARIANTS, type PlanFormingProps, type PlanVariant } from './components/PlanForming';
+export { ActivityStrip, ACTIVITY_STATUSES, type ActivityStripProps, type ActivityStatus } from './components/ActivityStrip';
