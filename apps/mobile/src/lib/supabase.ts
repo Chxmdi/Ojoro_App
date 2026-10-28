@@ -15,9 +15,21 @@ const config = getSupabaseConfig({
  * background while the app is in the foreground. Typed against the generated schema once the
  * Slice 01 data model exists (`supabase gen types`).
  */
+// Static web rendering runs in Node, where AsyncStorage's web build has no `window`. There the
+// session lives in memory for the length of the render; the browser and devices use AsyncStorage.
+export function createMemoryStorage() {
+  const memory = new Map<string, string>();
+  return {
+    getItem: async (key: string) => memory.get(key) ?? null,
+    setItem: async (key: string, value: string) => void memory.set(key, value),
+    removeItem: async (key: string) => void memory.delete(key),
+  };
+}
+const isServer = Platform.OS === 'web' && typeof window === 'undefined';
+
 export const supabase = createClient(config.url, config.publishableKey, {
   auth: {
-    storage: AsyncStorage,
+    storage: isServer ? createMemoryStorage() : AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     // Native app: auth links arrive through the `ojoro://` scheme, not the page URL.

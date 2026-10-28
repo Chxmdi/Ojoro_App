@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastProvider, useOjoroFonts } from '@/design-system';
+import { AuthProvider } from '@/lib/auth';
+import { QueryProvider } from '@/lib/query';
 
 // Hold the splash screen until Anton and Inter are ready, so no text flashes in a fallback face.
 void SplashScreen.preventAutoHideAsync();
@@ -23,9 +25,13 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ToastProvider>
-        <Stack screenOptions={{ headerShown: false }} />
-      </ToastProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+          </ToastProvider>
+        </AuthProvider>
+      </QueryProvider>
     </SafeAreaProvider>
   );
 }
