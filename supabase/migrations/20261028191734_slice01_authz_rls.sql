@@ -93,6 +93,7 @@ begin
 end;
 $$;
 
+-- In the plan: a member, the host, or (after GAME ON) confirmed on its activity.
 create or replace function authz.is_plan_member(p_plan uuid, p_viewer uuid default auth.uid())
 returns boolean
 language sql
@@ -101,7 +102,13 @@ security definer
 set search_path = ''
 as $$
   select exists (select 1 from public.plan_members m where m.plan_id = p_plan and m.user_id = p_viewer)
-      or exists (select 1 from public.plans p where p.id = p_plan and p.host_id = p_viewer);
+      or exists (select 1 from public.plans p where p.id = p_plan and p.host_id = p_viewer)
+      -- After GAME ON, people confirmed from the waitlist are in the game too.
+      or exists (
+        select 1 from public.activities a
+        join public.attendance t on t.activity_id = a.id
+        where a.plan_id = p_plan and t.user_id = p_viewer and t.status in ('confirmed', 'checked_in')
+      );
 $$;
 
 -- Plan visibility by audience. Members and the host always see it; everyone else needs no block with

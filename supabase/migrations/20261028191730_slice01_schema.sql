@@ -533,6 +533,19 @@ create trigger set_updated_at before update on public.location_shares
 create trigger set_updated_at before update on public.recaps
   for each row execute function private.set_updated_at();
 
+-- Sports catalog (reference data for every environment, not sample content) ----------------------------
+
+insert into public.sports (id, name, family, default_capacity, default_duration_minutes, team_based, sort_order) values
+  ('football', 'Football', 'football', 8, 90, true, 10),
+  ('running', 'Running', 'running', 6, 60, false, 20),
+  ('boxing', 'Boxing', 'boxing', 4, 60, false, 30),
+  ('basketball', 'Basketball', 'basketball', 8, 90, true, 40),
+  ('volleyball', 'Volleyball', 'volleyball', 8, 90, true, 50),
+  ('beach_volleyball', 'Beach volleyball', 'volleyball', 8, 90, true, 55),
+  ('climbing', 'Climbing', 'climbing', 4, 120, false, 60),
+  ('cycling', 'Cycling', 'cycling', 6, 120, false, 70),
+  ('tennis', 'Tennis', 'tennis', 4, 60, false, 80);
+
 -- Profile rows for every auth user ------------------------------------------------------------------
 
 create or replace function private.handle_new_user()

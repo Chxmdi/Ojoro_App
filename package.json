@@ -19,6 +19,7 @@
     "ci:env": "node scripts/ci/validate-env-contract.mjs",
     "tokens": "node scripts/build-tokens.mjs",
     "tokens:check": "node scripts/build-tokens.mjs --check",
+    "db:types": "npx -y supabase@2.122.0 gen types typescript --local --schema public > packages/contracts/src/database.types.ts && prettier --write packages/contracts/src/database.types.ts",
     "ci": "pnpm format:check && pnpm tokens:check && pnpm lint && pnpm typecheck && pnpm test && pnpm ci:migrations && pnpm ci:env && pnpm build"
   },
   "devDependencies": {

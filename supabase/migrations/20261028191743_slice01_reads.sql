@@ -226,8 +226,8 @@ begin
     m.user_id = v_plan.host_id,
     m.user_id = v_uid,
     case when m.user_id = v_uid then null else authz.games_together(m.user_id, v_uid) end,
-    case when authz.can_see_part(m.user_id, 'history', v_uid)
-         then not exists (select 1 from public.passport_entries e where e.user_id = m.user_id) end,
+    -- A welcome cue for fellow members, not history: shown whatever the history setting.
+    not exists (select 1 from public.passport_entries e where e.user_id = m.user_id),
     private.hosted_count(m.user_id),
     case when authz.can_see_part(m.user_id, 'sports', v_uid)
          then (select us.position from public.user_sports us
@@ -334,7 +334,8 @@ $$;
 create or replace function public.plans_nearby(
   p_sport_id text default null,
   p_until timestamptz default null,
-  p_limit integer default 20
+  p_limit integer default 20,
+  p_max_km numeric default null
 )
 returns table (
   plan_id uuid,
@@ -381,13 +382,13 @@ as $$
     and starts_at > now()
     and starts_at <= coalesce(p_until, now() + interval '7 days')
     and (p_sport_id is null or sport_id = p_sport_id)
-    and (km is null or km <= r)
+    and (km is null or km <= coalesce(p_max_km, r))
   order by starts_at, km nulls last, id
   limit least(greatest(coalesce(p_limit, 20), 1), 50);
 $$;
 
--- STILL ON TONIGHT: after a plan expires (or fills), what's still on in the same sport family, nearby,
--- with spots left, in the next p_within_hours. Never a dead end.
+-- STILL ON TONIGHT: after a plan expires (or fills), what's still on in the same sport family, within
+-- twice the caller's radius, with spots left, in the next p_within_hours. Never a dead end.
 create or replace function public.still_on_nearby(
   p_plan_id uuid,
   p_within_hours integer default 24,
@@ -416,7 +417,13 @@ set search_path = ''
 as $$
   select n.*
   from public.plan_cards ref
-  cross join lateral public.plans_nearby(null, now() + make_interval(hours => least(greatest(coalesce(p_within_hours, 24), 1), 168)), 50) n
+  cross join lateral public.plans_nearby(
+    null,
+    now() + make_interval(hours => least(greatest(coalesce(p_within_hours, 24), 1), 168)),
+    50,
+    -- A bit further out than usual: twice the caller's radius.
+    (select 2 * pp.discovery_radius_km from public.profile_private pp where pp.user_id = auth.uid())
+  ) n
   join public.sports s on s.id = n.sport_id
   where ref.id = p_plan_id
     and n.plan_id <> ref.id
