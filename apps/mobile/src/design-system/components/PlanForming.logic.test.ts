@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { isBreakthrough, isGather, planAccessibilityLabel, planModel, planVariant } from './PlanForming.logic';
+import {
+  isBreakthrough,
+  isGather,
+  planAccessibilityLabel,
+  planButtons,
+  planModel,
+  planVariant,
+} from './PlanForming.logic';
 
 describe('planVariant', () => {
   it('matches the web thresholds', () => {
@@ -134,5 +141,19 @@ describe('motion triggers', () => {
     expect(isGather(7, 7)).toBe(false);
     expect(isGather(7, 6)).toBe(false);
     expect(isGather(undefined, 7)).toBe(false);
+  });
+});
+
+describe('planButtons', () => {
+  it('lets someone not yet in take the last spot', () => {
+    expect(planButtons('invite', false)).toEqual(['commit']);
+  });
+  it("keeps YOU'RE DOWN visible and adds PULL SOMEONE IN for people who are in", () => {
+    expect(planButtons('invite', true)).toEqual(['commit', 'invite']);
+  });
+  it('maps the other actions to one button, or none when expired', () => {
+    expect(planButtons('commit', false)).toEqual(['commit']);
+    expect(planButtons('open', true)).toEqual(['open']);
+    expect(planButtons(null, true)).toEqual([]);
   });
 });
