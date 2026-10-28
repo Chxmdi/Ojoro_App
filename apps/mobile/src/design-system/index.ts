@@ -18,3 +18,8 @@ export { Input, type InputProps } from './components/Input';
 export { Switch, type SwitchProps } from './components/Switch';
 export { Stepper, type StepperProps } from './components/Stepper';
 export { Progress, type ProgressProps } from './components/Progress';
+export { Button, type ButtonProps, type ButtonVariant } from './components/Button';
+export { IconButton, type IconButtonProps, type IconButtonVariant } from './components/IconButton';
+export { TextButton, type TextButtonProps } from './components/TextButton';
+export { Chip, type ChipProps } from './components/Chip';
+export { FocusRing, useFocusVisible, usePressScale, noBrowserOutline } from './components/pressFeedback';
