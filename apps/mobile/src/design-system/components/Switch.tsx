@@ -1,4 +1,4 @@
-import { opacity, parseColor } from '@ojoro/design-tokens';
+import { contrastRatio, opacity, parseColor } from '@ojoro/design-tokens';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, View } from 'react-native';
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -7,7 +7,7 @@ import { uiFamily } from '../fonts';
 import { useMotion } from '../motion';
 import { useThemeColor } from '../useThemeColor';
 import { focusRingStyle, isFocusVisible } from './focusRing';
-import { SWITCH, knobOffset, switchWord } from './Switch.logic';
+import { SWITCH, knobOffset, needsMarkRing, switchWord } from './Switch.logic';
 import { Text } from './Text';
 
 export type SwitchProps = {
@@ -43,6 +43,9 @@ export function Switch({ value, onValueChange, label, description, disabled, cla
   const inverse = useThemeColor('inverse');
   const onInverse = useThemeColor('on-inverse');
   const focus = useThemeColor('focus');
+  const surface = useThemeColor('surface');
+  const markRing = useThemeColor('mark-ring');
+  const ringed = value && needsMarkRing(contrastRatio(inverse, surface));
 
   const progress = useSharedValue(value ? 1 : 0);
   useEffect(() => {
@@ -114,6 +117,21 @@ export function Switch({ value, onValueChange, label, description, disabled, cla
           pillStyle,
         ]}
       >
+        {ringed ? (
+          <View
+            pointerEvents="none"
+            style={{
+              position: 'absolute',
+              top: -2,
+              left: -2,
+              right: -2,
+              bottom: -2,
+              borderWidth: 2,
+              borderRadius: 999,
+              borderColor: markRing,
+            }}
+          />
+        ) : null}
         <Animated.View
           style={[
             { position: 'absolute', left: 0, width: SWITCH.knob, height: SWITCH.knob, borderRadius: 999 },

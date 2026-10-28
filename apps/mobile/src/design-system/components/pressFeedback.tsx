@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Platform,
   View,
   type NativeSyntheticEvent,
   type GestureResponderEvent,
   type TargetedEvent,
+  type ViewStyle,
 } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -40,9 +41,21 @@ export function usePressScale(scale: number) {
 
 /**
  * Focus-visible: the ring shows when focus arrives from a keyboard or switch
- * control, not when a pointer or finger pressed the control (the press comes
- * first, then the focus).
+ * control, not when a pointer pressed the control. On the web the browser's own
+ * `:focus-visible` decides. On iOS and Android a touch never focuses a
+ * Pressable, so any focus there comes from a keyboard or switch control.
  */
+function isFocusVisible(event: NativeSyntheticEvent<TargetedEvent>): boolean {
+  if (Platform.OS !== 'web') return true;
+  const target = (event.nativeEvent as unknown as { target?: { matches?: (q: string) => boolean } })
+    .target;
+  try {
+    return target?.matches?.(':focus-visible') ?? true;
+  } catch {
+    return true;
+  }
+}
+
 export function useFocusVisible(handlers: {
   onPressIn?: PressHandler;
   onFocus?: FocusHandler;
@@ -50,24 +63,29 @@ export function useFocusVisible(handlers: {
 }) {
   const { onPressIn, onFocus, onBlur } = handlers;
   const [focusVisible, setFocusVisible] = useState(false);
-  const pointer = useRef(false);
   return {
     focusVisible,
     onPressIn: (event: GestureResponderEvent) => {
-      pointer.current = true;
       onPressIn?.(event);
     },
     onFocus: (event: NativeSyntheticEvent<TargetedEvent>) => {
-      if (!pointer.current) setFocusVisible(true);
+      setFocusVisible(isFocusVisible(event));
       onFocus?.(event);
     },
     onBlur: (event: NativeSyntheticEvent<TargetedEvent>) => {
-      pointer.current = false;
       setFocusVisible(false);
       onBlur?.(event);
     },
   };
 }
+
+/**
+ * The browser draws its own focus outline around the element; Ojoro draws
+ * `FocusRing` instead, so turn the browser's off (web only).
+ */
+export const noBrowserOutline = (
+  Platform.OS === 'web' ? { outlineStyle: 'none' } : null
+) as ViewStyle | null;
 
 /** Ring width (`border-strong`) plus its offset from the control's edge. */
 const RING_OUTSET = 4;

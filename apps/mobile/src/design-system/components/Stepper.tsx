@@ -45,7 +45,8 @@ function StepButton({
   const [focusVisible, setFocusVisible] = useState(false);
   const focus = useThemeColor('focus');
   const a11y = isWeb
-    ? { role: 'button' as const, 'aria-label': name, 'aria-disabled': !enabled, ...(reason ? { title: reason } : null) }
+    ? // At a bound the spinbutton's value text says "10, the minimum"; react-native-web has no hint prop.
+      { role: 'button' as const, 'aria-label': name, 'aria-disabled': !enabled }
     : {
         accessibilityRole: 'button' as const,
         accessibilityLabel: name,

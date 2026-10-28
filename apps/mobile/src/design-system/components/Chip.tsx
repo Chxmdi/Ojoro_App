@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import { uiFamily } from '../fonts';
 import { useThemeColor } from '../useThemeColor';
-import { Check, FocusRing, useFocusVisible } from './pressFeedback';
+import { Check, FocusRing, useFocusVisible, noBrowserOutline } from './pressFeedback';
 import { Text } from './Text';
 
 export type ChipProps = {
@@ -51,7 +51,7 @@ export function Chip({
       onBlur={focus.onBlur}
       testID={testID}
       className={['shrink-0 self-start', className].filter(Boolean).join(' ')}
-      style={disabled ? { opacity: opacity['opacity-disabled'] } : undefined}
+      style={[noBrowserOutline, disabled ? { opacity: opacity['opacity-disabled'] } : null]}
     >
       <View
         className={`min-h-touch flex-row items-center gap-space-1 rounded-pill border px-space-4 ${

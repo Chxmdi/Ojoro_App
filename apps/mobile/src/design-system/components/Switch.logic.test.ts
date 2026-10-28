@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { SWITCH, knobOffset, switchWord } from './Switch.logic';
+import { SWITCH, knobOffset, needsMarkRing, switchWord } from './Switch.logic';
 
 describe('switchWord', () => {
   it('says the state in a word', () => {
@@ -19,5 +19,12 @@ describe('knobOffset', () => {
   });
   it('centres the knob vertically with the same inset', () => {
     expect((SWITCH.height - 2 * SWITCH.border - SWITCH.knob) / 2).toBe(SWITCH.knobInset);
+  });
+});
+
+describe('needsMarkRing', () => {
+  it('rings a pill that merges with its ground', () => {
+    expect(needsMarkRing(1.09)).toBe(true);
+    expect(needsMarkRing(21)).toBe(false);
   });
 });

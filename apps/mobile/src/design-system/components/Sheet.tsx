@@ -15,8 +15,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { motion } from '../motion';
 import { Situation, useSituation } from '../Situation';
 import {
-  CloseButton,
-  moveFocus, programmaticFocus, Scrim, useOverlayPresence, useReturnFocus, type Timing } from './Overlay';
+  moveFocus,
+  programmaticFocus,
+  Scrim,
+  useOverlayPresence,
+  useReturnFocus,
+  type Timing,
+} from './Overlay';
+import { IconButton } from './IconButton';
 import { Text } from './Text';
 
 export type SheetProps = {
@@ -92,7 +98,11 @@ function SheetOverlay({ visible = false, onClose, situation, ...panel }: SheetPr
   const panelStyle = useAnimatedStyle(() =>
     reduced
       ? { opacity: progress.value, transform: [{ translateY: drag.value }] }
-      : { transform: [{ translateY: (1 - progress.value) * (height || window.height) + drag.value }] },
+      : {
+          transform: [
+            { translateY: (1 - progress.value) * (height || window.height) + drag.value },
+          ],
+        },
   );
 
   if (!shown) return null;
@@ -180,7 +190,7 @@ function SheetPanel({
           >
             <Text variant="title">{title}</Text>
           </View>
-          <CloseButton onPress={onClose} />
+          <IconButton icon="close" label="Close" {...(onClose ? { onPress: onClose } : null)} />
         </View>
       </View>
       {scroll ? (

@@ -142,7 +142,10 @@ export const WithChevron: Story = {
   ),
 };
 
-/** Custom trailing slot: an icon (CrewHome › Open the session chat) and a word (HostAnnounce's text button). */
+/**
+ * Custom trailing slot: an icon (CrewHome › Open the session chat) and a text
+ * button (HostAnnounce); that row passes `accessible={false}` so SKIP stays reachable.
+ */
 export const CustomTrailing: Story = {
   render: () => (
     <StripList>
@@ -164,6 +167,7 @@ export const CustomTrailing: Story = {
           </View>
         }
         leadingLabel="Thursday 14 March"
+        accessible={false}
         title="Mixed 5s · 7:30"
         titleVariant="title-sm"
         meta="8 / 10 · members free"

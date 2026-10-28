@@ -19,7 +19,7 @@ import { Situation, useSituation } from '../Situation';
 import { useThemeColor } from '../useThemeColor';
 import { Icon } from './Icon';
 import { useOverlayReducedMotion } from './Overlay';
-import { FocusRing, useFocusVisible } from './pressFeedback';
+import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
 import { Text } from './Text';
 import {
   initialToastState,
@@ -50,7 +50,13 @@ export type ToastProps = {
  * Usually shown through `useToast()`; render it directly only for a static,
  * in-place state (the offline strip at the foot of a plan).
  */
-export function Toast({ message, kind = 'neutral', action, onAction, announce = true }: ToastProps) {
+export function Toast({
+  message,
+  kind = 'neutral',
+  action,
+  onAction,
+  announce = true,
+}: ToastProps) {
   const onInverse = useThemeColor('on-inverse');
   const icon = TOAST_ICON[kind];
   const liveness = toastLiveness(kind);
@@ -72,7 +78,12 @@ export function Toast({ message, kind = 'neutral', action, onAction, announce = 
       className="min-h-touch flex-row items-center gap-space-3 bg-inverse px-space-4 py-space-3"
     >
       {icon ? (
-        <Icon name={icon} size={20} color={onInverse} {...(kind === 'error' ? { label: 'Error' } : null)} />
+        <Icon
+          name={icon}
+          size={20}
+          color={onInverse}
+          {...(kind === 'error' ? { label: 'Error' } : null)}
+        />
       ) : null}
       <Text variant="body-sm" tone="on-inverse" className="flex-1">
         {message}
@@ -82,7 +93,11 @@ export function Toast({ message, kind = 'neutral', action, onAction, announce = 
   );
 }
 
-/** `.oj-toast-action`: label type, underlined, 44pt tall, a real button. */
+/**
+ * `.oj-toast-action`: label type in `on-inverse`, underlined, 44pt tall, a real
+ * button. Not TextButton: that one is `text-muted` on the page ground and has
+ * no tone for the inverse strip (the web reference also styles it separately).
+ */
 function ToastAction({ label, onPress }: { label: string; onPress?: (() => void) | undefined }) {
   const focus = useFocusVisible({});
   return (
@@ -93,6 +108,7 @@ function ToastAction({ label, onPress }: { label: string; onPress?: (() => void)
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
       className="min-h-touch justify-center px-space-2"
+      style={noBrowserOutline}
     >
       <Text variant="label" tone="on-inverse" style={styles.underline}>
         {label}
@@ -189,10 +205,12 @@ function ToastSlot({ toast, onAction }: { toast: ToastOptions; onAction: () => v
   const reduced = useOverlayReducedMotion();
   const entering = reduced
     ? FadeIn.duration(REDUCED_MOTION_FADE).reduceMotion(ReduceMotion.Never)
-    : FadeInDown.duration(motion.commit.duration).easing(motion.commit.easing).reduceMotion(ReduceMotion.Never);
-  const exiting = FadeOut.duration(reduced ? REDUCED_MOTION_FADE : motion.commit.duration).reduceMotion(
-    ReduceMotion.Never,
-  );
+    : FadeInDown.duration(motion.commit.duration)
+        .easing(motion.commit.easing)
+        .reduceMotion(ReduceMotion.Never);
+  const exiting = FadeOut.duration(
+    reduced ? REDUCED_MOTION_FADE : motion.commit.duration,
+  ).reduceMotion(ReduceMotion.Never);
   const strip = (
     <Toast message={toast.message} kind={toast.kind} action={toast.action} onAction={onAction} />
   );
@@ -244,5 +262,9 @@ function useScreenReader(): boolean {
 
 const styles = StyleSheet.create({
   host: { position: 'absolute', left: spacing['space-5'], right: spacing['space-5'] },
-  underline: { textDecorationLine: 'underline' },
+  // `.oj-toast-action`: underline 4px below the word on web.
+  underline: {
+    textDecorationLine: 'underline',
+    ...(Platform.OS === 'web' ? ({ textUnderlineOffset: 4 } as object) : null),
+  },
 });

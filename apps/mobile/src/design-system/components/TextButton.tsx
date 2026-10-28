@@ -1,7 +1,7 @@
 import { opacity } from '@ojoro/design-tokens';
 import { Platform, Pressable, View, type TextStyle } from 'react-native';
 
-import { FocusRing, useFocusVisible } from './pressFeedback';
+import { FocusRing, useFocusVisible, noBrowserOutline } from './pressFeedback';
 import { Text } from './Text';
 
 export type TextButtonProps = {
@@ -61,7 +61,7 @@ export function TextButton({
       onBlur={focus.onBlur}
       testID={testID}
       className={['self-start', className].filter(Boolean).join(' ')}
-      style={disabled ? { opacity: opacity['opacity-disabled'] } : undefined}
+      style={[noBrowserOutline, disabled ? { opacity: opacity['opacity-disabled'] } : null]}
     >
       <View className="min-h-[32px] justify-center px-space-1">
         <Text variant="label" muted={!on} style={on ? onStyle : undefined}>

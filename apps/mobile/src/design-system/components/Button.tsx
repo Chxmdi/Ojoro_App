@@ -18,7 +18,13 @@ import { DISPLAY_FAMILY } from '../fonts';
 import { haptics } from '../haptics';
 import { COMMIT_SCALE, REDUCED_MOTION_FADE } from '../motion';
 import { useThemeColor } from '../useThemeColor';
-import { Check, FocusRing, useFocusVisible, usePressScale } from './pressFeedback';
+import {
+  Check,
+  FocusRing,
+  useFocusVisible,
+  usePressScale,
+  noBrowserOutline,
+} from './pressFeedback';
 import { Text, type TextTone } from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'inverse' | 'commit';
@@ -191,7 +197,11 @@ export function Button({
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
       className={[block ? 'self-stretch' : 'self-start', className].filter(Boolean).join(' ')}
-      style={[inactive && !loading ? { opacity: opacity['opacity-disabled'] } : null, style]}
+      style={[
+        noBrowserOutline,
+        inactive && !loading ? { opacity: opacity['opacity-disabled'] } : null,
+        style,
+      ]}
     >
       <Animated.View style={press.style}>
         <View
