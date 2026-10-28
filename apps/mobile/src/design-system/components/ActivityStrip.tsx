@@ -41,7 +41,7 @@ export type ActivityStripProps = {
  *
  * Local to ActivityStrip until `LiveIndicator` is ported; replace it then.
  */
-function LiveTag() {
+export function LiveTag() {
   const ring = useThemeColor('mark-ring');
   const live = useMotion('live');
   const dot = useSharedValue(1);

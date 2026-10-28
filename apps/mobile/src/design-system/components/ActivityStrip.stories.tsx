@@ -33,12 +33,22 @@ export const Forming: Story = {};
 
 /** GAME ON in a signal badge. */
 export const Confirmed: Story = {
-  args: { activity: '5K river run', time: '6:30', place: 'Lachine Canal · 4 km', status: 'confirmed' },
+  args: {
+    activity: '5K river run',
+    time: '6:30',
+    place: 'Lachine Canal · 4 km',
+    status: 'confirmed',
+  },
 };
 
 /** LIVE: oxblood pill, white ring, pulsing dot (still under reduced motion). */
 export const Live: Story = {
-  args: { activity: 'Sparring rounds', time: 'NOW', place: 'Hoshino Boxing · 2.8 km', status: 'live' },
+  args: {
+    activity: 'Sparring rounds',
+    time: 'NOW',
+    place: 'Hoshino Boxing · 2.8 km',
+    status: 'live',
+  },
 };
 
 /** States › Couldn't join: FULL. */
@@ -48,10 +58,35 @@ export const Full: Story = {
 
 const rows = (
   <StripList>
-    <ActivityStrip activity="Sparring rounds" time="NOW" place="Hoshino Boxing · 2.8 km" status="live" onPress={() => {}} />
-    <ActivityStrip activity="5K river run" time="6:30" place="Lachine Canal · 4 km" status="confirmed" onPress={() => {}} />
-    <ActivityStrip activity="Pickup football" time="7:30" place="Jeanne-Mance Park · 1.2 km" count={6} capacity={8} onPress={() => {}} />
-    <ActivityStrip activity="Pickup football" time="7:30" place="Jeanne-Mance Park" status="full" onPress={() => {}} />
+    <ActivityStrip
+      activity="Sparring rounds"
+      time="NOW"
+      place="Hoshino Boxing · 2.8 km"
+      status="live"
+      onPress={() => {}}
+    />
+    <ActivityStrip
+      activity="5K river run"
+      time="6:30"
+      place="Lachine Canal · 4 km"
+      status="confirmed"
+      onPress={() => {}}
+    />
+    <ActivityStrip
+      activity="Pickup football"
+      time="7:30"
+      place="Jeanne-Mance Park · 1.2 km"
+      count={6}
+      capacity={8}
+      onPress={() => {}}
+    />
+    <ActivityStrip
+      activity="Pickup football"
+      time="7:30"
+      place="Jeanne-Mance Park"
+      status="full"
+      onPress={() => {}}
+    />
   </StripList>
 );
 
@@ -67,7 +102,9 @@ export const Stack: Story = {
 
 /** Every status on every ground it appears on. */
 export const OnEachSituation: Story = {
-  render: () => <EachSituation only={['calm', 'forming', 'confirmed', 'live']}>{rows}</EachSituation>,
+  render: () => (
+    <EachSituation only={['calm', 'forming', 'confirmed', 'live']}>{rows}</EachSituation>
+  ),
   parameters: { ojoro: { padded: false } },
 };
 
@@ -77,9 +114,25 @@ function AllStatuses() {
     <View>
       {(
         [
-          { activity: 'Beach volleyball', time: '7:00', place: 'Parc Jarry · 4 km', count: 5, capacity: 8 },
-          { activity: '5K river run', time: '6:30', place: 'Lachine Canal · 4 km', status: 'confirmed' },
-          { activity: 'Sparring rounds', time: 'NOW', place: 'Hoshino Boxing · 2.8 km', status: 'live' },
+          {
+            activity: 'Beach volleyball',
+            time: '7:00',
+            place: 'Parc Jarry · 4 km',
+            count: 5,
+            capacity: 8,
+          },
+          {
+            activity: '5K river run',
+            time: '6:30',
+            place: 'Lachine Canal · 4 km',
+            status: 'confirmed',
+          },
+          {
+            activity: 'Sparring rounds',
+            time: 'NOW',
+            place: 'Hoshino Boxing · 2.8 km',
+            status: 'live',
+          },
           { activity: 'Pickup football', time: '7:30', place: 'Jeanne-Mance Park', status: 'full' },
         ] as const
       ).map((row) => (
@@ -95,7 +148,13 @@ function AllStatuses() {
 export const AllStatusesCalm: Story = { render: () => <AllStatuses /> };
 
 /** All statuses on forming (inside a plan screen). */
-export const AllStatusesForming: Story = { render: () => <AllStatuses />, parameters: onSituation('forming') };
+export const AllStatusesForming: Story = {
+  render: () => <AllStatuses />,
+  parameters: onSituation('forming'),
+};
 
 /** All statuses on confirmed (game day). */
-export const AllStatusesConfirmed: Story = { render: () => <AllStatuses />, parameters: onSituation('confirmed') };
+export const AllStatusesConfirmed: Story = {
+  render: () => <AllStatuses />,
+  parameters: onSituation('confirmed'),
+};

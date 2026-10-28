@@ -23,7 +23,28 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   web: {
     output: 'static',
   },
-  plugins: ['expo-router', 'expo-dev-client'],
+  plugins: [
+    'expo-router',
+    'expo-dev-client',
+    [
+      'expo-location',
+      {
+        // Location is used once, at check-in, and while sharing for one game. Never in the background.
+        locationWhenInUsePermission:
+          'Ojoro checks you are at the game when you check in, and shares your location with the game only while you choose to.',
+        isIosBackgroundLocationEnabled: false,
+        isAndroidBackgroundLocationEnabled: false,
+      },
+    ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Ojoro adds the photos you pick to the game they came from.',
+        cameraPermission: false,
+        microphonePermission: false,
+      },
+    ],
+  ],
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

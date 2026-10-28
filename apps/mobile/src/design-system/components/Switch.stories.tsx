@@ -16,7 +16,8 @@ const meta = {
   args: {
     value: true,
     label: 'Approve first-timers',
-    description: "People who've played with you before join straight away. New faces wait for your OK.",
+    description:
+      "People who've played with you before join straight away. New faces wait for your OK.",
     disabled: false,
   },
   argTypes: {
@@ -49,15 +50,29 @@ export const DisabledOn: Story = { args: { value: true, disabled: true } };
 export const DisabledOff: Story = { args: { value: false, disabled: true } };
 
 /** Label only, no description. */
-export const LabelOnly: Story = { args: { value: false, label: 'Members first', description: undefined } };
+export const LabelOnly: Story = {
+  args: { value: false, label: 'Members first', description: undefined },
+};
 
 /** The LET THESE STRAIGHT IN rows from HostRequests. Press a row to toggle. */
 export const Rows: Story = {
   render: () => (
     <View>
-      <Controlled value label="People who've played with you" description="Anyone who checked in to one of your sessions before." />
-      <Controlled value={false} label="3 or more checked-in games" description="Anyone who has shown up to at least 3 Ojoro games, anywhere." />
-      <Controlled value label="Your Crews" description="Members of Plateau Pickup and Thursday FC." />
+      <Controlled
+        value
+        label="People who've played with you"
+        description="Anyone who checked in to one of your sessions before."
+      />
+      <Controlled
+        value={false}
+        label="3 or more checked-in games"
+        description="Anyone who has shown up to at least 3 Ojoro games, anywhere."
+      />
+      <Controlled
+        value
+        label="Your Crews"
+        description="Members of Plateau Pickup and Thursday FC."
+      />
     </View>
   ),
 };
@@ -66,7 +81,11 @@ export const Rows: Story = {
 export const OnEachSituation: Story = {
   render: () => (
     <EachSituation>
-      <Controlled value label="Waitlist that fills itself" description="When someone drops, the next person is in." />
+      <Controlled
+        value
+        label="Waitlist that fills itself"
+        description="When someone drops, the next person is in."
+      />
       <Controlled value={false} label="Members first" />
       <Controlled value disabled label="Approve first-timers" />
     </EachSituation>
