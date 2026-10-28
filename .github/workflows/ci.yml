@@ -75,6 +75,11 @@ jobs:
           node-version: 22
       - run: pnpm install --no-frozen-lockfile
       - run: pnpm build
+        env:
+          # The web export renders routes, which create the Supabase client. CI builds against the
+          # local-stack URL; real values come from EAS/GitHub environments at deploy time.
+          EXPO_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
