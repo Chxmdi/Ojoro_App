@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Discover</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 2200px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 24px 20px 40px;">
+    <section aria-label="Search" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;"><h1 class="oj-display oj-display-lg">DISCOVER</h1><a href="Pulse.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none; padding: 0 16px;">MAP</a></div>
+      <x-import component-from-global-scope="Ojoro.Input" label="Search" icon="search" placeholder="Activities, people, Clans, places"></x-import>
+      <div role="group" aria-label="Filter" style="display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-right: -20px; padding-right: 20px;">
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Everything</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Activities</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">People</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Crews &amp; Clans</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Ojoro Now" data-theme="forming" style="margin: 0 -20px; padding: 28px 20px; display: flex; flex-direction: column; gap: 16px; background: var(--surface); color: var(--text);">
+      <span class="oj-overline">OJORO NOW · WITHIN THE HOUR</span>
+      <h2 class="oj-display oj-display-xl">RIGHT NOW.</h2>
+      <p class="oj-body">3 things start soon. 4 of your friends are free until 9.</p>
+      <div>
+        <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Sparring rounds" time="NOW" place="Hoshino Boxing · 2.8 km" status="live"></x-import>
+        <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="5K river run" time="6:30" place="Lachine Canal · 4 km" status="confirmed"></x-import>
+        <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Pickup football" time="7:30" place="Jeanne-Mance Park · 1.2 km" count="{{six}}" capacity="{{eight}}" href="Plan.dc.html"></x-import>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface-raised);">
+        <span class="oj-overline">NOTHING ON FOR VOLLEYBALL</span>
+        <p class="oj-title" style="margin: 0;">5 people within 3 km want to play volleyball after 7. That's a game.</p>
+        <p class="oj-caption oj-muted" style="margin: 0;">Shown as a count. Nobody's name or location is shared until they join.</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="Plan.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none;">MAKE IT HAPPEN</a>
+          <x-import component-from-global-scope="Ojoro.Button" variant="secondary">SURPRISE ME</x-import>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="People to move with" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="PEOPLE TO MOVE WITH"></x-import>
+      <p class="oj-body-sm oj-muted" style="margin: 0;">You've played 6 games together and you both run on Saturdays.</p>
+      <x-import component-from-global-scope="Ojoro.UserMiniCard" name="Ade B" handle="adeb" area="Mile End" verified="{{yes}}" sports="{{adeSports}}" stats="{{adeStats}}"></x-import>
+    </section>
+
+    <section aria-label="Places" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="PLACES NEAR YOU"></x-import>
+      <div>
+        <x-import component-from-global-scope="Ojoro.PlaceMiniCard" name="Jeanne-Mance Park" kind="Football" surface="Turf" distance="1.2 km" lights="11 PM" plans-tonight="{{four}}"></x-import>
+        <x-import component-from-global-scope="Ojoro.PlaceMiniCard" name="Hoshino Boxing" kind="Gym" distance="2.8 km" plans-tonight="{{one}}"></x-import>
+        <x-import component-from-global-scope="Ojoro.PlaceMiniCard" name="Lachine Canal" kind="Running route" surface="Paved · 8 km loop" distance="4 km"></x-import>
+      </div>
+    </section>
+
+    <section aria-label="Clans" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="CLANS"></x-import>
+      <div>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">140</span>
+          <span class="oj-strip-body"><span class="oj-title">Mile End Runners</span><span class="oj-body-sm oj-muted">Running · 3 runs a week · request to join</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">REQUEST</x-import>
+        </a>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">86</span>
+          <span class="oj-strip-body"><span class="oj-title">Plateau Ballers</span><span class="oj-body-sm oj-muted">Basketball · beginners welcome</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">OPEN</x-import>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="margin-top: auto; display: flex; align-items: stretch; border-top: 1px solid var(--line); background: var(--surface); padding: 0 4px 28px;">
+    <a href="Main.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>
+      HOME
+    </a>
+    <a href="Discover.dc.html" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text); box-shadow: inset 0 2px 0 var(--text); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="search"></x-import>
+      DISCOVER
+    </a>
+    <a href="Create.dc.html" aria-label="Create" style="flex: 1; min-height: 56px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: var(--inverse); color: var(--on-inverse); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="plus"></x-import></span>
+    </a>
+    <a href="Compete.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M9 21 L15 3 M3 8 H8 M3 16 H6 M16 8 H21 M18 16 H21"></path></svg>
+      COMPETE
+    </a>
+    <a href="You.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 4 a4 4 0 1 0 0.01 0 M4 21 C 4 16, 8 14, 12 14 S 20 16, 20 21"></path></svg>
+      YOU
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      yes: true, one: 1, four: 4, six: 6, eight: 8,
+      adeSports: ['Football', 'Running'],
+      adeStats: [{ value: '61', label: 'Sessions' }, { value: '6', label: 'Games with you' }, { value: '2', label: 'Crews' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

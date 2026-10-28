@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Pulse map</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="live" style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <div role="img" aria-label="Map of central Montréal. Busiest: Jeanne-Mance Park with 12 activities tonight and a football plan forming at 6 of 8. Five people want volleyball near Parc La Fontaine. Sparring is live at Hoshino Boxing." style="position: absolute; inset: 0;">
+    <div aria-hidden="true" style="position: absolute; left: -40px; top: 640px; width: 520px; height: 34px; background: var(--track); transform: rotate(-14deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: 70px; top: 250px; width: 120px; height: 190px; background: var(--surface-raised); transform: rotate(-34deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: 270px; top: 300px; width: 90px; height: 80px; background: var(--surface-raised); transform: rotate(-34deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: -60px; top: 330px; width: 560px; height: 2px; background: var(--line-strong); opacity: 0.5; transform: rotate(-34deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: -60px; top: 470px; width: 560px; height: 2px; background: var(--line-strong); opacity: 0.5; transform: rotate(-34deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: 0; top: 200px; width: 560px; height: 1px; background: var(--line); transform: rotate(56deg); transform-origin: left;"></div>
+    <div aria-hidden="true" style="position: absolute; left: 120px; top: 180px; width: 600px; height: 1px; background: var(--line); transform: rotate(56deg); transform-origin: left;"></div>
+    <div aria-hidden="true" style="position: absolute; left: 240px; top: 160px; width: 600px; height: 1px; background: var(--line); transform: rotate(56deg); transform-origin: left;"></div>
+    <div aria-hidden="true" style="position: absolute; left: -80px; top: 560px; width: 560px; height: 1px; background: var(--line); transform: rotate(-34deg);"></div>
+    <div aria-hidden="true" style="position: absolute; left: -80px; top: 250px; width: 560px; height: 1px; background: var(--line); transform: rotate(-34deg);"></div>
+
+    <span class="oj-label-sm oj-muted" aria-hidden="true" style="position: absolute; left: 24px; top: 236px;">PLATEAU</span>
+    <span class="oj-label-sm oj-muted" aria-hidden="true" style="position: absolute; left: 286px; top: 236px;">MILE END</span>
+    <span class="oj-label-sm oj-muted" aria-hidden="true" style="position: absolute; left: 36px; top: 520px;">DOWNTOWN</span>
+    <span class="oj-label-sm oj-muted" aria-hidden="true" style="position: absolute; left: 230px; top: 604px;">LACHINE CANAL</span>
+
+    <div aria-hidden="true" style="position: absolute; left: 92px; top: 300px; width: 76px; height: 76px; border-radius: 50%; box-shadow: 0 0 0 2px var(--text); display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface);">
+      <span class="oj-display oj-display-xs">12</span><span class="oj-label-sm oj-muted">ACTIVE</span>
+    </div>
+    <div aria-hidden="true" style="position: absolute; left: 128px; top: 388px; height: 32px; padding: 0 12px; border-radius: 999px; background: var(--signal); color: var(--on-signal); display: inline-flex; align-items: center; gap: 6px;">
+      <span class="oj-label-sm">FORMING</span><span class="oj-numeric" style="font-size: 13px;">6 / 8</span>
+    </div>
+    <div aria-hidden="true" style="position: absolute; left: 262px; top: 330px; width: 104px; height: 104px; border-radius: 50%; border: 2px dashed var(--line-strong); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+      <span class="oj-display oj-display-xs">5</span><span class="oj-label-sm oj-muted">WANT<br>VOLLEYBALL</span>
+    </div>
+    <div aria-hidden="true" style="position: absolute; left: 38px; top: 450px;"><x-import component-from-global-scope="Ojoro.LiveIndicator" label="SPARRING"></x-import></div>
+    <div aria-hidden="true" style="position: absolute; left: 210px; top: 486px; width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 0 0 2px var(--text); display: flex; align-items: center; justify-content: center; background: var(--surface);"><span class="oj-numeric" style="font-size: 13px;">3</span></div>
+    <div aria-hidden="true" style="position: absolute; left: 120px; top: 600px; width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 0 0 2px var(--text); display: flex; align-items: center; justify-content: center; background: var(--surface);"><span class="oj-numeric" style="font-size: 13px;">2</span></div>
+  </div>
+
+  <header style="position: absolute; left: 0; right: 0; top: 0; display: flex; flex-direction: column; gap: 12px; padding: 8px 0 16px 8px; background: var(--surface); border-bottom: 1px solid var(--line);">
+    <div style="display: flex; align-items: center; gap: 8px; padding-right: 8px;">
+      <a href="Discover.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+      <h1 class="oj-display oj-display-sm" style="flex: 1;">PULSE</h1>
+      <span class="oj-caption oj-muted">Tonight · 3 km</span>
+    </div>
+    <div role="group" aria-label="Filter" style="display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 12px;">
+      <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Everything</x-import>
+      <x-import component-from-global-scope="Ojoro.Chip">Football</x-import>
+      <x-import component-from-global-scope="Ojoro.Chip">Running</x-import>
+      <x-import component-from-global-scope="Ojoro.Chip">Boxing</x-import>
+    </div>
+    <div aria-label="Legend" style="display: flex; gap: 16px; padding: 0 12px;" class="oj-caption oj-muted">
+      <span style="display: inline-flex; gap: 6px; align-items: center;"><span aria-hidden="true" style="width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 0 2px var(--text);"></span>Activity</span>
+      <span style="display: inline-flex; gap: 6px; align-items: center;"><span aria-hidden="true" style="width: 18px; height: 10px; border-radius: 999px; background: var(--signal);"></span>Forming</span>
+      <span style="display: inline-flex; gap: 6px; align-items: center;"><span aria-hidden="true" style="width: 12px; height: 12px; border-radius: 50%; border: 2px dashed var(--line-strong); box-sizing: border-box;"></span>People want it</span>
+    </div>
+  </header>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0;">
+    <x-import component-from-global-scope="Ojoro.Sheet" title="Jeanne-Mance Park">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span class="oj-body-sm oj-muted">Football · turf · floodlit until 11 PM · 1.2 km</span>
+        <span class="oj-body-sm">12 activities tonight. Football is forming at 6 / 8 for 7:30.</span>
+        <div style="display: flex; gap: 8px;">
+          <a href="Place.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none;">OPEN PLACE</a>
+          <a href="Create.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none;">CREATE HERE</a>
+        </div>
+        <span class="oj-caption oj-muted">Areas, not people. Exact spots show only inside plans you've joined.</span>
+      </div>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { yes: true };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · After</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="after" style="width: 390px; height: 1130px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="LiveActivity.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">AFTER · OPEN UNTIL WED 9 PM</span>
+    <span style="width: 44px;"></span>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 24px 20px 32px;">
+    <section aria-label="Good game" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-xl">GOOD GAME.</h1>
+      <p class="oj-body" style="margin: 0;">90 minutes, 8 players, one very late winner. Lock in the result and the moments while they're fresh.</p>
+    </section>
+
+    <section aria-label="Confirm the result" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">FINAL SCORE · LOGGED BY ADE</span>
+      <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+        <div><div class="oj-label">LIGHTS</div><div class="oj-display oj-display-lg">5</div></div>
+        <span class="oj-display oj-display-sm oj-muted">–</span>
+        <div style="text-align: right;"><div class="oj-label">DARKS</div><div class="oj-display oj-display-lg">4</div></div>
+      </div>
+      <span class="oj-title-sm">Is this right?</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <x-import component-from-global-scope="Ojoro.Button" variant="primary">CONFIRM</x-import>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">SUGGEST A FIX</x-import>
+      </div>
+      <x-import component-from-global-scope="Ojoro.Progress" value="{{three}}" max="{{eight}}" label="3 of 8 confirmed"></x-import>
+      <span class="oj-caption oj-muted">3 of 8 confirmed. At 4 it becomes Participant confirmed.</span>
+    </section>
+
+    <section aria-label="Moments" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="MOMENTS · 2"></x-import>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Image" alt="Team photo under the floodlights" ratio="1:1" caption="Photo: Ade"></x-import>
+        <x-import component-from-global-scope="Ojoro.Image" alt="The late winner, blurry, from the sideline" ratio="1:1" caption="Photo: Yara"></x-import>
+      </div>
+      <x-import component-from-global-scope="Ojoro.Button" variant="secondary">ADD PHOTOS</x-import>
+      <span class="oj-caption oj-muted">Only the 8 who played can add photos. Anyone can be untagged.</span>
+    </section>
+
+    <a href="Recap.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">SEE THE RECAP</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1130}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { three: 3, eight: 8 };
+  }
+}
+</script>
+</body>
+</html>

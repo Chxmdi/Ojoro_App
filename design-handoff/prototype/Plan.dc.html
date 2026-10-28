@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Plan forming</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="forming" style="width: 390px; height: 1360px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">PLAN · FOOTBALL TONIGHT</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share plan"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.PlanForming" activity="Football" count="{{six}}" capacity="{{eight}}" participants="{{people}}" time="Tonight 7:30" place="Jeanne-Mance Park" joined="{{yes}}"></x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 8px 20px 32px;">
+    <p class="oj-body-sm" style="margin: 0; display: flex; gap: 8px; align-items: flex-start;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="clock" size="{{twenty}}"></x-import>
+      <span>You're down, but it's not on yet. The plan locks at 8 and everyone gets GAME ON at the same moment.</span>
+    </p>
+
+    <x-import component-from-global-scope="Ojoro.Poll" question="WHAT TIME?" voted="{{zero}}" options="{{timeOptions}}" closes="at 6:00"></x-import>
+
+    <section aria-label="Where" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="WHERE"></x-import>
+      <x-import component-from-global-scope="Ojoro.PlaceMiniCard" name="Jeanne-Mance Park" kind="Football" surface="Turf · north pitch" distance="1.2 km" lights="11 PM" plans-tonight="{{four}}"></x-import>
+      <p class="oj-caption oj-muted" style="margin: 0;">Proposed by Ade. The exact pitch is shared with people in the plan only.</p>
+    </section>
+
+    <section aria-label="Who's in" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="WHO'S IN · 6 OF 8"></x-import>
+      <div role="list">
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{ade}}" role="host" meta="Started the plan · 40 games hosted"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{chimdi}}" role="in" meta="You · midfield"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{marcus}}" role="in" meta="12 games with you"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{lena}}" role="in" meta="New to the area · first game"></x-import>
+      </div>
+      <span class="oj-body-sm oj-muted">+ Sam K and Yara M</span>
+    </section>
+
+    <section aria-label="Actions" style="display: flex; flex-direction: column; gap: 8px;">
+      <a href="NeedOneMore.dc.html" class="oj-btn oj-btn-secondary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">PULL SOMEONE IN</a>
+      <x-import component-from-global-scope="Ojoro.Button" variant="ghost">I CAN'T MAKE IT</x-import>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1360}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var people = [{ name: 'Ade B' }, { name: 'Chimdi O' }, { name: 'Marcus T' }, { name: 'Lena R' }, { name: 'Sam K' }, { name: 'Yara M' }];
+    return {
+      yes: true, zero: 0, four: 4, six: 6, eight: 8, twenty: 20,
+      people: people,
+      ade: people[0], chimdi: people[1], marcus: people[2], lena: people[3],
+      timeOptions: [{ label: '7:30', votes: 4 }, { label: '8:00', votes: 2 }]
+    };
+  }
+}
+</script>
+</body>
+</html>

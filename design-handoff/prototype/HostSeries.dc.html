@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Series</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.sw-row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line)}
+.sw-text{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sw{position:relative;flex:none;width:72px;height:32px;box-sizing:border-box;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--text);font:700 11px/1 var(--font-ui);letter-spacing:.08em;display:inline-flex;align-items:center;justify-content:space-between;padding:0 3px 0 10px;cursor:pointer;transition:background var(--dur-commit) var(--ease-commit)}
+.sw::after{content:'';position:absolute;inset:-6px -2px}
+.sw .knob{width:24px;height:24px;border-radius:50%;background:var(--text)}
+.sw.on{flex-direction:row-reverse;padding:0 10px 0 3px;background:var(--inverse);border-color:var(--inverse);color:var(--on-inverse)}
+.sw.on .knob{background:var(--on-inverse)}
+.sw:focus-visible,.step:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.step{width:44px;height:44px;flex:none;border-radius:50%;border:1px solid var(--line-strong);background:transparent;color:var(--text);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font:600 22px/1 var(--font-ui)}
+.step[disabled]{opacity:var(--opacity-disabled);cursor:default}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 2580px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">SERIES</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Duplicate, pause or end series"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Series" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">TUESDAY <span style="white-space: nowrap;">7-A-SIDE.</span></h1>
+      <p class="oj-body" style="margin: 0;">Every Tuesday since March. Change it once here and every future session follows.</p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <x-import component-from-global-scope="Ojoro.Badge" tone="verified">HOST VERIFIED</x-import>
+        <x-import component-from-global-scope="Ojoro.Badge">31 SESSIONS RUN</x-import>
+      </div>
+    </section>
+
+    <section aria-label="The session" style="display: flex; flex-direction: column; gap: 20px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="THE SESSION"></x-import>
+      <x-import component-from-global-scope="Ojoro.Input" label="Name" default-value="Tuesday 7-a-side"></x-import>
+      <x-import component-from-global-scope="Ojoro.Input" label="Place" icon="pin" default-value="Jeanne-Mance Park · turf 2" hint="People see the exact pitch once they're in."></x-import>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px;">
+        <x-import component-from-global-scope="Ojoro.Input" label="Starts" icon="clock" default-value="7:30 PM"></x-import>
+        <x-import component-from-global-scope="Ojoro.Input" label="Length" default-value="90 min"></x-import>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Players</span><span class="oj-body-sm oj-muted">7 a side. Ojoro balances teams at check-in.</span></span>
+        <button type="button" class="step" aria-label="One fewer player" onClick="{{fewer}}" disabled="{{atMin}}">−</button>
+        <span class="oj-display oj-display-sm" aria-live="polite" style="min-width: 40px; text-align: center;">{{cap}}</span>
+        <button type="button" class="step" aria-label="One more player" onClick="{{more}}" disabled="{{atMax}}">+</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span class="oj-title-sm">Level</span>
+        <div role="group" aria-label="Level" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <x-import component-from-global-scope="Ojoro.Chip">Beginners</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Mixed</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Competitive</x-import>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Repeats" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="REPEATS"></x-import>
+      <div role="group" aria-label="Days" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip">Mon</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Tue</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Wed</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Thu</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Fri</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Sat</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Sun</x-import>
+      </div>
+      <x-import component-from-global-scope="Ojoro.Input" label="Weekly until" default-value="March 30, 2027" hint="Skipping Dec 22 and Dec 29. The field's closed for the holidays."></x-import>
+      <x-import component-from-global-scope="Ojoro.Input" label="Opens for joining" default-value="5 days before" hint="Members get it 48 hours earlier."></x-import>
+    </section>
+
+    <section aria-label="Who gets in" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="WHO GETS IN"></x-import>
+      <sc-for list="{{rules}}" as="r" hint-placeholder-count="3">
+        <div class="sw-row">
+          <span class="sw-text"><span class="oj-title-sm" id="{{r.id}}">{{r.title}}</span><span class="oj-body-sm oj-muted">{{r.body}}</span></span>
+          <button type="button" role="switch" class="{{r.cls}}" aria-checked="{{r.on}}" aria-labelledby="{{r.id}}" onClick="{{r.toggle}}"><span class="knob"></span><span>{{r.word}}</span></button>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="Price and cancelling" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="PRICE &amp; CANCELLING"></x-import>
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px;">
+        <x-import component-from-global-scope="Ojoro.Input" label="Drop-in" default-value="$8"></x-import>
+        <x-import component-from-global-scope="Ojoro.Input" label="Members" default-value="Included"></x-import>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <span class="oj-title-sm">Full refund if they cancel</span>
+        <div role="group" aria-label="Refund window" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <x-import component-from-global-scope="Ojoro.Chip">Any time</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">12 h before</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">24 h before</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Never</x-import>
+        </div>
+        <span class="oj-caption oj-muted">If their spot gets filled from the waitlist, they're refunded whatever the timing. Ojoro's service fee is shown before you save.</span>
+      </div>
+    </section>
+
+    <section aria-label="Next sessions" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="NEXT 4 SESSIONS"></x-import>
+      <sc-for list="{{next}}" as="n" hint-placeholder-count="4">
+        <div class="oj-strip">
+          <span class="oj-strip-time" style="display: flex; flex-direction: column;"><span class="{{n.dayCls}}">{{n.day}}</span><span class="oj-caption oj-muted">{{n.date}}</span></span>
+          <span class="oj-strip-body"><span class="oj-title-sm">{{n.title}}</span><span class="oj-body-sm oj-muted">{{n.meta}}</span></span>
+          <button type="button" class="oj-textbtn oj-label" onClick="{{n.toggle}}" aria-label="{{n.aria}}">{{n.action}}</button>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="Save" style="display: flex; flex-direction: column; gap: 12px;">
+      <a href="HostHome.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">SAVE CHANGES</a>
+      <x-import component-from-global-scope="Ojoro.Button" variant="ghost" block="{{yes}}">SAVE AS A TEMPLATE</x-import>
+      <span class="oj-caption oj-muted" style="text-align: center;">Applies from Oct 13. The 9 people already in get one message saying what changed.</span>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2580}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cap: 14, rules: { first: true, wait: true, members: true }, skipped: { 3: true } };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var defs = [
+      ['first', 'Approve first-timers', "People who've played with you before join straight away. New faces wait for your OK."],
+      ['wait', 'Waitlist that fills itself', "When someone drops, the next person is in and told straight away. Stops 2 hours before kick-off."],
+      ['members', 'Members first', 'Monthly members can join before it opens to everyone.']
+    ];
+    var dates = [
+      ['TUE', 'OCT 13', '9 in · 5 open', 'Members are already in'],
+      ['TUE', 'OCT 20', '4 in · 10 open', 'Opens to everyone Oct 15'],
+      ['TUE', 'OCT 27', '2 in · 12 open', 'Opens to everyone Oct 22'],
+      ['TUE', 'NOV 3', 'Skipped', 'Field booked for a tournament']
+    ];
+    function set(patch) { self.setState(patch); }
+    return {
+      yes: true,
+      cap: s.cap,
+      atMin: s.cap <= 10, atMax: s.cap >= 18,
+      fewer: function () { set({ cap: Math.max(10, s.cap - 2) }); },
+      more: function () { set({ cap: Math.min(18, s.cap + 2) }); },
+      rules: defs.map(function (d) {
+        var on = !!s.rules[d[0]];
+        return {
+          id: 'rule-' + d[0], title: d[1], body: d[2], on: on,
+          cls: on ? 'sw on' : 'sw', word: on ? 'ON' : 'OFF',
+          toggle: function () { var r = Object.assign({}, s.rules); r[d[0]] = !r[d[0]]; set({ rules: r }); }
+        };
+      }),
+      next: dates.map(function (d, i) {
+        var off = !!s.skipped[i];
+        return {
+          day: d[0], date: d[1],
+          title: off ? 'Skipped' : d[2],
+          meta: off ? (i === 3 ? d[3] : 'Nobody was in yet') : d[3],
+          dayCls: off ? 'oj-display oj-display-xs oj-muted' : 'oj-display oj-display-xs',
+          action: off ? 'RESTORE' : 'SKIP',
+          aria: (off ? 'Restore ' : 'Skip ') + d[1],
+          toggle: function () { var k = Object.assign({}, s.skipped); k[i] = !k[i]; set({ skipped: k }); }
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

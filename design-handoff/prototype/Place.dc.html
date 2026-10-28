@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Place</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1400px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Pulse.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">PLACE</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share place"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.Image" alt="The north pitch at Jeanne-Mance under the floodlights" ratio="4:3">
+    <span class="oj-overline" style="color: var(--text-muted);">PLATEAU · 1.2 KM</span>
+    <span class="oj-display oj-display-md">JEANNE-MANCE PARK.</span>
+  </x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 20px 20px 40px;">
+    <section aria-label="About this place" style="display: flex; flex-direction: column; gap: 12px;">
+      <span class="oj-body-sm" style="display: inline-flex; gap: 6px; align-items: center;"><x-import component-from-global-scope="Ojoro.Icon" name="lights" size="{{sixteen}}"></x-import>Football · turf · floodlit until 11 PM · free</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="Create.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none;">CREATE ACTIVITY HERE</a>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">DIRECTIONS</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Tonight here" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="TONIGHT HERE"></x-import>
+      <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Pickup football" time="7:30" place="North pitch · mixed level" count="{{six}}" capacity="{{eight}}" href="Plan.dc.html"></x-import>
+      <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Women's 5 a side" time="8:00" place="South pitch · open" status="confirmed"></x-import>
+      <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Sprint intervals" time="8:30" place="Track by the pond" count="{{three}}" capacity="{{ten}}"></x-import>
+    </section>
+
+    <section aria-label="Rituals here" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="RITUALS HERE"></x-import>
+      <a href="CrewHome.dc.html" class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">THU</span><span class="oj-strip-body"><span class="oj-title-sm">Thursday FC · football</span><span class="oj-body-sm oj-muted">Every week, 7:30 · 6 weeks running</span></span><x-import component-from-global-scope="Ojoro.Badge">CREW</x-import></a>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">SUN</span><span class="oj-strip-body"><span class="oj-title-sm">Sunrise run · 6 km</span><span class="oj-body-sm oj-muted">Every week, 7:00 · open to all</span></span><x-import component-from-global-scope="Ojoro.Badge">OPEN</x-import></div>
+    </section>
+
+    <section aria-label="Hosts here" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="HOSTS HERE"></x-import>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: 1px solid var(--line);">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Ade B" size="md"></x-import>
+        <span style="flex: 1; display: flex; flex-direction: column;"><span class="oj-title-sm">Ade B</span><span class="oj-caption oj-muted">40 games hosted here</span></span>
+        <x-import component-from-global-scope="Ojoro.VerificationBadge" level="host"></x-import>
+      </div>
+    </section>
+
+    <section aria-label="When it's busy" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="WHEN IT'S BUSY · EVENINGS"></x-import>
+      <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 72px;">
+        <span style="height: 30%; background: var(--track);"></span>
+        <span style="height: 85%; background: var(--signal);"></span>
+        <span style="height: 70%; background: var(--track);"></span>
+        <span style="height: 100%; background: var(--track);"></span>
+        <span style="height: 45%; background: var(--track);"></span>
+        <span style="height: 60%; background: var(--track);"></span>
+        <span style="height: 40%; background: var(--track);"></span>
+      </div>
+      <div aria-hidden="true" class="oj-label-sm oj-muted" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; text-align: center;"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+      <span class="oj-body-sm">Busiest Thursday evenings. Tonight (Tuesday) is the second busiest.</span>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { three: 3, six: 6, eight: 8, ten: 10, sixteen: 16 };
+  }
+}
+</script>
+</body>
+</html>

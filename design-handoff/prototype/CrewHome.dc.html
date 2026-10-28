@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Crew home</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1560px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="You.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">CREW · PRIVATE</span>
+    <a href="CrewChat.dc.html" aria-label="Crew chat, 4 new" style="position: relative; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="chat"></x-import><span class="oj-iconbtn-count" aria-hidden="true">4</span></a>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <x-import component-from-global-scope="Ojoro.CrewMomentum" crew="Thursday FC" member-count="{{fourteen}}" members="{{members}}" weeks="{{weeks}}" streak="{{six}}" next="Football · Thu 7:30 · Jeanne-Mance"></x-import>
+
+    <section aria-label="Around tonight" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="FREE TONIGHT"></x-import>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <x-import component-from-global-scope="Ojoro.AvatarCluster" people="{{free}}" total="{{four}}" size="md"></x-import>
+        <span class="oj-body-sm">Ade, Lena, Joel and Sam are free after 7.</span>
+      </div>
+      <span class="oj-caption oj-muted">Shown as overlap only. Nobody's calendar is visible.</span>
+    </section>
+
+    <section aria-label="Down for board" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="DOWN FOR"></x-import>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: 1px solid var(--line);">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Lena R" size="md"></x-import>
+        <span style="flex: 1; display: flex; flex-direction: column;"><span class="oj-title-sm">Football, Saturday morning</span><span class="oj-caption oj-muted">Lena · 3 down · ends Fri 10 PM</span></span>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">I'M DOWN</x-import>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 64px; border-bottom: 1px solid var(--line);">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Sam K" size="md"></x-import>
+        <span style="flex: 1; display: flex; flex-direction: column;"><span class="oj-title-sm">Easy 5K, any evening</span><span class="oj-caption oj-muted">Sam · 1 down · ends Sun</span></span>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">I'M DOWN</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Ritual" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">RITUAL</span>
+      <span class="oj-display oj-display-sm">THURSDAY FOOTBALL.</span>
+      <span class="oj-body-sm">Every Thursday, 7:30, Jeanne-Mance. Prefilled each week; everyone still taps I'M DOWN.</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="Plan.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none;">THIS WEEK · 6 / 10</a>
+        <x-import component-from-global-scope="Ojoro.Button" variant="ghost">SKIP A WEEK</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Crew versus crew" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="mark" label="CREW VS CREW"></x-import>
+      <a href="Compete.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">SUN</span>
+        <span class="oj-strip-body"><span class="oj-title">vs Plateau Crew</span><span class="oj-body-sm oj-muted">5 a side · Jeanne-Mance · 9 of 10 in</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">ACCEPTED</x-import>
+      </a>
+    </section>
+
+    <section aria-label="Memories" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="MEMORIES"></x-import>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Image" alt="Team photo, soaked, under the floodlights" ratio="1:1" caption="Lights win 5–4 · 6 Oct"></x-import>
+        <x-import component-from-global-scope="Ojoro.Image" alt="Boots in a pile by the bench" ratio="1:1" caption="Game 20 · 1 Oct"></x-import>
+      </div>
+    </section>
+
+    <a href="CrewChat.dc.html" class="oj-btn oj-btn-secondary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">OPEN CREW CHAT · 4 NEW</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var m = [{ name: 'Ade B' }, { name: 'Lena R' }, { name: 'Joel P' }, { name: 'Sam K' }, { name: 'Marcus T' }, { name: 'Yara M' }];
+    return {
+      four: 4, six: 6, fourteen: 14,
+      members: m, free: m.slice(0, 4),
+      weeks: [3, 4, 2, 5, 6, 4, 6, 7]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Hosting</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1520px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="You.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">HOSTING · PLATEAU PICKUP</span>
+    <a href="HostSeries.dc.html" aria-label="New series" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="plus"></x-import></a>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Your week" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">YOUR WEEK.</h1>
+      <p class="oj-body" style="margin: 0;">3 sessions and a league round. 31 of 36 spots taken, 3 people waiting.</p>
+    </section>
+
+    <section aria-label="Needs you" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="NEEDS YOU · 3"></x-import>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line);">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">2 people asked to join</span><span class="oj-body-sm oj-muted">Sunday beginners · approval on</span></span>
+        <a href="HostRequests.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none; padding: 0 16px;">REVIEW</a>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line);">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">1 refund request</span><span class="oj-body-sm oj-muted">Lena R · monthly membership · cancelled 3 days in</span></span>
+        <a href="HostMembership.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none; padding: 0 16px;">DECIDE</a>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line);">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">League result to confirm</span><span class="oj-body-sm oj-muted">Thursday FC 4–2 Plateau Crew · both captains agree</span></span>
+        <a href="HostSeason.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none; padding: 0 16px;">CONFIRM</a>
+      </div>
+    </section>
+
+    <section aria-label="This week's sessions" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="THIS WEEK"></x-import>
+      <a href="HostRoster.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">TUE</span>
+        <span class="oj-strip-body"><span class="oj-title-sm">7-a-side · 7:30</span><span class="oj-body-sm oj-muted">14 / 14 · 3 waiting · drop-in</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="signal">FULL</x-import>
+      </a>
+      <div class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">THU</span>
+        <span class="oj-strip-body"><span class="oj-title-sm">Mixed 5s · 7:30</span><span class="oj-body-sm oj-muted">8 / 10 · members free</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">8 / 10</x-import>
+      </div>
+      <a href="HostSeason.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">SAT</span>
+        <span class="oj-strip-body"><span class="oj-title-sm">Winter League · round 3</span><span class="oj-body-sm oj-muted">3 fixtures · 6 teams</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">LEAGUE</x-import>
+      </a>
+      <a href="HostRequests.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">SUN</span>
+        <span class="oj-strip-body"><span class="oj-title-sm">Beginners · 10:00</span><span class="oj-body-sm oj-muted">9 / 12 · free · approval on</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">2 ASKING</x-import>
+      </a>
+    </section>
+
+    <a href="HostInsights.dc.html" aria-label="Last 30 days: 26 sessions, 91 percent showed up, 412 Ojoro hours. See insights." style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface-raised); text-decoration: none;">
+      <span class="oj-overline">LAST 30 DAYS</span>
+      <span style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+        <span><span class="oj-display oj-display-sm" style="display: block;">26</span><span class="oj-caption oj-muted">Sessions</span></span>
+        <span><span class="oj-display oj-display-sm" style="display: block;">91%</span><span class="oj-caption oj-muted">Showed up</span></span>
+        <span><span class="oj-display oj-display-sm" style="display: block;">412</span><span class="oj-caption oj-muted">Ojoro hours</span></span>
+      </span>
+      <span class="oj-label">SEE INSIGHTS</span>
+    </a>
+
+    <section aria-label="Tools" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="TOOLS"></x-import>
+      <a href="HostSeries.dc.html" class="oj-strip" style="gap: 12px; padding: 14px 0;"><span class="oj-strip-body"><span class="oj-display oj-display-xs">SERIES &amp; TEMPLATES</span><span class="oj-body-sm oj-muted">Repeat a session without rebuilding it</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+      <a href="HostPeople.dc.html" class="oj-strip" style="gap: 12px; padding: 14px 0;"><span class="oj-strip-body"><span class="oj-display oj-display-xs">PEOPLE</span><span class="oj-body-sm oj-muted">Regulars, attendance, notes</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+      <a href="HostMembership.dc.html" class="oj-strip" style="gap: 12px; padding: 14px 0;"><span class="oj-strip-body"><span class="oj-display oj-display-xs">MEMBERSHIPS &amp; PAYMENTS</span><span class="oj-body-sm oj-muted">Passes, payouts, refunds</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+      <a href="HostAnnounce.dc.html" class="oj-strip" style="gap: 12px; padding: 14px 0;"><span class="oj-strip-body"><span class="oj-display oj-display-xs">ANNOUNCEMENTS</span><span class="oj-body-sm oj-muted">One message to everyone who's in</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+      <a href="HostSeason.dc.html" class="oj-strip" style="gap: 12px; padding: 14px 0;"><span class="oj-strip-body"><span class="oj-display oj-display-xs">LEAGUE</span><span class="oj-body-sm oj-muted">Fixtures, results, standings</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1520}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

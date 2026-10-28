@@ -1,0 +1,282 @@
+{
+  "brand": {
+    "brand-black": "#000000",
+    "brand-ink": "#141515",
+    "brand-oxblood": "#290000",
+    "brand-graphite": "#45484a",
+    "brand-stone": "#a7a08b",
+    "brand-white": "#ffffff"
+  },
+  "situations": {
+    "calm": {
+      "surface": "#ffffff",
+      "surface-raised": "#f6f6f3",
+      "surface-sunk": "#e6e4df",
+      "text": "#141515",
+      "text-muted": "#45484a",
+      "line": "rgba(20,21,21,0.12)",
+      "line-strong": "#45484a",
+      "signal": "#290000",
+      "on-signal": "#ffffff",
+      "inverse": "#000000",
+      "on-inverse": "#ffffff",
+      "tint": "#a7a08b",
+      "on-tint": "#141515",
+      "track": "#e6e4df",
+      "mark-ring": "#ffffff",
+      "focus": "#290000"
+    },
+    "forming": {
+      "surface": "#f4f4f1",
+      "surface-raised": "#ffffff",
+      "surface-sunk": "#e6e4df",
+      "text": "#141515",
+      "text-muted": "#45484a",
+      "line": "rgba(20,21,21,0.14)",
+      "line-strong": "#45484a",
+      "signal": "#290000",
+      "on-signal": "#ffffff",
+      "inverse": "#000000",
+      "on-inverse": "#ffffff",
+      "tint": "#a7a08b",
+      "on-tint": "#141515",
+      "track": "#e6e4df",
+      "mark-ring": "#ffffff",
+      "focus": "#290000"
+    },
+    "confirmed": {
+      "surface": "#290000",
+      "surface-raised": "#3a1414",
+      "surface-sunk": "#1a0000",
+      "text": "#ffffff",
+      "text-muted": "#a7a08b",
+      "line": "rgba(255,255,255,0.16)",
+      "line-strong": "#a7a08b",
+      "signal": "#ffffff",
+      "on-signal": "#290000",
+      "inverse": "#000000",
+      "on-inverse": "#ffffff",
+      "tint": "#a7a08b",
+      "on-tint": "#141515",
+      "track": "#4b2929",
+      "mark-ring": "#ffffff",
+      "focus": "#ffffff"
+    },
+    "live": {
+      "surface": "#000000",
+      "surface-raised": "#141515",
+      "surface-sunk": "#000000",
+      "text": "#ffffff",
+      "text-muted": "#a7a08b",
+      "line": "rgba(255,255,255,0.16)",
+      "line-strong": "#a7a08b",
+      "signal": "#ffffff",
+      "on-signal": "#000000",
+      "inverse": "#ffffff",
+      "on-inverse": "#000000",
+      "tint": "#45484a",
+      "on-tint": "#ffffff",
+      "track": "#272828",
+      "mark-ring": "#ffffff",
+      "focus": "#ffffff"
+    },
+    "after": {
+      "surface": "#a7a08b",
+      "surface-raised": "#b9b3a2",
+      "surface-sunk": "#8f8977",
+      "text": "#141515",
+      "text-muted": "#2e2e2a",
+      "line": "rgba(20,21,21,0.22)",
+      "line-strong": "#141515",
+      "signal": "#290000",
+      "on-signal": "#ffffff",
+      "inverse": "#141515",
+      "on-inverse": "#ffffff",
+      "tint": "#45484a",
+      "on-tint": "#ffffff",
+      "track": "#8f8977",
+      "mark-ring": "#ffffff",
+      "focus": "#141515"
+    }
+  },
+  "type": {
+    "fonts": [],
+    "families": {
+      "display": "Anton, \"Druk Condensed\", Impact, \"Arial Narrow\", sans-serif",
+      "ui": "Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif"
+    },
+    "groups": [
+      {
+        "name": "Display",
+        "family": "display",
+        "styles": [
+          {
+            "name": "display-hero",
+            "fontSize": "120px",
+            "lineHeight": 0.88,
+            "fontWeight": 400,
+            "letterSpacing": "0.005em",
+            "sample": "GAME ON",
+            "usage": "One per screen, max. Breakthrough moments: GAME ON, LIVE, CHIMDI WINS. Always uppercase."
+          },
+          {
+            "name": "display-xl",
+            "fontSize": "88px",
+            "lineHeight": 0.9,
+            "fontWeight": 400,
+            "letterSpacing": "0.005em",
+            "sample": "TONIGHT.",
+            "usage": "Editorial headlines on Home and Challenge heroes; competitor names."
+          },
+          {
+            "name": "display-lg",
+            "fontSize": "64px",
+            "lineHeight": 0.92,
+            "fontWeight": 400,
+            "letterSpacing": "0.01em",
+            "sample": "7 / 8",
+            "usage": "Plan counts, countdown numerals, poster headlines."
+          },
+          {
+            "name": "display-md",
+            "fontSize": "44px",
+            "lineHeight": 0.95,
+            "fontWeight": 400,
+            "letterSpacing": "0.01em",
+            "sample": "NEED ONE MORE",
+            "usage": "Object headlines inside Movement objects."
+          },
+          {
+            "name": "display-sm",
+            "fontSize": "32px",
+            "lineHeight": 1,
+            "fontWeight": 400,
+            "letterSpacing": "0.01em",
+            "sample": "WHO TAKES IT?",
+            "usage": "Section heads, VS, prediction percentages."
+          },
+          {
+            "name": "display-xs",
+            "fontSize": "24px",
+            "lineHeight": 1.05,
+            "fontWeight": 400,
+            "letterSpacing": "0.015em",
+            "sample": "78 BACK CHIMDI",
+            "usage": "Strip numerals, stamp titles. Smallest display size \u2014 below this, use label."
+          }
+        ]
+      },
+      {
+        "name": "UI",
+        "family": "ui",
+        "styles": [
+          {
+            "name": "title",
+            "fontSize": "20px",
+            "lineHeight": "26px",
+            "fontWeight": 600,
+            "letterSpacing": "-0.01em",
+            "sample": "Pickup football at Jeanne-Mance",
+            "usage": "Object titles, sheet headers, profile names."
+          },
+          {
+            "name": "body",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": 400,
+            "sample": "11 people near you want to play.",
+            "usage": "Descriptions, chat, hype posts."
+          },
+          {
+            "name": "body-sm",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": 400,
+            "sample": "Jeanne-Mance Park \u00b7 7:30 PM",
+            "usage": "Metadata, place and time lines, comments."
+          },
+          {
+            "name": "label",
+            "fontSize": "13px",
+            "lineHeight": "16px",
+            "fontWeight": 700,
+            "letterSpacing": "0.08em",
+            "sample": "I'M DOWN",
+            "usage": "Buttons, badges, overlines. Uppercase always."
+          },
+          {
+            "name": "caption",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": 500,
+            "letterSpacing": "0.01em",
+            "sample": "2 min ago",
+            "usage": "Timestamps, counts under avatars, legal."
+          },
+          {
+            "name": "numeric",
+            "fontSize": "15px",
+            "lineHeight": "20px",
+            "fontWeight": 600,
+            "sample": "48% \u00b7 5.2 km \u00b7 24:10",
+            "usage": "Stats and splits in UI type. Set font-variant-numeric: tabular-nums."
+          }
+        ]
+      }
+    ]
+  },
+  "spacing": {
+    "space-1": "4px",
+    "space-2": "8px",
+    "space-3": "12px",
+    "space-4": "16px",
+    "space-5": "20px",
+    "space-6": "24px",
+    "space-8": "32px",
+    "space-10": "40px",
+    "space-12": "48px",
+    "space-16": "64px",
+    "space-20": "80px"
+  },
+  "radius": {
+    "radius-none": "0",
+    "radius-xs": "2px",
+    "radius-sheet": "20px",
+    "radius-pill": "999px",
+    "radius-disc": "50%"
+  },
+  "shadow": {
+    "shadow-none": "none",
+    "shadow-sheet": "0 -8px 32px rgba(0,0,0,0.18)"
+  },
+  "duration": {
+    "dur-commit": "140ms",
+    "dur-gather": "320ms",
+    "dur-breakthrough": "600ms",
+    "dur-live": "1600ms"
+  },
+  "easing": {
+    "ease-commit": "cubic-bezier(0.2, 0, 0, 1)",
+    "ease-gather": "cubic-bezier(0.34, 1.4, 0.64, 1)",
+    "ease-breakthrough": "cubic-bezier(0.16, 1, 0.3, 1)",
+    "ease-live": "cubic-bezier(0.4, 0, 0.6, 1)"
+  },
+  "size": {
+    "size-touch": "44px",
+    "size-commit": "56px",
+    "size-avatar-sm": "28px",
+    "size-avatar-md": "40px",
+    "size-avatar-lg": "72px"
+  },
+  "borderWidth": {
+    "border-hair": "1px",
+    "border-strong": "2px",
+    "border-poster": "6px"
+  },
+  "opacity": {
+    "opacity-disabled": "0.4",
+    "opacity-expired": "0.56",
+    "opacity-scrim": "0.64"
+  },
+  "_note": "Generated from tokens.json (the source of truth). Colour references are resolved per situation. Regenerate if tokens.json changes."
+}

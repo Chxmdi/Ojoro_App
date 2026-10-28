@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · People</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.prow-btn{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);padding:12px 0;min-height:44px;display:flex;align-items:center;gap:12px;color:var(--text);text-align:left;cursor:pointer;font:inherit}
+.prow-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.att{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px}
+.att span{height:20px;box-sizing:border-box;border:1.5px solid var(--text)}
+.att span.y{background:var(--text)}
+.chevron{transition:transform var(--dur-commit) var(--ease-commit)}
+.chevron.open{transform:rotate(90deg)}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1880px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">PEOPLE · 86</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Export or tag people"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 16px 20px 40px;">
+    <section aria-label="Your people" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">YOUR REGULARS.</h1>
+      <p class="oj-body" style="margin: 0;">86 people have played with you. 23 came at least twice this month.</p>
+      <x-import component-from-global-scope="Ojoro.Input" label="Find someone" icon="search" placeholder="Name or tag"></x-import>
+      <div role="group" aria-label="Show" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <sc-for list="{{filters}}" as="f" hint-placeholder-count="5">
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{f.on}}" on-click="{{f.pick}}">{{f.label}}</x-import>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="{{listLabel}}" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="{{listLabel}}"></x-import>
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="6">
+        <div>
+          <button type="button" class="prow-btn" aria-expanded="{{p.open}}" onClick="{{p.toggle}}">
+            <x-import component-from-global-scope="Ojoro.Avatar" name="{{p.name}}" size="md"></x-import>
+            <span class="oj-prow-main"><span class="oj-title-sm">{{p.name}}</span><span class="oj-caption oj-muted">{{p.meta}}</span></span>
+            <x-import component-from-global-scope="Ojoro.Badge">{{p.badge}}</x-import>
+            <span class="{{p.chev}}" aria-hidden="true" style="display: inline-flex;"><x-import component-from-global-scope="Ojoro.Icon" name="forward" size="{{eighteen}}"></x-import></span>
+          </button>
+          <sc-if value="{{p.open}}" hint-placeholder-val="{{no}}">
+            <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px; margin: 12px 0 8px; background: var(--surface-raised);">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <span class="oj-overline">LAST 12 SESSIONS</span>
+                <div class="att" role="img" aria-label="{{p.attLabel}}">
+                  <sc-for list="{{p.att}}" as="a" hint-placeholder-count="12"><span class="{{a}}"></span></sc-for>
+                </div>
+                <span class="oj-caption oj-muted">{{p.attLabel}}. Filled means came, outline means didn't.</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+                <sc-for list="{{p.stats}}" as="s" hint-placeholder-count="3">
+                  <span><span class="oj-display oj-display-sm" style="display: block;">{{s.v}}</span><span class="oj-caption oj-muted">{{s.l}}</span></span>
+                </sc-for>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <span class="oj-overline">PASS</span>
+                <span class="oj-body-sm">{{p.pass}}</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <span class="oj-overline">TAGS</span>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <sc-for list="{{p.tags}}" as="t" hint-placeholder-count="2"><x-import component-from-global-scope="Ojoro.Badge">{{t}}</x-import></sc-for>
+                </div>
+              </div>
+              <x-import component-from-global-scope="Ojoro.Input" label="Your notes" multiline="{{yes}}" default-value="{{p.note}}" hint="Only you see this. Never shown to them or other hosts."></x-import>
+              <div style="display: flex; gap: 8px;">
+                <a href="CrewChat.dc.html" class="oj-btn oj-btn-primary" style="flex: 1; text-decoration: none; box-sizing: border-box;">MESSAGE</a>
+                <x-import component-from-global-scope="Ojoro.Button" variant="secondary">INVITE TO…</x-import>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="Drifting" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface-sunk);">
+      <span class="oj-overline">DRIFTING · 6</span>
+      <span class="oj-title">6 regulars haven't been in for 3 weeks or more.</span>
+      <span class="oj-body-sm oj-muted">Send them next Tuesday's link with a line from you. No streaks, no guilt, just the invite.</span>
+      <x-import component-from-global-scope="Ojoro.AvatarCluster" people="{{drifting}}" max="{{six}}" size="sm"></x-import>
+      <a href="HostAnnounce.dc.html" class="oj-btn oj-btn-secondary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">INVITE THEM BACK</a>
+    </section>
+
+    <span class="oj-caption oj-muted">You see attendance at your own sessions only. Nothing else from their Ojoro life unless they choose to show it.</span>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1880}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: 'Marcus T', filter: 'regulars' };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var all = [
+      { name: 'Yara M', meta: 'Tue · Thu · 12 of the last 12', badge: 'MEMBER', f: ['regulars', 'members'], att: '111111111111', stats: [['48', 'Sessions'], ['Mar', 'First came'], ['0', 'No-shows']], pass: 'Monthly · renews Nov 1', tags: ['KEEPER', 'CAPTAIN · THU FC'], note: 'Happy to keep goal. Ask her first if we are short.' },
+      { name: 'Chimdi O', meta: 'Tue · Thu · 11 of the last 12', badge: 'MEMBER', f: ['regulars', 'members'], att: '111111011111', stats: [['44', 'Sessions'], ['Mar', 'First came'], ['0', 'No-shows']], pass: 'Monthly · renews Nov 1', tags: ['BRINGS BALLS'], note: 'Co-hosts Thursdays when I am away.' },
+      { name: 'Marcus T', meta: 'Tue · 9 of the last 12', badge: 'MEMBER', f: ['regulars', 'members'], att: '110111101110', stats: [['34', 'Sessions'], ['Apr', 'First came'], ['1', 'No-show']], pass: 'Monthly · renews Nov 1', tags: ['CENTRE-BACK', 'SPARE BIBS'], note: 'Prefers centre-back. Brings the spare bibs. Usually 5 minutes late on Tuesdays.' },
+      { name: 'Kofi A', meta: 'Tue · Thu · 8 of the last 12', badge: 'MEMBER', f: ['regulars', 'members'], att: '101101110110', stats: [['22', 'Sessions'], ['Jun', 'First came'], ['0', 'No-shows']], pass: 'Monthly · renews Nov 1', tags: ['WINGER'], note: '' },
+      { name: 'Sam K', meta: 'Tue · 6 of the last 12', badge: 'DROP-IN', f: ['regulars'], att: '100110101100', stats: [['15', 'Sessions'], ['May', 'First came'], ['0', 'No-shows']], pass: 'Pays per session · $8', tags: ['ASKED ABOUT MEMBERSHIP'], note: 'Said he would go monthly if Thursdays kept running in winter.' },
+      { name: 'Priya S', meta: 'Thu · Sun · 6 of the last 12', badge: '10-PACK', f: ['regulars'], att: '011010110100', stats: [['12', 'Sessions'], ['Jul', 'First came'], ['0', 'No-shows']], pass: '10-pack · 4 sessions left', tags: ['BEGINNERS HELPER'], note: '' },
+      { name: 'Tomás G', meta: 'First time tonight', badge: 'NEW', f: ['new'], att: '000000000000', stats: [['0', 'Sessions'], ['Oct', 'First came'], ['–', 'No-shows']], pass: 'Pays $8 at the field tonight', tags: ['NEW'], note: '' },
+      { name: 'Grace N', meta: 'Asked to join Sunday', badge: 'NEW', f: ['new'], att: '000000000000', stats: [['0', 'Sessions'], ['–', 'First came'], ['–', 'No-shows']], pass: 'Sunday beginners is free', tags: ['BEGINNER'], note: '' },
+      { name: 'Lena R', meta: 'Last came Sep 8 · cancelled monthly', badge: 'LAPSED', f: ['drifting'], att: '111011100000', stats: [['26', 'Sessions'], ['Mar', 'First came'], ['0', 'No-shows']], pass: 'Monthly cancelled Oct 4 · refund request open', tags: ['THU REGULAR'], note: 'Started a new job with late shifts.' },
+      { name: 'Ines V', meta: 'Last came Sep 10', badge: '10-PACK', f: ['drifting'], att: '101101000000', stats: [['9', 'Sessions'], ['Jun', 'First came'], ['0', 'No-shows']], pass: '10-pack · 6 sessions left', tags: ['MIDFIELD'], note: '' }
+    ];
+    var filters = [['all', 'All 86'], ['regulars', 'Regulars 23'], ['members', 'Members 18'], ['new', 'New 9'], ['drifting', 'Drifting 6']];
+    var list = all.filter(function (p) { return s.filter === 'all' || p.f.indexOf(s.filter) >= 0; });
+    var labels = { all: 'EVERYONE', regulars: 'REGULARS · MOST FIRST', members: 'MEMBERS', new: 'NEW THIS MONTH', drifting: 'DRIFTING' };
+    return {
+      yes: true, no: false, six: 6, eighteen: 18,
+      listLabel: labels[s.filter],
+      filters: filters.map(function (f) { return { label: f[1], on: s.filter === f[0], pick: function () { self.setState({ filter: f[0] }); } }; }),
+      people: list.map(function (p) {
+        var open = s.open === p.name;
+        var came = p.att.split('').filter(function (c) { return c === '1'; }).length;
+        return {
+          name: p.name, meta: p.meta, badge: p.badge, open: open,
+          chev: open ? 'chevron open' : 'chevron',
+          toggle: function () { self.setState({ open: open ? null : p.name }); },
+          att: p.att.split('').map(function (c) { return c === '1' ? 'y' : 'n'; }),
+          attLabel: 'Came to ' + came + ' of the last 12',
+          stats: p.stats.map(function (x) { return { v: x[0], l: x[1] }; }),
+          pass: p.pass, tags: p.tags, note: p.note
+        };
+      }),
+      drifting: [{ name: 'Lena R' }, { name: 'Ines V' }, { name: 'Paul M' }, { name: 'Ari W' }, { name: 'Keisha B' }, { name: 'Jonah E' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

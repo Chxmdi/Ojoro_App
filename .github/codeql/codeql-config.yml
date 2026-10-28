@@ -1,0 +1,6 @@
+name: Ojoro CodeQL config
+
+# design-handoff/ holds the web reference bundles and prototype from design.
+# They are read-only reference material, not shipped code.
+paths-ignore:
+  - design-handoff

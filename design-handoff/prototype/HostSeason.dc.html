@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · League operations</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.tbl{display:flex;flex-direction:column;font-variant-numeric:tabular-nums}
+.tr{display:grid;grid-template-columns:24px minmax(0,1fr) repeat(5,28px) 32px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font:500 14px/20px var(--font-ui);text-align:right}
+.tr.th{padding:0 0 8px;border-bottom:2px solid var(--text);font:700 10px/12px var(--font-ui);letter-spacing:.08em;color:var(--text-muted)}
+.tr .team{text-align:left;font-weight:600;padding-right:8px}
+.tr .pos{text-align:left;font-weight:700}
+.tr.th > span:first-child{text-align:left}
+.tr .pts{font-weight:700}
+.tr.changed{background:var(--surface-raised)}
+.fx{display:flex;flex-direction:column;gap:10px;padding:16px 0;border-bottom:1px solid var(--line)}
+.fx-head{display:flex;align-items:baseline;gap:12px}
+.vs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1880px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">ROUND 3 OF 10</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share season page"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="League" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">WINTER LEAGUE.</h1>
+      <p class="oj-body" style="margin: 0;">6 teams, 10 Saturdays at Jeanne-Mance. Round 3 kicks off this Saturday at 9:00.</p>
+    </section>
+
+    <section aria-label="Result to confirm" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">{{resultOverline}}</span>
+      <div class="vs">
+        <span class="oj-title">Thursday FC</span>
+        <span class="oj-display oj-display-md" aria-label="4 to 2">4–2</span>
+        <span class="oj-title" style="text-align: right;">Plateau Crew</span>
+      </div>
+      <span class="oj-body-sm oj-muted">Round 2, played Thursday after the rain-out. Both captains sent 4–2 and 13 of 14 players checked in at the pitch.</span>
+      <sc-if value="{{pending}}" hint-placeholder-val="{{yes}}">
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="oj-btn oj-btn-primary" style="flex: 1;" onClick="{{confirm}}">CONFIRM RESULT</button>
+          <x-import component-from-global-scope="Ojoro.Button" variant="secondary">DISPUTE</x-import>
+        </div>
+      </sc-if>
+      <sc-if value="{{confirmed}}" hint-placeholder-val="{{no}}">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;" role="status">
+          <x-import component-from-global-scope="Ojoro.VerificationBadge" level="result"></x-import>
+          <span class="oj-body-sm" style="flex: 1; min-width: 160px;">Standings updated. Both teams told.</span>
+          <button type="button" class="oj-textbtn oj-label" onClick="{{undo}}">UNDO</button>
+        </div>
+      </sc-if>
+    </section>
+
+    <section aria-label="Standings" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="STANDINGS"></x-import>
+      <div class="tbl" role="table" aria-label="Standings">
+        <div class="tr th" role="row"><span role="columnheader" aria-label="Position">#</span><span role="columnheader" class="team">TEAM</span><span role="columnheader" aria-label="Played">P</span><span role="columnheader" aria-label="Won">W</span><span role="columnheader" aria-label="Drawn">D</span><span role="columnheader" aria-label="Lost">L</span><span role="columnheader" aria-label="Goal difference">GD</span><span role="columnheader" aria-label="Points">PTS</span></div>
+        <sc-for list="{{table}}" as="t" hint-placeholder-count="6">
+          <div class="{{t.cls}}" role="row"><span role="cell" class="pos">{{t.pos}}</span><span role="cell" class="team">{{t.name}}</span><span role="cell">{{t.p}}</span><span role="cell">{{t.w}}</span><span role="cell">{{t.d}}</span><span role="cell">{{t.l}}</span><span role="cell">{{t.gd}}</span><span role="cell" class="pts">{{t.pts}}</span></div>
+        </sc-for>
+      </div>
+      <span class="oj-caption oj-muted">{{tableNote}}</span>
+    </section>
+
+    <section aria-label="Round 3" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="ROUND 3 · SAT OCT 10"></x-import>
+      <sc-for list="{{fixtures}}" as="f" hint-placeholder-count="3">
+        <div class="fx">
+          <div class="fx-head"><span class="oj-display oj-display-xs">{{f.time}}</span><span class="oj-caption oj-muted">{{f.pitch}}</span></div>
+          <span class="oj-title-sm">{{f.match}}</span>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="oj-body-sm oj-muted" style="flex: 1; min-width: 0;">{{f.ref}}</span>
+            <x-import component-from-global-scope="Ojoro.Badge" tone="{{f.tone}}">{{f.ready}}</x-import>
+          </div>
+          <sc-if value="{{f.needsRef}}" hint-placeholder-val="{{no}}">
+            <button type="button" class="oj-btn oj-btn-secondary" style="align-self: flex-start;" onClick="{{f.assign}}">ASK YARA TO REF</button>
+          </sc-if>
+        </div>
+      </sc-for>
+      <span class="oj-body-sm" style="margin-top: 16px;">Teams need 7 checked in by kick-off. If one is short, Ojoro offers the spot to free agents on the league list.</span>
+    </section>
+
+    <section aria-label="Season tools" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="SEASON"></x-import>
+      <div class="oj-strip" style="gap: 12px;"><span class="oj-strip-body"><span class="oj-title-sm">Fixtures</span><span class="oj-body-sm oj-muted">10 rounds, everyone plays everyone twice</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></div>
+      <div class="oj-strip" style="gap: 12px;"><span class="oj-strip-body"><span class="oj-title-sm">Teams and captains</span><span class="oj-body-sm oj-muted">6 teams · 64 players · 9 free agents</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></div>
+      <div class="oj-strip" style="gap: 12px;"><span class="oj-strip-body"><span class="oj-title-sm">Rules and tie-breaks</span><span class="oj-body-sm oj-muted">Points, then goal difference, then goals scored</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></div>
+      <a href="Clash.dc.html" class="oj-strip" style="gap: 12px;"><span class="oj-strip-body"><span class="oj-title-sm">Season page</span><span class="oj-body-sm oj-muted">Public standings, results and the final</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1880}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { confirmed: false, refs: {} };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var results = [
+      ['Thursday FC', 2, 'Concordia Old Boys', 1], ['Mile End Strikers', 3, 'Saint-Henri United', 1], ['Lachine Locos', 2, 'Plateau Crew', 2],
+      ['Mile End Strikers', 2, 'Concordia Old Boys', 0], ['Lachine Locos', 1, 'Saint-Henri United', 1]
+    ];
+    if (s.confirmed) results.push(['Thursday FC', 4, 'Plateau Crew', 2]);
+    var teams = {};
+    ['Mile End Strikers', 'Thursday FC', 'Lachine Locos', 'Plateau Crew', 'Saint-Henri United', 'Concordia Old Boys'].forEach(function (n) { teams[n] = { name: n, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 }; });
+    results.forEach(function (r) {
+      var a = teams[r[0]], b = teams[r[2]];
+      a.p++; b.p++; a.gf += r[1]; a.ga += r[3]; b.gf += r[3]; b.ga += r[1];
+      if (r[1] > r[3]) { a.w++; b.l++; } else if (r[1] < r[3]) { b.w++; a.l++; } else { a.d++; b.d++; }
+    });
+    var rows = Object.keys(teams).map(function (k) { var t = teams[k]; t.pts = t.w * 3 + t.d; t.gdn = t.gf - t.ga; return t; });
+    rows.sort(function (x, y) { return (y.pts - x.pts) || (y.gdn - x.gdn) || (y.gf - x.gf) || x.name.localeCompare(y.name); });
+    var touched = ['Thursday FC', 'Plateau Crew'];
+    var REFS = [
+      { time: '9:00', pitch: 'Turf 1', match: 'Mile End Strikers v Thursday FC', ref: 'Ref: Kofi A', ready: '7 + 8 IN' },
+      { time: '10:15', pitch: 'Turf 1', match: 'Lachine Locos v Concordia Old Boys', ref: null, ready: '9 + 6 IN', short: true },
+      { time: '11:30', pitch: 'Turf 1', match: 'Plateau Crew v Saint-Henri United', ref: 'Ref: Chimdi O', ready: '8 + 7 IN' }
+    ];
+    return {
+      yes: true, no: false,
+      pending: !s.confirmed, confirmed: s.confirmed,
+      resultOverline: s.confirmed ? 'RESULT CONFIRMED' : 'RESULT TO CONFIRM',
+      confirm: function () { self.setState({ confirmed: true }); },
+      undo: function () { self.setState({ confirmed: false }); },
+      table: rows.map(function (t, i) {
+        return { pos: i + 1, name: t.name, p: t.p, w: t.w, d: t.d, l: t.l, gd: (t.gdn > 0 ? '+' : '') + t.gdn, pts: t.pts,
+          cls: s.confirmed && touched.indexOf(t.name) >= 0 ? 'tr changed' : 'tr' };
+      }),
+      tableNote: s.confirmed ? 'Shaded rows moved with the result you just confirmed.' : 'Thursday FC and Plateau Crew have a game in hand until you confirm.',
+      fixtures: REFS.map(function (f, i) {
+        var assigned = s.refs[i];
+        return {
+          time: f.time, pitch: f.pitch, match: f.match,
+          ref: f.ref || (assigned ? 'Ref: ' + assigned + ' · asked, waiting on her answer' : 'No ref yet. Yara M is free and has reffed twice.'),
+          needsRef: !f.ref && !assigned,
+          assign: function () { var r = Object.assign({}, s.refs); r[i] = 'Yara M'; self.setState({ refs: r }); },
+          ready: f.short ? '6 OF 7 · CONCORDIA' : f.ready,
+          tone: f.short ? 'signal' : 'neutral'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -33,6 +33,7 @@ The fundamental unit of Ojoro is not content. It is **shared real-world action**
 - `packages/*` — shared contracts, config, design tokens and analytics
 - `.github/workflows` — CI/CD, security and release automation
 - `.github/ISSUE_TEMPLATE` — structured issue forms
+- `design-handoff` — PRD v3.0, OJORO KINETIC design system, 44 screen designs and the clickable prototype (source of truth for the build; see `CLAUDE.md`)
 - `docs` — engineering, delivery, security and product documentation
 - `project` — canonical issue/milestone/label manifests
 - `scripts` — GitHub bootstrap and verification utilities

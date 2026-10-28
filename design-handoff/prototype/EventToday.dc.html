@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Race day</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="confirmed" style="width: 390px; height: 1280px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="EventBuildup.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">SAT 12 OCT · 8:34 AM</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share event"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.ChallengeEventHero" stage="soon" a="{{chimdi}}" b="{{marcus}}" discipline="5K" when="9:00 · Cartier monument"></x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 8px 20px 32px;">
+    <x-import component-from-global-scope="Ojoro.HypePost" kind="system" time="8:31" body="BOTH ARE HERE."></x-import>
+
+    <section aria-label="Check-in" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="CHECK-IN"></x-import>
+      <div role="list">
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{chimdiP}}" role="checked" meta="You · 8:22 · watch connected"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{marcusP}}" role="checked" meta="8:31 · watch connected"></x-import>
+      </div>
+    </section>
+
+    <section aria-label="Prediction" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.PredictionBar" a="{{predA}}" b="{{predB}}" picked="a"></x-import>
+      <span class="oj-caption oj-muted">212 predictions. They lock the moment the race goes live.</span>
+    </section>
+
+    <section aria-label="Start" style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="oj-body-sm">The race goes live when you both press start on your watch. Nothing to do here until then.</span>
+      <a href="EventLive.dc.html" class="oj-btn oj-btn-commit oj-btn-block" style="text-decoration: none; box-sizing: border-box;">I'M READY</a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1280}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      chimdi: { name: 'Chimdi' }, marcus: { name: 'Marcus' },
+      chimdiP: { name: 'Chimdi O' }, marcusP: { name: 'Marcus T' },
+      predA: { name: 'Chimdi', pct: 46 }, predB: { name: 'Marcus', pct: 54 }
+    };
+  }
+}
+</script>
+</body>
+</html>

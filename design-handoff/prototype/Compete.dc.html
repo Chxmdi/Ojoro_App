@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Compete</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="live" style="width: 390px; height: 1660px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 24px 20px 40px;">
+    <section aria-label="Compete" style="display: flex; flex-direction: column; gap: 12px;">
+      <span class="oj-overline">CALL-OUTS · EVENTS · RIVALRIES</span>
+      <h1 class="oj-display oj-display-xl">COMPETE.</h1>
+    </section>
+
+    <a href="CallOut.dc.html" data-theme="calm" aria-label="Incoming call-out from Marcus. 5K, Saturday. Reply." style="display: flex; flex-direction: column; gap: 12px; padding: 24px 20px; margin: 0 -20px; background: var(--surface); color: var(--text); text-decoration: none;">
+      <span class="oj-overline">INCOMING CALL-OUT · 2H AGO</span>
+      <span class="oj-display oj-display-md">MARCUS CALLED YOU OUT.</span>
+      <span class="oj-body">5K · Mount Royal loop · Sat 12 Oct, 9:00</span>
+      <span style="display: flex; gap: 8px; align-items: center;">
+        <span class="oj-btn oj-btn-primary">REPLY</span>
+        <span class="oj-body-sm oj-muted">Accept, counter or pass</span>
+      </span>
+    </a>
+
+    <section aria-label="Your events" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="YOUR EVENTS"></x-import>
+      <div>
+        <a href="EventBuildup.dc.html" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">SAT</span>
+          <span class="oj-strip-body"><span class="oj-title">Chimdi vs Marcus · 5K</span><span class="oj-body-sm oj-muted">Build-up · 142 following</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge" tone="signal">3 DAYS</x-import>
+        </a>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">SUN</span>
+          <span class="oj-strip-body"><span class="oj-title">Thursday FC vs Plateau Crew</span><span class="oj-body-sm oj-muted">Crew-vs-Crew · 5 a side</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">ACCEPTED</x-import>
+        </a>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">NOW</span>
+          <span class="oj-strip-body"><span class="oj-title">Ife vs Sam · sparring</span><span class="oj-body-sm oj-muted">You follow · round 2 of 3</span></span>
+          <x-import component-from-global-scope="Ojoro.LiveIndicator"></x-import>
+        </a>
+      </div>
+    </section>
+
+    <section aria-label="Rivalries" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="mark" label="RIVALRIES"></x-import>
+      <div style="margin: 0 -20px;">
+        <x-import component-from-global-scope="Ojoro.Rivalry" a="{{chimdi}}" b="{{marcus}}" record="{{record}}" history="{{history}}" next="5K · Sat 12 Oct"></x-import>
+      </div>
+      <a href="Rivalry.dc.html" class="oj-btn oj-btn-secondary" style="align-self: flex-start; text-decoration: none;">OPEN RIVALRY</a>
+    </section>
+
+    <section aria-label="Ladders and seasons" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="LADDERS &amp; SEASONS"></x-import>
+      <div>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">#4</span>
+          <span class="oj-strip-body"><span class="oj-title">Plateau 5K Ladder</span><span class="oj-body-sm oj-muted">18 runners · 0:41 off #3</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">LADDER</x-import>
+        </a>
+        <a href="#" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">2–1</span>
+          <span class="oj-strip-body"><span class="oj-title">Fall Clash: Concordia vs McGill</span><span class="oj-body-sm oj-muted">Clan-vs-Clan · event 4 of 6 · Sat</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">CLASH</x-import>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="margin-top: auto; display: flex; align-items: stretch; border-top: 1px solid var(--line); background: var(--surface); padding: 0 4px 28px;">
+    <a href="Main.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>
+      HOME
+    </a>
+    <a href="Discover.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="search"></x-import>
+      DISCOVER
+    </a>
+    <a href="Create.dc.html" aria-label="Create" style="flex: 1; min-height: 56px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: var(--inverse); color: var(--on-inverse); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="plus"></x-import></span>
+    </a>
+    <a href="Compete.dc.html" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text); box-shadow: inset 0 2px 0 var(--text); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M9 21 L15 3 M3 8 H8 M3 16 H6 M16 8 H21 M18 16 H21"></path></svg>
+      COMPETE
+    </a>
+    <a href="You.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 4 a4 4 0 1 0 0.01 0 M4 21 C 4 16, 8 14, 12 14 S 20 16, 20 21"></path></svg>
+      YOU
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1660}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      chimdi: { name: 'Chimdi' },
+      marcus: { name: 'Marcus' },
+      record: { a: 4, b: 3, draws: 1 },
+      history: ['a', 'b', 'a', 'd', 'b', 'a', 'b', 'a']
+    };
+  }
+}
+</script>
+</body>
+</html>

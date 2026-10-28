@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Rivalry</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="live" style="width: 390px; height: 1070px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Result.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">CHIMDI · MARCUS</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Mute, report or block"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.Rivalry" a="{{chimdi}}" b="{{marcus}}" record="{{record}}" history="{{history}}"></x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 8px 20px 0;">
+    <section aria-label="Meetings" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="RECENT MEETINGS"></x-import>
+      <a href="Result.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">12.10</span>
+        <span class="oj-strip-body"><span class="oj-title">5K · Mount Royal</span><span class="oj-body-sm oj-muted">22:48 vs 23:31 · device verified</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="signal">CHIMDI</x-import>
+      </a>
+      <a href="#" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">14.09</span>
+        <span class="oj-strip-body"><span class="oj-title">10K · Lachine Canal</span><span class="oj-body-sm oj-muted">Marcus by 1:02 · participant confirmed</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">MARCUS</x-import>
+      </a>
+      <a href="#" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">31.08</span>
+        <span class="oj-strip-body"><span class="oj-title">1v1 football · Jeanne-Mance</span><span class="oj-body-sm oj-muted">3–3 · participant confirmed</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">DRAW</x-import>
+      </a>
+    </section>
+  </main>
+
+  <div style="margin-top: 32px;">
+    <x-import component-from-global-scope="Ojoro.Rematch" requester="Marcus" opponent="Chimdi" discipline="the 5K" last-result="CHIMDI BY 43S" note="Same loop, two weeks. Best of three?"></x-import>
+  </div>
+  <div data-theme="after" style="padding: 0 24px 32px; background: var(--surface); color: var(--text); display: flex; flex-direction: column; gap: 12px;">
+    <span class="oj-caption oj-muted">Accepting creates a new Call-Out linked to this rivalry. Saturday's result stays exactly as it is.</span>
+    <a href="CallOut.dc.html" class="oj-body-sm" style="font-weight: 600; text-underline-offset: 4px;">See the Call-Out flow</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1070}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      chimdi: { name: 'Chimdi' }, marcus: { name: 'Marcus' },
+      record: { a: 5, b: 3, draws: 1 },
+      history: ['b', 'a', 'd', 'b', 'a', 'b', 'a', 'a']
+    };
+  }
+}
+</script>
+</body>
+</html>

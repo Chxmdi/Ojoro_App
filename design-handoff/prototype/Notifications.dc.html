@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Updates</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1300px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Notification settings"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 8px 20px 40px;">
+    <h1 class="oj-display oj-display-lg">UPDATES.</h1>
+
+    <section aria-label="Needs you" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="NEEDS YOU · 3"></x-import>
+      <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line);">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--text); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="people" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Basketball needs one more.</span><span class="oj-body-sm oj-muted">Sat 10:00 · Parc La Fontaine · 7 / 8. You have Pull Me In on for basketball.</span><span class="oj-caption oj-muted">4 min ago</span></span>
+        <a href="Plan.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none; padding: 0 16px;">I'M DOWN</a>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line);">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--text); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Graphic" kind="mark" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Marcus called you out.</span><span class="oj-body-sm oj-muted">5K · Mount Royal loop · Sat 9:00</span><span class="oj-caption oj-muted">2 h ago</span></span>
+        <a href="CallOut.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none; padding: 0 16px;">REPLY</a>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line);">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--text); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="chat" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Thursday FC: what time Saturday?</span><span class="oj-body-sm oj-muted">Lena started a poll · 9 votes so far</span><span class="oj-caption oj-muted">2:20 PM</span></span>
+        <a href="CrewChat.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none; padding: 0 16px;">VOTE</a>
+      </div>
+    </section>
+
+    <section aria-label="Today" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="TODAY"></x-import>
+      <a href="GameOn.dc.html" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none;">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--signal); color: var(--on-signal); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="check" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">GAME ON · football tonight</span><span class="oj-body-sm oj-muted">All 8 are in. 7:30, Jeanne-Mance.</span><span class="oj-caption oj-muted">5:12 PM</span></span>
+      </a>
+      <a href="EventBuildup.dc.html" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none;">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line-strong); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="bell" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">3 new posts in Chimdi vs Marcus</span><span class="oj-body-sm oj-muted">Marcus, Ade and an Ojoro update · bundled</span><span class="oj-caption oj-muted">1:05 PM</span></span>
+      </a>
+      <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line);">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line-strong); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="clock" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Check-in opens at 7:00</span><span class="oj-body-sm oj-muted">Football · Jeanne-Mance</span><span class="oj-caption oj-muted">Reminder set</span></span>
+      </div>
+    </section>
+
+    <section aria-label="Earlier" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="EARLIER"></x-import>
+      <a href="Recap.dc.html" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line); text-decoration: none;">
+        <span style="width: 40px; height: 40px; flex: none; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line-strong); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Graphic" kind="o" size="{{twenty}}"></x-import></span>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Recap ready: Lights win 5–4</span><span class="oj-body-sm oj-muted">Add photos until Wed 9 PM</span><span class="oj-caption oj-muted">Yesterday</span></span>
+      </a>
+      <div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--line);">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Lena R" size="md"></x-import>
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Lena joined Thursday FC</span><span class="oj-body-sm oj-muted">Invited by Ade after her first game</span><span class="oj-caption oj-muted">Sun</span></span>
+      </div>
+    </section>
+
+    <section aria-label="End" style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
+      <h2 class="oj-display oj-display-sm">YOU'RE CAUGHT UP.</h2>
+      <p class="oj-caption oj-muted" style="margin: 0; max-width: 300px;">Quiet hours 11 PM to 7 AM. Lock-screen previews never show who or where.</p>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { twenty: 20 };
+  }
+}
+</script>
+</body>
+</html>
