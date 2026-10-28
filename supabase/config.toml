@@ -306,10 +306,15 @@ max_frequency = "5s"
 
 # Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
 # The SMS provider for hosted environments is not chosen yet; configure it in the dashboard, not here.
+#
+# Local only: Auth refuses phone sign-in unless some provider is enabled, even for the test_otp
+# numbers above. This block is switched on with placeholder values so those numbers work on
+# `supabase start`. Nothing is ever sent: test numbers skip the provider, and any other number
+# fails because these credentials are not real. config.toml does not configure hosted projects.
 [auth.sms.twilio]
-enabled = false
-account_sid = ""
-message_service_sid = ""
+enabled = true
+account_sid = "local-dev-placeholder"
+message_service_sid = "local-dev-placeholder"
 # DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
 auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 
