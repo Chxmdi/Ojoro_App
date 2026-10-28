@@ -38,7 +38,7 @@ export function openLocationSettings() {
   void Linking.openSettings().catch(() => undefined);
 }
 
-export function useCheckIn(activityId: string, radiusM: number, timeZone: string) {
+export function useCheckIn(activityId: string, radiusM: number, timeZone: string, opensAt: string) {
   const queryClient = useQueryClient();
   const online = useOnline();
   const intent = useIntentKey();
@@ -58,6 +58,11 @@ export function useCheckIn(activityId: string, radiusM: number, timeZone: string
   async function checkIn(): Promise<boolean> {
     setFailure(null);
     track('check_in_tapped', { activity_id: activityId });
+    if (Date.now() < Date.parse(opensAt)) {
+      // Not open yet: say when, without asking for location.
+      setFailure(checkInFailure({ kind: 'ojoro', code: 'check_in_not_open', detail: opensAt }, radiusM, timeZone));
+      return false;
+    }
     if (!online) {
       setFailure(checkInFailure('offline', radiusM, timeZone));
       track('check_in_failed', { activity_id: activityId, code: 'offline' });

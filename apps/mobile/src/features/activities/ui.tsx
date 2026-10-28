@@ -132,7 +132,7 @@ export function NotFoundState() {
         It may have been removed, or it isn't open to you.
       </Text>
       <View className="self-start">
-        <Button variant="secondary" href="/">
+        <Button variant="secondary" onPress={() => router.push('/')}>
           BACK TO HOME
         </Button>
       </View>

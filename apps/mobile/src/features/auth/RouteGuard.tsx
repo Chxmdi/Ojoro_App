@@ -27,7 +27,7 @@ export function RouteGuard({ routeName, children }: { routeName: string; childre
     if (!focused || !target) return;
     if (access === 'app' && gate.kind !== 'ready') rememberReturnTo(pathname);
     if (gate.kind === 'ready') consumeReturnTo();
-    if (router.canDismiss()) router.dismissAll();
+    // Replacing at the root swaps the whole group (auth, onboarding, the tabs) for the target.
     router.replace(target as Href);
   }, [focused, target, access, gate.kind, pathname]);
 

@@ -93,9 +93,9 @@ describe('Down For pick', () => {
   it('writes when and where', () => {
     expect(downForWhen('2026-10-28T22:00:00Z', NOW, TZ)).toBe('tonight');
     expect(downForWhen('2026-10-29T22:00:00Z', NOW, TZ)).toBe('tomorrow');
-    expect(downForWhere(plan({}), '2026-10-29T01:30:00Z', NOW, TZ)).toBe('Jeanne-Mance Park · around 7:30 · 1.2 km');
-    expect(downForWhere(plan({ place_name: null, distance_km: null }), '', NOW, TZ)).toBe('Place to be agreed · around 7:30');
-    expect(downForWhere(null, '2026-10-29T01:30:00Z', NOW, TZ)).toBe('Near you · until 9:30');
+    expect(downForWhere(plan({}), '2026-10-29T01:30:00Z', TZ)).toBe('Jeanne-Mance Park · around 7:30 · 1.2 km');
+    expect(downForWhere(plan({ place_name: null, distance_km: null }), '', TZ)).toBe('Place to be agreed · around 7:30');
+    expect(downForWhere(null, '2026-10-29T01:30:00Z', TZ)).toBe('Near you · until 9:30');
     expect(formingLink(plan({}))).toBe('6 of 8 are already in a plan.');
   });
 });
@@ -117,16 +117,16 @@ describe('Ojoro Daily', () => {
   });
 
   it('writes counts and the move', () => {
-    expect(dailyBody({ downCount: 11, best: plan({}), now: NOW, timeZone: TZ })).toBe(
+    expect(dailyBody({ downCount: 11, best: plan({}), timeZone: TZ })).toBe(
       '11 people near you want to play. Your best move: football at Jeanne-Mance Park, 7:30.',
     );
-    expect(dailyBody({ downCount: 1, best: plan({ i_am_in: true, place_name: null }), now: NOW })).toBe(
+    expect(dailyBody({ downCount: 1, best: plan({ i_am_in: true, place_name: null }) })).toBe(
       "1 person near you wants to play. You're in football, 7:30.",
     );
-    expect(dailyBody({ downCount: 3, best: null, now: NOW })).toBe(
+    expect(dailyBody({ downCount: 3, best: null })).toBe(
       "3 people near you want to play. Say you're down and Ojoro gathers people around it.",
     );
-    expect(dailyBody({ downCount: 0, best: null, now: NOW })).toContain("Nothing's forming near you yet.");
+    expect(dailyBody({ downCount: 0, best: null })).toContain("Nothing's forming near you yet.");
   });
 });
 

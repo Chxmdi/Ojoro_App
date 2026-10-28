@@ -49,6 +49,15 @@ export const analyticsEvents = {
   momentRemoved: 'moment_removed',
   recapShared: 'recap_shared',
   runItBackTapped: 'run_it_back_tapped',
+  // Slice 01: Home, Down For, Plan, Pull Someone In, GAME ON. The server records down_for_created,
+  // im_down_committed, plan_threshold_changed, game_on_reached and friend_pulled_in; the client
+  // sends taps and what only it sees.
+  downForWithdrawn: 'down_for_withdrawn',
+  planLeft: 'plan_left',
+  planShared: 'plan_shared',
+  timeVoted: 'time_voted',
+  gameOnShown: 'game_on_shown',
+  imDownFailed: 'im_down_failed',
 } as const;
 
 export type AnalyticsEvent =

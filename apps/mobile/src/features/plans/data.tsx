@@ -40,9 +40,14 @@ export const planKeys = {
 };
 
 /** Throws the OjoroCallError behind a PostgREST read error. */
-function check<T>(result: { data: T; error: unknown }): T {
+export function check<T>(result: { data: T; error: unknown }): T {
   if (result.error) throw new OjoroCallError(toOjoroError(result.error));
   return result.data;
+}
+
+/** A list read: throws on error, never null. */
+export function checkRows<T>(result: { data: T[] | null; error: unknown }): T[] {
+  return check(result) ?? [];
 }
 
 /** Retry only network failures (an `ojoro` error is an answer), at most twice. */
@@ -104,7 +109,7 @@ export function usePlanPoll(id: string, userId: string | null) {
   return useQuery({
     queryKey: planKeys.poll(id),
     queryFn: async () => {
-      const options = check(
+      const options = checkRows(
         await supabase.from('plan_time_options').select('id, starts_at, vote_count').eq('plan_id', id),
       );
       let mine: string | null = null;
@@ -178,7 +183,7 @@ export function usePlaceZones() {
     queryKey: ['places', 'zones'],
     staleTime: 24 * 3600_000,
     queryFn: async () => {
-      const rows = check(await supabase.from('places').select('id, time_zone'));
+      const rows = checkRows(await supabase.from('places').select('id, time_zone'));
       return Object.fromEntries(rows.map((r) => [r.id, r.time_zone])) as Record<string, string>;
     },
   });
@@ -261,11 +266,12 @@ function useMembership(id: string, kind: 'im_down' | 'leave_plan') {
       await qc.cancelQueries({ queryKey: planKeys.card(id) });
       const previous = qc.getQueryData<PlanCard | null>(planKeys.card(id));
       if (previous && Boolean(previous.i_am_in) !== joining) {
-        qc.setQueryData<PlanCard | null>(planKeys.card(id), {
+        const optimistic: PlanCard = {
           ...previous,
           i_am_in: joining,
           member_count: Math.max(0, previous.member_count + (joining ? 1 : -1)),
-        });
+        };
+        qc.setQueryData<PlanCard | null>(planKeys.card(id), optimistic);
       }
       return { previous };
     },

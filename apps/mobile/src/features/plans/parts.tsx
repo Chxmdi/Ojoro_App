@@ -54,13 +54,13 @@ export function TopBar({
 }) {
   return (
     <View className="flex-row items-center justify-between px-space-2 pt-space-2">
-      <View className="min-w-[88px] flex-row">
+      <View className="min-w-touch flex-row">
         {onBack ? <IconButton icon={backIcon} label={backLabel} onPress={onBack} /> : null}
       </View>
-      <Text variant="overline" tone="text" className="shrink text-center" numberOfLines={1} role="heading">
+      <Text variant="overline" tone="text" className="flex-1 text-center" numberOfLines={2} role="heading">
         {title}
       </Text>
-      <View className="min-w-[88px] flex-row justify-end">{right}</View>
+      <View className="min-w-touch flex-row justify-end">{right}</View>
     </View>
   );
 }

@@ -1,17 +1,8 @@
-import { View } from 'react-native';
+import { ProfileScreen } from '@/features/profile/ProfileScreen';
+import { useUserId } from '@/lib/auth';
 
-import { Screen, Text } from '@/design-system';
-
-/** You tab. Scaffold only: the real screen is built in its milestone (HANDOFF.md, build order). */
+/** You tab (You.png): your physical identity profile. */
 export default function YouTab() {
-  return (
-    <Screen situation="calm" scroll>
-      <View className="gap-space-3 pb-space-10 pt-space-4">
-        <Text variant="overline">You</Text>
-        <Text variant="display-lg" accessibilityRole="header">
-          Your Passport lives here.
-        </Text>
-      </View>
-    </Screen>
-  );
+  const userId = useUserId();
+  return <ProfileScreen userId={userId} self />;
 }
