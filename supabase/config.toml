@@ -286,6 +286,9 @@ max_frequency = "5s"
 15555550101 = "123456"
 15555550102 = "123456"
 15555550103 = "123456"
+# A brand-new user for the auth/onboarding e2e (apps/mobile/e2e/auth-onboarding.e2e.mjs). Not seeded:
+# the e2e deletes and recreates it on every run.
+15555550199 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]
