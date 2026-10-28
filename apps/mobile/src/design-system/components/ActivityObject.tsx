@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
+import { useEffectEvent, useLayoutEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
@@ -245,12 +245,15 @@ export function ActivityObject({
 
   const wipe = useBreakthroughWipe(false);
   const breaking = under !== null;
+  // Plays once per breakthrough, reading the current wipe when it starts.
+  const playBreakthrough = useEffectEvent(() => {
+    wipe.play();
+    return setTimeout(() => setUnder(null), wipe.duration + (wipe.reduced ? 170 : 50));
+  });
   useLayoutEffect(() => {
     if (!breaking) return undefined;
-    wipe.play();
-    const done = setTimeout(() => setUnder(null), wipe.duration + (wipe.reduced ? 170 : 50));
+    const done = playBreakthrough();
     return () => clearTimeout(done);
-    // Plays once per breakthrough; `wipe` is read fresh then.
   }, [breaking]);
 
   return (

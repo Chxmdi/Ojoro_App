@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { Platform, View, type DimensionValue } from 'react-native';
 import Animated, {
   cancelAnimation,
@@ -80,10 +80,11 @@ export function Skeleton({
   const live = useMotion('live');
   const pulse = skeletonPulse(live.reduced, live.duration);
   const breath = useSharedValue(1);
-  useEffect(() => {
+  // `pulse` and `live.easing` derive from `live.reduced` and `live.duration`, the real triggers.
+  const startBreathing = useEffectEvent(() => {
     if (!shown || !pulse) {
       breath.value = 1;
-      return undefined;
+      return false;
     }
     breath.value = pulse.from;
     breath.value = withRepeat(
@@ -91,9 +92,12 @@ export function Skeleton({
       -1,
       true,
     );
+    return true;
+  });
+  useEffect(() => {
+    if (!startBreathing()) return undefined;
     return () => cancelAnimation(breath);
-    // `pulse` and `live.easing` are derived from these primitives.
-  }, [shown, live.reduced, live.duration]);
+  }, [shown, live.reduced, live.duration, breath]);
   const style = useAnimatedStyle(() => ({ opacity: breath.value }));
 
   if (!shown) return null;

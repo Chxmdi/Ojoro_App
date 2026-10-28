@@ -28,7 +28,7 @@ type Story = StoryObj<typeof meta>;
 
 /** OnboardWhen: tap a cell to toggle it. Free cells say FREE; the rest are empty boxes. */
 export const Interactive: Story = {
-  render: () => {
+  render: function Render() {
     const [value, setValue] = useState<AvailabilitySlot[]>(onboard);
     return (
       <View className="gap-space-3">

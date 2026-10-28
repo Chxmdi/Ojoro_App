@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Database } from '@ojoro/contracts';
 import { createClient, processLock } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';
 
@@ -27,7 +28,7 @@ export function createMemoryStorage() {
 }
 const isServer = Platform.OS === 'web' && typeof window === 'undefined';
 
-export const supabase = createClient(config.url, config.publishableKey, {
+export const supabase = createClient<Database>(config.url, config.publishableKey, {
   auth: {
     storage: isServer ? createMemoryStorage() : AsyncStorage,
     autoRefreshToken: true,

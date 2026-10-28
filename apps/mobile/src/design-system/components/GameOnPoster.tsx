@@ -1,4 +1,4 @@
-import { useContext, useLayoutEffect, useRef } from 'react';
+import { useContext, useEffectEvent, useLayoutEffect, useRef } from 'react';
 import {
   AccessibilityInfo,
   Platform,
@@ -113,13 +113,15 @@ export function GameOnPoster({
   const heroStyle = useScaleIn(wipe.t, wipe.reduced);
 
   const previous = useRef<boolean | undefined>(undefined);
+  // A change of `celebrate` is the only trigger; the wipe and label are read fresh when it fires.
+  const playCelebration = useEffectEvent(() => {
+    wipe.play();
+    if (Platform.OS === 'ios') AccessibilityInfo.announceForAccessibility(model.accessibilityLabel);
+  });
   useLayoutEffect(() => {
     const play = shouldCelebrate(previous.current, celebrate);
     previous.current = celebrate;
-    if (!play) return;
-    wipe.play();
-    if (Platform.OS === 'ios') AccessibilityInfo.announceForAccessibility(model.accessibilityLabel);
-    // `wipe.play` and the label are read fresh on each change of `celebrate`; that's the only trigger.
+    if (play) playCelebration();
   }, [celebrate]);
 
   return (

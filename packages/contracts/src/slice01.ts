@@ -4,7 +4,7 @@
  *
  * Pure TypeScript with no runtime dependencies, so it runs in the app, in tests and in Node.
  */
-import type { Database } from './database.types.js';
+import type { Database } from './database.types';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];

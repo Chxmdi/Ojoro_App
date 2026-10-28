@@ -14,7 +14,7 @@ import {
   planSubscription,
   slice01Rpcs,
   toOjoroError,
-} from './index.js';
+} from './index';
 
 const migrationsDir = new URL('../../../supabase/migrations/', import.meta.url);
 const migrations = readdirSync(migrationsDir)

@@ -5,6 +5,6 @@ export function describeService() {
 }
 
 // Generated from the local Supabase schema (`pnpm db:types`). Do not edit by hand.
-export * from './database.types.js';
+export * from './database.types';
 // Slice 01 client contract helpers (docs/SLICE01_CONTRACT.md).
-export * from './slice01.js';
+export * from './slice01';
