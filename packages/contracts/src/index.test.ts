@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeService } from './index.js';
+import { describeService } from './index';
 
 describe('contracts', () => {
   it('exposes a healthy bootstrap descriptor', () => {

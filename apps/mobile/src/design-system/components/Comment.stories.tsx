@@ -83,7 +83,7 @@ export const BuildUp: Story = {
 
 /** RESPECT toggles to RESPECTED (underlined, full text colour) and counts up. */
 export const InteractiveRespect: Story = {
-  render: () => {
+  render: function Render() {
     const [on, setOn] = useState(false);
     return (
       <Comment

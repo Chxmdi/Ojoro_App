@@ -43,7 +43,7 @@ export const Closed: Story = { args: { voted: 0, closed: true } };
 
 /** Tap an option: it records your vote and shows the results. */
 export const InteractiveVoting: Story = {
-  render: () => {
+  render: function Render() {
     const [voted, setVoted] = useState<number | undefined>(undefined);
     const options = saturday.map((o, i) => ({ ...o, votes: o.votes + (voted === i ? 1 : 0) }));
     return (
