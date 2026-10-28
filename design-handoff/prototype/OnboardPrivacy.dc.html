@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Who sees what</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1030px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; gap: 12px; padding: 8px 12px 0 8px;">
+    <a href="OnboardWhen.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <div style="flex: 1;"><x-import component-from-global-scope="Ojoro.Progress" value="{{three}}" max="{{three}}" label="Step 3 of 3"></x-import></div>
+    <span class="oj-label oj-muted">3 OF 3</span>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 28px; padding: 24px 20px 32px;">
+    <section aria-label="Who sees what" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">WHO SEES WHAT?</h1>
+      <p class="oj-body" style="margin: 0;">Each part of your profile has its own setting. These are the defaults; change any of them now or later.</p>
+    </section>
+
+    <section aria-label="Sports and level" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <span class="oj-title-sm">Your sports and level</span>
+      <div role="group" aria-label="Sports and level visible to" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Everyone</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Friends</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Just me</x-import>
+      </div>
+    </section>
+
+    <section aria-label="History and Passport" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <span class="oj-title-sm">What you've done and your Passport</span>
+      <div role="group" aria-label="History visible to" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip">Everyone</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Friends</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Just me</x-import>
+      </div>
+    </section>
+
+    <section aria-label="When you're free" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <span class="oj-title-sm">When you're free</span>
+      <div role="group" aria-label="Availability visible to" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip">Friends</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">My Crews</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Just me</x-import>
+      </div>
+      <span class="oj-caption oj-muted">Shown as overlap with theirs, never as your schedule.</span>
+    </section>
+
+    <section aria-label="Where you are" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--surface-raised);">
+      <x-import component-from-global-scope="Ojoro.Icon" name="pin" size="{{twenty}}"></x-import>
+      <span style="display: flex; flex-direction: column; gap: 4px;">
+        <span class="oj-title-sm">Where you are: area only</span>
+        <span class="oj-body-sm oj-muted">Nobody sees your exact location. You can share it live for one game, with the people in it, until it ends.</span>
+      </span>
+    </section>
+
+    <section aria-label="Safety" style="display: flex; gap: 12px; align-items: flex-start;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="alert" size="{{twenty}}"></x-import>
+      <span class="oj-body-sm">Block and report are on every profile, chat, plan and Challenge. Blocked people can't see you anywhere.</span>
+    </section>
+
+    <a href="FirstHome.dc.html" class="oj-btn oj-btn-commit oj-btn-block" style="text-decoration: none; box-sizing: border-box;">LET'S MOVE</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1030}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { yes: true, three: 3, twenty: 20 };
+  }
+}
+</script>
+</body>
+</html>

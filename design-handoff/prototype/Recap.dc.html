@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Recap</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="after" style="width: 390px; height: 1190px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="After.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">RECAP · TUE 6 OCT</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share recap"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.Image" alt="Team photo under the floodlights, everyone soaked" ratio="4:5">
+    <span class="oj-overline" style="color: var(--text-muted);">FOOTBALL · JEANNE-MANCE</span>
+    <span class="oj-display oj-display-lg">LIGHTS WIN<br>5–4.</span>
+    <span class="oj-body">Marcus with the late one.</span>
+  </x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 24px 20px 32px;">
+    <section aria-label="The numbers" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+        <div><div class="oj-display oj-display-sm">8</div><div class="oj-caption oj-muted">Played</div></div>
+        <div><div class="oj-display oj-display-sm">90</div><div class="oj-caption oj-muted">Minutes</div></div>
+        <div><div class="oj-display oj-display-sm">+1.5</div><div class="oj-caption oj-muted">Ojoro hours</div></div>
+      </div>
+      <x-import component-from-global-scope="Ojoro.VerificationBadge" level="result"></x-import>
+      <span class="oj-caption oj-muted">Confirmed by 6 of 8 players.</span>
+    </section>
+
+    <section aria-label="Played with" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="PLAYED WITH"></x-import>
+      <x-import component-from-global-scope="Ojoro.AvatarCluster" people="{{people}}" total="{{seven}}" max="{{seven}}" size="md"></x-import>
+      <span class="oj-body-sm">First game with Lena and Joel. 12th with Marcus.</span>
+    </section>
+
+    <section aria-label="Passport" style="display: flex; align-items: center; gap: 20px;">
+      <x-import component-from-global-scope="Ojoro.PassportStamp" title="21 GAMES" place="Jeanne-Mance" date="06.10.26" kind="NEW STAMP"></x-import>
+      <span style="display: flex; flex-direction: column; gap: 4px;"><span class="oj-label">ADDED TO YOUR PASSPORT</span><span class="oj-body-sm oj-muted">21 games at Jeanne-Mance since March.</span></span>
+    </section>
+
+    <section aria-label="Next" style="display: flex; flex-direction: column; gap: 8px;">
+      <a href="RunItBack.dc.html" class="oj-btn oj-btn-commit oj-btn-block" style="text-decoration: none; box-sizing: border-box;">RUN IT BACK</a>
+      <x-import component-from-global-scope="Ojoro.Button" variant="ghost">SHARE RECAP</x-import>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1190}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      seven: 7,
+      people: [{ name: 'Ade B' }, { name: 'Marcus T' }, { name: 'Joel P' }, { name: 'Lena R' }, { name: 'Sam K' }, { name: 'Yara M' }, { name: 'Tolu D' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Join requests</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.sw-row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line)}
+.sw-text{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sw{position:relative;flex:none;width:72px;height:32px;box-sizing:border-box;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--text);font:700 11px/1 var(--font-ui);letter-spacing:.08em;display:inline-flex;align-items:center;justify-content:space-between;padding:0 3px 0 10px;cursor:pointer}
+.sw::after{content:'';position:absolute;inset:-6px -2px}
+.sw .knob{width:24px;height:24px;border-radius:50%;background:var(--text)}
+.sw.on{flex-direction:row-reverse;padding:0 10px 0 3px;background:var(--inverse);border-color:var(--inverse);color:var(--on-inverse)}
+.sw.on .knob{background:var(--on-inverse)}
+.sw:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.req-note{margin:0;padding-left:12px;border-left:2px solid var(--line-strong)}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1600px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">SUNDAY BEGINNERS · 10:00</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Session options"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Requests" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">{{headline}}</h1>
+      <p class="oj-body" style="margin: 0;">Approval is on for this one. You see what they've done on Ojoro and the area they're in, never an address.</p>
+      <x-import component-from-global-scope="Ojoro.Progress" value="{{count}}" max="{{twelve}}" label="{{progressLabel}}"></x-import>
+      <span class="oj-label" aria-live="polite">{{countLabel}}</span>
+    </section>
+
+    <sc-for list="{{requests}}" as="r" hint-placeholder-count="2">
+      <article aria-label="{{r.aria}}" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface-raised);">
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <x-import component-from-global-scope="Ojoro.Avatar" name="{{r.name}}" size="lg"></x-import>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0;">
+            <span class="oj-title">{{r.name}}</span>
+            <span class="oj-body-sm oj-muted">{{r.area}}</span>
+          </span>
+        </div>
+        <sc-if value="{{r.open}}" hint-placeholder-val="{{yes}}">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <sc-for list="{{r.facts}}" as="f" hint-placeholder-count="3">
+                <x-import component-from-global-scope="Ojoro.Badge">{{f}}</x-import>
+              </sc-for>
+            </div>
+            <p class="oj-body req-note">“{{r.note}}”</p>
+            <span class="oj-body-sm oj-muted">{{r.context}}</span>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button type="button" class="oj-btn oj-btn-primary" style="flex: 1;" onClick="{{r.approve}}">APPROVE</button>
+              <button type="button" class="oj-btn oj-btn-secondary" onClick="{{r.decline}}">DECLINE</button>
+            </div>
+            <x-import component-from-global-scope="Ojoro.Button" variant="ghost">{{r.ask}}</x-import>
+          </div>
+        </sc-if>
+        <sc-if value="{{r.done}}" hint-placeholder-val="{{no}}">
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <x-import component-from-global-scope="Ojoro.Icon" name="{{r.doneIcon}}"></x-import>
+            <span class="oj-body-sm" style="flex: 1;">{{r.doneText}}</span>
+            <button type="button" class="oj-textbtn oj-label" onClick="{{r.undo}}">UNDO</button>
+          </div>
+        </sc-if>
+      </article>
+    </sc-for>
+
+    <section aria-label="Approve automatically" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="LET THESE STRAIGHT IN"></x-import>
+      <sc-for list="{{rules}}" as="s" hint-placeholder-count="3">
+        <div class="sw-row">
+          <span class="sw-text"><span class="oj-title-sm" id="{{s.id}}">{{s.title}}</span><span class="oj-body-sm oj-muted">{{s.body}}</span></span>
+          <button type="button" role="switch" class="{{s.cls}}" aria-checked="{{s.on}}" aria-labelledby="{{s.id}}" onClick="{{s.toggle}}"><span class="knob"></span><span>{{s.word}}</span></button>
+        </div>
+      </sc-for>
+      <span class="oj-caption oj-muted" style="margin-top: 16px;">Declining is quiet. They're told you couldn't take them this time and shown similar sessions nearby.</span>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { decided: {}, rules: { before: true, games: false, crew: true } };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var reqs = [
+      { key: 'grace', name: 'Grace N', first: 'GRACE', area: 'Verdun · about 3 km away',
+        facts: ['ID VERIFIED', '14 OJORO GAMES', 'SHOWED UP 14 OF 14'],
+        note: "Haven't played football since school. Want to get back into it with people who won't mind.",
+        context: 'You both play with Chimdi O.' },
+      { key: 'omar', name: 'Omar S', first: 'OMAR', area: 'Rosemont · about 5 km away',
+        facts: ['NEW TO OJORO', 'BEGINNER'],
+        note: 'Just moved here. Played a bit in Lyon, mostly 5-a-side.',
+        context: 'Joined Ojoro this week, so there is no history yet. Nobody you know.' }
+    ];
+    var approved = reqs.filter(function (r) { return s.decided[r.key] === 'in'; }).length;
+    var pending = reqs.filter(function (r) { return !s.decided[r.key]; }).length;
+    var count = 9 + approved;
+    function decide(k, v) { var d = Object.assign({}, s.decided); d[k] = v; self.setState({ decided: d }); }
+    var ruleDefs = [
+      ['before', "People who've played with you", 'Anyone who checked in to one of your sessions before.'],
+      ['games', '3 or more checked-in games', 'Anyone who has shown up to at least 3 Ojoro games, anywhere.'],
+      ['crew', 'Your Crews', 'Members of Plateau Pickup and Thursday FC.']
+    ];
+    return {
+      yes: true, no: false, twelve: 12, count: count,
+      headline: pending === 2 ? '2 WANT IN.' : pending === 1 ? '1 MORE WANTS IN.' : 'ALL ANSWERED.',
+      progressLabel: count + ' of 12 in',
+      countLabel: count + ' / 12 IN · ' + (12 - count) + ' OPEN' + (pending ? ' · ' + pending + ' ASKING' : ''),
+      requests: reqs.map(function (r) {
+        var d = s.decided[r.key];
+        return {
+          name: r.name, ask: 'ASK ' + r.first + ' SOMETHING', area: r.area, facts: r.facts, note: r.note, context: r.context,
+          aria: 'Request from ' + r.name,
+          open: !d, done: !!d,
+          doneIcon: d === 'in' ? 'check' : 'close',
+          doneText: d === 'in' ? r.name.split(' ')[0] + " is in and has been told." : 'Declined quietly.',
+          approve: function () { decide(r.key, 'in'); },
+          decline: function () { decide(r.key, 'out'); },
+          undo: function () { decide(r.key, null); }
+        };
+      }),
+      rules: ruleDefs.map(function (d) {
+        var on = !!s.rules[d[0]];
+        return {
+          id: 'auto-' + d[0], title: d[1], body: d[2], on: on,
+          cls: on ? 'sw on' : 'sw', word: on ? 'ON' : 'OFF',
+          toggle: function () { var r = Object.assign({}, s.rules); r[d[0]] = !r[d[0]]; self.setState({ rules: r }); }
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

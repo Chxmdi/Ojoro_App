@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Call-Out</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="live" style="width: 390px; height: 1160px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Compete.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">RECEIVED 2H AGO</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Report or block"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.CallOutPoster" challenger="{{marcus}}" opponent="{{chimdi}}" discipline="5K" when="Sat 12 Oct · 9:00" status="PENDING"></x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 8px 20px 32px;">
+    <blockquote style="margin: 0; padding: 16px 0 16px 16px; border-left: 0; box-shadow: inset 4px 0 0 var(--text); display: flex; flex-direction: column; gap: 6px;">
+      <span class="oj-title">“Saturday. Mount Royal. Bring your legs.”</span>
+      <span class="oj-caption oj-muted">Marcus T · 12 games together · rivalry 3–4</span>
+    </blockquote>
+
+    <section aria-label="The rules" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="THE RULES"></x-import>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">FORMAT</span><span class="oj-body-sm" style="text-align: right;">Person vs person · run</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">COURSE</span><span class="oj-body-sm" style="text-align: right;">Mount Royal loop, 5.0 km, from the Cartier monument</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">START</span><span class="oj-body-sm" style="text-align: right;">Sat 12 Oct, 9:00</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">VERIFIED BY</span><span class="oj-body-sm" style="text-align: right;">GPS watch data, then both of you confirm</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">AUDIENCE</span><span class="oj-body-sm" style="text-align: right;">Public. People can follow, predict and back.</span></div>
+      <div style="display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--line);"><span class="oj-label oj-muted" style="flex: none;">STAKES</span><span class="oj-body-sm" style="text-align: right;">None. Bragging rights only.</span></div>
+    </section>
+
+    <section aria-label="Reply" style="display: flex; flex-direction: column; gap: 8px;">
+      <a href="EventBuildup.dc.html" class="oj-btn oj-btn-commit oj-btn-block" style="text-decoration: none; box-sizing: border-box;">ACCEPT</a>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary" block="{{yes}}">COUNTER</x-import>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary" block="{{yes}}">PASS</x-import>
+      </div>
+      <span class="oj-caption oj-muted" style="text-align: center;">Accepting creates the Challenge Event straight away. Counter to change the time, distance or course.</span>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1160}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { yes: true, marcus: { name: 'Marcus' }, chimdi: { name: 'Chimdi' } };
+  }
+}
+</script>
+</body>
+</html>

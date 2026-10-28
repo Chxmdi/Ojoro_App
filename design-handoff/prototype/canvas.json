@@ -1,0 +1,476 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Activity.dc.html": {
+      "h": 1310,
+      "is_interactive": true,
+      "title": "4 · Activity",
+      "w": 390,
+      "x": 1410,
+      "y": 2650
+    },
+    "After.dc.html": {
+      "h": 1130,
+      "is_interactive": true,
+      "title": "7 · After",
+      "w": 390,
+      "x": 2820,
+      "y": 2650
+    },
+    "CallOut.dc.html": {
+      "h": 1160,
+      "is_interactive": true,
+      "title": "1 · Call-Out",
+      "w": 390,
+      "x": 0,
+      "y": 4430
+    },
+    "CheckIn.dc.html": {
+      "h": 990,
+      "is_interactive": true,
+      "title": "5 · Check-in",
+      "w": 390,
+      "x": 1880,
+      "y": 2650
+    },
+    "Clan.dc.html": {
+      "h": 1740,
+      "is_interactive": true,
+      "title": "Clan",
+      "w": 390,
+      "x": 940,
+      "y": 7120
+    },
+    "Clash.dc.html": {
+      "h": 1500,
+      "is_interactive": true,
+      "title": "Ojoro Clash",
+      "w": 390,
+      "x": 1410,
+      "y": 7120
+    },
+    "Compete.dc.html": {
+      "h": 1660,
+      "is_interactive": true,
+      "title": "Compete",
+      "w": 390,
+      "x": 1410,
+      "y": 0
+    },
+    "Create.dc.html": {
+      "h": 1460,
+      "is_interactive": true,
+      "title": "Create",
+      "w": 390,
+      "x": 940,
+      "y": 0
+    },
+    "CrewChat.dc.html": {
+      "h": 1450,
+      "is_interactive": true,
+      "title": "Crew chat → Make This a Game",
+      "w": 390,
+      "x": 470,
+      "y": 7120
+    },
+    "CrewHome.dc.html": {
+      "h": 1560,
+      "is_interactive": true,
+      "title": "Crew home",
+      "w": 390,
+      "x": 0,
+      "y": 7120
+    },
+    "Discover.dc.html": {
+      "h": 2200,
+      "is_interactive": true,
+      "title": "Discover",
+      "w": 390,
+      "x": 470,
+      "y": 0
+    },
+    "EventBuildup.dc.html": {
+      "h": 2270,
+      "is_interactive": true,
+      "title": "2 · Event build-up",
+      "w": 390,
+      "x": 470,
+      "y": 4430
+    },
+    "EventLive.dc.html": {
+      "h": 960,
+      "is_interactive": true,
+      "title": "5 · Live challenge",
+      "w": 390,
+      "x": 2030,
+      "y": 4430
+    },
+    "EventToday.dc.html": {
+      "h": 1280,
+      "is_interactive": true,
+      "title": "4 · Event day",
+      "w": 390,
+      "x": 1560,
+      "y": 4430
+    },
+    "FirstHome.dc.html": {
+      "h": 1640,
+      "is_interactive": true,
+      "title": "First home · low density",
+      "w": 390,
+      "x": 1880,
+      "y": 9280
+    },
+    "GameOn.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "3 · GAME ON",
+      "w": 390,
+      "x": 940,
+      "y": 2650
+    },
+    "HostAnnounce.dc.html": {
+      "h": 1670,
+      "is_interactive": true,
+      "title": "Announcements",
+      "w": 390,
+      "x": 2820,
+      "y": 11340
+    },
+    "HostHome.dc.html": {
+      "h": 1520,
+      "is_interactive": true,
+      "title": "Host home",
+      "w": 390,
+      "x": 0,
+      "y": 11340
+    },
+    "HostInsights.dc.html": {
+      "h": 1760,
+      "is_interactive": true,
+      "title": "Insights & revenue",
+      "w": 390,
+      "x": 3760,
+      "y": 11340
+    },
+    "HostMembership.dc.html": {
+      "h": 2130,
+      "is_interactive": true,
+      "title": "Memberships & payments",
+      "w": 390,
+      "x": 2350,
+      "y": 11340
+    },
+    "HostPeople.dc.html": {
+      "h": 1880,
+      "is_interactive": true,
+      "title": "People · participant CRM",
+      "w": 390,
+      "x": 1880,
+      "y": 11340
+    },
+    "HostRequests.dc.html": {
+      "h": 1600,
+      "is_interactive": true,
+      "title": "Join requests",
+      "w": 390,
+      "x": 1410,
+      "y": 11340
+    },
+    "HostRoster.dc.html": {
+      "h": 1920,
+      "is_interactive": true,
+      "title": "Tonight's roster & waitlist",
+      "w": 390,
+      "x": 940,
+      "y": 11340
+    },
+    "HostSeason.dc.html": {
+      "h": 1880,
+      "is_interactive": true,
+      "title": "League operations",
+      "w": 390,
+      "x": 3290,
+      "y": 11340
+    },
+    "HostSeries.dc.html": {
+      "h": 2580,
+      "is_interactive": true,
+      "title": "Series & template",
+      "w": 390,
+      "x": 470,
+      "y": 11340
+    },
+    "LiveActivity.dc.html": {
+      "h": 920,
+      "is_interactive": true,
+      "title": "6 · Live",
+      "w": 390,
+      "x": 2350,
+      "y": 2650
+    },
+    "Main.dc.html": {
+      "h": 2220,
+      "is_interactive": true,
+      "title": "Home",
+      "w": 390,
+      "x": 0,
+      "y": 0
+    },
+    "NeedOneMore.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "2 · Need one more",
+      "w": 390,
+      "x": 470,
+      "y": 2650
+    },
+    "Notifications.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "title": "Updates",
+      "w": 390,
+      "x": 2820,
+      "y": 7120
+    },
+    "OnboardPrivacy.dc.html": {
+      "h": 1030,
+      "is_interactive": true,
+      "title": "Onboarding 3 · Privacy",
+      "w": 390,
+      "x": 1410,
+      "y": 9280
+    },
+    "OnboardSports.dc.html": {
+      "h": 1110,
+      "is_interactive": true,
+      "title": "Onboarding 1 · Sports",
+      "w": 390,
+      "x": 470,
+      "y": 9280
+    },
+    "OnboardWhen.dc.html": {
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Onboarding 2 · Time and distance",
+      "w": 390,
+      "x": 940,
+      "y": 9280
+    },
+    "Place.dc.html": {
+      "h": 1400,
+      "is_interactive": true,
+      "title": "Place",
+      "w": 390,
+      "x": 2350,
+      "y": 7120
+    },
+    "Plan.dc.html": {
+      "h": 1360,
+      "is_interactive": true,
+      "title": "1 · Plan forming",
+      "w": 390,
+      "x": 0,
+      "y": 2650
+    },
+    "Poster.dc.html": {
+      "h": 675,
+      "title": "3 · Share poster",
+      "w": 540,
+      "x": 940,
+      "y": 4430
+    },
+    "Pulse.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Pulse map",
+      "w": 390,
+      "x": 1880,
+      "y": 7120
+    },
+    "Recap.dc.html": {
+      "h": 1190,
+      "is_interactive": true,
+      "title": "8 · Recap",
+      "w": 390,
+      "x": 3290,
+      "y": 2650
+    },
+    "Result.dc.html": {
+      "h": 1050,
+      "is_interactive": true,
+      "title": "7 · Result",
+      "w": 390,
+      "x": 2970,
+      "y": 4430
+    },
+    "Rivalry.dc.html": {
+      "h": 1070,
+      "is_interactive": true,
+      "title": "8 · Rivalry & rematch",
+      "w": 390,
+      "x": 3440,
+      "y": 4430
+    },
+    "RunItBack.dc.html": {
+      "h": 860,
+      "is_interactive": true,
+      "title": "9 · Run It Back",
+      "w": 390,
+      "x": 3760,
+      "y": 2650
+    },
+    "States.dc.html": {
+      "h": 960,
+      "title": "System states",
+      "w": 1720,
+      "x": 2350,
+      "y": 9280
+    },
+    "Verifying.dc.html": {
+      "h": 790,
+      "is_interactive": true,
+      "title": "6 · Verifying",
+      "w": 390,
+      "x": 2500,
+      "y": 4430
+    },
+    "Welcome.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "title": "Welcome",
+      "w": 390,
+      "x": 0,
+      "y": 9280
+    },
+    "You.dc.html": {
+      "h": 2030,
+      "is_interactive": true,
+      "title": "You",
+      "w": 390,
+      "x": 1880,
+      "y": 0
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-06T17:23:40Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/artifact/Gfnch4LVK8AJaD4WU5VAK1",
+      "copiedAt": "2026-10-06T18:36:00Z",
+      "namespace": "ojoro",
+      "title": "OJORO KINETIC",
+      "version": "1791311715-c675"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "note-fifgbr": {
+      "text": "",
+      "w": 240,
+      "x": -4609,
+      "y": 1924
+    },
+    "row-community": {
+      "kind": "title1",
+      "maxW": 3210,
+      "text": "COMMUNITY · CREWS, CLANS, PLACES, UPDATES",
+      "w": 240,
+      "x": 0,
+      "y": 6820
+    },
+    "row-compete": {
+      "kind": "title1",
+      "maxW": 3830,
+      "text": "CHALLENGE JOURNEY · CALL-OUT → REMATCH",
+      "w": 240,
+      "x": 0,
+      "y": 4130
+    },
+    "row-firstrun": {
+      "kind": "title1",
+      "maxW": 4070,
+      "text": "FIRST RUN & SYSTEM STATES",
+      "w": 240,
+      "x": 0,
+      "y": 8980
+    },
+    "row-host": {
+      "kind": "title1",
+      "maxW": 4150,
+      "text": "HOST OS · ADE RUNS PLATEAU PICKUP",
+      "w": 240,
+      "x": 0,
+      "y": 11040
+    },
+    "row-move": {
+      "kind": "title1",
+      "maxW": 4150,
+      "text": "MOVEMENT JOURNEY · FOOTBALL TONIGHT → RUN IT BACK",
+      "w": 240,
+      "x": 0,
+      "y": 2350
+    },
+    "row-tabs": {
+      "kind": "title1",
+      "maxW": 2270,
+      "text": "THE FIVE TABS",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Discover.dc.html",
+    "Create.dc.html",
+    "Compete.dc.html",
+    "You.dc.html",
+    "Plan.dc.html",
+    "NeedOneMore.dc.html",
+    "GameOn.dc.html",
+    "Activity.dc.html",
+    "CheckIn.dc.html",
+    "LiveActivity.dc.html",
+    "After.dc.html",
+    "Recap.dc.html",
+    "RunItBack.dc.html",
+    "CallOut.dc.html",
+    "EventBuildup.dc.html",
+    "Poster.dc.html",
+    "EventToday.dc.html",
+    "EventLive.dc.html",
+    "Verifying.dc.html",
+    "Result.dc.html",
+    "Rivalry.dc.html",
+    "CrewHome.dc.html",
+    "CrewChat.dc.html",
+    "Clan.dc.html",
+    "Clash.dc.html",
+    "Pulse.dc.html",
+    "Place.dc.html",
+    "Notifications.dc.html",
+    "Welcome.dc.html",
+    "OnboardSports.dc.html",
+    "OnboardWhen.dc.html",
+    "OnboardPrivacy.dc.html",
+    "FirstHome.dc.html",
+    "States.dc.html",
+    "HostHome.dc.html",
+    "HostSeries.dc.html",
+    "HostRoster.dc.html",
+    "HostRequests.dc.html",
+    "HostPeople.dc.html",
+    "HostMembership.dc.html",
+    "HostAnnounce.dc.html",
+    "HostSeason.dc.html",
+    "HostInsights.dc.html"
+  ],
+  "pages": [],
+  "title": "Ojoro App UI"
+}

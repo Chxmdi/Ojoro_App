@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · You</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 2030px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 8px 0 20px;">
+    <span class="oj-overline">YOU · PHYSICAL IDENTITY</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Settings and privacy"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 12px 20px 40px;">
+    <section aria-label="Profile" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; gap: 16px; align-items: center;">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Chimdi O" size="lg"></x-import>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <h1 class="oj-display oj-display-md">CHIMDI O</h1>
+          <span class="oj-body-sm oj-muted">@chimdi · Plateau, Montréal</span>
+          <x-import component-from-global-scope="Ojoro.VerificationBadge" level="identity"></x-import>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border-top: 1px solid var(--line); padding-top: 16px;">
+        <div><div class="oj-display oj-display-sm">64</div><div class="oj-caption oj-muted">Ojoro hours</div></div>
+        <div><div class="oj-display oj-display-sm">48</div><div class="oj-caption oj-muted">Sessions</div></div>
+        <div><div class="oj-display oj-display-sm">23</div><div class="oj-caption oj-muted">People moved with</div></div>
+      </div>
+      <p class="oj-caption oj-muted" style="margin: 0;">Friends see your sports, Crews and Passport. Everyone else sees your sports only. <a href="#" style="font-weight: 600;">Edit visibility</a></p>
+    </section>
+
+    <section aria-label="What I do" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="WHAT I DO"></x-import>
+      <div>
+        <div class="oj-strip">
+          <span class="oj-strip-body"><span class="oj-title">Football</span><span class="oj-body-sm oj-muted">Midfield · intermediate · social and competitive</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge" tone="signal">MAIN</x-import>
+        </div>
+        <div class="oj-strip">
+          <span class="oj-strip-body"><span class="oj-title">Running</span><span class="oj-body-sm oj-muted">5K and 10K · advanced · competitive</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">RACING</x-import>
+        </div>
+        <div class="oj-strip">
+          <span class="oj-strip-body"><span class="oj-title">Boxing</span><span class="oj-body-sm oj-muted">Learning · looking for patient partners</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">LEARNING</x-import>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Goal" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="GOAL"></x-import>
+      <h2 class="oj-display oj-display-sm">SUB-22 5K BY DECEMBER.</h2>
+      <p class="oj-body-sm oj-muted" style="margin: 0;">Best so far: 23:05. The Call-Out on Saturday is your next real test.</p>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; background: var(--surface-raised);">
+        <span style="display: flex; flex-direction: column;"><span class="oj-label oj-muted">NEXT STEP</span><span class="oj-title-sm">Tempo run · Thu 6:30 · Plateau Run Club</span></span>
+        <a href="Plan.dc.html" class="oj-btn oj-btn-secondary" style="text-decoration: none;">I'M DOWN</a>
+      </div>
+    </section>
+
+    <section aria-label="Reputation" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="REPUTATION"></x-import>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Badge" tone="verified">SHOWS UP · 31</x-import>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="verified">RESPECTFUL · 27</x-import>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="verified">WELCOMES BEGINNERS · 12</x-import>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="verified">GREAT HOST · 8</x-import>
+      </div>
+      <p class="oj-caption oj-muted" style="margin: 0;">From people you've played with. A signal only appears after 5 confirmations.</p>
+    </section>
+
+    <a href="Recap.dc.html" data-theme="after" aria-label="Passport: 14 stamps, 6 places, 23 people" style="margin: 0 -20px; padding: 28px 20px; display: flex; flex-direction: column; gap: 20px; background: var(--surface); color: var(--text); text-decoration: none;">
+      <span class="oj-overline">PASSPORT</span>
+      <span class="oj-display oj-display-md">14 STAMPS.<br>6 PLACES.<br>23 PEOPLE.</span>
+      <span style="display: flex; gap: 8px; justify-content: center;">
+        <x-import component-from-global-scope="Ojoro.PassportStamp" title="FIRST 10K" place="Lachine Canal" date="14.09.26"></x-import>
+        <x-import component-from-global-scope="Ojoro.PassportStamp" title="20 GAMES" place="Jeanne-Mance" date="01.10.26" kind="THURSDAY FC" tilt="{{no}}"></x-import>
+      </span>
+      <span class="oj-label">OPEN PASSPORT</span>
+    </a>
+
+    <section aria-label="Crews and Clans" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="CREWS, CLANS &amp; HOSTING"></x-import>
+      <div>
+        <a href="CrewHome.dc.html" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">14</span>
+          <span class="oj-strip-body"><span class="oj-title">Thursday FC</span><span class="oj-body-sm oj-muted">Crew · 6-week rhythm · plays Thursdays</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">CREW</x-import>
+        </a>
+        <a href="Clan.dc.html" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">212</span>
+          <span class="oj-strip-body"><span class="oj-title">Concordia Run Club</span><span class="oj-body-sm oj-muted">Clan · connector role</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">CLAN</x-import>
+        </a>
+        <a href="HostHome.dc.html" class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">86</span>
+          <span class="oj-strip-body"><span class="oj-title">Plateau Pickup</span><span class="oj-body-sm oj-muted">Host tools · you co-host Thursdays</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge">CO-HOST</x-import>
+        </a>
+      </div>
+      <p class="oj-caption oj-muted" style="margin: 0;">Usually free Tue and Thu evenings, Sat mornings. Shared with your Crews as overlap only.</p>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="margin-top: auto; display: flex; align-items: stretch; border-top: 1px solid var(--line); background: var(--surface); padding: 0 4px 28px;">
+    <a href="Main.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>
+      HOME
+    </a>
+    <a href="Discover.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="search"></x-import>
+      DISCOVER
+    </a>
+    <a href="Create.dc.html" aria-label="Create" style="flex: 1; min-height: 56px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: var(--inverse); color: var(--on-inverse); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="plus"></x-import></span>
+    </a>
+    <a href="Compete.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M9 21 L15 3 M3 8 H8 M3 16 H6 M16 8 H21 M18 16 H21"></path></svg>
+      COMPETE
+    </a>
+    <a href="You.dc.html" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text); box-shadow: inset 0 2px 0 var(--text); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 4 a4 4 0 1 0 0.01 0 M4 21 C 4 16, 8 14, 12 14 S 20 16, 20 21"></path></svg>
+      YOU
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2030}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { no: false };
+  }
+}
+</script>
+</body>
+</html>

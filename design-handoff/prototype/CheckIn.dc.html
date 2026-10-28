@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Check-in</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="confirmed" style="width: 390px; height: 990px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Activity.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">CHECK-IN · 7:04 PM</span>
+    <span style="width: 44px;"></span>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 24px 20px 32px;">
+    <section aria-label="You're checked in" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.VerificationBadge" level="checked-in"></x-import>
+      <h1 class="oj-display oj-display-xl">YOU'RE HERE.</h1>
+      <p class="oj-body" style="margin: 0;">Jeanne-Mance Park, north pitch. 6 of 8 have arrived.</p>
+      <x-import component-from-global-scope="Ojoro.Progress" value="{{six}}" max="{{eight}}" label="6 of 8 checked in"></x-import>
+    </section>
+
+    <section aria-label="Arrivals" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="ARRIVALS"></x-import>
+      <div role="list">
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{ade}}" role="checked" meta="Host · 6:52"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{chimdi}}" role="checked" meta="You · 7:04"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{marcus}}" role="in" meta="On the way · about 5 min"></x-import>
+        <x-import component-from-global-scope="Ojoro.ParticipantRow" person="{{tolu}}" role="in" meta="Not checked in yet"></x-import>
+      </div>
+    </section>
+
+    <section aria-label="Location sharing" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--surface-raised);">
+      <x-import component-from-global-scope="Ojoro.Icon" name="pin" size="{{twenty}}"></x-import>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+        <span class="oj-body-sm">Your location is shared with this game only, until 9:30. Then it stops by itself.</span>
+        <x-import component-from-global-scope="Ojoro.Button" variant="ghost" style="align-self: flex-start;">STOP SHARING</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Next" style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="oj-body-sm oj-muted">Ade starts the game once the teams are set.</span>
+      <a href="LiveActivity.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">GO TO THE GAME</a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":990}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      six: 6, eight: 8, twenty: 20,
+      ade: { name: 'Ade B' }, chimdi: { name: 'Chimdi O' }, marcus: { name: 'Marcus T' }, tolu: { name: 'Tolu D' }
+    };
+  }
+}
+</script>
+</body>
+</html>

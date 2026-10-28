@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Challenge Event build-up</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="forming" style="width: 390px; height: 2270px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="CallOut.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">SAT 12 OCT · MOUNT ROYAL</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Mute, report or block"></x-import>
+  </header>
+
+  <a href="EventToday.dc.html" aria-label="Chimdi versus Marcus, 5K, starts in 3 days. Open race day." style="display: block; text-decoration: none;">
+    <x-import component-from-global-scope="Ojoro.ChallengeEventHero" stage="days" a="{{chimdi}}" b="{{marcus}}" discipline="5K" countdown="{{countdown}}"></x-import>
+  </a>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 8px 20px 40px;">
+    <section aria-label="Event status" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+      <span style="display: flex; align-items: center; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Badge" tone="signal">BUILD-UP</x-import>
+        <span class="oj-body-sm oj-muted">142 following</span>
+      </span>
+      <span style="display: flex; gap: 4px; align-items: center;">
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Following</x-import>
+        <a href="Poster.dc.html" class="oj-btn oj-btn-ghost" style="padding: 0 8px;">POSTER</a>
+      </span>
+    </section>
+
+    <section aria-label="Prediction" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.PredictionBar" a="{{predA}}" b="{{predB}}" picked="a"></x-import>
+      <span class="oj-caption oj-muted">You picked Chimdi. Change it any time before 9:00 Saturday. Social only: no money, no points, no odds.</span>
+    </section>
+
+    <section aria-label="Backing" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.CrowdSupport" a="{{backA}}" b="{{backB}}" backing="a"></x-import>
+      <span class="oj-body-sm">6 of your Crew back Chimdi. Backing never affects the result.</span>
+    </section>
+
+    <x-import component-from-global-scope="Ojoro.Poll" question="ANYONE UNDER 23 MINUTES?" closes="Sat 9:00" options="{{pollOptions}}"></x-import>
+
+    <section aria-label="Build-up feed" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="mark" label="BUILD-UP"></x-import>
+      <x-import component-from-global-scope="Ojoro.HypePost" kind="system" time="1H AGO" body="THE CROWD IS CHANGING ITS MIND."></x-import>
+      <x-import component-from-global-scope="Ojoro.HypePost" kind="evidence" author="Marcus T" side="MARCUS" time="3h" body="Last tempo run before Saturday." stats="{{marcusStats}}"></x-import>
+      <x-import component-from-global-scope="Ojoro.HypePost" kind="competitor" author="Chimdi O" side="CHIMDI" time="1d" body="Rain or not, Saturday I run it."></x-import>
+      <x-import component-from-global-scope="Ojoro.HypePost" kind="system" time="SUN" body="THE CHALLENGE IS SET."></x-import>
+    </section>
+
+    <section aria-label="The crowd" style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span class="oj-label">THE CROWD · 38</span>
+        <x-import component-from-global-scope="Ojoro.Button" variant="ghost">MUTE COMMENTS</x-import>
+      </div>
+      <x-import component-from-global-scope="Ojoro.Comment" author="Ade B" time="12m" body="Chimdi's been out on Mount Royal every morning. Just saying." respect="{{fourteen}}" respected="{{yes}}" replies="{{three}}"></x-import>
+      <x-import component-from-global-scope="Ojoro.Comment" author="Marcus T" badge="COMPETITOR" time="8m" body="Mornings don't win races." respect="{{thirtyOne}}" reply="{{yes}}"></x-import>
+      <x-import component-from-global-scope="Ojoro.Input" label="Add to the crowd" placeholder="Say something. Keep it friendly."></x-import>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2270}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      yes: true, three: 3, fourteen: 14, thirtyOne: 31,
+      chimdi: { name: 'Chimdi' }, marcus: { name: 'Marcus' },
+      countdown: { label: 'STARTS IN', days: 3, hours: 14, minutes: 20 },
+      predA: { name: 'Chimdi', pct: 48 }, predB: { name: 'Marcus', pct: 52 },
+      backA: { name: 'Chimdi', count: 78 }, backB: { name: 'Marcus', count: 64 },
+      pollOptions: [{ label: 'Yes, at least one', votes: 0 }, { label: 'Neither', votes: 0 }],
+      marcusStats: [{ value: '5.2 KM', label: 'distance' }, { value: '23:48', label: 'time' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Insights</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;background:var(--line)}
+.tile{background:var(--surface);padding:16px 12px 16px 0;display:flex;flex-direction:column;gap:4px}
+.tile:nth-child(even){padding-left:16px}
+.delta{font:600 12px/16px var(--font-ui);color:var(--text-muted)}
+.chart{position:relative;height:180px;margin-left:28px}
+.grid{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+.grid.base{border-top-color:var(--line-strong)}
+.tick{position:absolute;left:-28px;width:22px;text-align:right;transform:translateY(-50%);font:500 10px/12px var(--font-ui);color:var(--text-muted);font-variant-numeric:tabular-nums}
+.cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));align-items:end}
+.col{height:100%;display:flex;align-items:flex-end;justify-content:center;background:transparent;border:0;padding:0;cursor:pointer;position:relative}
+.col:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.bar{width:18px;border-radius:4px 4px 0 0;background:#8f8977}
+.bar.last{background:var(--text)}
+.col.hot .bar{box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--text)}
+.xlabels{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));margin:8px 0 0 28px}
+.xlabels span{text-align:center;white-space:nowrap;font:500 10px/12px var(--font-ui);color:var(--text-muted)}
+.endlabel{position:absolute;white-space:nowrap;font:700 11px/14px var(--font-ui);letter-spacing:.04em;color:var(--text);transform:translate(-100%,-100%);padding-bottom:6px}
+.readout{display:flex;align-items:baseline;gap:8px;min-height:24px}
+.meter{height:8px;background:var(--track);border-radius:4px;overflow:hidden}
+.meter span{display:block;height:100%;background:var(--text);border-radius:4px}
+.ledger{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ledger:last-child{border-bottom:0}
+.ledger .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px;font:500 13px/18px var(--font-ui);font-variant-numeric:tabular-nums}
+.tbl span{padding:8px 0;border-bottom:1px solid var(--line)}
+.tbl span.h{font:700 10px/12px var(--font-ui);letter-spacing:.08em;color:var(--text-muted);border-bottom:2px solid var(--text)}
+.tbl span.r{text-align:right}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1760px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">INSIGHTS · PLATEAU PICKUP</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Export report"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Ojoro hours" style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="oj-overline">LAST 30 DAYS</span>
+      <span class="oj-display oj-display-xl">412</span>
+      <span class="oj-title">Ojoro hours at your sessions</span>
+      <span class="oj-body-sm oj-muted">Everyone who checked in, times how long they played. Up 18% on the 30 days before.</span>
+    </section>
+
+    <section aria-label="Key numbers" class="tiles">
+      <sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+        <div class="tile">
+          <span class="oj-display oj-display-sm">{{t.v}}</span>
+          <span class="oj-body-sm">{{t.l}}</span>
+          <span class="delta">{{t.d}}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="People per week" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="PEOPLE PER WEEK"></x-import>
+        <span class="oj-body-sm oj-muted">Checked in across all your sessions, last 12 weeks.</span>
+      </div>
+      <div class="readout" aria-live="polite">
+        <span class="oj-title">{{readValue}}</span>
+        <span class="oj-body-sm oj-muted">{{readMeta}}</span>
+      </div>
+      <sc-if value="{{chartView}}" hint-placeholder-val="{{yes}}">
+        <div>
+          <div class="chart" onMouseLeave="{{reset}}">
+            <sc-for list="{{ticks}}" as="k" hint-placeholder-count="4">
+              <div class="{{k.cls}}" style="top: {{k.top}}px;"></div>
+              <span class="tick" style="top: {{k.top}}px;">{{k.v}}</span>
+            </sc-for>
+            <div class="cols">
+              <sc-for list="{{weeks}}" as="w" hint-placeholder-count="12">
+                <button type="button" class="{{w.colCls}}" aria-label="{{w.aria}}" onMouseEnter="{{w.hover}}" onFocus="{{w.hover}}" onClick="{{w.hover}}"><span class="{{w.barCls}}" style="height: {{w.h}}px;"></span></button>
+              </sc-for>
+            </div>
+            <span class="endlabel" style="left: 100%; top: {{lastTop}}px;">LAST WEEK · 58</span>
+          </div>
+          <div class="xlabels" aria-hidden="true">
+            <sc-for list="{{weeks}}" as="w" hint-placeholder-count="12"><span>{{w.x}}</span></sc-for>
+          </div>
+          <span class="oj-caption oj-muted" style="display: block; margin-top: 12px;">The dip in mid-September is the Thursday rain-out.</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{tableView}}" hint-placeholder-val="{{no}}">
+        <div class="tbl" role="table" aria-label="People per week">
+          <span class="h" role="columnheader">WEEK OF</span><span class="h r" role="columnheader">PEOPLE</span><span class="h r" role="columnheader">SESSIONS</span>
+          <sc-for list="{{weeks}}" as="w" hint-placeholder-count="12">
+            <span role="cell">{{w.label}}</span><span class="r" role="cell">{{w.v}}</span><span class="r" role="cell">{{w.s}}</span>
+          </sc-for>
+        </div>
+      </sc-if>
+      <button type="button" class="oj-btn oj-btn-ghost" style="align-self: flex-start; padding-left: 0;" onClick="{{toggleView}}">{{viewLabel}}</button>
+    </section>
+
+    <section aria-label="By session" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="BY SESSION"></x-import>
+      <sc-for list="{{series}}" as="r" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px 0; border-bottom: 1px solid var(--line);">
+          <div style="display: flex; justify-content: space-between; gap: 12px; align-items: baseline;"><span class="oj-title-sm">{{r.name}}</span><span class="oj-title-sm" style="font-variant-numeric: tabular-nums;">{{r.pct}}% full</span></div>
+          <div class="meter" role="img" aria-label="{{r.aria}}"><span style="width: {{r.pct}}%;"></span></div>
+          <span class="oj-body-sm oj-muted">{{r.meta}}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="Revenue" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="REVENUE · LAST 30 DAYS"></x-import>
+      <div style="display: flex; flex-direction: column;">
+        <sc-for list="{{money}}" as="m" hint-placeholder-count="6">
+          <div class="ledger"><span class="{{m.cls}}">{{m.label}}</span><span class="{{m.amtCls}}">{{m.amt}}</span></div>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">DOWNLOAD CSV</x-import>
+        <a href="HostMembership.dc.html" class="oj-btn oj-btn-ghost" style="text-decoration: none;">PAYOUTS</a>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1760}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { hot: null, table: false };
+  }
+  renderVals() {
+    var self = this, s = this.state;
+    var H = 180, MAX = 60;
+    var labels = ['Jul 13', 'Jul 20', 'Jul 27', 'Aug 3', 'Aug 10', 'Aug 17', 'Aug 24', 'Aug 31', 'Sep 7', 'Sep 14', 'Sep 21', 'Sep 28'];
+    var vals = [38, 41, 44, 40, 47, 52, 49, 45, 50, 31, 54, 58];
+    var sess = [4, 4, 4, 4, 5, 5, 5, 5, 5, 4, 5, 5];
+    var hot = s.hot === null ? 11 : s.hot;
+    function hgt(v) { return Math.round(v / MAX * H); }
+    return {
+      yes: true, no: false,
+      tiles: [
+        { v: '91%', l: 'Showed up', d: '+3 pts on the 30 days before' },
+        { v: '64%', l: 'Came back within 2 weeks', d: '+5 pts' },
+        { v: '1 DAY', l: 'For Tuesday to fill', d: '4 hours faster' },
+        { v: '$1,544', l: 'Paid out to you', d: '+12%' }
+      ],
+      ticks: [0, 20, 40, 60].map(function (v) { return { v: v, top: H - hgt(v), cls: v === 0 ? 'grid base' : 'grid' }; }),
+      lastTop: H - hgt(58),
+      weeks: vals.map(function (v, i) {
+        var mon = labels[i].split(' ');
+        return {
+          v: v, s: sess[i], label: labels[i], h: hgt(v),
+          x: i % 3 === 0 ? mon[0].toUpperCase() + ' ' + mon[1] : '',
+          aria: 'Week of ' + labels[i] + ': ' + v + ' people, ' + sess[i] + ' sessions',
+          barCls: i === 11 ? 'bar last' : 'bar',
+          colCls: i === s.hot ? 'col hot' : 'col',
+          hover: function () { if (self.state.hot !== i) self.setState({ hot: i }); }
+        };
+      }),
+      reset: function () { self.setState({ hot: null }); },
+      readValue: vals[hot] + ' people',
+      readMeta: 'Week of ' + labels[hot] + ' · ' + sess[hot] + ' sessions' + (hot === 9 ? ' · Thursday rained out' : ''),
+      chartView: !s.table, tableView: s.table,
+      viewLabel: s.table ? 'SHOW AS CHART' : 'SHOW AS TABLE',
+      toggleView: function () { self.setState({ table: !s.table }); },
+      series: [
+        { name: 'Tuesday 7-a-side', pct: 98, meta: 'Fills in about 26 hours · 3% no-shows · 3 on the waitlist most weeks' },
+        { name: 'Thursday mixed 5s', pct: 84, meta: 'Usually 8 or 9 of 10 · 6% no-shows' },
+        { name: 'Sunday beginners', pct: 71, meta: '4 in 10 first-timers come back the next week' }
+      ].map(function (r) { r.aria = r.name + ', ' + r.pct + ' percent full on average'; return r; }),
+      money: [
+        ['Memberships · 18 × $35', '$630'],
+        ['Drop-ins · 85 × $8', '$680'],
+        ['10-packs · 5 × $70', '$350'],
+        ['Refunds', '−$32'],
+        ['Ojoro service fee', '−$84']
+      ].map(function (m) { return { label: m[0], amt: m[1], cls: 'oj-body-sm', amtCls: 'amt oj-body-sm' }; })
+        .concat([{ label: 'Paid out to you', amt: '$1,544', cls: 'oj-title-sm', amtCls: 'amt oj-title-sm' }])
+    };
+  }
+}
+</script>
+</body>
+</html>

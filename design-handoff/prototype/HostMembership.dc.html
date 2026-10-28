@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Memberships and payments</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.req-note{margin:0;padding-left:12px;border-left:2px solid var(--line-strong)}
+.ledger{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ledger:last-child{border-bottom:0}
+.ledger .amt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pass{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-bottom:1px solid var(--line)}
+.pass-price{width:72px;flex:none}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 2130px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">MEMBERSHIPS &amp; PAYMENTS</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Payout settings"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Next payout" style="display: flex; flex-direction: column; gap: 12px;">
+      <span class="oj-overline">NEXT PAYOUT · FRIDAY OCT 9</span>
+      <h1 class="oj-display oj-display-xl" style="margin: 0;">{{payout}}</h1>
+      <p class="oj-body" style="margin: 0;">From 4 sessions and 7 passes this week. It lands in your bank on Friday.</p>
+      <div style="display: flex; flex-direction: column; margin-top: 8px;">
+        <sc-for list="{{lines}}" as="l" hint-placeholder-count="6">
+          <div class="ledger"><span class="{{l.cls}}">{{l.label}}</span><span class="{{l.amtCls}}">{{l.amt}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section aria-label="Needs a decision" style="display: flex; flex-direction: column; gap: 16px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">NEEDS A DECISION</span>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Lena R" size="md"></x-import>
+        <span style="display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Lena R · monthly refund</span><span class="oj-body-sm oj-muted">Renewed Oct 1 for $35. Cancelled Oct 4. Hasn't played since.</span></span>
+      </div>
+      <p class="oj-body req-note">“New job with late shifts, so Tuesdays and Thursdays are out for now. Could I get some of October back?”</p>
+      <span class="oj-caption oj-muted">Your policy leaves membership refunds to you. Whatever you pick, Lena hears it from Ojoro, kindly worded.</span>
+      <sc-if value="{{undecided}}" hint-placeholder-val="{{yes}}">
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button type="button" class="oj-btn oj-btn-primary oj-btn-block" onClick="{{full}}">REFUND ALL $35</button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="oj-btn oj-btn-secondary" style="flex: 1;" onClick="{{part}}">REFUND $25</button>
+            <button type="button" class="oj-btn oj-btn-ghost" style="flex: 1;" onClick="{{keep}}">KEEP IT</button>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{decided}}" hint-placeholder-val="{{no}}">
+        <div style="display: flex; gap: 12px; align-items: center;" role="status">
+          <x-import component-from-global-scope="Ojoro.Icon" name="check"></x-import>
+          <span class="oj-body-sm" style="flex: 1;">{{decisionText}}</span>
+          <button type="button" class="oj-textbtn oj-label" onClick="{{undo}}">UNDO</button>
+        </div>
+      </sc-if>
+    </section>
+
+    <section aria-label="Passes" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="PASSES"></x-import>
+      <sc-for list="{{passes}}" as="p" hint-placeholder-count="4">
+        <div class="pass">
+          <span class="pass-price oj-display oj-display-sm">{{p.price}}</span>
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0;"><span class="oj-title-sm">{{p.name}}</span><span class="oj-body-sm oj-muted">{{p.what}}</span><span class="oj-label-sm" style="margin-top: 6px;">{{p.count}}</span></span>
+          <button type="button" class="oj-textbtn oj-label" aria-label="{{p.edit}}">EDIT</button>
+        </div>
+      </sc-for>
+      <x-import component-from-global-scope="Ojoro.Button" variant="ghost">NEW PASS</x-import>
+    </section>
+
+    <section aria-label="Members" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="MEMBERS · 18"></x-import>
+      <x-import component-from-global-scope="Ojoro.AvatarCluster" people="{{members}}" total="{{eighteen}}" max="{{seven}}" size="md"></x-import>
+      <span class="oj-body-sm">17 renew on Nov 1. 1 cancelled. Members come to 2.4 sessions a week, drop-ins to 0.8.</span>
+      <a href="HostPeople.dc.html" class="oj-strip" style="gap: 12px;"><span class="oj-strip-body"><span class="oj-title-sm">See members in People</span></span><x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import></a>
+    </section>
+
+    <section aria-label="Past payouts" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="PAST PAYOUTS"></x-import>
+      <sc-for list="{{past}}" as="x" hint-placeholder-count="3">
+        <div class="oj-strip">
+          <span class="oj-strip-time oj-display oj-display-xs">{{x.date}}</span>
+          <span class="oj-strip-body"><span class="oj-title-sm">{{x.amt}}</span><span class="oj-body-sm oj-muted">{{x.meta}}</span></span>
+          <x-import component-from-global-scope="Ojoro.Badge" tone="verified">PAID</x-import>
+        </div>
+      </sc-for>
+      <a href="HostInsights.dc.html" class="oj-btn oj-btn-secondary oj-btn-block" style="text-decoration: none; box-sizing: border-box; margin-top: 16px;">REVENUE &amp; REPORTS</a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2130}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { refund: null };
+  }
+  renderVals() {
+    var self = this, r = this.state.refund;
+    var refund = r === 'full' ? 35 : r === 'part' ? 25 : 0;
+    var payout = 412 - refund;
+    var lines = [
+      ['Drop-ins · 22 × $8', '$176'],
+      ['Monthly renewals · 6 × $35', '$210'],
+      ['10-pack · 1 × $70', '$70'],
+      ['Refunds', refund ? '−$' + (8 + refund) : '−$8'],
+      ['Ojoro service fee', '−$36']
+    ].map(function (l) { return { label: l[0], amt: l[1], cls: 'oj-body-sm', amtCls: 'amt oj-body-sm' }; });
+    lines.push({ label: 'You get', amt: '$' + payout, cls: 'oj-title-sm', amtCls: 'amt oj-title-sm' });
+    function set(v) { self.setState({ refund: v }); }
+    var texts = {
+      full: 'Refunded $35. Lena has been told and her membership ends today.',
+      part: 'Refunded $25. Lena has been told and her membership ends today.',
+      keep: "Kept. Lena's told it stays active to Oct 31, so she can still come."
+    };
+    return {
+      yes: true, no: false, seven: 7, eighteen: 18,
+      payout: '$' + payout,
+      lines: lines,
+      undecided: !r, decided: !!r,
+      decisionText: r ? texts[r] : '',
+      full: function () { set('full'); }, part: function () { set('part'); }, keep: function () { set('keep'); },
+      undo: function () { set(null); },
+      passes: [
+        { price: '$8', name: 'Drop-in', what: 'One session, any Tuesday or Thursday', count: '41 SOLD THIS MONTH', edit: 'Edit drop-in' },
+        { price: '$70', name: '10-pack', what: '10 sessions, use within 4 months', count: '7 ACTIVE', edit: 'Edit 10-pack' },
+        { price: '$35', name: 'Monthly', what: 'Every Tuesday and Thursday, early access', count: '18 MEMBERS', edit: 'Edit monthly' },
+        { price: 'FREE', name: 'Sunday beginners', what: 'Approval on, 12 spots', count: '9 IN THIS SUNDAY', edit: 'Edit Sunday beginners' }
+      ],
+      members: [{ name: 'Chimdi O' }, { name: 'Yara M' }, { name: 'Marcus T' }, { name: 'Kofi A' }, { name: 'Nadia L' }, { name: 'Ruth A' }, { name: 'Jo P' }],
+      past: [
+        { date: 'OCT 2', amt: '$386', meta: '5 sessions · 1 refund' },
+        { date: 'SEP 25', amt: '$402', meta: '5 sessions' },
+        { date: 'SEP 18', amt: '$344', meta: '4 sessions · rain-out on Thursday' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

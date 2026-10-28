@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · When are you free?</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.slot{height:44px;border:1px solid var(--line-strong);background:transparent;color:var(--text);font:600 12px/1 var(--font-ui);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.slot.on{background:var(--inverse);border-color:var(--inverse);color:var(--on-inverse)}
+.slot:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1180px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; gap: 12px; padding: 8px 12px 0 8px;">
+    <a href="OnboardSports.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <div style="flex: 1;"><x-import component-from-global-scope="Ojoro.Progress" value="{{two}}" max="{{three}}" label="Step 2 of 3"></x-import></div>
+    <span class="oj-label oj-muted">2 OF 3</span>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 24px 20px 32px;">
+    <section aria-label="When are you free" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">WHEN ARE YOU USUALLY FREE?</h1>
+      <p class="oj-body" style="margin: 0;">Rough is fine. Ojoro uses it to suggest times, and only ever shows overlap, never your calendar.</p>
+      <div style="display: grid; grid-template-columns: 48px repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; margin-top: 8px;">
+        <span></span><span class="oj-label-sm oj-muted" style="text-align: center;">MORNING</span><span class="oj-label-sm oj-muted" style="text-align: center;">MIDDAY</span><span class="oj-label-sm oj-muted" style="text-align: center;">EVENING</span>
+      </div>
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <div role="group" aria-label="{{d.name}}" style="display: grid; grid-template-columns: 48px repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center;">
+          <span class="oj-label">{{d.short}}</span>
+          <sc-for list="{{d.slots}}" as="s" hint-placeholder-count="3">
+            <button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" aria-label="{{s.label}}" onClick="{{s.toggle}}">{{s.mark}}</button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </section>
+
+    <section aria-label="How far" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="HOW FAR WILL YOU GO?"></x-import>
+      <div role="group" aria-label="Distance" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip">1 km</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">3 km</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">5 km</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">10 km</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Pull me in" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="PULL ME IN"></x-import>
+      <span class="oj-body-sm">When a game needs one more, your Crews can invite you directly for:</span>
+      <div role="group" aria-label="Pull me in for" style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Football</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Running</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Boxing</x-import>
+      </div>
+      <span class="oj-caption oj-muted">Turn it off any time. Nobody sees you as "available" outside the Crews you choose.</span>
+    </section>
+
+    <a href="OnboardPrivacy.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">CONTINUE</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { free: { 'Tue-2': true, 'Thu-2': true, 'Sat-0': true, 'Sun-0': true, 'Wed-2': true } };
+  }
+  renderVals() {
+    var self = this, parts = ['morning', 'midday', 'evening'];
+    var names = [['Mon', 'Monday'], ['Tue', 'Tuesday'], ['Wed', 'Wednesday'], ['Thu', 'Thursday'], ['Fri', 'Friday'], ['Sat', 'Saturday'], ['Sun', 'Sunday']];
+    return {
+      yes: true, two: 2, three: 3,
+      days: names.map(function (n) {
+        return {
+          short: n[0].toUpperCase(), name: n[1],
+          slots: parts.map(function (p, i) {
+            var key = n[0] + '-' + i, on = !!self.state.free[key];
+            return {
+              on: on, cls: on ? 'slot on' : 'slot', mark: on ? 'FREE' : '',
+              label: n[1] + ' ' + p + (on ? ', free' : ', not set'),
+              toggle: function () { var f = Object.assign({}, self.state.free); f[key] = !f[key]; self.setState({ free: f }); }
+            };
+          })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

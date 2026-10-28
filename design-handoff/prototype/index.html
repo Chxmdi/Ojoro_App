@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ojoro prototype</title>
+<style>
+:root{--bg:#fff;--ink:#141515;--muted:#45484a;--line:rgba(20,21,21,.12)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+h1{font:400 56px/0.95 Anton,Impact,sans-serif;text-transform:uppercase;margin:0 0 8px}
+h2{font:700 13px/16px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin:40px 0 12px;padding-top:16px;border-top:2px solid var(--ink)}
+p{max-width:640px;color:var(--muted);margin:0}
+.row{display:flex;gap:16px;overflow-x:auto;padding-bottom:8px}
+.card{flex:none;width:180px;display:flex;flex-direction:column;gap:4px;color:inherit;text-decoration:none}
+.card img{width:180px;height:320px;object-fit:cover;object-position:top;border:1px solid var(--line)}
+.card span{font-weight:600}
+.card code{font-size:12px;color:var(--muted)}
+.card:focus-visible{outline:2px solid #290000;outline-offset:2px}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&display=swap">
+</head><body>
+<h1>Ojoro prototype</h1>
+<p>Every screen from the design canvas. Click one to open it; links inside the screens follow the prototype flows. Serve the design-handoff folder over HTTP (see README.md), don't open it as a file.</p>
+<h2>The five tabs</h2><div class="row">
+<a class="card" href="Main.dc.html"><img src="../screens/Main.png" alt="Home" loading="lazy"><span>Home</span><code>Main</code></a>
+<a class="card" href="Discover.dc.html"><img src="../screens/Discover.png" alt="Discover" loading="lazy"><span>Discover</span><code>Discover</code></a>
+<a class="card" href="Create.dc.html"><img src="../screens/Create.png" alt="Create" loading="lazy"><span>Create</span><code>Create</code></a>
+<a class="card" href="Compete.dc.html"><img src="../screens/Compete.png" alt="Compete" loading="lazy"><span>Compete</span><code>Compete</code></a>
+<a class="card" href="You.dc.html"><img src="../screens/You.png" alt="You" loading="lazy"><span>You</span><code>You</code></a>
+</div>
+<h2>Movement journey · football tonight → Run It Back</h2><div class="row">
+<a class="card" href="Plan.dc.html"><img src="../screens/Plan.png" alt="1 · Plan forming" loading="lazy"><span>1 · Plan forming</span><code>Plan</code></a>
+<a class="card" href="NeedOneMore.dc.html"><img src="../screens/NeedOneMore.png" alt="2 · Need one more" loading="lazy"><span>2 · Need one more</span><code>NeedOneMore</code></a>
+<a class="card" href="GameOn.dc.html"><img src="../screens/GameOn.png" alt="3 · GAME ON" loading="lazy"><span>3 · GAME ON</span><code>GameOn</code></a>
+<a class="card" href="Activity.dc.html"><img src="../screens/Activity.png" alt="4 · Activity" loading="lazy"><span>4 · Activity</span><code>Activity</code></a>
+<a class="card" href="CheckIn.dc.html"><img src="../screens/CheckIn.png" alt="5 · Check-in" loading="lazy"><span>5 · Check-in</span><code>CheckIn</code></a>
+<a class="card" href="LiveActivity.dc.html"><img src="../screens/LiveActivity.png" alt="6 · Live" loading="lazy"><span>6 · Live</span><code>LiveActivity</code></a>
+<a class="card" href="After.dc.html"><img src="../screens/After.png" alt="7 · After" loading="lazy"><span>7 · After</span><code>After</code></a>
+<a class="card" href="Recap.dc.html"><img src="../screens/Recap.png" alt="8 · Recap" loading="lazy"><span>8 · Recap</span><code>Recap</code></a>
+<a class="card" href="RunItBack.dc.html"><img src="../screens/RunItBack.png" alt="9 · Run It Back" loading="lazy"><span>9 · Run It Back</span><code>RunItBack</code></a>
+</div>
+<h2>Challenge journey · Call-Out → rematch</h2><div class="row">
+<a class="card" href="CallOut.dc.html"><img src="../screens/CallOut.png" alt="1 · Call-Out" loading="lazy"><span>1 · Call-Out</span><code>CallOut</code></a>
+<a class="card" href="EventBuildup.dc.html"><img src="../screens/EventBuildup.png" alt="2 · Event build-up" loading="lazy"><span>2 · Event build-up</span><code>EventBuildup</code></a>
+<a class="card" href="Poster.dc.html"><img src="../screens/Poster.png" alt="3 · Share poster" loading="lazy"><span>3 · Share poster</span><code>Poster</code></a>
+<a class="card" href="EventToday.dc.html"><img src="../screens/EventToday.png" alt="4 · Event day" loading="lazy"><span>4 · Event day</span><code>EventToday</code></a>
+<a class="card" href="EventLive.dc.html"><img src="../screens/EventLive.png" alt="5 · Live challenge" loading="lazy"><span>5 · Live challenge</span><code>EventLive</code></a>
+<a class="card" href="Verifying.dc.html"><img src="../screens/Verifying.png" alt="6 · Verifying" loading="lazy"><span>6 · Verifying</span><code>Verifying</code></a>
+<a class="card" href="Result.dc.html"><img src="../screens/Result.png" alt="7 · Result" loading="lazy"><span>7 · Result</span><code>Result</code></a>
+<a class="card" href="Rivalry.dc.html"><img src="../screens/Rivalry.png" alt="8 · Rivalry & rematch" loading="lazy"><span>8 · Rivalry & rematch</span><code>Rivalry</code></a>
+</div>
+<h2>Community · Crews, Clans, Places, Updates</h2><div class="row">
+<a class="card" href="CrewHome.dc.html"><img src="../screens/CrewHome.png" alt="Crew home" loading="lazy"><span>Crew home</span><code>CrewHome</code></a>
+<a class="card" href="CrewChat.dc.html"><img src="../screens/CrewChat.png" alt="Crew chat → Make This a Game" loading="lazy"><span>Crew chat → Make This a Game</span><code>CrewChat</code></a>
+<a class="card" href="Clan.dc.html"><img src="../screens/Clan.png" alt="Clan" loading="lazy"><span>Clan</span><code>Clan</code></a>
+<a class="card" href="Clash.dc.html"><img src="../screens/Clash.png" alt="Ojoro Clash" loading="lazy"><span>Ojoro Clash</span><code>Clash</code></a>
+<a class="card" href="Pulse.dc.html"><img src="../screens/Pulse.png" alt="Pulse map" loading="lazy"><span>Pulse map</span><code>Pulse</code></a>
+<a class="card" href="Place.dc.html"><img src="../screens/Place.png" alt="Place" loading="lazy"><span>Place</span><code>Place</code></a>
+<a class="card" href="Notifications.dc.html"><img src="../screens/Notifications.png" alt="Updates" loading="lazy"><span>Updates</span><code>Notifications</code></a>
+</div>
+<h2>First run & system states</h2><div class="row">
+<a class="card" href="Welcome.dc.html"><img src="../screens/Welcome.png" alt="Welcome" loading="lazy"><span>Welcome</span><code>Welcome</code></a>
+<a class="card" href="OnboardSports.dc.html"><img src="../screens/OnboardSports.png" alt="Onboarding 1 · Sports" loading="lazy"><span>Onboarding 1 · Sports</span><code>OnboardSports</code></a>
+<a class="card" href="OnboardWhen.dc.html"><img src="../screens/OnboardWhen.png" alt="Onboarding 2 · Time and distance" loading="lazy"><span>Onboarding 2 · Time and distance</span><code>OnboardWhen</code></a>
+<a class="card" href="OnboardPrivacy.dc.html"><img src="../screens/OnboardPrivacy.png" alt="Onboarding 3 · Privacy" loading="lazy"><span>Onboarding 3 · Privacy</span><code>OnboardPrivacy</code></a>
+<a class="card" href="FirstHome.dc.html"><img src="../screens/FirstHome.png" alt="First home · low density" loading="lazy"><span>First home · low density</span><code>FirstHome</code></a>
+<a class="card" href="States.dc.html"><img src="../screens/States.png" alt="System states" loading="lazy"><span>System states</span><code>States</code></a>
+</div>
+<h2>Host OS · Ade runs Plateau Pickup</h2><div class="row">
+<a class="card" href="HostHome.dc.html"><img src="../screens/HostHome.png" alt="Host home" loading="lazy"><span>Host home</span><code>HostHome</code></a>
+<a class="card" href="HostSeries.dc.html"><img src="../screens/HostSeries.png" alt="Series & template" loading="lazy"><span>Series & template</span><code>HostSeries</code></a>
+<a class="card" href="HostRoster.dc.html"><img src="../screens/HostRoster.png" alt="Tonight's roster & waitlist" loading="lazy"><span>Tonight's roster & waitlist</span><code>HostRoster</code></a>
+<a class="card" href="HostRequests.dc.html"><img src="../screens/HostRequests.png" alt="Join requests" loading="lazy"><span>Join requests</span><code>HostRequests</code></a>
+<a class="card" href="HostPeople.dc.html"><img src="../screens/HostPeople.png" alt="People · participant CRM" loading="lazy"><span>People · participant CRM</span><code>HostPeople</code></a>
+<a class="card" href="HostMembership.dc.html"><img src="../screens/HostMembership.png" alt="Memberships & payments" loading="lazy"><span>Memberships & payments</span><code>HostMembership</code></a>
+<a class="card" href="HostAnnounce.dc.html"><img src="../screens/HostAnnounce.png" alt="Announcements" loading="lazy"><span>Announcements</span><code>HostAnnounce</code></a>
+<a class="card" href="HostSeason.dc.html"><img src="../screens/HostSeason.png" alt="League operations" loading="lazy"><span>League operations</span><code>HostSeason</code></a>
+<a class="card" href="HostInsights.dc.html"><img src="../screens/HostInsights.png" alt="Insights & revenue" loading="lazy"><span>Insights & revenue</span><code>HostInsights</code></a>
+</div>
+</body></html>

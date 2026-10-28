@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · What do you play?</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1110px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; gap: 12px; padding: 8px 12px 0 8px;">
+    <a href="Welcome.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <div style="flex: 1;"><x-import component-from-global-scope="Ojoro.Progress" value="{{one}}" max="{{three}}" label="Step 1 of 3"></x-import></div>
+    <span class="oj-label oj-muted">1 OF 3</span>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 24px 20px 32px;">
+    <section aria-label="What do you play" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">WHAT DO YOU PLAY?</h1>
+      <p class="oj-body" style="margin: 0;">Anything you do now or want to try. You can change it any time.</p>
+      <div role="group" aria-label="Sports" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Football</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Running</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Boxing</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Basketball</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Volleyball</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Climbing</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Cycling</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Tennis</x-import>
+        <x-import component-from-global-scope="Ojoro.Chip">Something else</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Levels" style="display: flex; flex-direction: column; gap: 20px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="HOW GOOD, ROUGHLY?"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span class="oj-title-sm">Football</span>
+        <div role="group" aria-label="Football level" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <x-import component-from-global-scope="Ojoro.Chip">Learning</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Casual</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Intermediate</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Advanced</x-import>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span class="oj-title-sm">Running</span>
+        <div role="group" aria-label="Running level" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <x-import component-from-global-scope="Ojoro.Chip">Learning</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Casual</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Intermediate</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Advanced</x-import>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span class="oj-title-sm">Boxing</span>
+        <div role="group" aria-label="Boxing level" style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <x-import component-from-global-scope="Ojoro.Chip" selected="{{yes}}">Learning</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Casual</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Intermediate</x-import>
+          <x-import component-from-global-scope="Ojoro.Chip">Advanced</x-import>
+        </div>
+      </div>
+      <span class="oj-caption oj-muted">Levels are only used to match you fairly. They never show as a score.</span>
+    </section>
+
+    <section aria-label="Actions" style="display: flex; flex-direction: column; gap: 4px;">
+      <a href="OnboardWhen.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box;">CONTINUE</a>
+      <x-import component-from-global-scope="Ojoro.Button" variant="ghost" block="{{yes}}">SKIP FOR NOW</x-import>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1110}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { yes: true, one: 1, three: 3 };
+  }
+}
+</script>
+</body>
+</html>

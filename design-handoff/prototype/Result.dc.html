@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Result</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="after" style="width: 390px; height: 1050px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Verifying.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">COMPLETE · 9:41 AM</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share result"></x-import>
+  </header>
+
+  <x-import component-from-global-scope="Ojoro.RecapPoster" winner="Chimdi" discipline="5K" date="SAT 12 OCT" stats="{{stats}}" story="Out hard, held it through the last climb on Camillien-Houde. 43 seconds."></x-import>
+
+  <main style="display: flex; flex-direction: column; gap: 32px; padding: 8px 20px 32px;">
+    <section aria-label="Crowd prediction outcome" style="display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">PREDICTIONS</span>
+      <span class="oj-display oj-display-sm">THE CROWD GOT IT WRONG.</span>
+      <span class="oj-body-sm">54% picked Marcus. You called it.</span>
+    </section>
+
+    <section aria-label="What changed" style="display: flex; flex-direction: column;">
+      <a href="Rivalry.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">5–3</span>
+        <span class="oj-strip-body"><span class="oj-title">Rivalry with Marcus</span><span class="oj-body-sm oj-muted">You lead after 9 meetings</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="signal">UPDATED</x-import>
+      </a>
+      <a href="You.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">PB</span>
+        <span class="oj-strip-body"><span class="oj-title">Mount Royal 5K · 22:48</span><span class="oj-body-sm oj-muted">Added to your Passport · 49 s off your goal</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">PASSPORT</x-import>
+      </a>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1050}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      stats: [{ value: '22:48', label: 'Chimdi' }, { value: '23:31', label: 'Marcus' }, { value: '212', label: 'Watched' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

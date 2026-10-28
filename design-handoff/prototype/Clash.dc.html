@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Clash</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="live" style="width: 390px; height: 1500px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="Clan.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">OJORO CLASH · FALL 2026</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share the Clash"></x-import>
+  </header>
+
+  <section class="oj-poster" aria-label="Concordia 2, McGill 1, after 3 of 6 events" style="background: var(--surface); color: var(--text);">
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <span class="oj-display oj-display-lg">CONCORDIA</span>
+      <div class="oj-callout-vs"><span class="oj-callout-rule" aria-hidden="true"></span><span class="oj-display oj-display-sm">VS</span><span class="oj-callout-rule" aria-hidden="true"></span></div>
+      <span class="oj-display oj-display-lg" style="text-align: right;">MCGILL</span>
+    </div>
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 16px;">
+      <span class="oj-display oj-display-hero">2–1</span>
+      <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right;"><span class="oj-label">AFTER 3 OF 6</span><span class="oj-body-sm oj-muted">Concordia leads</span></span>
+    </div>
+  </section>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 8px 20px 40px;">
+    <section aria-label="Your part" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface-raised);">
+      <span class="oj-overline">YOUR PART · EVENT 4</span>
+      <span class="oj-title">You're in the football squad for Saturday.</span>
+      <span class="oj-body-sm oj-muted">7-a-side · Jeanne-Mance · 9:00 AM · 9 of 14 squad spots taken</span>
+      <x-import component-from-global-scope="Ojoro.Button" variant="commit" committed="{{yes}}" block="{{yes}}"></x-import>
+    </section>
+
+    <section aria-label="Events" style="display: flex; flex-direction: column; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="mark" label="THE SIX EVENTS"></x-import>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">1</span><span class="oj-strip-body"><span class="oj-title-sm">4 × 1 km relay</span><span class="oj-body-sm oj-muted">Organizer verified</span></span><x-import component-from-global-scope="Ojoro.Badge" tone="signal">CONCORDIA</x-import></div>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">2</span><span class="oj-strip-body"><span class="oj-title-sm">3v3 basketball</span><span class="oj-body-sm oj-muted">21–17</span></span><x-import component-from-global-scope="Ojoro.Badge">MCGILL</x-import></div>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">3</span><span class="oj-strip-body"><span class="oj-title-sm">Bouldering · most tops</span><span class="oj-body-sm oj-muted">38–34</span></span><x-import component-from-global-scope="Ojoro.Badge" tone="signal">CONCORDIA</x-import></div>
+      <a href="Plan.dc.html" class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">4</span><span class="oj-strip-body"><span class="oj-title-sm">7-a-side football</span><span class="oj-body-sm oj-muted">Sat 9:00 · squads forming</span></span><x-import component-from-global-scope="Ojoro.Badge">SAT</x-import></a>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">5</span><span class="oj-strip-body"><span class="oj-title-sm">Rowing erg · 2 km team</span><span class="oj-body-sm oj-muted">Sun 2 Nov</span></span><x-import component-from-global-scope="Ojoro.Badge">UPCOMING</x-import></div>
+      <div class="oj-strip"><span class="oj-strip-time oj-display oj-display-xs">6</span><span class="oj-strip-body"><span class="oj-title-sm">Final · 10K, every runner counts</span><span class="oj-body-sm oj-muted">Sun 16 Nov · Mount Royal</span></span><x-import component-from-global-scope="Ojoro.Badge">FINAL</x-import></div>
+    </section>
+
+    <x-import component-from-global-scope="Ojoro.CrowdSupport" a="{{backA}}" b="{{backB}}" backing="a"></x-import>
+    <span class="oj-caption oj-muted">Backing is for fun and never changes a score. No stakes, no prizes.</span>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      yes: true,
+      backA: { name: 'Concordia', count: 312 }, backB: { name: 'McGill', count: 287 }
+    };
+  }
+}
+</script>
+</body>
+</html>

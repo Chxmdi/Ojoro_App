@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · System states</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 1720px; height: 960px; box-sizing: border-box; padding: 40px 20px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; background: var(--surface-raised); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+
+  <section aria-label="Loading" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><span class="oj-display oj-display-sm">LOADING</span><span class="oj-body-sm oj-muted">After 300 ms, placeholders shaped like what's coming. Never a spinner over a blank screen.</span></div>
+    <div data-theme="calm" style="height: 760px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px; padding: 20px; background: var(--surface); box-shadow: 0 0 0 1px var(--line);">
+      <span class="oj-display oj-display-xs" style="letter-spacing: 0.06em;">OJORO</span>
+      <x-import component-from-global-scope="Ojoro.Skeleton" kind="text" lines="{{two}}" label="Loading today"></x-import>
+      <x-import component-from-global-scope="Ojoro.Skeleton" kind="object" label="Loading plan"></x-import>
+      <x-import component-from-global-scope="Ojoro.Skeleton" kind="strip" label="Loading activity"></x-import>
+      <x-import component-from-global-scope="Ojoro.Skeleton" kind="strip" label="Loading activity"></x-import>
+    </div>
+  </section>
+
+  <section aria-label="Offline" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><span class="oj-display oj-display-sm">OFFLINE</span><span class="oj-body-sm oj-muted">The last confirmed state stays on screen and says how old it is. Taps queue and say so.</span></div>
+    <div data-theme="forming" style="position: relative; height: 760px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); box-shadow: 0 0 0 1px var(--line);">
+      <x-import component-from-global-scope="Ojoro.PlanForming" activity="Football" count="{{six}}" capacity="{{eight}}" participants="{{six_people}}" time="Tonight 7:30" place="Jeanne-Mance Park" joined="{{yes}}"></x-import>
+      <span class="oj-caption oj-muted" style="padding: 0 24px; display: flex; gap: 6px; align-items: center;"><x-import component-from-global-scope="Ojoro.Icon" name="clock" size="{{sixteen}}"></x-import>Count as of 7:02 PM</span>
+      <div style="margin-top: auto; padding: 20px;">
+        <x-import component-from-global-scope="Ojoro.Toast" kind="offline" message="Offline. Showing the last count from 7:02."></x-import>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Expired plan" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><span class="oj-display oj-display-sm">EXPIRED</span><span class="oj-body-sm oj-muted">A plan that didn't come together never dead-ends. It offers what's still on.</span></div>
+    <div data-theme="calm" style="height: 760px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; background: var(--surface); box-shadow: 0 0 0 1px var(--line);">
+      <x-import component-from-global-scope="Ojoro.PlanForming" activity="Volleyball" count="{{three}}" capacity="{{eight}}" participants="{{three_people}}" time="Last night 8:00" place="Parc La Fontaine" expired="{{yes}}"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 20px 20px;">
+        <span class="oj-display oj-display-sm">IT DIDN'T COME TOGETHER.</span>
+        <span class="oj-body-sm">3 of 8 by the deadline. Nobody was charged or marked as a no-show.</span>
+        <x-import component-from-global-scope="Ojoro.Divider" label="STILL ON TONIGHT"></x-import>
+        <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Beach volleyball" time="7:00" place="Parc Jarry · 4 km" count="{{five}}" capacity="{{eight}}"></x-import>
+        <a href="FirstHome.dc.html" class="oj-btn oj-btn-primary oj-btn-block" style="text-decoration: none; box-sizing: border-box; margin-top: 8px;">TRY AGAIN THIS WEEKEND</a>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Couldn't join" style="display: flex; flex-direction: column; gap: 16px;">
+    <div style="display: flex; flex-direction: column; gap: 4px;"><span class="oj-display oj-display-sm">COULDN'T JOIN</span><span class="oj-body-sm oj-muted">Errors say what happened in words, with the alert icon and one next step. Never red.</span></div>
+    <div data-theme="calm" style="height: 760px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; padding: 20px; background: var(--surface); box-shadow: 0 0 0 1px var(--line);">
+      <x-import component-from-global-scope="Ojoro.ActivityStrip" activity="Pickup football" time="7:30" place="Jeanne-Mance Park" status="full"></x-import>
+      <x-import component-from-global-scope="Ojoro.Toast" kind="error" message="Couldn't join. The last spot went a moment before you." action="WAITLIST"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--surface-raised);">
+        <span class="oj-title-sm">Join the waitlist</span>
+        <span class="oj-body-sm">2 people ahead of you. If a spot opens before 7:00 you're in automatically, and we tell you straight away.</span>
+        <x-import component-from-global-scope="Ojoro.Button" variant="primary">JOIN WAITLIST</x-import>
+      </div>
+      <x-import component-from-global-scope="Ojoro.Input" label="How many" default-value="14" error="Plans hold 2 to 12 people."></x-import>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1720,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var p = [{ name: 'Ade B' }, { name: 'Chimdi O' }, { name: 'Marcus T' }, { name: 'Lena R' }, { name: 'Sam K' }, { name: 'Yara M' }];
+    return {
+      yes: true, two: 2, three: 3, five: 5, six: 6, eight: 8, sixteen: 16,
+      six_people: p, three_people: p.slice(0, 3)
+    };
+  }
+}
+</script>
+</body>
+</html>

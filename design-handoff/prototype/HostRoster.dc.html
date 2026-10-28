@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Tonight's roster</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+.wl-n{width:32px;flex:none}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1920px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0;">
+    <a href="HostHome.dc.html" aria-label="Back to hosting" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span class="oj-overline">TONIGHT · 7:30</span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="share" label="Share session link"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Session" style="display: flex; flex-direction: column; gap: 12px;">
+      <h1 class="oj-display oj-display-lg">TUESDAY <span style="white-space: nowrap;">7-A-SIDE.</span></h1>
+      <p class="oj-body" style="margin: 0;">Jeanne-Mance Park · turf 2 · 7:30 to 9:00. Starts in 50 minutes.</p>
+      <x-import component-from-global-scope="Ojoro.Progress" value="{{fourteen}}" max="{{fourteen}}" label="14 of 14 in"></x-import>
+      <span class="oj-label">14 / 14 IN · 3 WAITING</span>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <a href="HostAnnounce.dc.html" class="oj-btn oj-btn-primary" style="flex: 1; text-decoration: none; box-sizing: border-box;">MESSAGE ALL 17</a>
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">CHECK-IN</x-import>
+      </div>
+      <span class="oj-caption oj-muted">Check-in opens at 7:00. Players tap in at the pitch, or you mark them in.</span>
+    </section>
+
+    <section aria-label="Payments" style="display: flex; gap: 12px; align-items: flex-start; padding: 16px; background: var(--surface-raised);">
+      <x-import component-from-global-scope="Ojoro.Icon" name="check" size="{{twenty}}"></x-import>
+      <span style="display: flex; flex-direction: column; gap: 4px;">
+        <span class="oj-title-sm">13 of 14 settled</span>
+        <span class="oj-body-sm oj-muted">Tomás is new and pays $8 at the field. Mark it when he does and it shows in your payout.</span>
+      </span>
+    </section>
+
+    <section aria-label="In" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="IN · 14"></x-import>
+      <div role="list" aria-label="Players in">
+        <sc-for list="{{shown}}" as="p" hint-placeholder-count="8">
+          <div class="oj-prow" role="listitem">
+            <x-import component-from-global-scope="Ojoro.Avatar" name="{{p.name}}" size="md"></x-import>
+            <span class="oj-prow-main"><span class="oj-title-sm">{{p.name}}</span><span class="oj-caption oj-muted">{{p.meta}}</span></span>
+            <x-import component-from-global-scope="Ojoro.Badge" tone="{{p.tone}}">{{p.badge}}</x-import>
+          </div>
+        </sc-for>
+      </div>
+      <button type="button" class="oj-btn oj-btn-ghost" style="align-self: flex-start; margin-top: 8px; padding-left: 0;" onClick="{{toggleAll}}" aria-expanded="{{all}}">{{moreLabel}}</button>
+    </section>
+
+    <section aria-label="Waitlist" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" kind="strong" label="WAITLIST · 3"></x-import>
+      <div role="list" aria-label="Waitlist in order">
+        <sc-for list="{{waiting}}" as="w" hint-placeholder-count="3">
+          <div class="oj-prow" role="listitem">
+            <span class="wl-n oj-display oj-display-xs" aria-label="{{w.pos}}">{{w.n}}</span>
+            <x-import component-from-global-scope="Ojoro.Avatar" name="{{w.name}}" size="sm"></x-import>
+            <span class="oj-prow-main"><span class="oj-title-sm">{{w.name}}</span><span class="oj-caption oj-muted">{{w.meta}}</span></span>
+          </div>
+        </sc-for>
+      </div>
+      <span class="oj-body-sm" style="margin-top: 16px;">The waitlist stopped filling itself at 5:30. If someone drops now, you choose who's in and they hear straight away.</span>
+      <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <x-import component-from-global-scope="Ojoro.Button" variant="secondary">ADD A 15TH SPOT</x-import>
+        <x-import component-from-global-scope="Ojoro.Button" variant="ghost">REORDER</x-import>
+      </div>
+    </section>
+
+    <section aria-label="Dropped" style="display: flex; flex-direction: column;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="DROPPED · 1"></x-import>
+      <div class="oj-prow">
+        <x-import component-from-global-scope="Ojoro.Avatar" name="Dayo F" size="md"></x-import>
+        <span class="oj-prow-main"><span class="oj-title-sm">Dayo F</span><span class="oj-caption oj-muted">Dropped at 2:30. Rina took the spot a minute later, so Dayo's $8 went back automatically.</span></span>
+      </div>
+    </section>
+
+    <a href="HostSeries.dc.html" class="oj-strip" style="gap: 12px;">
+      <span class="oj-strip-body"><span class="oj-title-sm">Series settings</span><span class="oj-body-sm oj-muted">Approval, waitlist, price and refunds</span></span>
+      <x-import component-from-global-scope="Ojoro.Icon" name="forward"></x-import>
+    </a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1920}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { all: false };
+  }
+  renderVals() {
+    var self = this;
+    var people = [
+      ['Ade B', 'Hosting · plays in goal first half', 'HOST', 'signal'],
+      ['Chimdi O', '11 of the last 12', 'MEMBER'],
+      ['Yara M', '12 of the last 12', 'MEMBER'],
+      ['Marcus T', '9 of the last 12', 'MEMBER'],
+      ['Sam K', '6 of the last 12', 'PAID $8'],
+      ['Priya S', '10-pack · 4 sessions left', '10-PACK'],
+      ['Rina K', 'In from the waitlist at 2:31', 'PAID $8'],
+      ['Tomás G', 'First time · you approved him Saturday', '$8 AT FIELD', 'signal'],
+      ['Kofi A', '8 of the last 12', 'MEMBER'],
+      ['Nadia L', '7 of the last 12', 'MEMBER'],
+      ['Joel A', 'Second time', 'PAID $8'],
+      ['Elise D', '5 of the last 12', 'PAID $8'],
+      ['Malik H', '10-pack · last session on it', '10-PACK'],
+      ['Ben O', '3 of the last 12', 'PAID $8']
+    ].map(function (p) { return { name: p[0], meta: p[1], badge: p[2], tone: p[3] || 'neutral' }; });
+    var all = this.state.all;
+    return {
+      fourteen: 14, twenty: 20,
+      all: all,
+      shown: all ? people : people.slice(0, 8),
+      moreLabel: all ? 'SHOW FEWER' : 'SHOW ALL 14',
+      toggleAll: function () { self.setState({ all: !all }); },
+      waiting: [
+        { n: '1', pos: 'First', name: 'Lucas P', meta: 'Waiting since Saturday · plays most Thursdays' },
+        { n: '2', pos: 'Second', name: 'Femi J', meta: 'Waiting since Sunday · first time, approved' },
+        { n: '3', pos: 'Third', name: 'Ana C', meta: 'Waiting since this morning' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

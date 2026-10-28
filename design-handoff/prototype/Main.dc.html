@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Home</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 2220px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 12px 8px 4px 20px;">
+    <span class="oj-display oj-display-xs" style="letter-spacing: 0.06em;">OJORO</span>
+    <div style="display: flex; gap: 4px;">
+      <x-import component-from-global-scope="Ojoro.IconButton" icon="search" label="Search"></x-import>
+      <a href="Notifications.dc.html" aria-label="Updates, 2 new" style="position: relative; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="bell"></x-import><span class="oj-iconbtn-count" aria-hidden="true">2</span></a>
+    </div>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 40px; padding: 16px 20px 40px;">
+    <section aria-label="Ojoro Daily" style="display: flex; flex-direction: column; gap: 12px;">
+      <span class="oj-overline">OJORO DAILY · TUE 6 OCT</span>
+      <h1 class="oj-display oj-display-xl">TONIGHT.</h1>
+      <p class="oj-body">11 people near you want to play. Your best move: football at Jeanne-Mance, 7:30.</p>
+    </section>
+
+    <section aria-label="Down for" style="display: flex; flex-direction: column; gap: 12px;">
+      <x-import component-from-global-scope="Ojoro.DownFor" activity="Football" when="tonight" where="Jeanne-Mance Park · around 7:30 · 1.2 km" down-count="{{eleven}}" downs="{{people}}"></x-import>
+      <a href="Plan.dc.html" class="oj-body-sm" style="text-underline-offset: 4px;">Ojoro matched 6 of them into a plan. <strong>See it forming</strong></a>
+    </section>
+
+    <section aria-label="Forming near you" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="FORMING NEAR YOU"></x-import>
+      <div style="margin: 0 -20px;">
+        <x-import component-from-global-scope="Ojoro.PlanForming" activity="Basketball" count="{{five}}" capacity="{{eight}}" participants="{{fivePeople}}" time="Sat 10:00" place="Parc La Fontaine courts"></x-import>
+      </div>
+    </section>
+
+    <section aria-label="Your crew" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="YOUR CREW"></x-import>
+      <x-import component-from-global-scope="Ojoro.CrewMomentum" crew="Thursday FC" member-count="{{fourteen}}" members="{{people}}" weeks="{{weeks}}" streak="{{six}}" next="Football · Thu 7:30 · Jeanne-Mance"></x-import>
+    </section>
+
+    <section aria-label="Challenges you follow" style="display: flex; flex-direction: column; gap: 8px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="CHALLENGES YOU FOLLOW"></x-import>
+      <a href="EventBuildup.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">SAT</span>
+        <span class="oj-strip-body"><span class="oj-title">Chimdi vs Marcus · 5K</span><span class="oj-body-sm oj-muted">142 following · build-up</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge" tone="signal">3 DAYS</x-import>
+      </a>
+      <a href="Compete.dc.html" class="oj-strip">
+        <span class="oj-strip-time oj-display oj-display-xs">SUN</span>
+        <span class="oj-strip-body"><span class="oj-title">Thursday FC vs Plateau Crew</span><span class="oj-body-sm oj-muted">Crew-vs-Crew · football · 5 a side</span></span>
+        <x-import component-from-global-scope="Ojoro.Badge">ACCEPTED</x-import>
+      </a>
+    </section>
+
+    <section aria-label="Last game" style="display: flex; flex-direction: column; gap: 16px;">
+      <x-import component-from-global-scope="Ojoro.Divider" label="LAST THURSDAY"></x-import>
+      <a href="Recap.dc.html" data-theme="after" style="display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--surface); color: var(--text); text-decoration: none;">
+        <span class="oj-overline">RECAP · THURSDAY FC</span>
+        <span class="oj-display oj-display-md">LIGHTS WIN 5–4.</span>
+        <span class="oj-body-sm">8 played · 90 min · 3 photos added. <strong>Run it back?</strong></span>
+      </a>
+    </section>
+
+    <section aria-label="End of feed" style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 16px; text-align: center;">
+      <x-import component-from-global-scope="Ojoro.Graphic" kind="o" size="{{fortyEight}}"></x-import>
+      <h2 class="oj-display oj-display-sm">YOU'RE CAUGHT UP.</h2>
+      <p class="oj-body oj-muted">Go do something.</p>
+    </section>
+  </main>
+
+  <nav aria-label="Main" style="margin-top: auto; display: flex; align-items: stretch; border-top: 1px solid var(--line); background: var(--surface); padding: 0 4px 28px;">
+    <a href="Main.dc.html" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text); box-shadow: inset 0 2px 0 var(--text); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>
+      HOME
+    </a>
+    <a href="Discover.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <x-import component-from-global-scope="Ojoro.Icon" name="search"></x-import>
+      DISCOVER
+    </a>
+    <a href="Create.dc.html" aria-label="Create" style="flex: 1; min-height: 56px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: var(--inverse); color: var(--on-inverse); display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="plus"></x-import></span>
+    </a>
+    <a href="Compete.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M9 21 L15 3 M3 8 H8 M3 16 H6 M16 8 H21 M18 16 H21"></path></svg>
+      COMPETE
+    </a>
+    <a href="You.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: var(--text-muted); font: 700 10px/12px var(--font-ui); letter-spacing: 0.08em;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M12 4 a4 4 0 1 0 0.01 0 M4 21 C 4 16, 8 14, 12 14 S 20 16, 20 21"></path></svg>
+      YOU
+    </a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2220}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var people = [{ name: 'Ade B' }, { name: 'Marcus T' }, { name: 'Lena R' }, { name: 'Sam K' }, { name: 'Yara M' }, { name: 'Joel P' }, { name: 'Ife N' }, { name: 'Tomi A' }];
+    return {
+      people: people,
+      fivePeople: people.slice(0, 5),
+      weeks: [3, 4, 2, 5, 6, 4, 6, 7],
+      two: 2, five: 5, six: 6, eight: 8, eleven: 11, fourteen: 14, fortyEight: 48
+    };
+  }
+}
+</script>
+</body>
+</html>

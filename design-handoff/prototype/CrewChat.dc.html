@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ojoro · Crew chat</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ojoro/tokens.css">
+<link rel="stylesheet" href="ds/ojoro/components/bundle.css">
+<script src="ds/ojoro/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="calm" style="width: 390px; height: 1450px; box-sizing: border-box; display: flex; flex-direction: column; background: var(--surface); color: var(--text); font-family: var(--font-ui); overflow: hidden;">
+  <header style="display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px; border-bottom: 1px solid var(--line);">
+    <a href="CrewHome.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;"><x-import component-from-global-scope="Ojoro.Icon" name="back"></x-import></a>
+    <span style="flex: 1; display: flex; flex-direction: column;"><span class="oj-title-sm">Thursday FC</span><span class="oj-caption oj-muted">14 members · 4 free tonight</span></span>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="more" label="Crew settings"></x-import>
+  </header>
+
+  <main style="display: flex; flex-direction: column; gap: 20px; padding: 20px 20px 24px;">
+    <span class="oj-caption oj-muted" style="text-align: center;">TODAY · 2:14 PM</span>
+
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+      <x-import component-from-global-scope="Ojoro.Avatar" name="Lena R" size="sm"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Lena</span><span class="oj-body">Thursday's going to be a washout. Anyone up for Saturday morning instead?</span></div>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+      <x-import component-from-global-scope="Ojoro.Avatar" name="Ade B" size="sm"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Ade</span><span class="oj-body">In, if it's before 11.</span></div>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: flex-start;">
+      <x-import component-from-global-scope="Ojoro.Avatar" name="Sam K" size="sm"></x-import>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><span class="oj-title-sm">Sam</span><span class="oj-body">Saturday works. Jeanne-Mance or the indoor place?</span></div>
+    </div>
+    <div style="align-self: flex-end; max-width: 280px; padding: 12px 16px; background: var(--surface-raised); display: flex; flex-direction: column; gap: 2px;">
+      <span class="oj-caption oj-muted">You</span><span class="oj-body">Same. Let's actually lock it this time.</span>
+    </div>
+
+    <section data-theme="forming" aria-label="Ojoro suggestion" style="display: flex; flex-direction: column; gap: 12px; padding: 20px; background: var(--surface); color: var(--text); box-shadow: inset 0 3px 0 var(--text);">
+      <span class="oj-overline">OJORO NOTICED A PLAN</span>
+      <span class="oj-display oj-display-sm">FOOTBALL, SATURDAY MORNING?</span>
+      <span class="oj-body-sm">4 of you want in. Ojoro can set up the plan with this crew already invited and ask only what's missing: time and place.</span>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="Plan.dc.html" class="oj-btn oj-btn-primary" style="text-decoration: none;">MAKE THIS A GAME</a>
+        <x-import component-from-global-scope="Ojoro.Button" variant="ghost">NOT NOW</x-import>
+      </div>
+      <span class="oj-caption oj-muted">Only a suggestion. Nothing is created until someone taps.</span>
+    </section>
+
+    <span class="oj-caption oj-muted" style="text-align: center;">2:20 PM · Lena tapped MAKE THIS A GAME</span>
+
+    <section aria-label="Time poll" style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="oj-caption oj-muted">9 of 14 are free Saturday between 9 and 11.</span>
+      <x-import component-from-global-scope="Ojoro.Poll" question="WHAT TIME SATURDAY?" voted="{{zero}}" closes="tonight 9 PM" options="{{timeOptions}}"></x-import>
+    </section>
+
+    <x-import component-from-global-scope="Ojoro.Poll" question="WHERE?" closes="tonight 9 PM" options="{{placeOptions}}"></x-import>
+  </main>
+
+  <footer style="margin-top: auto; display: flex; align-items: flex-end; gap: 8px; padding: 12px 12px 28px 20px; border-top: 1px solid var(--line);">
+    <div style="flex: 1;"><x-import component-from-global-scope="Ojoro.Input" label="Message" placeholder="Message Thursday FC"></x-import></div>
+    <x-import component-from-global-scope="Ojoro.IconButton" icon="forward" label="Send" variant="solid"></x-import>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1450}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      zero: 0,
+      timeOptions: [{ label: '9:00', votes: 5 }, { label: '10:00', votes: 3 }, { label: '10:30', votes: 1 }],
+      placeOptions: [{ label: 'Jeanne-Mance Park', votes: 0 }, { label: 'Indoor dome, Plateau', votes: 0 }]
+    };
+  }
+}
+</script>
+</body>
+</html>
