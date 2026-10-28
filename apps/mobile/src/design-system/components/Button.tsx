@@ -1,6 +1,6 @@
 import { opacity, spacing } from '@ojoro/design-tokens';
 import { Link, type Href } from 'expo-router';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type Ref } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -45,6 +45,8 @@ export type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   /** Layout classes for the button's outer box (margins, alignment). */
   className?: string;
   style?: StyleProp<ViewStyle>;
+  /** The pressable's view, e.g. to move accessibility focus to it (Modal focuses its safe option). */
+  ref?: Ref<View> | undefined;
 };
 
 /** Check and label sit `space-2` apart, like the button's own gap. */
@@ -122,6 +124,7 @@ export function Button({
   onPressOut,
   onFocus,
   onBlur,
+  ref,
   ...rest
 }: ButtonProps) {
   const isCommit = variant === 'commit';
@@ -179,6 +182,7 @@ export function Button({
 
   const button = (
     <Pressable
+      ref={ref}
       role={href ? 'link' : 'button'}
       aria-disabled={inactive || undefined}
       aria-busy={loading || undefined}

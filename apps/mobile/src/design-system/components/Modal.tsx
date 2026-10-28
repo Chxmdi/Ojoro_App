@@ -108,7 +108,7 @@ function ModalPanel({
       </Text>
       <View className="flex-row flex-wrap justify-end gap-space-3">
         {/* React 19 passes `ref` through Button's rest props to its Pressable; ButtonProps doesn't declare it yet. */}
-        <Button variant="secondary" onPress={onCancel} {...({ ref: cancelRef } as object)}>
+        <Button variant="secondary" onPress={onCancel} ref={cancelRef}>
           {cancel}
         </Button>
         <Button variant="primary" onPress={onConfirm}>
