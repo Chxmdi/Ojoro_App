@@ -2,7 +2,7 @@
 
 Ojoro is a social network for real-world movement: people say what they're down for, plans form, the plan locks at GAME ON, people show up, and it becomes a recap, a rivalry, a Passport stamp. The product is fully specified and designed. Your job is to build it as a **React Native + Expo** app that matches the design.
 
-Owner: Blessed. Ask him before anything in "Ask first" below.
+Owner: Blessed. Ask him before anything in "Ask first" below. Record judgment calls (spec gaps, deviations you couldn't avoid) in `docs/DESIGN_DECISIONS.md`.
 
 ## Sources of truth
 

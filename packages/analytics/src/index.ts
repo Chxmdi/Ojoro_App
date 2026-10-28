@@ -1,7 +1,9 @@
 export const analyticsEvents = {
   screenViewed: 'screen_viewed',
   downForCreated: 'down_for_created',
+  imDownTapped: 'im_down_tapped',
   imDownCommitted: 'im_down_committed',
+  ctaTapped: 'cta_tapped',
   planThresholdChanged: 'plan_threshold_changed',
   gameOnReached: 'game_on_reached',
   needOneMoreShown: 'need_one_more_shown',
