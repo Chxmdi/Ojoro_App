@@ -34,3 +34,7 @@ why, so it can be reviewed and reversed. Newest at the bottom of each section.
 | Strip pressed state: `surface-raised` | The web has no pressed look; a ground change is the system's way to show state without colour. |
 | Primitives never send analytics | Features send events. `im_down_tapped` and `cta_tapped` (Button.md) are in `@ojoro/analytics`. |
 | Native underline offset | iOS/Android can't offset underlines; ghost/TextButton underlines sit at the font default there. Web matches. |
+| PlanForming accepts `privacy` but draws nothing | The web reference doesn't draw it and no copy exists. Adding a privacy line means new copy; decide when Plan (Slice 01) is built. |
+| No stale-count state on PlanForming yet | The spec mentions "stale (count greyed until refresh)" but `index.d.ts` has no prop for it. Add with the realtime layer in Slice 01. |
+| ActivityStrip draws its own LIVE tag | `LiveIndicator` arrives in step 4 (M5). Swap it in then. Same anatomy: oxblood pill, 2px mark-ring, word LIVE. |
+| Open spot in AvatarCluster is padded to 30pt | Matches the web's 28pt disc plus its outside border, so cluster widths line up with the designs. |
