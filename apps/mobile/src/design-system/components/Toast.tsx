@@ -247,6 +247,8 @@ export function useToast(): ToastApi {
 function useScreenReader(): boolean {
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {
+    // react-native-web always answers true (a browser can't tell), which would double every toast.
+    if (Platform.OS === 'web') return;
     let alive = true;
     void AccessibilityInfo.isScreenReaderEnabled().then((on) => {
       if (alive) setEnabled(on);
