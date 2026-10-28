@@ -1,4 +1,4 @@
-import { spacing, type SituationId } from '@ojoro/design-tokens';
+import { contrastRatio, spacing, type SituationId } from '@ojoro/design-tokens';
 import {
   createContext,
   useCallback,
@@ -18,6 +18,7 @@ import { motion, REDUCED_MOTION_FADE } from '../motion';
 import { Situation, useSituation } from '../Situation';
 import { useThemeColor } from '../useThemeColor';
 import { Icon } from './Icon';
+import { needsMarkRing } from './Switch.logic';
 import { useOverlayReducedMotion } from './Overlay';
 import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
 import { Text } from './Text';
@@ -58,6 +59,8 @@ export function Toast({
   announce = true,
 }: ToastProps) {
   const onInverse = useThemeColor('on-inverse');
+  // On confirmed the black strip merges into oxblood (1.09:1), so it carries the white mark-ring.
+  const ringed = needsMarkRing(contrastRatio(useThemeColor('inverse'), useThemeColor('surface')));
   const icon = TOAST_ICON[kind];
   const liveness = toastLiveness(kind);
   const spoken = toastAnnouncement(message, kind);
@@ -75,7 +78,7 @@ export function Toast({
   return (
     <View
       {...(live as object)}
-      className="min-h-touch flex-row items-center gap-space-3 bg-inverse px-space-4 py-space-3"
+      className={`min-h-touch flex-row items-center gap-space-3 bg-inverse px-space-4 py-space-3${ringed ? ' border-2 border-mark-ring' : ''}`}
     >
       {icon ? (
         <Icon
