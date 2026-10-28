@@ -1,33 +1,12 @@
+import type { AnalyticsEvent, AnalyticsPayload } from '@ojoro/analytics';
+
 /**
  * Provider-agnostic analytics. The provider isn't chosen yet (HANDOFF.md, open
  * decisions), so events go to whatever sink is plugged in with `setAnalyticsSink`
- * and are logged in development.
- *
- * Event names mirror `analyticsEvents` in packages/analytics (`@ojoro/analytics`).
- * That package isn't a dependency of the app yet; when it is, import
- * `AnalyticsEvent` and `AnalyticsPayload` from it and delete the local copies.
+ * and are logged in development. Event names come from `@ojoro/analytics`.
  */
 
-export type AnalyticsEvent =
-  | 'screen_viewed'
-  | 'down_for_created'
-  | 'im_down_committed'
-  | 'plan_threshold_changed'
-  | 'game_on_reached'
-  | 'need_one_more_shown'
-  | 'friend_pulled_in'
-  | 'activity_opened'
-  | 'activity_started'
-  | 'activity_completed'
-  | 'recap_viewed'
-  | 'run_it_back'
-  | 'crew_make_this_a_game'
-  | 'challenge_sent'
-  | 'challenge_accepted'
-  | 'challenge_countered'
-  | 'challenge_completed';
-
-export type AnalyticsPayload = Record<string, string | number | boolean | null>;
+export type { AnalyticsEvent, AnalyticsPayload };
 
 export type TrackedEvent = {
   name: AnalyticsEvent;

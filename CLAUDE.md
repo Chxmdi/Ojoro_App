@@ -78,14 +78,19 @@ Run from the repo root (Node ≥ 22.13, pnpm 10):
 
 ```bash
 pnpm install
-pnpm lint          # eslint apps packages
+pnpm tokens        # regenerate tokens from design-handoff/design-system/tokens.json
+pnpm lint          # eslint apps packages scripts
 pnpm typecheck     # turbo run typecheck
-pnpm test          # vitest with coverage
-pnpm ci            # everything CI runs
-pnpm --filter @ojoro/mobile start
+pnpm test          # vitest with coverage (80% thresholds)
+pnpm run ci        # everything CI runs (`pnpm ci` is a pnpm built-in, not this script)
+pnpm --filter @ojoro/mobile start            # Expo dev server
+pnpm --filter @ojoro/mobile web              # Expo web (visual checks at 390pt)
+pnpm --filter @ojoro/mobile storybook        # Storybook on device; open /storybook
+pnpm --filter @ojoro/mobile storybook:web    # Storybook in the browser
+npx supabase start                           # local Supabase (needs Docker)
 ```
 
-Storybook and the token build script are added in step 0; record their commands here.
+Local phone sign-in uses the test numbers in `supabase/config.toml` (code 123456).
 
 ## Layout (target)
 
