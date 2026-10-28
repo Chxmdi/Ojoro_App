@@ -1558,11 +1558,15 @@ export type Database = {
           level_label: string | null;
           live_at: string | null;
           my_attendance: Database['public']['Enums']['attendance_status'] | null;
+          my_waitlist_position: number | null;
           place_area: string | null;
           place_floodlit_until: string | null;
           place_id: string | null;
+          place_lat: number | null;
+          place_lng: number | null;
           place_name: string | null;
           place_surface: string | null;
+          place_time_zone: string | null;
           plan_id: string;
           sport_id: string;
           sport_name: string;

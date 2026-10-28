@@ -88,4 +88,19 @@ export default tseslint.config(
       globals: { process: 'readonly', console: 'readonly', URL: 'readonly', Buffer: 'readonly' },
     },
   },
+  {
+    // Playwright end-to-end scripts: Node, plus browser globals inside page.evaluate callbacks.
+    files: ['apps/mobile/e2e/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        localStorage: 'readonly',
+        Event: 'readonly',
+      },
+    },
+  },
 );

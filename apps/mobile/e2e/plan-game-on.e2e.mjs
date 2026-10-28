@@ -100,6 +100,20 @@ async function signIn({ phone, name }) {
     p_area_lat: 45.52,
     p_area_lng: -73.58,
   });
+  // Start clean whatever an earlier run (or another script) left: out of every forming plan, no
+  // active Down For. save_onboarding above already reset the name, area, sports and Pull Me In.
+  const { data: forming } = await client
+    .from('plan_cards')
+    .select('id')
+    .eq('i_am_in', true)
+    .eq('effective_status', 'forming');
+  for (const p of forming ?? []) await call('leave_plan', { p_plan_id: p.id, p_idempotency_key: randomUUID() });
+  const { data: signals } = await client
+    .from('intent_signals')
+    .select('id')
+    .eq('user_id', res.data.user.id)
+    .eq('status', 'active');
+  for (const s of signals ?? []) await call('withdraw_down_for', { p_signal_id: s.id });
   return { client, call, session: res.data.session, id: res.data.user.id, name };
 }
 
@@ -190,6 +204,7 @@ function assert(cond, message) {
 
 const browser = await chromium.launch();
 const toCancel = [];
+let small = null;
 let exitCode = 0;
 
 try {
@@ -286,7 +301,7 @@ try {
   // 2. Couldn't join: a fourth person whose screen is behind ---------------------------------
   const D = await browserAs(browser, d);
   await step("a fourth person gets plan_full: Couldn't join + JOIN WAITLIST", async () => {
-    const small = await host.call('create_plan', {
+    small = await host.call('create_plan', {
       p_idempotency_key: key(),
       p_sport_id: 'football',
       p_starts_at: inMinutes(150),
@@ -340,7 +355,7 @@ try {
   });
 
   // Tidy up: GAME ON games are called off; what's still forming is cancelled.
-  for (const id of [planId]) {
+  for (const id of [planId, small?.plan_id].filter(Boolean)) {
     const card = await planCard(host, id);
     if (card.activity_id) await host.call('cancel_activity', { p_activity_id: card.activity_id }).catch(() => {});
   }

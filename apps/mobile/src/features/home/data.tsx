@@ -22,8 +22,8 @@ export function useMyPlans(userId: string | null) {
   return useQuery({
     queryKey: ['home', 'mine', userId],
     enabled: userId !== null,
-    queryFn: async (): Promise<PlanCard[]> =>
-      checkRows(
+    queryFn: async (): Promise<PlanCard[]> => {
+      const plans = checkRows(
         await supabase
           .from('plan_cards')
           .select('*')
@@ -32,7 +32,18 @@ export function useMyPlans(userId: string | null) {
           .gt('starts_at', new Date(Date.now() - 3 * 3600_000).toISOString())
           .order('starts_at')
           .limit(10),
-      ),
+      );
+      // A plan stays game_on when its game is called off or over; leave those to the Activity.
+      const activityIds = plans.map((p) => p.activity_id).filter((a): a is string => a !== null);
+      if (activityIds.length === 0) return plans;
+      const games = checkRows(
+        await supabase.from('activity_cards').select('id, effective_status').in('id', activityIds),
+      );
+      const done = new Set(
+        games.filter((g) => g.effective_status !== 'confirmed').map((g) => g.id),
+      );
+      return plans.filter((p) => !p.activity_id || !done.has(p.activity_id));
+    },
   });
 }
 
