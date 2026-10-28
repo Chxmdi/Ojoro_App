@@ -60,3 +60,29 @@ why, so it can be reviewed and reversed. Newest at the bottom of each section.
 | RunItBack: the new-plan rule is the button's accessibility hint | The object's copy is the web's; the RunItBack screen states "a new plan opens… nobody is in until they tap I'M DOWN" in its own list. Screen-reader users get it on the button: "Opens a new plan and invites the same people. Nobody is in until they tap I'M DOWN." |
 | PassportStamp sets after on its root, without a ground | The spec says it lives on the after ground; the web doesn't set a theme. `Situation id="after" ground={false}` keeps the ink oxblood wherever it's placed; the gap between the rings is left transparent (the web paints it in `surface`, which is the same ground). |
 | DownFor says "1 person down" | Same singular rule as AvatarCluster; the web says "1 people down." |
+
+## Slice 01 backend
+
+| Decision | Why |
+|---|---|
+| Friends and Crews mean "people you have played with" for now | Privacy settings offer Friends and My Crews, plans and Down For have a friends audience, but neither Friends (M1) nor Crews (M2) exist yet. Played-together (both checked in to the same game, so both have the Passport stamp) is the closest real relationship. Replace `authz.connected()` when they land. |
+| Levels are self-only | "Levels are only used to match you fairly. They never show as a score." `profile_sports()` returns the level to the owner only; others see sport, position and main sport. |
+| A Down For match makes you a member | Main says "Ojoro matched 6 of them into a plan" and Plan says "You're down, but it's not on yet": a Down For is an advance, conditional I'M DOWN. Matched people join with `via = 'down_for'` and can leave. Run It Back, by contrast, only invites (PRD §9.8). |
+| Down For matching rules | PRD §9.2 only says signals "can" be matched. Rules in docs/SLICE01_CONTRACT.md §Down For matching: join the fullest compatible forming plan, else group signals (oldest first, shared start time, mutual radius, no blocks, everyone's minimum met), else stay active. |
+| "Same intent" = same person, sport and overlapping window | PRD requires idempotent creation without duplicate active signals; an exclusion constraint enforces it and a repeat returns the existing signal. |
+| Plans lock at capacity, then join the waitlist | "The plan locks at 8"; States shows "Couldn't join… WAITLIST". `im_down` on a locked plan returns `plan_full` and the app offers `join_waitlist`. |
+| Waitlist auto-promotion stops when check-in opens | States: "If a spot opens before 7:00 you're in automatically" (7:00 = check-in opening for a 7:30 game). |
+| Check-in opens 30 min before the start and closes at the end; 150 m from the meeting point | Activity: "Opens at 7:00 when you're within 150 m" for a 7:30 game. The meeting point coordinates are used when set (parks are larger than 150 m), else the place centroid. |
+| After stays open 24 h; location sharing ends at the game's end + 30 min | After: "OPEN UNTIL WED 9 PM" for a Tue game ending 9:00; CheckIn: sharing "until 9:30" for a game ending 9:00. |
+| Participant Confirmed threshold = half of the players, rounded up, at least 2 | After: "3 of 8 confirmed. At 4 it becomes Participant confirmed." PRD §11.3: "multiple participants confirm". Players = people who checked in. |
+| Recap without a result | When After closes with no verified result, the Recap is still created (attendance, minutes) with the unverified score marked `self_recorded`, or no score. A recap is a permanent object (§9.8). |
+| The Run It Back caller is not a member either | "Nobody is in until they tap I'M DOWN." The caller hosts the new plan but taps I'M DOWN like everyone else. Two players running it back to the same time get the same plan. |
+| Pull-in permission | Allowed for people you've played with, or people with Pull Me In `nearby` for the sport. Quota 3 per plan per inviter (NeedOneMore: "You can send 3 more invites") plus 20 a day. Refusals don't say why (blocks stay private). |
+| "first game" shows to fellow members whatever the history setting | Plan shows "New to the area · first game". It says the person has no history, which isn't history; gating it on `history_visibility` (default Friends) would hide it from exactly the people meeting them for the first time. |
+| Games hosted is public (minus blocked) | Plan shows "Started the plan · 40 games hosted" to everyone in the plan. It's host reputation, not personal history. |
+| Reputation: a table of endorsements, shown from 5 | You: "A signal only appears after 5 confirmations." `give_reputation` exists for After; no UI is designed for giving yet. |
+| Sports catalog is a migration, places are seed | Sports are reference data every environment needs; places, people and plans are sample content. |
+| Day parts: morning < 11:00, midday 11:00–16:59, evening ≥ 17:00 local | OnboardWhen has MORNING / MIDDAY / EVENING without boundaries. |
+| STILL ON TONIGHT looks twice as far as your radius | States shows Parc Jarry at 4 km for a 3 km radius ("a bit further out", FirstHome). |
+| Hosts can start and end a game early | CheckIn: "Ade starts the game once the teams are set"; Live: FULL TIME (host). Without the host, times decide. |
+| Live score updates, chat, notifications and payments are out of the backend for now | Not in Slice 01 (PRD §18.3) or not decided (payments). Cost is stored for display only. |

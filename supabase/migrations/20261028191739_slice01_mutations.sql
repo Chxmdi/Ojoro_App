@@ -79,6 +79,7 @@ create type public.run_it_back_state as (
 create or replace function private.fail(p_code text, p_detail text default null)
 returns void
 language plpgsql
+stable
 set search_path = ''
 as $$
 begin
@@ -1071,7 +1072,9 @@ $$;
 --      start time t, both areas within the smaller of the two radii, audiences allow each other, no
 --      blocks inside the group. Oldest signals first, up to the sport's default capacity. Needs at
 --      least 2 people and every member's min_participants.
---      t = the later of the window start and now + 45 minutes, on a 15-minute boundary.
+--      t starts as the later of the new signal's window start and now + ~1 hour (15-minute
+--      boundary), and moves to the latest window start in the group; a signal joins only if every
+--      window in the group still contains t.
 --   C. Otherwise the signal stays active and shows in down_for_nearby().
 create or replace function private.match_signal(p_signal uuid)
 returns table (plan_id uuid, plan_created boolean)
@@ -1084,14 +1087,14 @@ declare
   v_sport public.sports%rowtype;
   v_plan uuid;
   v_t timestamptz;
+  v_end timestamptz;
   v_group uuid[];
   v_signals uuid[];
   v_mins integer[];
   v_c record;
   v_n integer;
   v_place uuid;
-  v_audience public.audience := 'public';
-  v_i integer;
+  v_audience public.audience := 'public'::public.audience;
 begin
   select * into v_s from public.intent_signals where id = p_signal;
   select * into v_sport from public.sports where id = v_s.sport_id;
@@ -1141,12 +1144,13 @@ begin
   v_group := array[v_s.user_id];
   v_signals := array[v_s.id];
   v_mins := array[coalesce(v_s.min_participants, 2)];
+  v_end := v_s.window_end;
   for v_c in
-    select o.id, o.user_id, o.min_participants, o.audience
+    select o.id, o.user_id, o.min_participants, o.audience, o.window_start, o.window_end
     from public.intent_signals o
     where o.status = 'active' and o.expires_at > now() and o.id <> v_s.id and o.user_id <> v_s.user_id
       and o.sport_id = v_s.sport_id
-      and o.window_start <= v_t and o.window_end > v_t
+      and o.window_start < v_s.window_end and o.window_end > v_t
       and o.area_lat is not null
       and private.distance_m(v_s.area_lat::double precision, v_s.area_lng::double precision,
                              o.area_lat::double precision, o.area_lng::double precision)
@@ -1156,9 +1160,15 @@ begin
     order by o.created_at, o.id
   loop
     exit when cardinality(v_group) >= v_sport.default_capacity;
+    -- Every window in the group must contain the start: the latest window start so far.
+    if greatest(v_t, v_c.window_start) >= least(v_end, v_c.window_end) then
+      continue;
+    end if;
     if exists (select 1 from unnest(v_group) g where authz.is_blocked(g, v_c.user_id)) then
       continue;
     end if;
+    v_t := greatest(v_t, v_c.window_start);
+    v_end := least(v_end, v_c.window_end);
     v_group := v_group || v_c.user_id;
     v_signals := v_signals || v_c.id;
     v_mins := v_mins || coalesce(v_c.min_participants, 2);
@@ -1624,7 +1634,7 @@ begin
     perform private.fail('not_host');
   end if;
   if private.activity_status_now(v_a) = 'live' then
-    return 'live';
+    return 'live'::public.activity_status;
   end if;
   if private.activity_status_now(v_a) <> 'confirmed' then
     perform private.fail('activity_started');
@@ -1634,7 +1644,7 @@ begin
   end if;
   update public.activities set status = 'live', live_at = now() where id = p_activity_id;
   perform private.emit('activity_started', v_uid, jsonb_build_object('activity_id', p_activity_id));
-  return 'live';
+  return 'live'::public.activity_status;
 end;
 $$;
 
@@ -1663,7 +1673,7 @@ begin
          after_closes_at = now() + interval '24 hours'
    where id = p_activity_id;
   delete from public.location_shares where activity_id = p_activity_id;
-  return 'after';
+  return 'after'::public.activity_status;
 end;
 $$;
 
@@ -1683,14 +1693,14 @@ begin
     perform private.fail('not_host');
   end if;
   if v_a.status = 'cancelled' then
-    return 'cancelled';
+    return 'cancelled'::public.activity_status;
   end if;
   if private.activity_status_now(v_a) <> 'confirmed' then
     perform private.fail('activity_started');
   end if;
   update public.activities set status = 'cancelled', cancelled_at = now() where id = p_activity_id;
   delete from public.location_shares where activity_id = p_activity_id;
-  return 'cancelled';
+  return 'cancelled'::public.activity_status;
 end;
 $$;
 
