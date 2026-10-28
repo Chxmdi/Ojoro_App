@@ -1,10 +1,13 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
+const owner = process.env.EXPO_OWNER;
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'Ojoro',
   slug: 'ojoro',
-  owner: process.env.EXPO_OWNER,
+  // exactOptionalPropertyTypes: omit the key entirely when EXPO_OWNER isn't set.
+  ...(owner ? { owner } : {}),
   version: '0.1.0',
   orientation: 'portrait',
   scheme: 'ojoro',

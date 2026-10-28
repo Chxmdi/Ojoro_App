@@ -12,7 +12,10 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     ".expo/types/**/*.ts",
+    ".rnstorybook/**/*.ts",
+    ".rnstorybook/**/*.tsx",
     "expo-env.d.ts",
+    "nativewind-env.d.ts",
     "app.config.ts"
   ]
 }

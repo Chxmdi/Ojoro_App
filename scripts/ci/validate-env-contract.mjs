@@ -1,19 +1,68 @@
 import { readFileSync } from 'node:fs';
 
-const required = ['NODE_ENV', 'APP_ENV', 'APP_VERSION'];
-const text = readFileSync(new URL('../../.env.example', import.meta.url), 'utf8');
-const keys = new Set(
-  text
+// Every key the code reads must be declared (with a placeholder, never a real value) in the
+// matching .env.example. Server-only secrets live in the root file; the mobile file holds only
+// EXPO_PUBLIC_ values, which are bundled into the app.
+const contracts = [
+  {
+    file: '.env.example',
+    required: ['NODE_ENV', 'APP_ENV', 'APP_VERSION', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
+  },
+  {
+    file: 'apps/mobile/.env.example',
+    required: ['EXPO_PUBLIC_SUPABASE_URL', 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'],
+    publicOnly: true,
+  },
+];
+
+// Server-side secrets must never appear in a file whose values ship to clients.
+const secretLike = /SERVICE_ROLE|SECRET|PRIVATE|PASSWORD|ACCESS_TOKEN/;
+
+function readEnv(file) {
+  const text = readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8');
+  return text
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line && !line.startsWith('#'))
-    .map((line) => line.split('=', 1)[0]),
-);
+    .map((line) => {
+      const eq = line.indexOf('=');
+      return eq === -1 ? [line, ''] : [line.slice(0, eq), line.slice(eq + 1)];
+    });
+}
 
-const missing = required.filter((key) => !keys.has(key));
-if (missing.length) {
-  console.error('Missing required .env.example keys:', missing.join(', '));
+const errors = [];
+for (const { file, required, publicOnly } of contracts) {
+  let entries;
+  try {
+    entries = readEnv(file);
+  } catch {
+    errors.push(`${file}: file is missing`);
+    continue;
+  }
+  const keys = new Set(entries.map(([key]) => key));
+  const missing = required.filter((key) => !keys.has(key));
+  if (missing.length) errors.push(`${file}: missing required keys: ${missing.join(', ')}`);
+
+  for (const [key, value] of entries) {
+    if (publicOnly && !key.startsWith('EXPO_PUBLIC_')) {
+      errors.push(
+        `${file}: ${key} is not EXPO_PUBLIC_; server-side keys belong in the root .env.example`,
+      );
+    }
+    if (publicOnly && secretLike.test(key)) errors.push(`${file}: ${key} looks like a secret`);
+    // Real Supabase keys (JWT-shaped or the sb_secret_/sb_publishable_ formats) must not be committed.
+    if (/^eyJ[\w-]{10,}\./.test(value) || /^sb_(secret|publishable)_\w+/.test(value)) {
+      errors.push(`${file}: ${key} has what looks like a real key; leave it empty`);
+    }
+  }
+}
+
+if (errors.length) {
+  console.error('Environment contract failed.');
+  for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
-process.stdout.write('Environment contract is valid.\n');
+process.stdout.write(
+  `Environment contract is valid (${contracts.map((c) => c.file).join(', ')}).\n`,
+);
