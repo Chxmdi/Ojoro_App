@@ -1,0 +1,3 @@
+-- Local seed data, loaded by `supabase db reset` after migrations (see [db.seed] in config.toml).
+-- Empty until the Slice 01 data model exists. Seed content comes from the sample names, places and
+-- counts in design-handoff/ and must never be applied to a shared environment.

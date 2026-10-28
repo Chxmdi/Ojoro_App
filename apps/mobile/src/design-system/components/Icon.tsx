@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { useThemeColor } from '../useThemeColor';
@@ -47,8 +48,13 @@ export type IconProps = {
 export function Icon({ name, size = 24, strokeWidth = 2, color, label }: IconProps) {
   const text = useThemeColor('text');
   const a11y = label
-    ? { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label }
-    : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const };
+    ? Platform.OS === 'web'
+      ? { role: 'img' as const, 'aria-label': label }
+      : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label }
+    : Platform.OS === 'web'
+      ? // react-native-svg passes props straight to the DOM on web, where RN's a11y props are unknown.
+        { 'aria-hidden': true }
+      : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const };
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...a11y}>
       <Path
