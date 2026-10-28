@@ -7,3 +7,10 @@ export { Text, type TextProps, type TextTone, type TextVariant } from './compone
 export { Icon, ICONS, type IconName, type IconProps } from './components/Icon';
 export { Screen, type ScreenProps } from './components/Screen';
 export { TabBar, type TabBarItem, type TabBarProps } from './components/TabBar';
+export { DisplayText, usePosterWidth, type DisplayTextProps, type DisplaySize } from './components/DisplayText';
+export { posterHeroSize, POSTER_HERO_MIN, POSTER_HERO_MAX, POSTER_HERO_RATIO } from './components/posterHero';
+export { Avatar, type AvatarProps, type AvatarSize } from './components/Avatar';
+export { initials } from './components/initials';
+export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
+export { Divider, type DividerProps, type DividerKind } from './components/Divider';
+export { Graphic, Check, GRAPHIC_KINDS, type GraphicProps, type GraphicKind, type CheckProps } from './components/Graphic';
