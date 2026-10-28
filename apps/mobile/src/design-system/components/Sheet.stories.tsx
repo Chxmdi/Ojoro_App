@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { EachSituation, onSituation, Section } from '../stories/storyKit';
 import { Button } from './Button';
+import { Modal } from './Modal';
 import { ReducedMotionOverride } from './Overlay';
 import { Sheet } from './Sheet';
 import { Text } from './Text';
@@ -173,4 +174,49 @@ export const Inline: Story = {
       </Sheet>
     </Section>
   ),
+};
+
+/**
+ * Overlays never stack. LEAVE PLAN opens a Modal while the sheet is still
+ * open: the Modal waits (and a dev warning names both) until the sheet has
+ * closed. The right call is to close the sheet first, as KEEP IT does here.
+ */
+function NoStacking() {
+  const [sheet, setSheet] = useState(true);
+  const [modal, setModal] = useState(false);
+  return (
+    <View className="gap-space-4">
+      <Button variant="secondary" onPress={() => setSheet(true)}>
+        OPEN SHEET
+      </Button>
+      <Sheet
+        visible={sheet}
+        title="Plan options"
+        onClose={() => setSheet(false)}
+        actions={
+          <Button block variant="secondary" onPress={() => setModal(true)}>
+            LEAVE PLAN
+          </Button>
+        }
+      >
+        <Text variant="body-sm" muted>
+          Tap LEAVE PLAN: nothing draws over this sheet. Close it and the modal appears.
+        </Text>
+      </Sheet>
+      <Modal
+        visible={modal}
+        title="LEAVE THIS PLAN?"
+        body="7 of 8 are in. Leaving drops it to 6 of 8 and tells the host."
+        confirm="LEAVE PLAN"
+        cancel="STAY IN"
+        onCancel={() => setModal(false)}
+        onConfirm={() => setModal(false)}
+      />
+    </View>
+  );
+}
+
+export const NeverStacks: Story = {
+  parameters: onSituation('forming'),
+  render: () => <NoStacking />,
 };

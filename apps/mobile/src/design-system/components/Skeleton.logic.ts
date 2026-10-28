@@ -54,6 +54,8 @@ export function loadingProps(label: string) {
     accessible: true,
     accessibilityLabel: label,
     accessibilityState: { busy: true },
+    // RN maps this to accessibilityState too; react-native-web only renders aria-busy from it.
+    'aria-busy': true,
     accessibilityLiveRegion: 'polite',
   } as const;
 }

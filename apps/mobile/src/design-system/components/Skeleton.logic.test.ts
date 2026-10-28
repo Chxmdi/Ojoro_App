@@ -65,6 +65,7 @@ describe('loadingProps', () => {
       accessible: true,
       accessibilityLabel: 'Loading plans',
       accessibilityState: { busy: true },
+      'aria-busy': true,
       accessibilityLiveRegion: 'polite',
     });
   });

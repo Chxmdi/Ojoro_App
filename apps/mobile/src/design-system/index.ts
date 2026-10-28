@@ -23,3 +23,6 @@ export { IconButton, type IconButtonProps, type IconButtonVariant } from './comp
 export { TextButton, type TextButtonProps } from './components/TextButton';
 export { Chip, type ChipProps } from './components/Chip';
 export { FocusRing, useFocusVisible, usePressScale, noBrowserOutline } from './components/pressFeedback';
+export { Image, IMAGE_RATIOS, type ImageProps, type ImageRatio } from './components/Image';
+export { Skeleton, loadingProps, SKELETON_DELAY, SKELETON_KINDS, type SkeletonKind, type SkeletonProps } from './components/Skeleton';
+export { Strip, StripList, STRIP_TITLE_VARIANTS, type StripProps, type StripListProps, type StripTitleVariant } from './components/Strip';
