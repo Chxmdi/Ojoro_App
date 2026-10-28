@@ -83,10 +83,24 @@ export const States: Story = {
     <View className="gap-space-4">
       <Input label="Name" placeholder="Tuesday 7-a-side" />
       <Input label="Name" defaultValue="Tuesday 7-a-side" />
-      <Input label="Place" icon="pin" defaultValue="Jeanne-Mance Park · turf 2" hint="People see the exact pitch once they're in." />
-      <Input label="Starts" icon="clock" defaultValue="7:30 AM" error="That time has passed. Pick a time after now." />
+      <Input
+        label="Place"
+        icon="pin"
+        defaultValue="Jeanne-Mance Park · turf 2"
+        hint="People see the exact pitch once they're in."
+      />
+      <Input
+        label="Starts"
+        icon="clock"
+        defaultValue="7:30 AM"
+        error="That time has passed. Pick a time after now."
+      />
       <Input label="Drop-in" defaultValue="$8" disabled hint="Set by the venue." />
-      <Input label="Note to the group" multiline defaultValue="Bring a dark and a light top. We split teams at check-in." />
+      <Input
+        label="Note to the group"
+        multiline
+        defaultValue="Bring a dark and a light top. We split teams at check-in."
+      />
     </View>
   ),
 };
@@ -113,7 +127,12 @@ export const OnEachSituation: Story = {
     <EachSituation>
       <Section title="Filled, hint, error">
         <Input label="Name" defaultValue="Tuesday 7-a-side" />
-        <Input label="Place" icon="pin" defaultValue="Jeanne-Mance Park" hint="Areas, not addresses." />
+        <Input
+          label="Place"
+          icon="pin"
+          defaultValue="Jeanne-Mance Park"
+          hint="Areas, not addresses."
+        />
         <Input label="Starts" icon="clock" defaultValue="7:30 AM" error="That time has passed." />
       </Section>
     </EachSituation>

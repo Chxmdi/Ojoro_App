@@ -26,7 +26,10 @@ export const Playground: Story = {};
 export const Empty: Story = { args: { value: 0, label: '0 of 8 in' } };
 
 /** Plan capacity on the forming ground, as in Plan.png. */
-export const Partial: Story = { args: { value: 6, label: '6 of 8 in' }, parameters: onSituation('forming') };
+export const Partial: Story = {
+  args: { value: 6, label: '6 of 8 in' },
+  parameters: onSituation('forming'),
+};
 
 export const Full: Story = { args: { value: 14, max: 14, label: '14 of 14 in' } };
 

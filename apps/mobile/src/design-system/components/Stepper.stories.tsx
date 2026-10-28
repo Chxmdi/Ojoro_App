@@ -51,7 +51,15 @@ export const AtMax: Story = { args: { value: 18 } };
 
 /** `format` shows money; the bounds are spoken in the same format. */
 export const Money: Story = {
-  args: { label: 'Drop-in price', hint: undefined, value: 12, min: 0, max: 40, step: 1, format: dollars },
+  args: {
+    label: 'Drop-in price',
+    hint: undefined,
+    value: 12,
+    min: 0,
+    max: 40,
+    step: 1,
+    format: dollars,
+  },
 };
 
 export const Capacity: Story = {

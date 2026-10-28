@@ -65,13 +65,19 @@ export const Variants: Story = {
 export const Gather: Story = {
   render: function GatherStory() {
     const [n, setN] = useState(4);
-    const people = PEOPLE.slice(0, n).map((p, i) => (i === n - 1 && n > 4 ? { ...p, isNew: true } : p));
+    const people = PEOPLE.slice(0, n).map((p, i) =>
+      i === n - 1 && n > 4 ? { ...p, isNew: true } : p,
+    );
     return (
       <View className="gap-space-4">
         <AvatarCluster people={people} total={n} max={8} open={Math.min(2, 8 - n)} />
         <Text variant="body-sm" muted>{`${n} / 8`}</Text>
         <View className="flex-row gap-space-3">
-          <Button variant="secondary" onPress={() => setN((v) => Math.min(8, v + 1))} disabled={n >= 8}>
+          <Button
+            variant="secondary"
+            onPress={() => setN((v) => Math.min(8, v + 1))}
+            disabled={n >= 8}
+          >
             SOMEONE JOINS
           </Button>
           <Button variant="ghost" onPress={() => setN(4)}>

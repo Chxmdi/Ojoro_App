@@ -120,7 +120,9 @@ export const Interactive: Story = {
     const join = (person: Person) =>
       setPeople((current) =>
         // Newest first, so the one who just joined is in view and gathers in.
-        current.length >= 8 ? current : [{ ...person, isNew: true }, ...current.map((p) => ({ ...p, isNew: false }))],
+        current.length >= 8
+          ? current
+          : [{ ...person, isNew: true }, ...current.map((p) => ({ ...p, isNew: false }))],
       );
     return (
       <View className="gap-space-4">
@@ -141,7 +143,9 @@ export const Interactive: Story = {
           <Button
             variant="secondary"
             disabled={count >= 8}
-            onPress={() => join(PEOPLE.find((p) => !people.some((q) => q.name === p.name)) ?? { name: 'Friend' })}
+            onPress={() =>
+              join(PEOPLE.find((p) => !people.some((q) => q.name === p.name)) ?? { name: 'Friend' })
+            }
           >
             SOMEONE JOINS
           </Button>
@@ -185,7 +189,11 @@ export const States: Story = {
               Count as of 7:02 PM
             </Text>
           </View>
-          <Toast kind="offline" message="Offline. Showing the last count from 7:02." announce={false} />
+          <Toast
+            kind="offline"
+            message="Offline. Showing the last count from 7:02."
+            announce={false}
+          />
         </View>
       </Section>
       <Section title="FULL">
