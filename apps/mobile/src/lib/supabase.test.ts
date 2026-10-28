@@ -56,6 +56,18 @@ describe('supabase client', () => {
     );
   });
 
+  it('keeps the session in memory during static web rendering', async () => {
+    mocks.platform.OS = 'web';
+    await load();
+    const storage = mocks.createClient.mock.calls[0]?.[2].auth.storage;
+    expect(storage).not.toEqual({ name: 'AsyncStorage' });
+    expect(await storage.getItem('k')).toBeNull();
+    await storage.setItem('k', 'v');
+    expect(await storage.getItem('k')).toBe('v');
+    await storage.removeItem('k');
+    expect(await storage.getItem('k')).toBeNull();
+  });
+
   it('refreshes tokens only while the app is active', async () => {
     await load();
     expect(mocks.addEventListener).toHaveBeenCalledWith('change', expect.any(Function));
