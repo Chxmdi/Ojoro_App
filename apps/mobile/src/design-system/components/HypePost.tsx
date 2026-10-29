@@ -1,4 +1,8 @@
+import { borderWidth } from '@ojoro/design-tokens';
 import { View } from 'react-native';
+
+import { useSituation } from '../Situation';
+import { useThemeColor } from '../useThemeColor';
 
 import { Avatar } from './Avatar';
 import { Badge } from './Badge';
@@ -7,6 +11,7 @@ import {
   postAvatarSize,
   postBadge,
   showsStats,
+  systemNeedsRing,
   systemOverline,
   type HypePostKind,
   type HypeStat,
@@ -18,6 +23,7 @@ export {
   HYPE_POST_KINDS,
   POST_KIND,
   hypePostLabel,
+  systemNeedsRing,
   type HypePostKind,
   type HypeStat,
 } from './HypePost.logic';
@@ -51,7 +57,8 @@ const competitorBody = { fontSize: 18, lineHeight: 26 } as const;
 /**
  * A post in a Challenge Event or live game feed (HypePost.md, web `function
  * HypePost`). The kind is named in words, never by colour alone: Ojoro's
- * updates are an `inverse` strip with a display headline; people's posts are
+ * updates are an `inverse` strip with a display headline (with the
+ * `mark-ring` on confirmed, where black meets oxblood); people's posts are
  * an avatar, name, a badge naming the kind, time and body on a `line` rule.
  */
 export function HypePost({
@@ -66,6 +73,8 @@ export function HypePost({
   testID,
 }: HypePostProps) {
   const label = hypePostLabel({ kind, author, body, time, side, stats });
+  const situation = useSituation();
+  const ring = useThemeColor('mark-ring');
 
   if (kind === 'system') {
     return (
@@ -75,6 +84,11 @@ export function HypePost({
         accessible
         aria-label={label}
         className="gap-space-2 bg-inverse p-space-4"
+        style={
+          systemNeedsRing(situation)
+            ? { boxShadow: `0 0 0 ${borderWidth['border-strong']}px ${ring}` }
+            : undefined
+        }
       >
         <Text variant="overline" tone="on-inverse">
           {systemOverline(time)}

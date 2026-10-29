@@ -59,3 +59,11 @@ export function hypePostLabel(p: {
     : '';
   return `${head}. ${p.body}${stats}`;
 }
+
+/**
+ * Ojoro's update strip is `inverse` (black). On `confirmed` (oxblood) the two
+ * merge at 1.09:1, so the strip gets the 2px white `mark-ring` there.
+ */
+export function systemNeedsRing(situation: string): boolean {
+  return situation === 'confirmed';
+}

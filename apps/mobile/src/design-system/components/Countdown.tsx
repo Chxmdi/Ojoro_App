@@ -54,15 +54,18 @@ export function useCountdown(to: number, fixed?: number | undefined): CountdownP
 
 const tabular: TextStyle = { fontVariant: ['tabular-nums'] };
 
-function Face({ parts, label, testID }: { parts: CountdownParts; label?: string | undefined; testID?: string | undefined }) {
+function Face({
+  parts,
+  label,
+  testID,
+}: {
+  parts: CountdownParts;
+  label?: string | undefined;
+  testID?: string | undefined;
+}) {
   const units = countdownUnits(parts);
   return (
-    <View
-      testID={testID}
-      role="timer"
-      accessible
-      accessibilityLabel={countdownLabel(parts, label)}
-    >
+    <View testID={testID} role="timer" accessible accessibilityLabel={countdownLabel(parts, label)}>
       {label ? (
         <Text variant="overline" className="mb-space-2">
           {label}
@@ -82,7 +85,17 @@ function Face({ parts, label, testID }: { parts: CountdownParts; label?: string 
   );
 }
 
-function Ticking({ to, now, label, testID }: { to: number; now?: number | undefined; label?: string | undefined; testID?: string | undefined }) {
+function Ticking({
+  to,
+  now,
+  label,
+  testID,
+}: {
+  to: number;
+  now?: number | undefined;
+  label?: string | undefined;
+  testID?: string | undefined;
+}) {
   const parts = useCountdown(to, now);
   return <Face parts={parts} label={label} testID={testID} />;
 }

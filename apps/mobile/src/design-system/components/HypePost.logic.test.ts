@@ -6,6 +6,7 @@ import {
   postAvatarSize,
   postBadge,
   showsStats,
+  systemNeedsRing,
   systemOverline,
 } from './HypePost.logic';
 
@@ -56,5 +57,12 @@ describe('HypePost logic', () => {
     expect(hypePostLabel({ kind: 'supporter', author: 'Ade B', body: 'Go on.' })).toBe(
       'Ade B, supporter. Go on.',
     );
+  });
+});
+
+describe('systemNeedsRing', () => {
+  it('rings the black strip only where it meets oxblood', () => {
+    expect(systemNeedsRing('confirmed')).toBe(true);
+    for (const s of ['calm', 'forming', 'live', 'after']) expect(systemNeedsRing(s)).toBe(false);
   });
 });

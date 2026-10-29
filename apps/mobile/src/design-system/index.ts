@@ -74,7 +74,7 @@ export {
   type ToastApi,
   type ToastProviderProps,
 } from './components/Toast';
-export { word, capitalize } from './components/word';
+export { word, capitalize, sentenceCase } from './components/word';
 export {
   AvatarCluster,
   clusterModel,
@@ -203,6 +203,7 @@ export {
   HYPE_POST_KINDS,
   POST_KIND,
   hypePostLabel,
+  systemNeedsRing,
   type HypePostKind,
   type HypeStat,
   type HypePostProps,
@@ -247,3 +248,78 @@ export {
   type NotificationRowProps,
   type NotificationGroupProps,
 } from './components/NotificationRow';
+export {
+  Countdown,
+  useCountdown,
+  countdownLabel,
+  countdownParts,
+  countdownUnits,
+  nextTickDelay,
+  type CountdownProps,
+  type CountdownParts,
+  type CountdownUnit,
+} from './components/Countdown';
+export {
+  PredictionBar,
+  PREDICTION_QUESTION,
+  pickLabel,
+  predictionLabel,
+  predictionSplit,
+  type PredictionBarProps,
+  type PredictionPick,
+  type PredictionSide,
+  type PredictionSplit,
+} from './components/PredictionBar';
+export {
+  CrowdSupport,
+  crowdSide,
+  type CrowdSupportProps,
+  type CrowdKey,
+  type CrowdSide,
+  type CrowdSideModel,
+} from './components/CrowdSupport';
+export {
+  CallOutPoster,
+  CALL_OUT_STATUSES,
+  callOutModel,
+  type CallOutPosterProps,
+  type CallOutStatus,
+} from './components/CallOutPoster';
+export {
+  ChallengeEventHero,
+  CHALLENGE_STAGES,
+  heroHaptic,
+  stageSpec,
+  winnerHeadline,
+  type ChallengeEventHeroProps,
+  type ChallengeStage,
+  type Competitor,
+  type StageSituation,
+  type StageSpec,
+} from './components/ChallengeEventHero';
+export {
+  LiveChallenge,
+  LIVE_ANNOUNCE_MS,
+  laneLabel,
+  lanePct,
+  raceSummary,
+  type LiveChallengeProps,
+  type LiveCompetitor,
+} from './components/LiveChallenge';
+export {
+  RecapPoster,
+  recapModel,
+  type RecapPosterProps,
+  type RecapStat,
+} from './components/RecapPoster';
+export {
+  Rivalry,
+  formCells,
+  recordSentence,
+  rivalryOverline,
+  type RivalryProps,
+  type RivalryRecord,
+  type RivalryResult,
+  type FormCell,
+} from './components/Rivalry';
+export { Rematch, rematchModel, type RematchProps } from './components/Rematch';
