@@ -17,6 +17,9 @@ are in ADR 0002 and in `docs/DESIGN_DECISIONS.md` ("Slice 01 backend").
   stub, Discover, FirstHome and the Need One More ranking are in
   [`LIQUIDITY_CONTRACT.md`](LIQUIDITY_CONTRACT.md). It also adds `plan_cards.place_time_zone` and new
   columns on `pull_in_candidates` (below).
+- **Step 4 (Messaging and feed, M5):** notifications, crews, crew and activity chat, Make This a Game,
+  Live (score, updates, reactions, followers) and `home_feed` are in
+  [`MESSAGING_CONTRACT.md`](MESSAGING_CONTRACT.md). It adds the `crew` plan audience and two report subjects.
 
 Contents: [Rules for clients](#rules-for-clients) · [Errors](#errors) · [Idempotency](#idempotency) ·
 [Tables and views](#tables-and-views) · [RPCs](#rpcs) · [Down For matching](#down-for-matching) ·
