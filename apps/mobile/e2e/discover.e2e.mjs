@@ -221,7 +221,9 @@ try {
     await results.getByText('Football tonight').waitFor();
     await C.page.getByTestId('result-place-b0000000-0000-4000-8000-000000000001').waitFor();
     const summary = await C.page.getByTestId('results-summary').textContent();
-    assert(/3 results for “jeanne”/.test(summary ?? ''), `summary: ${summary}`);
+    // At least the two plans and the place above; later seeds add more games at Jeanne-Mance.
+    const found = Number(/(\d+) results? for “jeanne”/.exec(summary ?? '')?.[1] ?? 0);
+    assert(found >= 3, `summary: ${summary}`);
   });
 
   await step('filter chips narrow the results', async () => {

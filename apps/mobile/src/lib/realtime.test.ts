@@ -73,6 +73,15 @@ describe('watchTopic', () => {
     expect(channels.size).toBe(0);
   });
 
+  it('opens a fresh channel name after the last screen left, never a closing one', () => {
+    watchTopic(sub, vi.fn())();
+    watchTopic(sub, vi.fn());
+    const names = mocks.supabase.channel.mock.calls.map((call) => String((call as unknown[])[0]));
+    expect(names).toHaveLength(2);
+    expect(names[0]).not.toBe(names[1]);
+    expect(names.every((name) => name.startsWith('activity:a1#'))).toBe(true);
+  });
+
   it('refetches everyone on subscribe, and catches up a screen that joins later', () => {
     const a = vi.fn();
     watchTopic(sub, a);

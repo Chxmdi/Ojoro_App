@@ -38,15 +38,20 @@ export function reactionLabel(reaction: Reaction): string {
 }
 
 /**
- * The optimistic toggle: flips `mine` on `label` and moves its count by one.
- * Screens apply it at once on tap, then reconcile with the server's counts
- * (or apply it again to roll back if the write fails). Other reactions are
- * untouched: a person can hold more than one.
+ * The optimistic toggle, with the server's rule: one word per person per post.
+ * Tapping the word you hold takes it back; tapping another moves your reaction
+ * there (the old word loses one). Screens apply it at once on tap, keep the
+ * previous list to roll back to if the write fails, then reconcile with the
+ * server's counts.
  */
 export function toggleReaction<R extends Reaction>(reactions: readonly R[], label: string): R[] {
+  if (!reactions.some((r) => r.label === label)) return [...reactions];
   return reactions.map((r) => {
-    if (r.label !== label) return r;
-    const mine = !r.mine;
-    return { ...r, mine, count: reactionCount(r.count + (mine ? 1 : -1)) };
+    if (r.label === label) {
+      const mine = !r.mine;
+      return { ...r, mine, count: reactionCount(r.count + (mine ? 1 : -1)) };
+    }
+    if (r.mine) return { ...r, mine: false, count: reactionCount(r.count - 1) };
+    return r;
   });
 }

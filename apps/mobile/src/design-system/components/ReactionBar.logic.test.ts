@@ -27,17 +27,23 @@ describe('ReactionBar logic', () => {
     expect(reactionCount(Number.NaN)).toBe(0);
   });
 
-  it('toggles one reaction optimistically, and back', () => {
+  it('toggles one reaction optimistically, one word per person', () => {
     const start = [
       { label: 'LET’S GO', count: 9, mine: true },
       { label: 'RESPECT', count: 4 },
     ];
-    const on = toggleReaction(start, 'RESPECT');
-    expect(on).toEqual([
-      { label: 'LET’S GO', count: 9, mine: true },
+    // Another word moves your reaction: the old one loses one.
+    const moved = toggleReaction(start, 'RESPECT');
+    expect(moved).toEqual([
+      { label: 'LET’S GO', count: 8, mine: false },
       { label: 'RESPECT', count: 5, mine: true },
     ]);
-    expect(toggleReaction(on, 'RESPECT')[1]).toEqual({ label: 'RESPECT', count: 4, mine: false });
+    // Your own word again takes it back.
+    expect(toggleReaction(moved, 'RESPECT')[1]).toEqual({
+      label: 'RESPECT',
+      count: 4,
+      mine: false,
+    });
     expect(toggleReaction(start, 'LET’S GO')[0]).toEqual({
       label: 'LET’S GO',
       count: 8,

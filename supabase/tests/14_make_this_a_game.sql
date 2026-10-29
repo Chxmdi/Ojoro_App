@@ -183,6 +183,14 @@ select ok((select bool_and(to_char(t at time zone 'America/Toronto', 'HH24:MI') 
           from public.chat_suggestions(tests.id('crew')) s, unnest(s.proposed_times) t),
   '"Saturday morning … before 11" proposes 9:00, 10:00 and 10:30 on a Saturday (those still ahead)');
 select is((select place_names from public.chat_suggestions(tests.id('crew'))), array['Test Pitch'], 'the place named');
+-- A plain re-read writes nothing (no realtime UPDATE, no refetch loop across the crew).
+select tests.keep('xmin_before', (select md5(s.xmin::text)::uuid from public.chat_suggestions s
+                                  where s.crew_id = tests.id('crew') and s.status = 'open'));
+select public.chat_suggestions(tests.id('crew'));
+select public.chat_suggestions(tests.id('crew'));
+select is((select md5(s.xmin::text)::uuid from public.chat_suggestions s
+           where s.crew_id = tests.id('crew') and s.status = 'open'),
+          tests.id('xmin_before'), 'reading the suggestion again does not rewrite it');
 select is((select count(*)::integer from public.plans where crew_id = tests.id('crew')), 0,
   'nothing is created until someone taps');
 select tests.keep('s', (select id from public.chat_suggestions(tests.id('crew'))));
