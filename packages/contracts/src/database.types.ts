@@ -3781,7 +3781,7 @@ export type Database = {
         }[];
       };
       back_challenge: {
-        Args: { p_event_id: string; p_side: Database['public']['Enums']['team_side'] };
+        Args: { p_event_id: string; p_side?: Database['public']['Enums']['team_side'] };
         Returns: Database['public']['CompositeTypes']['challenge_crowd_state'];
         SetofOptions: {
           from: '*';
@@ -4036,6 +4036,7 @@ export type Database = {
           scoring: Database['public']['Enums']['challenge_scoring'];
           sport_name: string;
           starts_at: string;
+          target: number;
           time_zone: string;
           title: string;
           unit: string;

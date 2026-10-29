@@ -11,7 +11,8 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
 - Schema: `supabase/migrations/20261029200000_competition_enums.sql`, `…200100_competition_schema.sql`,
   `…200200_competition_call_outs.sql`, `…200300_competition_crowd.sql`, `…200400_competition_live_result.sql`,
   `…200500_competition_auto_confirm_enum.sql`, `…200510_competition_auto_confirm.sql`,
-  `…200520_competition_verification_requester.sql`.
+  `…200520_competition_verification_requester.sql`, `…200530_competition_rivalry_report_enum.sql`,
+  `…200540_competition_rivalry_gaps.sql`, `…200550_competition_poster_backing.sql`.
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases `CallOutView`, `CallOutRow`,
   `ChallengeEventView`, `ChallengeEventRow`, `ChallengeFeedPost`, `ChallengeComment`, `ChallengePoll`,
   `ChallengeVerification`, `VerificationCheck`, `ChallengePoster`, `RivalryView`, `RivalryMeeting`,
@@ -22,14 +23,18 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
   `competitionIdempotentRpcs` (also in `idempotentRpcs`), `competitionToggleRpcs`,
   `competitionErrorCodes` (also in `ojoroErrorCodes`), `situationForStage`, `screenForStage`,
   `challengeCountdown`, `formatChallengeValue`, `formatMargin`, `formCells`, `crowdOutcome`, realtime
-  descriptors `challengeEventSubscription`, `callOutSubscription`, `callOutsSubscription`, and the limits
+  descriptors `challengeEventSubscription`, `callOutSubscription`, `callOutsSubscription`,
+  `rivalrySubscription`, the `WithNull<T, K>` helper, and the limits
   `CALL_OUTS_PER_DAY` (10), `PREDICTION_MIN_COUNT` (5), `CHALLENGE_POST_MAX_LENGTH` (280),
   `CHALLENGE_COMMENT_MAX_LENGTH` (500), `CALL_OUT_MESSAGE_MAX_LENGTH` (140), `CHALLENGE_CHECK_IN_MINUTES` (60),
   `RESULT_AUTO_CONFIRM_HOURS` (48).
 - Tests: `supabase/tests/17_call_outs.sql`, `18_challenge_crowd.sql`, `19_challenge_result_rivalry.sql`,
   `20_challenge_auto_confirm.sql`,
   plus the local-only concurrency check `supabase/tests/race/accept_call_out_race.sh` (22 concurrent
-  ACCEPT taps on one open call-out: exactly one event).
+  ACCEPT taps on one open call-out: exactly one event), and `21_rivalry_gaps.sql`.
+- `RivalryView`, `RivalryMeeting` and `RivalryRow` already mark their nullable columns `| null`
+  (the generated types say non-null for every `returns table` column); use them, not the raw
+  `Functions[…]['Returns']`.
 - Enum names: `challenge_format`, `challenge_scoring`, `challenge_audience`, `challenge_stage`,
   `challenge_status`, `call_out_status`, `challenge_post_kind`, `challenge_poll_template`,
   `challenge_verification_method` (not `challenge_verification`, which is the Verifying RPC),
@@ -146,7 +151,8 @@ changed`, `side`, `kind`, `stats`, `threshold`, `template`, `closes_at`, `value`
 - **Blocks:** blocked authors' posts and comments are left out (RLS and RPCs); blocking someone ends
   pending call-outs between you (as withdrawn, so nobody is told). Report from every call-out, event,
   post and comment: `report('call_out' | 'challenge_event' | 'challenge_post' | 'challenge_comment', id,
-  reason, note)`. Block: `block_user` from the header menu or a comment's author.
+  reason, note)`. Block: `block_user` from the header menu or a comment's author. Rivalry's header menu:
+  `report('rivalry', rivalry_id, …)` (anyone who can see one of its events) and `block_user(a/b id)`.
 - **No gambling adjacency:** see rule 7. Poll questions and options are written by the server from an
   allowlist; nobody can write a wagering or humiliating poll.
 - **Spectators never affect the result:** predictions, backing, polls and cheers are stored apart and
@@ -279,8 +285,8 @@ my_backing*, changed }`** One per person, change any time before the start; comp
 themselves. When the favourite flips with 20+ predictions: milestone THE CROWD IS CHANGING ITS MIND (at
 most every 6 h). Errors: `predictions_locked`, `prediction_not_allowed`, `invalid_argument`.
 
-**`back_challenge(p_event_id, p_side | null) → challenge_crowd_state`** BACK CHIMDI / BACKING; null
-stops backing. Open until verifying. Errors: `backing_closed`, `prediction_not_allowed`.
+**`back_challenge(p_event_id, p_side = null) → challenge_crowd_state`** BACK CHIMDI / BACKING. Leave
+`p_side` out (or pass null) to stop backing. Open until verifying. Errors: `backing_closed`, `prediction_not_allowed`.
 
 **`post_challenge_update(p_event_id, p_kind, p_body, p_idempotency_key, p_stats = null) →
 challenge_posts`** Competitors and approved organizers (organizers: no `training`), until complete. Kinds
@@ -412,7 +418,9 @@ returned).
 `last_scoring`, `last_unit`, `last_title`), `next_event_id`*, `next_title`*, `next_starts_at`*,
 `next_time_zone`*, `next_stage`* ("NEXT · 5K · Sat 12 Oct"), `rematch_call_out_id`*, `rematch_from`*
 ('a' | 'b'), `rematch_from_name`*, `rematch_message`* ("Same loop, two weeks. Best of three?"),
-`rematch_title`*, `rematch_starts_at`*, `rematch_can_answer`. Error: `rivalry_not_found`.
+`rematch_title`*, `rematch_starts_at`*, `rematch_can_answer`, `rematch_of_event_id`* (the event the
+pending rematch follows). **The caller is always side `a`** when they're in the rivalry (as the person,
+or a member of the crew); spectators get the lower id as `a`. Error: `rivalry_not_found`.
 
 **`rivalry_meetings(p_rivalry_id, p_limit = 20) → table(event_id, starts_at, time_zone, title,
 sport_id, place_name*, scoring, unit*, a_value, b_value, winner ('a' | 'b' | 'd'), margin, source,
@@ -420,8 +428,10 @@ verified_at)`** RECENT MEETINGS, newest first ("12.10 · 5K · Mount Royal loop 
 participant confirmed · CHIMDI").
 
 **`my_rivalries(p_limit = 10) → table(rivalry_id, kind, a_name, b_name, meetings, a_wins, b_wins,
-draws, form, next_event_id*, next_title*, next_starts_at*, next_time_zone*, last_active_at*)`** Compete
-· RIVALRIES (yours and your crews'), most recently active first.
+draws, form, next_event_id*, next_title*, next_starts_at*, next_time_zone*, last_active_at*,
+opponent_user_id*, opponent_crew_id*)`** Compete · RIVALRIES (yours and your crews'), most recently
+active first. **You are always side `a`**; the opponent is `b`: `opponent_user_id` for a person rivalry
+(null for crews), `opponent_crew_id` for a crew rivalry (null for people).
 
 **`run_it_back_challenge(p_event_id, p_idempotency_key, p_starts_at = null, p_message = null) →
 rematch_state { call_out_id, event_id*, created, accepted }`** RUN IT BACK on Result and Rivalry
@@ -436,8 +446,8 @@ event and its result never change. Errors: `challenge_event_not_found`, `not_com
 
 **`challenge_poster(p_event_id) → 1 row(event_id, kind ('accepted' | 'result'), a_name, b_name, title,
 sport_name, starts_at, time_zone, place_name*, place_city*, winner_side*, is_draw*, a_value*, b_value*,
-scoring, unit*, link_path)`** The 540×675 share image (render it client-side): OJORO · CALL-OUT
-ACCEPTED, names, title, "Sat 12 Oct · 9:00", "Mount Royal loop, Montréal", "WHO TAKES IT? FOLLOW,
+scoring, unit*, link_path, target*)`** The 540×675 share image (render it client-side): OJORO · CALL-OUT
+ACCEPTED, names, title ("5K"; `target`/`unit` = 5 km), "Sat 12 Oct · 9:00", "Mount Royal loop, Montréal", "WHO TAKES IT? FOLLOW,
 PREDICT AND BACK ON OJORO"; after verification the result. Only for `public` events (or your own);
 never counts, avatars, or anything beyond the public place and city. `link_path` = `/event/{id}`.
 Errors: `poster_not_allowed`, `challenge_closed`.
@@ -469,6 +479,7 @@ event with `mute_object('challenge_event', id)`.
 | Event pages (Buildup, Today, Live, Verifying, Result) | `challengeEventSubscription(eventId)` (`challenge:{id}`) | `challenge_events` · UPDATE · `id=eq.{id}`; `challenge_competitors` · *; `challenge_posts` · INSERT/UPDATE; `challenge_comments` · INSERT/UPDATE; `challenge_polls` · *; `challenge_result_submissions` · * (competitors only) — all `event_id=eq.{id}` | Event UPDATE: refetch `challenge_event_view` (stage, counts, progress). Competitors: check-ins. Posts/comments/polls: refetch the list. Submissions: refetch `challenge_verification`. |
 | CallOut | `callOutSubscription(callOutId)` (`call-out:{id}`) | `call_outs` · UPDATE · `id=eq.{id}` | Status changed (accepted → open the event; countered → open `counter_id`). |
 | Compete | `callOutsSubscription(me)` (`call-outs:{me}`) + Step 4 `notificationsSubscription(me)` | `call_outs` · * · `opponent_id=eq.{me}` and `challenger_id=eq.{me}` | Refetch `my_call_outs`, `my_challenge_events`. |
+| Rivalry (and Compete's rivalry block) | `rivalrySubscription(rivalryId)` (`rivalry:{id}`) | `call_outs` · * and `challenge_events` · * · `rivalry_id=eq.{id}` | A rematch asked/answered or an event's stage changed (a result changes the record): refetch `rivalry_view`, `rivalry_meetings`. |
 
 Published tables added: `call_outs`, `challenge_events`, `challenge_competitors`, `challenge_posts`,
 `challenge_comments`, `challenge_polls`, `challenge_result_submissions`. Predictions, backing,
@@ -486,9 +497,11 @@ has_stats), `challenge_comment_created` (reply, on_post, competitor), `challenge
 `challenge_live` (predictions, followers), `challenge_progress_logged`, `challenge_result_submitted`,
 `challenge_correction_requested`, `challenge_result_verified` (source, draw, crowd_called_it,
 minutes_to_verify), `challenge_rematch_requested`, `challenge_rematch_accepted`, `challenge_cancelled`.
-The client sends taps only: `screen_viewed`, `challenge_shared` (poster), `challenge_live_viewed`,
-`prediction_made{side}` (PredictionBar), `crowd_backed{side}` (CrowdSupport), `rematch_requested` /
-`rematch_accepted` taps (Rematch), never a copy of the server events.
+The client sends taps only (names in `@ojoro/analytics`): `screen_viewed`, `cta_tapped` (Call-Out taps:
+`call_out_accept`, `call_out_counter`, `call_out_pass`, `call_out_withdraw`, `call_out_send`),
+`challenge_shared` (poster), `challenge_live_viewed`, `prediction_made{side}` (PredictionBar),
+`crowd_backed{side}` (CrowdSupport), `rematch_requested` / `rematch_accepted` (Rematch), never a copy
+of the server events.
 
 ## Screens
 
@@ -502,7 +515,7 @@ The client sends taps only: `screen_viewed`, `challenge_shared` (poster), `chall
 | **EventLive** | `/event/[id]` (stage `live`) | `challenge_event_view` (LiveChallenge lanes: `a_progress`/`b_progress` of `target` `unit`, `a_checked_in`, clock from `live_at`, "212 watching" = `follower_count`, freshness + "participant logged"), LOCKED PREDICTIONS (`prediction_*_pct`, `my_prediction`), `challenge_comments` | `react_challenge` (CHEER THEM ON), `comment_on_challenge`, `respect_challenge_comment`; competitors: `log_challenge_progress`, `submit_challenge_result` (FINISH) | `challenge:{id}` |
 | **Verifying** | `/event/[id]` (stage `verifying` / `disputed`) | `challenge_verification(id)` (competitors/organizers); spectators: `challenge_event_view` only ("Verifying. Nobody is called the winner until it's done.") | `confirm_challenge_result` (CONFIRM BOTH TIMES), `request_challenge_correction`, `withdraw_challenge_correction`, `submit_challenge_result` (corrected numbers) | `challenge:{id}` |
 | **Result** | `/event/[id]` (stage `complete`) | `challenge_event_view` (RecapPoster: winner, `result_a`/`result_b`, `watched_count`, `result_note` + `formatMargin(margin)`, VERIFIED + `result_source`; PREDICTIONS: `crowdOutcome(crowd_called_it)` "THE CROWD GOT IT WRONG." / "54% picked Marcus. You called it." from `crowd_pick_*` and `my_prediction`; rivalry row from `rivalry_a_wins`…/`rivalry_meetings` with UPDATED), `challenge_poster` (SHARE RECAP) | `run_it_back_challenge` (RUN IT BACK) | `challenge:{id}` |
-| **Rivalry** | `/rivalry/[id]` | `rivalry_view(id)`, `rivalry_meetings(id)` (RECENT MEETINGS: date, title · place, values or "Marcus by 1:02", source "participant confirmed", winner tag or DRAW); Rematch block from `rematch_*` and `last_*` | RUN IT BACK = `run_it_back_challenge(last_event_id)` (accepts their rematch, or asks for one); NOT YET = `decline_call_out(rematch_call_out_id)`; "See the Call-Out flow" → `/challenge/{rematch_call_out_id}`; header menu report/block | none |
+| **Rivalry** | `/rivalry/[id]` (sub `rivalry:{id}`) | `rivalry_view(id)`, `rivalry_meetings(id)` (RECENT MEETINGS: date, title · place, values or "Marcus by 1:02", source "participant confirmed", winner tag or DRAW); Rematch block from `rematch_*` and `last_*` | RUN IT BACK = `run_it_back_challenge(last_event_id)` (accepts their rematch, or asks for one); NOT YET = `decline_call_out(rematch_call_out_id)`; "See the Call-Out flow" → `/challenge/{rematch_call_out_id}`; header menu report/block | none |
 
 Every screen has the standard states (skeleton after 300 ms, empty, offline with last-known values and
 how old, errors by code).
