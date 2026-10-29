@@ -7,6 +7,7 @@
 import type { Database } from './database.types';
 import { liquidityErrorCodes } from './liquidity';
 import { messagingErrorCodes } from './messaging';
+import { competitionErrorCodes } from './competition';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -96,6 +97,15 @@ export const idempotentRpcs = [
   'send_message',
   'make_this_a_game',
   'post_update',
+  // Step 5 (competition.ts)
+  'create_call_out',
+  'accept_call_out',
+  'counter_call_out',
+  'post_challenge_update',
+  'comment_on_challenge',
+  'submit_challenge_result',
+  'confirm_challenge_result',
+  'run_it_back_challenge',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -157,6 +167,8 @@ export const ojoroErrorCodes = [
   ...liquidityErrorCodes,
   // Step 4: Messaging and feed (messaging.ts, docs/MESSAGING_CONTRACT.md)
   ...messagingErrorCodes,
+  // Step 5: Competition (competition.ts, docs/COMPETITION_CONTRACT.md)
+  ...competitionErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

@@ -22,6 +22,10 @@ const SUBJECT_WORDS: Record<ReportSubjectKind, string> = {
   result: 'score',
   message: 'message',
   update: 'update',
+  call_out: 'Call-Out',
+  challenge_event: 'event',
+  challenge_post: 'post',
+  challenge_comment: 'comment',
 };
 
 export function subjectWord(kind: ReportSubjectKind): string {

@@ -12,3 +12,5 @@ export * from './slice01';
 export * from './liquidity';
 // Step 4 (Messaging and feed) client contract helpers (docs/MESSAGING_CONTRACT.md).
 export * from './messaging';
+// Step 5 (Competition) client contract helpers (docs/COMPETITION_CONTRACT.md).
+export * from './competition';
