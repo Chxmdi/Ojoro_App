@@ -5,6 +5,7 @@
  * Pure TypeScript with no runtime dependencies, so it runs in the app, in tests and in Node.
  */
 import type { Database } from './database.types';
+import { liquidityErrorCodes } from './liquidity';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -87,6 +88,8 @@ export const idempotentRpcs = [
   'propose_result',
   'confirm_result',
   'run_it_back',
+  // Step 3 (liquidity.ts)
+  'create_from_demand',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -144,6 +147,8 @@ export const ojoroErrorCodes = [
   'moments_closed',
   'moment_path_invalid',
   'not_author',
+  // Step 3: Liquidity (liquidity.ts, docs/LIQUIDITY_CONTRACT.md)
+  ...liquidityErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

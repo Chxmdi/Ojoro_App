@@ -8,3 +8,5 @@ export function describeService() {
 export * from './database.types';
 // Slice 01 client contract helpers (docs/SLICE01_CONTRACT.md).
 export * from './slice01';
+// Step 3 (Liquidity) client contract helpers (docs/LIQUIDITY_CONTRACT.md).
+export * from './liquidity';
