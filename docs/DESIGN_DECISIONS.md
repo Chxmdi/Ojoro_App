@@ -457,4 +457,21 @@ Competition (PRD M6). Contract: `docs/COMPETITION_CONTRACT.md`.
 | RUN IT BACK asks first | Modal: "Sends Marcus a new Call-Out with the same rules, two weeks on at the same time. If Marcus already asked, this accepts it. This result stays as it is." Then opens the new Call-Out (or the accepted rematch event). |
 | Result verified haptic | Plays once per result per session, when the result was verified less than 2 minutes before it opened (so watching it arrive plays it, reopening an old recap doesn't). |
 | Side order follows the event, not the viewer | Lanes, numbers and stats list side a (the challenger) first for everyone, so two people comparing screens see the same order. The PNGs happen to show the viewer first. The rivalry row is oriented to the viewer ("You lead after 9 meetings"). |
+| Unanswered results stand after 48 hours | Verifying adds a clock line under the numbers: "Final at Sat 9:23 unless you confirm or ask for a correction." (or "unless Marcus confirms or asks…" once you have), hidden while a correction is open. Result's foot reads "Confirmed after 48 hours without an answer." for `unanswered_auto_confirmed`. |
 | Report/block on every stage | The header's more button reports the event; competitors in a person-vs-person event can also block the other side; everyone else reports only (they block from comments or profiles). |
+
+## Step 5 screens: D
+
+### Rivalry & rematch
+
+| Decision | Detail |
+|---|---|
+| First names for people | The record, header, form and badges use first names ("CHIMDI 5 / MARCUS 3"), as designed; crew rivalries keep the full crew name. |
+| Three recent meetings, then EARLIER MEETINGS | The design shows three; the rest are a tap away so the rematch block stays near the record. Each row opens that meeting's result (`/event/[id]`). |
+| Meeting line | Times and distances read "22:48 vs 23:31", scores "3–3" (from the viewer's side); without values, "Marcus by 1:02". Verification words: "participant confirmed", "organizer reviewed". The PNG's "device verified" isn't possible until device verification (M10). |
+| Rematch states the design doesn't show | Their request, you can answer: the Rematch component (RUN IT BACK accepts via `accept_call_out`, NOT YET declines; toast "Not yet. Marcus can ask again any time."). Nothing pending and you're in it: REMATCH? with "Ask Marcus to go again: the 5K, same rules, two weeks on." and RUN IT BACK (`run_it_back_challenge(last_event_id)`). You asked: "You asked for a rematch. Waiting on Marcus." Someone else can't answer (spectator, non-captain): "Marcus asked for a rematch." A next meeting is already on: SEE THE NEXT MEETING. Spectators with nothing pending: "Only Chimdi and Marcus can ask for a rematch." |
+| The promise line | "Accepting creates a new Call-Out linked to this rivalry. Saturday's result stays exactly as it is." uses the day name within a week of the last meeting, the date after that ("The result from 14 Sep…"). |
+| "See the Call-Out flow" | Reads "See the Call-Out" and opens the pending rematch Call-Out (`/challenge/[id]`). |
+| Report/block | The header's more button reports the latest event of the rivalry; in a person-vs-person rivalry you're in, it can also block the other person. Crews and spectators report only. After a block, back to Compete. |
+| Privacy | When fewer meetings are listed than the record counts (some were only open to the people in them), a note says so; the record still counts every verified result. |
+| Realtime without a contract channel | The screen listens to `call_outs` and `challenge_events` filtered by `rivalry_id` (both published, RLS applies) and refetches on any change. |

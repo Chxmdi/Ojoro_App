@@ -115,8 +115,8 @@ async function browserAs(browser, person) {
 
 async function open(page, path, testId) {
   // The shared dev server can take a while to serve a page; give it room.
-  await page.goto(`${APP}${path}`, { waitUntil: 'load', timeout: 180_000 });
-  if (testId) await page.getByTestId(testId).first().waitFor({ timeout: 60_000 });
+  await page.goto(`${APP}${path}`, { waitUntil: 'domcontentloaded', timeout: 180_000 });
+  if (testId) await page.getByTestId(testId).first().waitFor({ timeout: 180_000 });
 }
 
 const results = [];
@@ -266,15 +266,16 @@ try {
     await Z.page.keyboard.press('Escape');
   });
 
-  await step('the poster: names, 5K, the line; private events have none', async () => {
-    await open(Z.page, `${path}/poster`, 'poster-art');
+  await step('the poster: names, 5K and the line; only public events (or your own) have one', async () => {
+    // In-app navigation from the build-up (POSTER), so the shared dev server needn't serve a new page.
+    await Z.page.getByTestId('event-poster-link').click();
+    await Z.page.getByTestId('poster-art').waitFor({ timeout: 30_000 });
     await Z.page.getByText('CALL-OUT ACCEPTED').waitFor();
     await Z.page.getByText('WHO TAKES IT? FOLLOW, PREDICT AND BACK ON OJORO').waitFor();
+    // Not public: the build-up drops the POSTER link; the server still gives competitors their own.
     await admin.from('challenge_events').update({ audience: 'participants' }).eq('id', eventId);
-    await X.page.goto(`${APP}/`, { waitUntil: 'load' });
-    await open(X.page, `${path}/poster`);
-    // A competitor still sees it (their own); a stranger can't open the event at all.
-    await X.page.getByTestId('poster-art').waitFor({ timeout: 30_000 });
+    const own = await y.client.rpc('challenge_poster', { p_event_id: eventId });
+    assert(!own.error && own.data?.length === 1, `own poster: ${JSON.stringify(own.error)}`);
     await admin.from('challenge_events').update({ audience: 'public' }).eq('id', eventId);
   });
 

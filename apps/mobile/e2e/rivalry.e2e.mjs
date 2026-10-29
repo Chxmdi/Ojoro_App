@@ -240,8 +240,7 @@ try {
     await Y.page.getByTestId('header-more').click();
     await Y.page.getByText(/report this event/i).first().waitFor({ timeout: 15_000 });
     await Y.page.keyboard.press('Escape');
-    await Y.page.reload({ waitUntil: 'load' });
-    await Y.page.getByTestId('rivalry-screen').waitFor({ timeout: 60_000 });
+    await open(Y.page, `/rivalry/${rivalryId}`, 'rivalry-rematch-offer');
   });
 
   let firstAsk;

@@ -10,6 +10,7 @@ import {
   formatChallengeValue,
   formatMargin,
   PREDICTION_MIN_COUNT,
+  RESULT_AUTO_CONFIRM_HOURS,
   type ChallengeScoring,
   type ChallengeSide,
   type ChallengeStage,
@@ -17,7 +18,7 @@ import {
   type VerificationCheck,
 } from '@ojoro/contracts';
 
-import { firstName } from '../activities/format';
+import { firstName, weekdayClock } from '../activities/format';
 import { reactionRows, type ReactionState } from '../live/logic';
 
 /** The event facts these screens read (a subset of `challenge_event_view`, nullable as served). */
@@ -392,9 +393,26 @@ export function rivalryRow(f: StageFacts): { record: string; title: string; line
 
 /** How the result was verified, in words for the recap's foot. */
 export function verifiedBy(source: string | null): string {
-  return source === 'organizer_review'
-    ? 'Verified by an organizer review.'
-    : 'Verified: both competitors confirmed the numbers.';
+  if (source === 'organizer_review') return 'Verified by an organizer review.';
+  if (source === 'unanswered_auto_confirmed') {
+    return `Confirmed after ${RESULT_AUTO_CONFIRM_HOURS} hours without an answer.`;
+  }
+  return 'Verified: both competitors confirmed the numbers.';
+}
+
+/**
+ * When an unanswered result becomes final on its own (RESULT_AUTO_CONFIRM_HOURS after it was sent):
+ * "Final at Sat 9:23 unless you confirm or ask for a correction." Null while a correction is open.
+ */
+export function autoConfirmLine(
+  autoConfirmsAt: string | null,
+  timeZone: string | undefined,
+  p: { iNeedToConfirm: boolean; other: string | null },
+): string | null {
+  if (!autoConfirmsAt) return null;
+  const at = weekdayClock(autoConfirmsAt, timeZone);
+  if (p.iNeedToConfirm) return `Final at ${at} unless you confirm or ask for a correction.`;
+  return `Final at ${at} unless ${p.other ?? 'the other side'} confirms or asks for a correction.`;
 }
 
 /** The share text for the recap (no place beyond what's public, no watchers list). */

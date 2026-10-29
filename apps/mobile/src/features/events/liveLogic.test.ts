@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ageWords,
+  autoConfirmLine,
   cheerRows,
   checkRow,
   confirmLabel,
@@ -277,7 +278,22 @@ describe('result', () => {
   it('says how it was verified and shares plainly', () => {
     expect(verifiedBy('organizer_review')).toMatch(/organizer/);
     expect(verifiedBy('participant_confirmation')).toMatch(/both competitors/);
+    expect(verifiedBy('unanswered_auto_confirmed')).toBe('Confirmed after 48 hours without an answer.');
     expect(recapShareText(base)).toBe('Chimdi wins 5K. 22:48 Chimdi, 23:31 Marcus. On Ojoro.');
     expect(recapShareText({ ...base, is_draw: true, winner_side: null })).toMatch(/: a draw\./);
+  });
+});
+
+describe('auto-confirm', () => {
+  const at = '2026-10-17T13:23:00Z'; // Sat 9:23 in Toronto
+  it('says when an unanswered result becomes final', () => {
+    expect(autoConfirmLine(at, 'America/Toronto', { iNeedToConfirm: true, other: 'Marcus' })).toBe(
+      'Final at Sat 9:23 unless you confirm or ask for a correction.',
+    );
+    expect(autoConfirmLine(at, 'America/Toronto', { iNeedToConfirm: false, other: 'Marcus' })).toBe(
+      'Final at Sat 9:23 unless Marcus confirms or asks for a correction.',
+    );
+    expect(autoConfirmLine(at, 'America/Toronto', { iNeedToConfirm: false, other: null })).toMatch(/the other side/);
+    expect(autoConfirmLine(null, 'America/Toronto', { iNeedToConfirm: true, other: null })).toBeNull();
   });
 });
