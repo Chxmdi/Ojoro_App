@@ -120,14 +120,14 @@ export function quickChips(
   });
 }
 
-export type FurtherRow = Pick<
+/** Columns the contract documents as nullable (rule 2), even where the generated types say not. */
+type Nullable<T> = { [K in keyof T]: T[K] | null };
+
+export type FurtherRow = Pick<OjoroNowItem, 'kind' | 'plan_id' | 'starts_at' | 'sport_name'> &
+  Nullable<Pick<
   OjoroNowItem,
-  | 'kind'
-  | 'plan_id'
   | 'activity_id'
-  | 'sport_name'
   | 'title'
-  | 'starts_at'
   | 'status'
   | 'member_count'
   | 'capacity'
@@ -135,7 +135,7 @@ export type FurtherRow = Pick<
   | 'place_area'
   | 'place_time_zone'
   | 'distance_km'
->;
+>>;
 
 /** An ActivityStrip from a further-out row: "6:30 · 5K river run · Lachine Canal · 1.8 km · GAME ON". */
 export function furtherStrip(r: FurtherRow) {

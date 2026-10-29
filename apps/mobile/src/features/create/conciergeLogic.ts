@@ -19,22 +19,16 @@ export function conciergeQuery(text: string): string | null {
   return q.length >= CONCIERGE_MIN_CHARS ? q : null;
 }
 
-export type Idea = Pick<
-  Suggestion,
-  | 'kind'
-  | 'plan_id'
-  | 'sport_id'
-  | 'sport_name'
-  | 'title'
-  | 'starts_at'
-  | 'place_name'
-  | 'member_count'
-  | 'capacity'
-  | 'demand_count'
-  | 'window_start'
-  | 'window_end'
-  | 'reason'
->;
+/** Columns the contract documents as nullable (rule 2), even where the generated types say not. */
+type Nullable<T> = { [K in keyof T]: T[K] | null };
+
+export type Idea = Pick<Suggestion, 'kind' | 'sport_id' | 'sport_name' | 'starts_at'> &
+  Nullable<
+    Pick<
+      Suggestion,
+      'plan_id' | 'title' | 'place_name' | 'member_count' | 'capacity' | 'demand_count' | 'window_start' | 'window_end' | 'reason'
+    >
+  >;
 
 /** "Pickup football · 7:30 · Jeanne-Mance Park"; another day: "· Tomorrow 7:30". Demand: "Running · Tomorrow from 6 PM · 3 people down". */
 export function ideaTitle(i: Idea, now: Date, timeZone: string = DEFAULT_TIME_ZONE): string {
