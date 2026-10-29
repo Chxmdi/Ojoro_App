@@ -126,6 +126,7 @@ export function NotificationRow({
       {action ? (
         <Button
           variant={actionVariant}
+          compact
           onPress={onAction}
           {...(actionHref ? { href: actionHref } : null)}
           accessibilityLabel={`${action.charAt(0)}${action.slice(1).toLowerCase()}: ${title}`}

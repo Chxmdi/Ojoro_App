@@ -27,7 +27,7 @@ import { firstName } from '@/features/safety/reasons';
 import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf, rpc } from '@/lib/rpc';
-import { supabase } from '@/lib/supabase';
+import { signOutWithPush } from '@/lib/push';
 
 import {
   profileKeys,
@@ -475,7 +475,7 @@ function UnavailableProfile({ userId }: { userId: string }) {
 
 /** The You header's more button: privacy, blocked people, sign out. Not designed. */
 function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area') => {
+  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area' | '/settings/notifications') => {
     onClose();
     router.push(href);
   };
@@ -491,7 +491,7 @@ function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           testID="sign-out"
           onPress={() => {
             onClose();
-            void supabase.auth.signOut();
+            void signOutWithPush();
           }}
         >
           SIGN OUT
@@ -513,6 +513,14 @@ function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           trailing="chevron"
           onPress={() => go('/settings/area')}
           testID="settings-area"
+        />
+        <Strip
+          title="Notifications"
+          titleVariant="title-sm"
+          meta="Quiet hours, lock screen, what pushes"
+          trailing="chevron"
+          onPress={() => go('/settings/notifications')}
+          testID="settings-notifications"
         />
         <Strip
           title="Blocked people"

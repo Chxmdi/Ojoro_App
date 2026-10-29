@@ -1,8 +1,9 @@
 /**
  * Activity (design-handoff/screens/Activity.png, calm): the confirmed game. ActivityObject header,
  * details, who's playing, CHECK IN (or when it opens), I CAN'T MAKE IT ANYMORE, the waitlist, and
- * a minimal live state. Chat is not in Slice 01, so the chat preview and its header button are left
- * out; report and block sit in the overflow instead (docs/DESIGN_DECISIONS.md, Slice 01 screens).
+ * a minimal live state. Step 4 adds links to the live page (while live) and the game chat (people in
+ * the game); the design's chat preview isn't drawn, and report and block stay in the overflow
+ * (docs/DESIGN_DECISIONS.md, Step 4 screens).
  */
 import { checkInWindowState } from '@ojoro/contracts';
 import { router, type Href } from 'expo-router';
@@ -289,8 +290,39 @@ function ActivityBody({
           ) : null}
         </View>
 
+        <GameLinks id={card.id} status={status} inGame={inGame} />
+
         <ActionSection card={card} now={now} tz={tz} online={online} isHost={isHost} status={status} me={me} />
       </View>
+    </View>
+  );
+}
+
+/** Step 4: the live page while the game is on, and the game's chat for the people in it. */
+function GameLinks({
+  id,
+  status,
+  inGame,
+}: {
+  id: string;
+  status: ReturnType<typeof statusOf>;
+  inGame: boolean;
+}) {
+  const live = status === 'live';
+  const chat = inGame && status !== 'cancelled';
+  if (!live && !chat) return null;
+  return (
+    <View className="gap-space-3" testID="game-links">
+      {live ? (
+        <Button variant="secondary" block href={`/activity/${id}/live` as Href} testID="open-live">
+          LIVE SCORE AND UPDATES
+        </Button>
+      ) : null}
+      {chat ? (
+        <Button variant="ghost" block href={`/activity/${id}/chat` as Href} testID="open-chat">
+          GAME CHAT
+        </Button>
+      ) : null}
     </View>
   );
 }

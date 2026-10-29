@@ -198,6 +198,9 @@ select tests.login(5);
 select is((select action from public.my_notifications() where type = 'need_one_more'), 'im_down',
   'the inline action for an outsider is I''M DOWN');
 select is((select section from public.my_notifications() where type = 'need_one_more'), 'needs_you', 'and it needs you');
+select public.mark_notifications_read(p_before => now() + interval '1 minute');
+select is((select section from public.my_notifications() where type = 'need_one_more'), 'needs_you',
+  'reading it does not take it out of needs you; acting on it does');
 select tests.login(2);
 select is((select action from public.my_notifications() where type = 'need_one_more'), 'pull_in',
   'for a member it is PULL SOMEONE IN');
@@ -307,7 +310,8 @@ update public.notifications set updated_at = now() + interval '1 minute' where i
 select is((select reason from private.would_send(tests.id('n'))), 'rate_limited',
   'a repeated threshold update within 30 minutes is throttled');
 select is((select reason from private.would_send(tests.id('n'), now() + interval '31 minutes')), 'ok', 'after 30 minutes it goes');
-select ok(exists (select 1 from private.delivery_queue() q where q.notification_id = tests.id('n')),
+-- A large page: the queue is oldest-first and a busy local database can hold 100+ undrained rows.
+select ok(exists (select 1 from private.delivery_queue(1000) q where q.notification_id = tests.id('n')),
   'the queue holds rows changed since the last push');
 select tests.login(1);
 select ok(public.unregister_push_token('ExponentPushToken[abcdefghijkl]'), 'unregister');

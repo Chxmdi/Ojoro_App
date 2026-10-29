@@ -201,3 +201,120 @@ export function recapWhen(occurredAt: string, now: Date, timeZone: string = DEFA
 export function formingNearYou(plans: readonly NearbyPlan[], mine: ReadonlySet<string>): NearbyPlan[] {
   return plans.filter((p) => !p.i_am_in && !mine.has(p.plan_id) && p.effective_status === 'forming');
 }
+
+/* ---------- Step 4: the action feed (home_feed) ---------- */
+
+/** The fields of a `home_feed()` card these rules read (nullable columns as the contract marks them). */
+export type FeedCard = {
+  position: number;
+  card: string;
+  action: string;
+  object_kind: string | null;
+  object_id: string | null;
+  plan_id: string | null;
+  activity_id: string | null;
+  crew_id: string | null;
+  sport_id: string | null;
+  sport_name: string | null;
+  title: string;
+  reason: string | null;
+  starts_at: string | null;
+  place_name: string | null;
+  member_count: number | null;
+  capacity: number | null;
+  people: number | null;
+  notification_id: string | null;
+  href: string | null;
+};
+
+export type FeedSection = { kind: string; cards: FeedCard[] };
+
+/**
+ * The feed in rank order, consecutive cards of one kind under one heading, and the closing card.
+ * `caught_up` is always the end (the server sends it last); without one, the client says it.
+ */
+export function feedSections(cards: readonly FeedCard[]): { sections: FeedSection[]; end: FeedCard | null } {
+  const sorted = [...cards].sort((a, b) => a.position - b.position);
+  const sections: FeedSection[] = [];
+  let end: FeedCard | null = null;
+  for (const c of sorted) {
+    if (c.card === 'caught_up') {
+      end = c;
+      continue;
+    }
+    const last = sections[sections.length - 1];
+    // One heading per run: crew suggestions and crew plans share YOUR CREWS.
+    if (last && sectionKey(last.kind) === sectionKey(c.card)) last.cards.push(c);
+    else sections.push({ kind: c.card, cards: [c] });
+  }
+  return { sections, end };
+}
+
+function sectionKey(kind: string): string {
+  return sectionLabel(kind) ?? kind;
+}
+
+/** The divider over a section. Down For draws its own overline; the recap's says when. */
+export function sectionLabel(kind: string): string | null {
+  switch (kind) {
+    case 'needs_you':
+      return 'NEEDS YOU';
+    case 'your_plan':
+      return 'YOUR PLANS';
+    case 'crew_suggestion':
+    case 'crew_plan':
+      return 'YOUR CREWS';
+    case 'plan_forming':
+      return 'FORMING NEAR YOU';
+    default:
+      return null;
+  }
+}
+
+/** A plan card as the forming-plan object reads it. */
+export function cardToNearby(c: FeedCard): NearbyPlan | null {
+  if (!c.plan_id || c.capacity === null || c.member_count === null || !c.starts_at) return null;
+  return {
+    plan_id: c.plan_id,
+    sport_id: c.sport_id ?? '',
+    sport_name: c.sport_name ?? c.title,
+    title: c.title,
+    starts_at: c.starts_at,
+    capacity: c.capacity,
+    member_count: c.member_count,
+    effective_status: 'forming',
+    place_name: c.place_name,
+    i_am_in: false,
+    distance_km: null,
+  };
+}
+
+/** A your_plan card that is live now opens the live screen (the server's href says so). */
+export function isLiveCard(c: Pick<FeedCard, 'href'>): boolean {
+  return /\/activity\/[^/]+\/live$/.test(c.href ?? '');
+}
+
+/**
+ * The Down For to show, reconciled with the feed: the sport the server ranked (its `down_for`
+ * card), drawn from the people down near you for that sport. When the feed has none because you're
+ * already down, your own sport stays (committed), so the tap you just made doesn't vanish.
+ */
+export function feedDownFor(
+  card: Pick<FeedCard, 'sport_id'> | null,
+  committedSportId: string | null,
+  downs: readonly NearbyDown[],
+  plans: readonly NearbyPlan[],
+): DownForPick | null {
+  const sportId = card?.sport_id ?? committedSportId;
+  if (!sportId) return null;
+  return pickDownFor(
+    downs.filter((d) => d.sport_id === sportId),
+    plans,
+  );
+}
+
+/** "3 of you want in" → the crew suggestion's line; falls back to the count. */
+export function crewSuggestionLine(c: Pick<FeedCard, 'reason' | 'people'>): string {
+  if (c.reason) return `${c.reason.charAt(0).toUpperCase()}${c.reason.slice(1)}.`.replace(/\.\.$/, '.');
+  return c.people ? `${c.people} of you want in.` : 'Your crew is talking about a game.';
+}
