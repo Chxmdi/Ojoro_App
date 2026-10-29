@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { capitalize, word } from './word';
+import { capitalize, sentenceCase, word } from './word';
 
 describe('word', () => {
   it('spells zero to twelve', () => {
@@ -23,5 +23,13 @@ describe('capitalize', () => {
     expect(capitalize('seven of eight')).toBe('Seven of eight');
     expect(capitalize('12 of 14')).toBe('12 of 14');
     expect(capitalize('')).toBe('');
+  });
+});
+
+describe('sentenceCase', () => {
+  it('reads display copy in sentence case', () => {
+    expect(sentenceCase('WHO TAKES IT?')).toBe('Who takes it?');
+    expect(sentenceCase('STARTS IN')).toBe('Starts in');
+    expect(sentenceCase('')).toBe('');
   });
 });
