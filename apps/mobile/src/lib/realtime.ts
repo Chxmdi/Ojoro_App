@@ -15,6 +15,7 @@ type Entry = { channel: RealtimeChannel; listeners: Set<Listener>; subscribed: b
  * activity (Activity under Check-in) must share. Exported for tests.
  */
 export const channels = new Map<string, Entry>();
+let channelSerial = 0;
 
 export function watchTopic(subscription: RealtimeSubscription, listener: Listener): () => void {
   let entry = channels.get(subscription.channel);
@@ -23,7 +24,10 @@ export function watchTopic(subscription: RealtimeSubscription, listener: Listene
     const notify = () => {
       for (const l of listeners) l();
     };
-    let channel = supabase.channel(subscription.channel);
+    // A fresh name per channel: supabase.channel(name) returns an existing channel with that name,
+    // including one still closing after the last screen left, which then never delivers again.
+    // postgres_changes routing comes from the filters, not the name, so the suffix is harmless.
+    let channel = supabase.channel(`${subscription.channel}#${++channelSerial}`);
     for (const change of subscription.changes) {
       channel = channel.on('postgres_changes' as never, change as never, notify);
     }

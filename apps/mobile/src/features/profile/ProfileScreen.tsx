@@ -22,6 +22,7 @@ import {
   TextButton,
   useToast,
 } from '@/design-system';
+import { YourCrews } from '@/features/crews/CrewsScreens';
 import { useReportBlock } from '@/features/safety';
 import { firstName } from '@/features/safety/reasons';
 import { track } from '@/lib/analytics';
@@ -261,6 +262,8 @@ function ProfileBody({
           </Text>
         )}
       </View>
+
+      {self ? <YourCrews /> : null}
 
       <ReputationSection self={self} rows={reputation.data ?? []} />
 
