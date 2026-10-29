@@ -10,7 +10,8 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
 
 - Schema: `supabase/migrations/20261029200000_competition_enums.sql`, `…200100_competition_schema.sql`,
   `…200200_competition_call_outs.sql`, `…200300_competition_crowd.sql`, `…200400_competition_live_result.sql`,
-  `…200500_competition_auto_confirm_enum.sql`, `…200510_competition_auto_confirm.sql`.
+  `…200500_competition_auto_confirm_enum.sql`, `…200510_competition_auto_confirm.sql`,
+  `…200520_competition_verification_requester.sql`.
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases `CallOutView`, `CallOutRow`,
   `ChallengeEventView`, `ChallengeEventRow`, `ChallengeFeedPost`, `ChallengeComment`, `ChallengePoll`,
   `ChallengeVerification`, `VerificationCheck`, `ChallengePoster`, `RivalryView`, `RivalryMeeting`,
@@ -394,7 +395,8 @@ confirmed both times · DONE", "Your confirmation · WAITING"), `confirmed_count
 `i_need_to_confirm` (show CONFIRM BOTH TIMES), `correction_open`, `correction_requested_by_name`*,
 `correction_note`*, `correction_requested_at`*, `review_due_at`*, `auto_confirms_at`* (when the pending
 numbers stand if nobody answers: "Final at Sat 9:23 unless you confirm or ask for a correction"; null
-while a correction is open). Competitors and organizers only
+while a correction is open), `correction_requested_by_me` (you opened the open correction: show
+WITHDRAW THE CORRECTION; false otherwise, including when none is open). Competitors and organizers only
 (`not_competitor`). There is no device check row until M10 (the design's "GPS data received" row isn't
 returned).
 

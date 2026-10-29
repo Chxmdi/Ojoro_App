@@ -186,7 +186,7 @@ export function rematchPromise(
   const tz = last.time_zone ?? undefined;
   const days = (now.getTime() - Date.parse(last.starts_at)) / 86_400_000;
   const when =
-    days >= 0 && days < 7
+    days < 7
       ? `${WEEKDAY_NAMES[zonedParts(last.starts_at, tz).weekday]}'s result`
       : `The result from ${shortDate(last.starts_at, tz).replace(/^\w+ /, '')}`;
   return `${first} ${when} stays exactly as it is.`;

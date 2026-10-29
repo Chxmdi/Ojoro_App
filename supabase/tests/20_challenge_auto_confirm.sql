@@ -290,6 +290,14 @@ select tests.login(4);
 select public.request_challenge_correction(tests.id('dis'), 'That isn''t my time.');
 select is((select auto_confirms_at from public.challenge_verification(tests.id('dis'))), null,
   'no auto-confirm time while a correction is open');
+select is((select correction_requested_by_me from public.challenge_verification(tests.id('dis'))), true,
+  'the requester sees it is theirs (WITHDRAW THE CORRECTION)');
+select tests.login(3);
+select is((select correction_requested_by_me from public.challenge_verification(tests.id('dis'))), false,
+  'the other captain does not');
+select tests.login(1);
+select is((select correction_requested_by_me from public.challenge_verification(tests.id('ev'))), false,
+  'false with no open correction');
 select tests.logout();
 update public.challenge_result_submissions set created_at = now() - interval '72 hours' where id = tests.id('dsub');
 select is((private.challenge_tick() ->> 'auto_confirmed')::integer, 0, 'a disputed result is never auto-confirmed');

@@ -4053,6 +4053,7 @@ export type Database = {
           correction_note: string;
           correction_open: boolean;
           correction_requested_at: string;
+          correction_requested_by_me: boolean;
           correction_requested_by_name: string;
           event_id: string;
           i_need_to_confirm: boolean;
