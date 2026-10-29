@@ -484,6 +484,1127 @@ export type Database = {
           },
         ];
       };
+      call_outs: {
+        Row: {
+          audience: Database['public']['Enums']['challenge_audience'];
+          challenger_crew_id: string | null;
+          challenger_id: string;
+          countered_from: string | null;
+          course_note: string | null;
+          created_at: string;
+          event_id: string | null;
+          expires_at: string;
+          format: Database['public']['Enums']['challenge_format'];
+          id: string;
+          message: string | null;
+          opponent_crew_id: string | null;
+          opponent_id: string | null;
+          place_id: string | null;
+          rematch_of_event_id: string | null;
+          responded_at: string | null;
+          responded_by: string | null;
+          rivalry_id: string | null;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          side_size: number;
+          sport_id: string;
+          starts_at: string;
+          status: Database['public']['Enums']['call_out_status'];
+          target: number | null;
+          time_zone: string;
+          title: string;
+          unit: string | null;
+          updated_at: string;
+          verification: Database['public']['Enums']['challenge_verification'];
+        };
+        ComputedFields: never;
+        Insert: {
+          audience?: Database['public']['Enums']['challenge_audience'];
+          challenger_crew_id?: string | null;
+          challenger_id: string;
+          countered_from?: string | null;
+          course_note?: string | null;
+          created_at?: string;
+          event_id?: string | null;
+          expires_at: string;
+          format: Database['public']['Enums']['challenge_format'];
+          id?: string;
+          message?: string | null;
+          opponent_crew_id?: string | null;
+          opponent_id?: string | null;
+          place_id?: string | null;
+          rematch_of_event_id?: string | null;
+          responded_at?: string | null;
+          responded_by?: string | null;
+          rivalry_id?: string | null;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          side_size?: number;
+          sport_id: string;
+          starts_at: string;
+          status?: Database['public']['Enums']['call_out_status'];
+          target?: number | null;
+          time_zone?: string;
+          title: string;
+          unit?: string | null;
+          updated_at?: string;
+          verification?: Database['public']['Enums']['challenge_verification'];
+        };
+        Update: {
+          audience?: Database['public']['Enums']['challenge_audience'];
+          challenger_crew_id?: string | null;
+          challenger_id?: string;
+          countered_from?: string | null;
+          course_note?: string | null;
+          created_at?: string;
+          event_id?: string | null;
+          expires_at?: string;
+          format?: Database['public']['Enums']['challenge_format'];
+          id?: string;
+          message?: string | null;
+          opponent_crew_id?: string | null;
+          opponent_id?: string | null;
+          place_id?: string | null;
+          rematch_of_event_id?: string | null;
+          responded_at?: string | null;
+          responded_by?: string | null;
+          rivalry_id?: string | null;
+          scoring?: Database['public']['Enums']['challenge_scoring'];
+          side_size?: number;
+          sport_id?: string;
+          starts_at?: string;
+          status?: Database['public']['Enums']['call_out_status'];
+          target?: number | null;
+          time_zone?: string;
+          title?: string;
+          unit?: string | null;
+          updated_at?: string;
+          verification?: Database['public']['Enums']['challenge_verification'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'call_outs_challenger_crew_id_fkey';
+            columns: ['challenger_crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_challenger_id_fkey';
+            columns: ['challenger_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_countered_from_fkey';
+            columns: ['countered_from'];
+            isOneToOne: false;
+            referencedRelation: 'call_outs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_event_fk';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_opponent_crew_id_fkey';
+            columns: ['opponent_crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_opponent_id_fkey';
+            columns: ['opponent_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_rematch_fk';
+            columns: ['rematch_of_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_responded_by_fkey';
+            columns: ['responded_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_rivalry_id_fkey';
+            columns: ['rivalry_id'];
+            isOneToOne: false;
+            referencedRelation: 'rivalries';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_outs_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_backings: {
+        Row: {
+          created_at: string;
+          event_id: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          event_id: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string;
+          side?: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_backings_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_backings_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_comment_respects: {
+        Row: {
+          comment_id: string;
+          created_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          comment_id: string;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          comment_id?: string;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_comment_respects_comment_id_fkey';
+            columns: ['comment_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_comment_respects_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_comments: {
+        Row: {
+          author_id: string;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          event_id: string;
+          id: string;
+          parent_id: string | null;
+          post_id: string | null;
+          reply_count: number;
+          respect_count: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          event_id: string;
+          id?: string;
+          parent_id?: string | null;
+          post_id?: string | null;
+          reply_count?: number;
+          respect_count?: number;
+        };
+        Update: {
+          author_id?: string;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          event_id?: string;
+          id?: string;
+          parent_id?: string | null;
+          post_id?: string | null;
+          reply_count?: number;
+          respect_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_comments_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_comments_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_comments_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_comments';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_comments_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_posts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_competitors: {
+        Row: {
+          checked_in_at: string | null;
+          event_id: string;
+          is_captain: boolean;
+          joined_at: string;
+          ready_at: string | null;
+          side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          checked_in_at?: string | null;
+          event_id: string;
+          is_captain?: boolean;
+          joined_at?: string;
+          ready_at?: string | null;
+          side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        Update: {
+          checked_in_at?: string | null;
+          event_id?: string;
+          is_captain?: boolean;
+          joined_at?: string;
+          ready_at?: string | null;
+          side?: Database['public']['Enums']['team_side'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_competitors_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_competitors_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_corrections: {
+        Row: {
+          created_at: string;
+          event_id: string;
+          id: string;
+          note: string | null;
+          requested_by: string;
+          resolution: string | null;
+          resolved_at: string | null;
+          submission_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          event_id: string;
+          id?: string;
+          note?: string | null;
+          requested_by: string;
+          resolution?: string | null;
+          resolved_at?: string | null;
+          submission_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string;
+          id?: string;
+          note?: string | null;
+          requested_by?: string;
+          resolution?: string | null;
+          resolved_at?: string | null;
+          submission_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_corrections_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_corrections_requested_by_fkey';
+            columns: ['requested_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_corrections_submission_id_fkey';
+            columns: ['submission_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_result_submissions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_events: {
+        Row: {
+          a_captain_id: string;
+          a_crew_id: string | null;
+          a_progress: number | null;
+          a_user_id: string | null;
+          accepted_at: string;
+          audience: Database['public']['Enums']['challenge_audience'];
+          b_captain_id: string;
+          b_crew_id: string | null;
+          b_progress: number | null;
+          b_user_id: string | null;
+          backing_a: number;
+          backing_b: number;
+          call_out_id: string;
+          cancel_reason: string | null;
+          cancelled_at: string | null;
+          check_in_opens_at: string;
+          comment_count: number;
+          completed_at: string | null;
+          course_note: string | null;
+          disputed_at: string | null;
+          ended_at: string | null;
+          follower_count: number;
+          format: Database['public']['Enums']['challenge_format'];
+          id: string;
+          live_at: string | null;
+          live_period: number | null;
+          place_id: string | null;
+          prediction_a: number;
+          prediction_b: number;
+          progress_logged_by: string | null;
+          progress_updated_at: string | null;
+          reaction_counts: NonNullable<Json>;
+          rematch_of_event_id: string | null;
+          rivalry_id: string;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          side_size: number;
+          sport_id: string;
+          starts_at: string;
+          status: Database['public']['Enums']['challenge_status'];
+          target: number | null;
+          time_zone: string;
+          title: string;
+          unit: string | null;
+          updated_at: string;
+          verification: Database['public']['Enums']['challenge_verification'];
+        };
+        ComputedFields: never;
+        Insert: {
+          a_captain_id: string;
+          a_crew_id?: string | null;
+          a_progress?: number | null;
+          a_user_id?: string | null;
+          accepted_at?: string;
+          audience: Database['public']['Enums']['challenge_audience'];
+          b_captain_id: string;
+          b_crew_id?: string | null;
+          b_progress?: number | null;
+          b_user_id?: string | null;
+          backing_a?: number;
+          backing_b?: number;
+          call_out_id: string;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          check_in_opens_at: string;
+          comment_count?: number;
+          completed_at?: string | null;
+          course_note?: string | null;
+          disputed_at?: string | null;
+          ended_at?: string | null;
+          follower_count?: number;
+          format: Database['public']['Enums']['challenge_format'];
+          id?: string;
+          live_at?: string | null;
+          live_period?: number | null;
+          place_id?: string | null;
+          prediction_a?: number;
+          prediction_b?: number;
+          progress_logged_by?: string | null;
+          progress_updated_at?: string | null;
+          reaction_counts?: NonNullable<Json>;
+          rematch_of_event_id?: string | null;
+          rivalry_id: string;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          side_size: number;
+          sport_id: string;
+          starts_at: string;
+          status?: Database['public']['Enums']['challenge_status'];
+          target?: number | null;
+          time_zone: string;
+          title: string;
+          unit?: string | null;
+          updated_at?: string;
+          verification: Database['public']['Enums']['challenge_verification'];
+        };
+        Update: {
+          a_captain_id?: string;
+          a_crew_id?: string | null;
+          a_progress?: number | null;
+          a_user_id?: string | null;
+          accepted_at?: string;
+          audience?: Database['public']['Enums']['challenge_audience'];
+          b_captain_id?: string;
+          b_crew_id?: string | null;
+          b_progress?: number | null;
+          b_user_id?: string | null;
+          backing_a?: number;
+          backing_b?: number;
+          call_out_id?: string;
+          cancel_reason?: string | null;
+          cancelled_at?: string | null;
+          check_in_opens_at?: string;
+          comment_count?: number;
+          completed_at?: string | null;
+          course_note?: string | null;
+          disputed_at?: string | null;
+          ended_at?: string | null;
+          follower_count?: number;
+          format?: Database['public']['Enums']['challenge_format'];
+          id?: string;
+          live_at?: string | null;
+          live_period?: number | null;
+          place_id?: string | null;
+          prediction_a?: number;
+          prediction_b?: number;
+          progress_logged_by?: string | null;
+          progress_updated_at?: string | null;
+          reaction_counts?: NonNullable<Json>;
+          rematch_of_event_id?: string | null;
+          rivalry_id?: string;
+          scoring?: Database['public']['Enums']['challenge_scoring'];
+          side_size?: number;
+          sport_id?: string;
+          starts_at?: string;
+          status?: Database['public']['Enums']['challenge_status'];
+          target?: number | null;
+          time_zone?: string;
+          title?: string;
+          unit?: string | null;
+          updated_at?: string;
+          verification?: Database['public']['Enums']['challenge_verification'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_events_a_captain_id_fkey';
+            columns: ['a_captain_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_a_crew_id_fkey';
+            columns: ['a_crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_a_user_id_fkey';
+            columns: ['a_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_b_captain_id_fkey';
+            columns: ['b_captain_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_b_crew_id_fkey';
+            columns: ['b_crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_b_user_id_fkey';
+            columns: ['b_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_call_out_id_fkey';
+            columns: ['call_out_id'];
+            isOneToOne: true;
+            referencedRelation: 'call_outs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_progress_logged_by_fkey';
+            columns: ['progress_logged_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_rematch_of_event_id_fkey';
+            columns: ['rematch_of_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_rivalry_id_fkey';
+            columns: ['rivalry_id'];
+            isOneToOne: false;
+            referencedRelation: 'rivalries';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_events_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_followers: {
+        Row: {
+          comments_muted: boolean;
+          created_at: string;
+          event_id: string;
+          quiet: boolean;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          comments_muted?: boolean;
+          created_at?: string;
+          event_id: string;
+          quiet?: boolean;
+          user_id: string;
+        };
+        Update: {
+          comments_muted?: boolean;
+          created_at?: string;
+          event_id?: string;
+          quiet?: boolean;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_followers_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_followers_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_organizers: {
+        Row: {
+          approved_at: string | null;
+          created_at: string;
+          event_id: string;
+          proposed_by: string;
+          proposed_side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          approved_at?: string | null;
+          created_at?: string;
+          event_id: string;
+          proposed_by: string;
+          proposed_side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        Update: {
+          approved_at?: string | null;
+          created_at?: string;
+          event_id?: string;
+          proposed_by?: string;
+          proposed_side?: Database['public']['Enums']['team_side'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_organizers_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_organizers_proposed_by_fkey';
+            columns: ['proposed_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_organizers_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_poll_votes: {
+        Row: {
+          created_at: string;
+          option_index: number;
+          poll_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          option_index: number;
+          poll_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          option_index?: number;
+          poll_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_poll_votes_poll_id_fkey';
+            columns: ['poll_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_polls';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_poll_votes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_polls: {
+        Row: {
+          closes_at: string;
+          created_at: string;
+          created_by: string;
+          event_id: string;
+          id: string;
+          options: string[];
+          question: string;
+          template: Database['public']['Enums']['challenge_poll_template'];
+          threshold: number | null;
+          updated_at: string;
+          vote_counts: number[];
+        };
+        ComputedFields: never;
+        Insert: {
+          closes_at: string;
+          created_at?: string;
+          created_by: string;
+          event_id: string;
+          id?: string;
+          options: string[];
+          question: string;
+          template: Database['public']['Enums']['challenge_poll_template'];
+          threshold?: number | null;
+          updated_at?: string;
+          vote_counts: number[];
+        };
+        Update: {
+          closes_at?: string;
+          created_at?: string;
+          created_by?: string;
+          event_id?: string;
+          id?: string;
+          options?: string[];
+          question?: string;
+          template?: Database['public']['Enums']['challenge_poll_template'];
+          threshold?: number | null;
+          updated_at?: string;
+          vote_counts?: number[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_polls_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_polls_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_posts: {
+        Row: {
+          author_id: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          event_id: string;
+          id: string;
+          kind: Database['public']['Enums']['challenge_post_kind'];
+          milestone: string | null;
+          stats: Json | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          event_id: string;
+          id?: string;
+          kind: Database['public']['Enums']['challenge_post_kind'];
+          milestone?: string | null;
+          stats?: Json | null;
+        };
+        Update: {
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          event_id?: string;
+          id?: string;
+          kind?: Database['public']['Enums']['challenge_post_kind'];
+          milestone?: string | null;
+          stats?: Json | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_posts_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_posts_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_predictions: {
+        Row: {
+          created_at: string;
+          event_id: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          event_id: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string;
+          side?: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_predictions_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_predictions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_reactions: {
+        Row: {
+          created_at: string;
+          event_id: string;
+          reaction: Database['public']['Enums']['reaction_word'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          event_id: string;
+          reaction: Database['public']['Enums']['reaction_word'];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_id?: string;
+          reaction?: Database['public']['Enums']['reaction_word'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_reactions_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_reactions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_result_confirmations: {
+        Row: {
+          created_at: string;
+          submission_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          submission_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          submission_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_result_confirmations_submission_id_fkey';
+            columns: ['submission_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_result_submissions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_result_confirmations_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_result_submissions: {
+        Row: {
+          a_value: number;
+          b_value: number;
+          created_at: string;
+          event_id: string;
+          id: string;
+          note: string | null;
+          status: Database['public']['Enums']['challenge_submission_status'];
+          submitted_by: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          a_value: number;
+          b_value: number;
+          created_at?: string;
+          event_id: string;
+          id?: string;
+          note?: string | null;
+          status?: Database['public']['Enums']['challenge_submission_status'];
+          submitted_by: string;
+        };
+        Update: {
+          a_value?: number;
+          b_value?: number;
+          created_at?: string;
+          event_id?: string;
+          id?: string;
+          note?: string | null;
+          status?: Database['public']['Enums']['challenge_submission_status'];
+          submitted_by?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_result_submissions_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_result_submissions_submitted_by_fkey';
+            columns: ['submitted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      challenge_results: {
+        Row: {
+          a_value: number;
+          b_value: number;
+          crowd_called_it: boolean | null;
+          event_id: string;
+          margin: number;
+          note: string | null;
+          predicted_a: number;
+          predicted_b: number;
+          rivalry_id: string;
+          source: Database['public']['Enums']['challenge_result_source'];
+          submission_id: string | null;
+          verified_at: string;
+          watched_count: number;
+          winner_side: Database['public']['Enums']['team_side'] | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          a_value: number;
+          b_value: number;
+          crowd_called_it?: boolean | null;
+          event_id: string;
+          margin: number;
+          note?: string | null;
+          predicted_a?: number;
+          predicted_b?: number;
+          rivalry_id: string;
+          source: Database['public']['Enums']['challenge_result_source'];
+          submission_id?: string | null;
+          verified_at?: string;
+          watched_count?: number;
+          winner_side?: Database['public']['Enums']['team_side'] | null;
+        };
+        Update: {
+          a_value?: number;
+          b_value?: number;
+          crowd_called_it?: boolean | null;
+          event_id?: string;
+          margin?: number;
+          note?: string | null;
+          predicted_a?: number;
+          predicted_b?: number;
+          rivalry_id?: string;
+          source?: Database['public']['Enums']['challenge_result_source'];
+          submission_id?: string | null;
+          verified_at?: string;
+          watched_count?: number;
+          winner_side?: Database['public']['Enums']['team_side'] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'challenge_results_event_id_fkey';
+            columns: ['event_id'];
+            isOneToOne: true;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_results_rivalry_id_fkey';
+            columns: ['rivalry_id'];
+            isOneToOne: false;
+            referencedRelation: 'rivalries';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'challenge_results_submission_id_fkey';
+            columns: ['submission_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_result_submissions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chat_suggestion_dismissals: {
         Row: {
           created_at: string;
@@ -2214,6 +3335,31 @@ export type Database = {
           },
         ];
       };
+      rivalries: {
+        Row: {
+          created_at: string;
+          high_id: string;
+          id: string;
+          kind: Database['public']['Enums']['rivalry_kind'];
+          low_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          high_id: string;
+          id?: string;
+          kind: Database['public']['Enums']['rivalry_kind'];
+          low_id: string;
+        };
+        Update: {
+          created_at?: string;
+          high_id?: string;
+          id?: string;
+          kind?: Database['public']['Enums']['rivalry_kind'];
+          low_id?: string;
+        };
+        Relationships: [];
+      };
       sports: {
         Row: {
           default_capacity: number;
@@ -2471,6 +3617,16 @@ export type Database = {
       };
     };
     Functions: {
+      accept_call_out: {
+        Args: { p_as_crew_id?: string; p_call_out_id: string; p_idempotency_key: string };
+        Returns: Database['public']['CompositeTypes']['challenge_accept_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_accept_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       act_on_notification: {
         Args: { p_id: string };
         Returns: {
@@ -2624,7 +3780,66 @@ export type Database = {
           part: Database['public']['Enums']['day_part'];
         }[];
       };
+      back_challenge: {
+        Args: { p_event_id: string; p_side: Database['public']['Enums']['team_side'] };
+        Returns: Database['public']['CompositeTypes']['challenge_crowd_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_crowd_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       block_user: { Args: { p_user_id: string }; Returns: boolean };
+      call_out_view: {
+        Args: { p_call_out_id: string };
+        Returns: {
+          audience: Database['public']['Enums']['challenge_audience'];
+          can_answer: boolean;
+          challenger_avatar_path: string;
+          challenger_crew_id: string;
+          challenger_id: string;
+          challenger_name: string;
+          counter_id: string;
+          countered_from: string;
+          course_note: string;
+          created_at: string;
+          event_id: string;
+          expires_at: string;
+          format: Database['public']['Enums']['challenge_format'];
+          games_together: number;
+          id: string;
+          is_mine: boolean;
+          is_open: boolean;
+          message: string;
+          opponent_avatar_path: string;
+          opponent_crew_id: string;
+          opponent_id: string;
+          opponent_name: string;
+          place_area: string;
+          place_city: string;
+          place_id: string;
+          place_name: string;
+          rematch_of_event_id: string;
+          responded_at: string;
+          rivalry_challenger_wins: number;
+          rivalry_draws: number;
+          rivalry_id: string;
+          rivalry_opponent_wins: number;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          server_now: string;
+          side_size: number;
+          sport_id: string;
+          sport_name: string;
+          starts_at: string;
+          status: Database['public']['Enums']['call_out_status'];
+          target: number;
+          time_zone: string;
+          title: string;
+          unit: string;
+          verification: Database['public']['Enums']['challenge_verification'];
+        }[];
+      };
       cancel_activity: {
         Args: { p_activity_id: string };
         Returns: Database['public']['Enums']['activity_status'];
@@ -2639,6 +3854,10 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      cancel_challenge_event: {
+        Args: { p_event_id: string };
+        Returns: Database['public']['Enums']['challenge_stage'];
+      };
       cancel_plan: {
         Args: { p_plan_id: string };
         Returns: Database['public']['CompositeTypes']['plan_state'];
@@ -2648,6 +3867,203 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      challenge_comments: {
+        Args: { p_before?: string; p_event_id: string; p_limit?: number; p_post_id?: string };
+        Returns: {
+          author_avatar_path: string;
+          author_badge: string;
+          author_id: string;
+          author_name: string;
+          author_side: Database['public']['Enums']['team_side'];
+          body: string;
+          created_at: string;
+          id: string;
+          is_deleted: boolean;
+          is_mine: boolean;
+          parent_id: string;
+          post_id: string;
+          reply_count: number;
+          respect_count: number;
+          respected: boolean;
+        }[];
+      };
+      challenge_event_view: {
+        Args: { p_event_id: string };
+        Returns: {
+          a_avatar_path: string;
+          a_checked_in: boolean;
+          a_crew_id: string;
+          a_lineup_count: number;
+          a_name: string;
+          a_progress: number;
+          a_ready: boolean;
+          a_user_id: string;
+          accepted_at: string;
+          audience: Database['public']['Enums']['challenge_audience'];
+          b_avatar_path: string;
+          b_checked_in: boolean;
+          b_crew_id: string;
+          b_lineup_count: number;
+          b_name: string;
+          b_progress: number;
+          b_ready: boolean;
+          b_user_id: string;
+          backing_a: number;
+          backing_b: number;
+          backing_open: boolean;
+          call_out_id: string;
+          can_comment: boolean;
+          can_post: boolean;
+          cancel_reason: string;
+          cancelled_at: string;
+          check_in_opens_at: string;
+          comment_count: number;
+          comments_muted: boolean;
+          completed_at: string;
+          course_note: string;
+          crew_backing_a: number;
+          crew_backing_b: number;
+          crowd_called_it: boolean;
+          crowd_pick_pct: number;
+          crowd_pick_side: Database['public']['Enums']['team_side'];
+          ended_at: string;
+          follow_quiet: boolean;
+          follower_count: number;
+          format: Database['public']['Enums']['challenge_format'];
+          i_follow: boolean;
+          id: string;
+          is_captain: boolean;
+          is_competitor: boolean;
+          is_draw: boolean;
+          is_organizer: boolean;
+          live_at: string;
+          live_period: number;
+          margin: number;
+          my_backing: Database['public']['Enums']['team_side'];
+          my_prediction: Database['public']['Enums']['team_side'];
+          my_reaction: Database['public']['Enums']['reaction_word'];
+          my_side: Database['public']['Enums']['team_side'];
+          pending_rematch_call_out_id: string;
+          place_area: string;
+          place_city: string;
+          place_id: string;
+          place_name: string;
+          prediction_a_pct: number;
+          prediction_b_pct: number;
+          prediction_count: number;
+          predictions_locked: boolean;
+          progress_logged_by_name: string;
+          progress_source: string;
+          progress_updated_at: string;
+          reaction_counts: Json;
+          rematch_event_id: string;
+          rematch_of_event_id: string;
+          result_a: number;
+          result_b: number;
+          result_note: string;
+          result_source: Database['public']['Enums']['challenge_result_source'];
+          rivalry_a_wins: number;
+          rivalry_b_wins: number;
+          rivalry_draws: number;
+          rivalry_id: string;
+          rivalry_meetings: number;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          server_now: string;
+          side_size: number;
+          situation: string;
+          sport_id: string;
+          sport_name: string;
+          stage: Database['public']['Enums']['challenge_stage'];
+          starts_at: string;
+          status: Database['public']['Enums']['challenge_status'];
+          target: number;
+          time_zone: string;
+          title: string;
+          unit: string;
+          verification: Database['public']['Enums']['challenge_verification'];
+          verified_at: string;
+          watched_count: number;
+          winner_side: Database['public']['Enums']['team_side'];
+        }[];
+      };
+      challenge_feed: {
+        Args: { p_before?: string; p_event_id: string; p_limit?: number };
+        Returns: {
+          author_avatar_path: string;
+          author_id: string;
+          author_name: string;
+          author_role: string;
+          author_side: Database['public']['Enums']['team_side'];
+          body: string;
+          comment_count: number;
+          created_at: string;
+          id: string;
+          is_deleted: boolean;
+          is_mine: boolean;
+          kind: Database['public']['Enums']['challenge_post_kind'];
+          milestone: string;
+          stats: Json;
+        }[];
+      };
+      challenge_polls: {
+        Args: { p_event_id: string };
+        Returns: {
+          closes_at: string;
+          id: string;
+          is_closed: boolean;
+          my_vote: number;
+          options: string[];
+          question: string;
+          template: Database['public']['Enums']['challenge_poll_template'];
+          total_votes: number;
+          vote_counts: number[];
+        }[];
+      };
+      challenge_poster: {
+        Args: { p_event_id: string };
+        Returns: {
+          a_name: string;
+          a_value: number;
+          b_name: string;
+          b_value: number;
+          event_id: string;
+          is_draw: boolean;
+          kind: string;
+          link_path: string;
+          place_city: string;
+          place_name: string;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          sport_name: string;
+          starts_at: string;
+          time_zone: string;
+          title: string;
+          unit: string;
+          winner_side: Database['public']['Enums']['team_side'];
+        }[];
+      };
+      challenge_verification: {
+        Args: { p_event_id: string };
+        Returns: {
+          a_value: number;
+          b_value: number;
+          checks: Json;
+          confirmed_count: number;
+          correction_note: string;
+          correction_open: boolean;
+          correction_requested_at: string;
+          correction_requested_by_name: string;
+          event_id: string;
+          i_need_to_confirm: boolean;
+          needed_count: number;
+          note: string;
+          review_due_at: string;
+          stage: Database['public']['Enums']['challenge_stage'];
+          submission_id: string;
+          submitted_at: string;
+          submitted_by: string;
+          submitted_by_name: string;
+        }[];
       };
       chat_suggestions: {
         Args: { p_crew_id: string };
@@ -2685,6 +4101,43 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      check_in_challenge: {
+        Args: { p_event_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_presence_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_presence_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      comment_on_challenge: {
+        Args: {
+          p_body: string;
+          p_event_id: string;
+          p_idempotency_key: string;
+          p_parent_id?: string;
+          p_post_id?: string;
+        };
+        Returns: {
+          author_id: string;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          event_id: string;
+          id: string;
+          parent_id: string | null;
+          post_id: string | null;
+          reply_count: number;
+          respect_count: number;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_comments';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       concierge_suggest: {
         Args: { p_limit?: number; p_minutes?: number; p_sport_id?: string; p_text?: string };
         Returns: {
@@ -2709,12 +4162,96 @@ export type Database = {
           window_start: string;
         }[];
       };
+      confirm_challenge_result: {
+        Args: { p_idempotency_key: string; p_submission_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       confirm_result: {
         Args: { p_idempotency_key: string; p_proposal_id: string };
         Returns: Database['public']['CompositeTypes']['result_state'];
         SetofOptions: {
           from: '*';
           to: 'result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      counter_call_out: {
+        Args: {
+          p_call_out_id: string;
+          p_course_note?: string;
+          p_idempotency_key: string;
+          p_message?: string;
+          p_place_id?: string;
+          p_starts_at?: string;
+          p_target?: number;
+          p_title?: string;
+          p_unit?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['call_out_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'call_out_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_call_out: {
+        Args: {
+          p_audience?: Database['public']['Enums']['challenge_audience'];
+          p_challenger_crew_id?: string;
+          p_course_note?: string;
+          p_expires_at?: string;
+          p_idempotency_key: string;
+          p_message?: string;
+          p_opponent_crew_id?: string;
+          p_opponent_id?: string;
+          p_place_id?: string;
+          p_scoring: Database['public']['Enums']['challenge_scoring'];
+          p_side_size?: number;
+          p_sport_id: string;
+          p_starts_at: string;
+          p_target?: number;
+          p_title: string;
+          p_unit?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['call_out_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'call_out_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_challenge_poll: {
+        Args: {
+          p_closes_at?: string;
+          p_event_id: string;
+          p_template: Database['public']['Enums']['challenge_poll_template'];
+          p_threshold?: number;
+        };
+        Returns: {
+          closes_at: string;
+          created_at: string;
+          created_by: string;
+          event_id: string;
+          id: string;
+          options: string[];
+          question: string;
+          template: Database['public']['Enums']['challenge_poll_template'];
+          threshold: number | null;
+          updated_at: string;
+          vote_counts: number[];
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_polls';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -2857,10 +4394,22 @@ export type Database = {
           time_zone: string;
         }[];
       };
+      decline_call_out: {
+        Args: { p_call_out_id: string };
+        Returns: Database['public']['CompositeTypes']['call_out_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'call_out_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       decline_invite: {
         Args: { p_invite_id: string };
         Returns: Database['public']['Enums']['invite_status'];
       };
+      delete_challenge_comment: { Args: { p_comment_id: string }; Returns: boolean };
+      delete_challenge_post: { Args: { p_post_id: string }; Returns: boolean };
       delete_message: { Args: { p_message_id: string }; Returns: boolean };
       delete_update: { Args: { p_update_id: string }; Returns: boolean };
       discover_search: {
@@ -2927,6 +4476,16 @@ export type Database = {
         Returns: Database['public']['Enums']['activity_status'];
       };
       follow_activity: { Args: { p_activity_id: string }; Returns: boolean };
+      follow_challenge_event: {
+        Args: { p_comments_muted?: boolean; p_event_id: string; p_quiet?: boolean };
+        Returns: Database['public']['CompositeTypes']['challenge_follow_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_follow_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       further_out: {
         Args: { p_limit?: number };
         Returns: {
@@ -3023,6 +4582,7 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      join_challenge_lineup: { Args: { p_event_id: string }; Returns: number };
       join_crew: { Args: { p_code: string }; Returns: string };
       join_waitlist: {
         Args: { p_activity_id: string; p_idempotency_key: string };
@@ -3047,6 +4607,7 @@ export type Database = {
           window_start: string;
         }[];
       };
+      leave_challenge_lineup: { Args: { p_event_id: string }; Returns: boolean };
       leave_crew: { Args: { p_crew_id: string }; Returns: boolean };
       leave_plan: {
         Args: { p_idempotency_key: string; p_plan_id: string };
@@ -3054,6 +4615,16 @@ export type Database = {
         SetofOptions: {
           from: '*';
           to: 'plan_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      log_challenge_progress: {
+        Args: { p_a_value?: number; p_b_value?: number; p_event_id: string; p_period?: number };
+        Returns: Database['public']['CompositeTypes']['challenge_progress_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_progress_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -3112,6 +4683,55 @@ export type Database = {
           user_id: string;
         }[];
       };
+      my_call_outs: {
+        Args: { p_box?: string; p_limit?: number };
+        Returns: {
+          challenger_id: string;
+          challenger_name: string;
+          created_at: string;
+          direction: string;
+          event_id: string;
+          expires_at: string;
+          format: Database['public']['Enums']['challenge_format'];
+          id: string;
+          is_counter: boolean;
+          is_rematch: boolean;
+          opponent_name: string;
+          place_name: string;
+          sport_id: string;
+          starts_at: string;
+          status: Database['public']['Enums']['call_out_status'];
+          time_zone: string;
+          title: string;
+        }[];
+      };
+      my_challenge_events: {
+        Args: { p_limit?: number };
+        Returns: {
+          a_name: string;
+          a_progress: number;
+          b_name: string;
+          b_progress: number;
+          event_id: string;
+          follower_count: number;
+          format: Database['public']['Enums']['challenge_format'];
+          live_period: number;
+          my_side: Database['public']['Enums']['team_side'];
+          place_name: string;
+          relation: string;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          side_size: number;
+          situation: string;
+          sport_id: string;
+          stage: Database['public']['Enums']['challenge_stage'];
+          starts_at: string;
+          target: number;
+          time_zone: string;
+          title: string;
+          unit: string;
+          winner_side: Database['public']['Enums']['team_side'];
+        }[];
+      };
       my_crews: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -3150,6 +4770,25 @@ export type Database = {
           title: string;
           type: Database['public']['Enums']['notification_type'];
           updated_at: string;
+        }[];
+      };
+      my_rivalries: {
+        Args: { p_limit?: number };
+        Returns: {
+          a_name: string;
+          a_wins: number;
+          b_name: string;
+          b_wins: number;
+          draws: number;
+          form: string[];
+          kind: Database['public']['Enums']['rivalry_kind'];
+          last_active_at: string;
+          meetings: number;
+          next_event_id: string;
+          next_starts_at: string;
+          next_time_zone: string;
+          next_title: string;
+          rivalry_id: string;
         }[];
       };
       notification_preferences: {
@@ -3261,6 +4900,32 @@ export type Database = {
           title: string;
         }[];
       };
+      post_challenge_update: {
+        Args: {
+          p_body: string;
+          p_event_id: string;
+          p_idempotency_key: string;
+          p_kind: Database['public']['Enums']['challenge_post_kind'];
+          p_stats?: Json;
+        };
+        Returns: {
+          author_id: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          event_id: string;
+          id: string;
+          kind: Database['public']['Enums']['challenge_post_kind'];
+          milestone: string | null;
+          stats: Json | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_posts';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       post_update: {
         Args: { p_activity_id: string; p_body: string; p_idempotency_key: string };
         Returns: {
@@ -3279,6 +4944,16 @@ export type Database = {
         SetofOptions: {
           from: '*';
           to: 'activity_updates';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      predict_challenge: {
+        Args: { p_event_id: string; p_side: Database['public']['Enums']['team_side'] };
+        Returns: Database['public']['CompositeTypes']['challenge_crowd_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_crowd_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -3323,6 +4998,10 @@ export type Database = {
           sports_visible: boolean;
           user_id: string;
         }[];
+      };
+      propose_challenge_organizer: {
+        Args: { p_event_id: string; p_user_id: string };
+        Returns: boolean;
       };
       propose_result: {
         Args: {
@@ -3390,6 +5069,26 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      react_challenge: {
+        Args: { p_event_id: string; p_reaction: Database['public']['Enums']['reaction_word'] };
+        Returns: Database['public']['CompositeTypes']['challenge_reaction_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_reaction_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      ready_challenge: {
+        Args: { p_event_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_presence_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_presence_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       recap_for_me: {
         Args: { p_activity_id: string };
         Returns: {
@@ -3419,6 +5118,10 @@ export type Database = {
         Args: { p_platform: Database['public']['Enums']['push_platform']; p_token: string };
         Returns: string;
       };
+      remove_challenge_organizer: {
+        Args: { p_event_id: string; p_user_id: string };
+        Returns: boolean;
+      };
       remove_crew_member: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       remove_moment: { Args: { p_moment_id: string }; Returns: boolean };
       report: {
@@ -3430,12 +5133,103 @@ export type Database = {
         };
         Returns: string;
       };
+      request_challenge_correction: {
+        Args: { p_event_id: string; p_note?: string };
+        Returns: Database['public']['CompositeTypes']['challenge_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      respect_challenge_comment: {
+        Args: { p_comment_id: string };
+        Returns: Database['public']['CompositeTypes']['comment_respect_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'comment_respect_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      rivalry_meetings: {
+        Args: { p_limit?: number; p_rivalry_id: string };
+        Returns: {
+          a_value: number;
+          b_value: number;
+          event_id: string;
+          margin: number;
+          place_name: string;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          source: Database['public']['Enums']['challenge_result_source'];
+          sport_id: string;
+          starts_at: string;
+          time_zone: string;
+          title: string;
+          unit: string;
+          verified_at: string;
+          winner: string;
+        }[];
+      };
+      rivalry_view: {
+        Args: { p_rivalry_id: string };
+        Returns: {
+          a_id: string;
+          a_name: string;
+          a_wins: number;
+          b_id: string;
+          b_name: string;
+          b_wins: number;
+          draws: number;
+          form: string[];
+          i_am_in: boolean;
+          kind: Database['public']['Enums']['rivalry_kind'];
+          last_event_id: string;
+          last_margin: number;
+          last_scoring: Database['public']['Enums']['challenge_scoring'];
+          last_title: string;
+          last_unit: string;
+          last_winner: string;
+          meetings: number;
+          next_event_id: string;
+          next_stage: Database['public']['Enums']['challenge_stage'];
+          next_starts_at: string;
+          next_time_zone: string;
+          next_title: string;
+          rematch_call_out_id: string;
+          rematch_can_answer: boolean;
+          rematch_from: string;
+          rematch_from_name: string;
+          rematch_message: string;
+          rematch_starts_at: string;
+          rematch_title: string;
+          rivalry_id: string;
+          streak_length: number;
+          streak_side: string;
+        }[];
+      };
       run_it_back: {
         Args: { p_activity_id: string; p_idempotency_key: string; p_starts_at: string };
         Returns: Database['public']['CompositeTypes']['run_it_back_state'];
         SetofOptions: {
           from: '*';
           to: 'run_it_back_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      run_it_back_challenge: {
+        Args: {
+          p_event_id: string;
+          p_idempotency_key: string;
+          p_message?: string;
+          p_starts_at?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['rematch_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'rematch_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -3604,6 +5398,22 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      submit_challenge_result: {
+        Args: {
+          p_a_value: number;
+          p_b_value: number;
+          p_event_id: string;
+          p_idempotency_key: string;
+          p_note?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['challenge_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       surprise_me: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -3631,6 +5441,16 @@ export type Database = {
       transfer_crew_ownership: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       unblock_user: { Args: { p_user_id: string }; Returns: boolean };
       unfollow_activity: { Args: { p_activity_id: string }; Returns: boolean };
+      unfollow_challenge_event: {
+        Args: { p_event_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_follow_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_follow_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       unmute_object: {
         Args: {
           p_object_id: string;
@@ -3668,6 +5488,16 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      vote_challenge_poll: {
+        Args: { p_option: number; p_poll_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_poll_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_poll_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       vote_time: {
         Args: { p_option_id: string; p_plan_id: string };
         Returns: {
@@ -3676,6 +5506,26 @@ export type Database = {
           starts_at: string;
           vote_count: number;
         }[];
+      };
+      withdraw_call_out: {
+        Args: { p_call_out_id: string };
+        Returns: Database['public']['CompositeTypes']['call_out_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'call_out_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      withdraw_challenge_correction: {
+        Args: { p_event_id: string };
+        Returns: Database['public']['CompositeTypes']['challenge_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'challenge_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       withdraw_down_for: {
         Args: { p_signal_id: string };
@@ -3687,6 +5537,26 @@ export type Database = {
       attendance_rule: 'check_in' | 'check_in_host_confirms';
       attendance_status: 'confirmed' | 'waitlisted' | 'cancelled' | 'checked_in';
       audience: 'public' | 'friends' | 'invite_only' | 'crew';
+      call_out_status: 'proposed' | 'accepted' | 'countered' | 'declined' | 'withdrawn' | 'expired';
+      challenge_audience: 'public' | 'friends' | 'participants';
+      challenge_format: 'person_vs_person' | 'crew_vs_crew';
+      challenge_poll_template: 'winner' | 'margin' | 'performance' | 'first_score' | 'rematch';
+      challenge_post_kind: 'system' | 'statement' | 'training' | 'progress' | 'logistics';
+      challenge_result_source: 'participant_confirmation' | 'organizer_review';
+      challenge_scoring: 'time' | 'distance' | 'score' | 'rounds';
+      challenge_stage:
+        | 'accepted'
+        | 'days'
+        | 'today'
+        | 'soon'
+        | 'live'
+        | 'verifying'
+        | 'disputed'
+        | 'complete'
+        | 'cancelled';
+      challenge_status: 'scheduled' | 'live' | 'verifying' | 'disputed' | 'complete' | 'cancelled';
+      challenge_submission_status: 'pending' | 'confirmed' | 'superseded';
+      challenge_verification: 'participant_confirmation' | 'device';
       check_in_method: 'location' | 'host';
       crew_join_via: 'created' | 'added' | 'code';
       crew_role: 'owner' | 'admin' | 'member';
@@ -3695,7 +5565,7 @@ export type Database = {
       invite_status: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired';
       member_via: 'host' | 'im_down' | 'down_for' | 'invite';
       message_kind: 'text' | 'system';
-      notification_object: 'plan' | 'activity' | 'crew' | 'challenge';
+      notification_object: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event';
       notification_type:
         | 'need_one_more'
         | 'game_on'
@@ -3712,7 +5582,11 @@ export type Database = {
         | 'crew_plan'
         | 'mention'
         | 'crew_member_joined'
-        | 'challenge_response';
+        | 'challenge_response'
+        | 'call_out'
+        | 'challenge_posts'
+        | 'challenge_milestone'
+        | 'challenge_to_confirm';
       plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat';
       plan_status: 'forming' | 'game_on' | 'expired' | 'cancelled';
       proposal_status: 'proposed' | 'verified' | 'superseded';
@@ -3720,8 +5594,20 @@ export type Database = {
       push_platform: 'ios' | 'android' | 'web';
       reaction_word: 'lets_go' | 'respect' | 'hold_that' | 'run_it_back';
       report_reason: 'spam' | 'harassment' | 'unsafe' | 'impersonation' | 'inappropriate' | 'other';
-      report_subject: 'profile' | 'plan' | 'activity' | 'moment' | 'result' | 'message' | 'update';
+      report_subject:
+        | 'profile'
+        | 'plan'
+        | 'activity'
+        | 'moment'
+        | 'result'
+        | 'message'
+        | 'update'
+        | 'call_out'
+        | 'challenge_event'
+        | 'challenge_post'
+        | 'challenge_comment';
       reputation_kind: 'shows_up' | 'respectful' | 'welcomes_beginners' | 'great_host';
+      rivalry_kind: 'people' | 'crews';
       signal_status: 'active' | 'matched' | 'withdrawn' | 'expired';
       skill_level: 'learning' | 'casual' | 'intermediate' | 'advanced';
       suggestion_status: 'open' | 'accepted' | 'expired';
@@ -3753,6 +5639,87 @@ export type Database = {
         capacity: number | null;
         changed: boolean | null;
         promoted_user_id: string | null;
+      };
+      call_out_state: {
+        call_out_id: string | null;
+        status: Database['public']['Enums']['call_out_status'] | null;
+        created: boolean | null;
+        expires_at: string | null;
+        countered_from: string | null;
+        event_id: string | null;
+      };
+      challenge_accept_state: {
+        call_out_id: string | null;
+        event_id: string | null;
+        rivalry_id: string | null;
+        created: boolean | null;
+      };
+      challenge_crowd_state: {
+        event_id: string | null;
+        prediction_count: number | null;
+        prediction_a_pct: number | null;
+        prediction_b_pct: number | null;
+        my_prediction: Database['public']['Enums']['team_side'] | null;
+        predictions_locked: boolean | null;
+        backing_a: number | null;
+        backing_b: number | null;
+        my_backing: Database['public']['Enums']['team_side'] | null;
+        changed: boolean | null;
+      };
+      challenge_follow_state: {
+        event_id: string | null;
+        following: boolean | null;
+        quiet: boolean | null;
+        comments_muted: boolean | null;
+        follower_count: number | null;
+      };
+      challenge_poll_state: {
+        poll_id: string | null;
+        vote_counts: number[] | null;
+        total_votes: number | null;
+        my_vote: number | null;
+        closes_at: string | null;
+      };
+      challenge_presence_state: {
+        event_id: string | null;
+        stage: Database['public']['Enums']['challenge_stage'] | null;
+        my_checked_in_at: string | null;
+        my_ready_at: string | null;
+        a_checked_in: boolean | null;
+        b_checked_in: boolean | null;
+        a_ready: boolean | null;
+        b_ready: boolean | null;
+        live_at: string | null;
+      };
+      challenge_progress_state: {
+        event_id: string | null;
+        a_progress: number | null;
+        b_progress: number | null;
+        live_period: number | null;
+        progress_updated_at: string | null;
+        changed: boolean | null;
+      };
+      challenge_reaction_state: {
+        event_id: string | null;
+        reaction_counts: Json | null;
+        my_reaction: Database['public']['Enums']['reaction_word'] | null;
+      };
+      challenge_result_state: {
+        event_id: string | null;
+        submission_id: string | null;
+        stage: Database['public']['Enums']['challenge_stage'] | null;
+        a_value: number | null;
+        b_value: number | null;
+        confirmed_count: number | null;
+        needed_count: number | null;
+        i_confirmed: boolean | null;
+        verified: boolean | null;
+        winner_side: Database['public']['Enums']['team_side'] | null;
+      };
+      comment_respect_state: {
+        comment_id: string | null;
+        respect_count: number | null;
+        respected: boolean | null;
       };
       down_for_state: {
         signal_id: string | null;
@@ -3804,6 +5771,12 @@ export type Database = {
         update_id: string | null;
         reaction_counts: Json | null;
         my_reaction: Database['public']['Enums']['reaction_word'] | null;
+      };
+      rematch_state: {
+        call_out_id: string | null;
+        event_id: string | null;
+        created: boolean | null;
+        accepted: boolean | null;
       };
       result_state: {
         proposal_id: string | null;
@@ -3935,6 +5908,27 @@ export const Constants = {
       attendance_rule: ['check_in', 'check_in_host_confirms'],
       attendance_status: ['confirmed', 'waitlisted', 'cancelled', 'checked_in'],
       audience: ['public', 'friends', 'invite_only', 'crew'],
+      call_out_status: ['proposed', 'accepted', 'countered', 'declined', 'withdrawn', 'expired'],
+      challenge_audience: ['public', 'friends', 'participants'],
+      challenge_format: ['person_vs_person', 'crew_vs_crew'],
+      challenge_poll_template: ['winner', 'margin', 'performance', 'first_score', 'rematch'],
+      challenge_post_kind: ['system', 'statement', 'training', 'progress', 'logistics'],
+      challenge_result_source: ['participant_confirmation', 'organizer_review'],
+      challenge_scoring: ['time', 'distance', 'score', 'rounds'],
+      challenge_stage: [
+        'accepted',
+        'days',
+        'today',
+        'soon',
+        'live',
+        'verifying',
+        'disputed',
+        'complete',
+        'cancelled',
+      ],
+      challenge_status: ['scheduled', 'live', 'verifying', 'disputed', 'complete', 'cancelled'],
+      challenge_submission_status: ['pending', 'confirmed', 'superseded'],
+      challenge_verification: ['participant_confirmation', 'device'],
       check_in_method: ['location', 'host'],
       crew_join_via: ['created', 'added', 'code'],
       crew_role: ['owner', 'admin', 'member'],
@@ -3943,7 +5937,7 @@ export const Constants = {
       invite_status: ['pending', 'accepted', 'declined', 'revoked', 'expired'],
       member_via: ['host', 'im_down', 'down_for', 'invite'],
       message_kind: ['text', 'system'],
-      notification_object: ['plan', 'activity', 'crew', 'challenge'],
+      notification_object: ['plan', 'activity', 'crew', 'challenge', 'challenge_event'],
       notification_type: [
         'need_one_more',
         'game_on',
@@ -3961,6 +5955,10 @@ export const Constants = {
         'mention',
         'crew_member_joined',
         'challenge_response',
+        'call_out',
+        'challenge_posts',
+        'challenge_milestone',
+        'challenge_to_confirm',
       ],
       plan_source: ['down_for', 'quick', 'run_it_back', 'chat'],
       plan_status: ['forming', 'game_on', 'expired', 'cancelled'],
@@ -3969,8 +5967,21 @@ export const Constants = {
       push_platform: ['ios', 'android', 'web'],
       reaction_word: ['lets_go', 'respect', 'hold_that', 'run_it_back'],
       report_reason: ['spam', 'harassment', 'unsafe', 'impersonation', 'inappropriate', 'other'],
-      report_subject: ['profile', 'plan', 'activity', 'moment', 'result', 'message', 'update'],
+      report_subject: [
+        'profile',
+        'plan',
+        'activity',
+        'moment',
+        'result',
+        'message',
+        'update',
+        'call_out',
+        'challenge_event',
+        'challenge_post',
+        'challenge_comment',
+      ],
       reputation_kind: ['shows_up', 'respectful', 'welcomes_beginners', 'great_host'],
+      rivalry_kind: ['people', 'crews'],
       signal_status: ['active', 'matched', 'withdrawn', 'expired'],
       skill_level: ['learning', 'casual', 'intermediate', 'advanced'],
       suggestion_status: ['open', 'accepted', 'expired'],
