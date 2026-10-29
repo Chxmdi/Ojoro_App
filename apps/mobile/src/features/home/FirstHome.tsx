@@ -16,7 +16,6 @@ import {
   DisplayText,
   Divider,
   FeedEnd,
-  IconButton,
   LatentDemand,
   loadingProps,
   Panel,
@@ -51,6 +50,7 @@ import {
   pickBucket,
   type Bucket,
 } from './firstHomeLogic';
+import { HomeHeader } from './HomeHeader';
 import { HomePlan } from './HomePlan';
 import { QuickDownFor } from './QuickDownFor';
 
@@ -123,12 +123,7 @@ export function FirstHome({ density, densityUpdatedAt }: { density: HomeDensity;
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <View className="flex-row items-center justify-between pb-space-1 pl-space-5 pr-space-2 pt-space-3">
-        <Text variant="display-xs" style={{ letterSpacing: 24 * 0.06 }} role="heading">
-          OJORO
-        </Text>
-        <IconButton icon="search" label="Search" onPress={() => router.push('/discover')} />
-      </View>
+      <HomeHeader />
 
       <View className="gap-space-10 px-space-5 pb-space-10 pt-space-4" testID="first-home">
         <AreaPrompt userId={userId} show={!density.has_area} />

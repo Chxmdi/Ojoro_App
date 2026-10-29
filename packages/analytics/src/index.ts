@@ -80,6 +80,43 @@ export const analyticsEvents = {
   createOptionOpened: 'create_option_opened',
   planFormSubmitted: 'plan_form_submitted',
   planFormInvalid: 'plan_form_invalid',
+  // Step 4: Updates, the bell, the action feed, notification settings. The server records
+  // notification_acted and the messaging events; the client sends taps only, never words.
+  bellTapped: 'bell_tapped',
+  notificationOpened: 'notification_opened',
+  notificationActionTapped: 'notification_action_tapped',
+  homeCardOpened: 'home_card_opened',
+  notificationSettingChanged: 'notification_setting_changed',
+  notificationTypeChanged: 'notification_type_changed',
+  notificationUnmuted: 'notification_unmuted',
+  pushPromptAnswered: 'push_prompt_answered',
+  // Step 4: crew chat, Make This a Game, crews, activity chat, Live. The server records
+  // message_sent, chat_suggestion_*, make_this_a_game, crew_*, score_logged, live_update_posted
+  // and activity_followed; the client sends taps only, never message words or recipients.
+  chatMessageSent: 'chat_message_sent',
+  chatMessageQueued: 'chat_message_queued',
+  chatMessageFailed: 'chat_message_failed',
+  chatMessageEdited: 'chat_message_edited',
+  chatMessageDeleted: 'chat_message_deleted',
+  chatMessageActionsOpened: 'chat_message_actions_opened',
+  chatOlderLoaded: 'chat_older_loaded',
+  chatSuggestionShown: 'chat_suggestion_shown',
+  chatSuggestionNotNowTapped: 'chat_suggestion_not_now_tapped',
+  makeThisAGameOpened: 'make_this_a_game_opened',
+  makeThisAGameTapped: 'make_this_a_game_tapped',
+  crewPlanOpened: 'crew_plan_opened',
+  crewCreateTapped: 'crew_create_tapped',
+  crewJoinTapped: 'crew_join_tapped',
+  crewLeaveTapped: 'crew_leave_tapped',
+  crewCodeShared: 'crew_code_shared',
+  crewCodeRotated: 'crew_code_rotated',
+  reactionTapped: 'reaction_tapped',
+  liveScoreLoggedTapped: 'live_score_logged_tapped',
+  liveUpdatePostedTapped: 'live_update_posted_tapped',
+  liveReplyTapped: 'live_reply_tapped',
+  liveShared: 'live_shared',
+  activityFollowTapped: 'activity_follow_tapped',
+  activityUnfollowTapped: 'activity_unfollow_tapped',
 } as const;
 
 export type AnalyticsEvent =

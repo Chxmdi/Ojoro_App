@@ -9,6 +9,7 @@ import { rpc } from '@/lib/rpc';
 import { supabase } from '@/lib/supabase';
 
 import { check, checkRows, retryNetwork, type PlanCard } from '../plans/data';
+import type { FeedCard } from './homeLogic';
 
 export function useDownsNearby() {
   return useQuery({ queryKey: ['home', 'downs'], queryFn: () => rpc('down_for_nearby', {}) });
@@ -187,4 +188,36 @@ export function useCreateFromDemand() {
     );
   };
   return { ...mutation, tap };
+}
+
+/* ---------- Step 4: the action feed (docs/MESSAGING_CONTRACT.md, Main: home_feed) ---------- */
+
+/** The ranked, finite feed: one card per object, at most 12, then `caught_up`. */
+export function useHomeFeed(enabled = true) {
+  return useQuery({
+    queryKey: ['home', 'feed'],
+    enabled,
+    queryFn: async () => (await rpc('home_feed', {})) as unknown as FeedCard[],
+  });
+}
+
+/** The plan cards behind the feed's your_plan cards (count, status, roster link), in feed order. */
+export function useFeedPlans(ids: readonly string[]) {
+  const key = [...ids].sort().join(',');
+  return useQuery({
+    queryKey: ['home', 'feed-plans', key],
+    enabled: ids.length > 0,
+    queryFn: async (): Promise<PlanCard[]> =>
+      checkRows(await supabase.from('plan_cards').select('*').in('id', [...ids])),
+  });
+}
+
+/** A recap from the feed, with the facts its headline needs. */
+export function useRecap(activityId: string | null) {
+  return useQuery({
+    queryKey: ['home', 'recap-of', activityId],
+    enabled: activityId !== null,
+    queryFn: async () =>
+      check(await supabase.from('recaps').select('*').eq('activity_id', activityId ?? '').maybeSingle()),
+  });
 }

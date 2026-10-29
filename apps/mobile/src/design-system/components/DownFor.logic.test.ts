@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-
-import { downForAccessibilityLabel, downForModel } from './DownFor.logic';
+import { downForAccessibilityLabel, downForModel, fitDisplaySize } from './DownFor.logic';
 
 describe('downForModel', () => {
   it('asks the question in caps and counts who is down', () => {
@@ -26,5 +25,20 @@ describe('downForAccessibilityLabel', () => {
     expect(downForAccessibilityLabel('Tennis', 'Saturday', 0)).toBe(
       'Tennis Saturday. 0 people down.',
     );
+  });
+});
+
+describe('fitDisplaySize', () => {
+  it('keeps the largest size for short words', () => {
+    expect(fitDisplaySize('Football tonight?')).toBe('xl');
+  });
+  it('steps down so a long sport name never breaks mid-word', () => {
+    expect(fitDisplaySize('Volleyball tonight?')).toBe('lg');
+    expect(fitDisplaySize('Beach-volleyball tonight?')).toBe('md');
+  });
+  it('is exposed on the model', () => {
+    expect(
+      downForModel({ activity: 'Volleyball', when: 'tonight', downCount: 5 }).questionSize,
+    ).toBe('lg');
   });
 });

@@ -8,7 +8,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider, useOjoroFonts } from '@/design-system';
 import { RouteGuard } from '@/features/auth/RouteGuard';
 import { GateContext, useGateState } from '@/features/auth/useGate';
-import { AuthProvider } from '@/lib/auth';
+import { AuthProvider, useAuth } from '@/lib/auth';
+import { usePushRegistration } from '@/lib/push';
 import { QueryProvider } from '@/lib/query';
 
 // Hold the splash screen until Anton and Inter are ready, so no text flashes in a fallback face.
@@ -29,6 +30,7 @@ export default function RootLayout() {
       <QueryProvider>
         <AuthProvider>
           <ToastProvider>
+            <PushRegistration />
             <GatedStack />
           </ToastProvider>
         </AuthProvider>
@@ -62,4 +64,11 @@ function GatedStack() {
       />
     </GateContext>
   );
+}
+
+/** Registers this device's push token on every start while signed in, if permission was already given (lib/push.ts). */
+function PushRegistration() {
+  const auth = useAuth();
+  usePushRegistration(auth.status === 'signed-in' ? auth.session.user.id : null);
+  return null;
 }

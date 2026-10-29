@@ -215,7 +215,8 @@ begin
   end loop;
 
   -- 2. Last week: LIGHTS WIN 5–4. Complete, with a finalized Recap (Recap screen, Main "last Thursday").
-  v_start := now() - interval '7 days';
+  -- Just inside the week, so home_feed's 7-day recap window shows it.
+  v_start := now() - interval '6 days 20 hours';
   v_players := array[c_ade, c_chimdi, c_marcus, c_joel, c_sam, c_yara, c_tolu, c_tomi];
   insert into public.plans (sport_id, title, starts_at, duration_minutes, place_id, capacity, audience, deadline_at,
                             status, source, created_by, host_id, member_count, level_label, team_a_label, team_b_label,

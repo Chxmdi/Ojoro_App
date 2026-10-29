@@ -1,21 +1,25 @@
 /**
- * Home (Main.png, Slice 01 parts): the Ojoro Daily headline (TONIGHT.), Down For, your plans,
- * plans you were pulled into, FORMING NEAR YOU and the recap of your last game, then the end of
- * the feed. Crew momentum and Challenges are not in Slice 01 and are left out. A quiet area
+ * Home (Main.png). Step 4: the Ojoro Daily headline (TONIGHT.) and Down For lead, then the ranked,
+ * finite action feed from `home_feed()` (needs you, your plans, your crews, plans forming near you,
+ * your last recap), ending with YOU'RE CAUGHT UP. The bell in the header is `unread_count()`.
+ * Challenge Events (M6) and CrewMomentum (step 6) are not built. A quiet area
  * (`home_density().low_density`) gets FirstHome instead.
  */
+import type { NotificationRow as NotificationFacts } from '@ojoro/contracts';
 import { useQueryClient } from '@tanstack/react-query';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useRouter, type Href } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import {
   ActivityStrip,
+  Button,
   Divider,
   DownFor,
-  Graphic,
-  IconButton,
+  FeedEnd,
   loadingProps,
+  NotificationRow,
+  Panel,
   PlanForming,
   Screen,
   Situation,
@@ -34,28 +38,43 @@ import { AreaPrompt } from '../area/AreaPrompt';
 import { useCreateDownFor, useMySignals, useSports, useWithdrawDownFor } from '../downfor/data';
 import { DownForSheet } from '../downfor/DownForSheet';
 import { signalLine, tonightArgs, type WindowId } from '../downfor/logic';
-import { useImDown, useMyArea, useNow, useOnline, usePlanRoster } from '../plans/data';
+import { useNotificationPrefs, useNotifications } from '../notifications/data';
+import { UpdateRow, useRowActions, type RowActions } from '../notifications/UpdateRow';
+import { useImDown, useMyArea, useNow, useOnline, usePlanRoster, type PlanCard } from '../plans/data';
 import { AsOf, ErrorState, OfflineBanner, routes } from '../plans/parts';
 import { clock, DEFAULT_TIME_ZONE, dailyDate, planWhen } from '../plans/time';
-import { useDownsNearby, useHomeDensity, useHomeRealtime, useInvitedPlans, useLastRecap, useMyPlans, usePlansNearby } from './data';
+import {
+  useDownsNearby,
+  useFeedPlans,
+  useHomeDensity,
+  useHomeFeed,
+  useHomeRealtime,
+  usePlansNearby,
+  useRecap,
+} from './data';
+import { FirstHome } from './FirstHome';
 import {
   bestMove,
+  cardToNearby,
+  crewSuggestionLine,
   dailyBody,
   dailyHeadline,
   downForWhen,
   downForWhere,
+  feedDownFor,
+  feedSections,
   formingLink,
-  formingNearYou,
+  isLiveCard,
   peopleDown,
-  pickDownFor,
   planForSport,
   recapHeadline,
-  recapIsRecent,
   recapLine,
   recapWhen,
+  sectionLabel,
+  type FeedCard,
   type NearbyPlan,
 } from './homeLogic';
-import { FirstHome } from './FirstHome';
+import { HomeHeader } from './HomeHeader';
 import { HomePlan } from './HomePlan';
 import { QuickDownFor } from './QuickDownFor';
 
@@ -96,16 +115,17 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
   const online = useOnline();
   const now = useNow([]);
 
+  const feed = useHomeFeed(userId !== null);
   const downs = useDownsNearby();
   const nearby = usePlansNearby();
-  const mine = useMyPlans(userId);
-  const invited = useInvitedPlans(userId);
-  const recap = useLastRecap(userId);
   const signals = useMySignals(userId);
   const sports = useSports();
   const area = useMyArea(userId);
+  const notes = useNotifications(userId !== null);
+  const prefs = useNotificationPrefs();
   const create = useCreateDownFor();
   const withdraw = useWithdrawDownFor();
+  const rowActions = useRowActions('home');
   useHomeRealtime(userId);
   const [sheet, setSheet] = useState<SheetPreset | null>(null);
 
@@ -115,23 +135,30 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
     }, [qc]),
   );
 
+  const cards = feed.data ?? [];
+  const { sections, end } = feedSections(cards);
+  const planIds = cards
+    .filter((c) => c.card === 'your_plan' && c.plan_id && !isLiveCard(c))
+    .map((c) => c.plan_id as string);
+  const plans = useFeedPlans(planIds);
+
   const sportName = (id: string) => sports.data?.find((s) => s.id === id)?.name ?? id;
   const downRows = downs.data ?? [];
   const nearbyRows = (nearby.data ?? []) as NearbyPlan[];
-  const myPlans = mine.data ?? [];
-  const myIds = new Set(myPlans.map((p) => p.id));
-  const pick = pickDownFor(downRows, nearbyRows);
+  const mySignal = signals.data?.[0] ?? null;
+  const downCard = cards.find((c) => c.card === 'down_for') ?? null;
+  const pick = feedDownFor(downCard, mySignal?.sport_id ?? null, downRows, nearbyRows);
   const pickPlan = pick ? planForSport(nearbyRows, pick.sportId) : null;
   const best = bestMove(nearbyRows, now, TZ);
-  const formingRows = formingNearYou(nearbyRows, myIds);
-  const mySignal = signals.data?.[0] ?? null;
   const committed = pick ? (signals.data ?? []).some((s) => s.sport_id === pick.sportId) : false;
-  const lastRecap = recap.data && recapIsRecent(recap.data.recap.occurred_at, now, TZ) ? recap.data : null;
+  const tz = prefs.data?.time_zone ?? TZ;
 
-  const loading = downs.isPending && nearby.isPending;
-  const failed = downs.isError && nearby.isError && !downs.data && !nearby.data;
-  const quiet = !loading && !failed && downRows.length === 0 && nearbyRows.length === 0 && myPlans.length === 0;
-  const asOf = updatedAt(Math.max(downs.dataUpdatedAt, nearby.dataUpdatedAt));
+  const dailyLoading = downs.isPending && nearby.isPending;
+  const feedLoading = feed.isPending;
+  const failed = feed.isError && !feed.data;
+  const quiet = !feedLoading && !failed && sections.length === 0 && !pick;
+  const asOf = updatedAt(Math.max(feed.dataUpdatedAt, downs.dataUpdatedAt, nearby.dataUpdatedAt));
+  const noteById = new Map((notes.data ?? []).map((n) => [n.id, n]));
 
   const onDown = () => {
     if (!pick || committed) return;
@@ -165,14 +192,15 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
     });
   };
 
+  const openCard = (c: FeedCard) => {
+    if (!c.href) return;
+    track('home_card_opened', { card: c.card, position: c.position });
+    router.push(c.href as Href);
+  };
+
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <View className="flex-row items-center justify-between pb-space-1 pl-space-5 pr-space-2 pt-space-3">
-        <Text variant="display-xs" style={{ letterSpacing: 24 * 0.06 }} role="heading">
-          OJORO
-        </Text>
-        <IconButton icon="search" label="Search" onPress={() => router.push('/discover')} />
-      </View>
+      <HomeHeader />
 
       <View className="gap-space-10 px-space-5 pb-space-10 pt-space-4" testID="home-feed">
         <AreaPrompt userId={userId} show={!hasArea} />
@@ -182,7 +210,7 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
           <Text variant="display-xl" role="heading">
             {dailyHeadline(now, TZ)}
           </Text>
-          {loading ? (
+          {dailyLoading ? (
             <View {...loadingProps('Loading today')}>
               <Skeleton kind="text" lines={2} />
             </View>
@@ -193,10 +221,6 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
           )}
           {!online ? <AsOf at={asOf} what="Updated" /> : null}
         </View>
-
-        {failed ? (
-          <ErrorState error={ojoroErrorOf(downs.error)} onRetry={() => void qc.invalidateQueries({ queryKey: ['home'] })} />
-        ) : null}
 
         {/* Your Down For */}
         {mySignal ? (
@@ -214,9 +238,9 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
           </View>
         ) : null}
 
-        {/* Down For */}
+        {/* Down For: the sport home_feed ranked, under the editorial as in the design. */}
         {pick ? (
-          <View className="gap-space-3" role="region" aria-label="Down for">
+          <View className="gap-space-3" role="region" aria-label="Down for" testID="home-down-for">
             <DownFor
               activity={sportName(pick.sportId)}
               when={downForWhen(pick.earliestStart, now, TZ)}
@@ -240,7 +264,7 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
               SOMETHING ELSE
             </TextButton>
           </View>
-        ) : !loading ? (
+        ) : !dailyLoading && !feedLoading ? (
           <QuickDownFor
             sports={(sports.data ?? []).map((sp) => ({ id: sp.id, name: sp.name }))}
             downFor={(signals.data ?? []).map((sg) => sg.sport_id)}
@@ -250,83 +274,55 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
           />
         ) : null}
 
-        {/* Your plans: forming, or GAME ON reached while you were elsewhere. */}
-        {myPlans.length > 0 ? (
-          <View className="gap-space-4" role="region" aria-label="Your plans">
-            <Divider label="YOUR PLANS" />
-            {myPlans.map((p) => (
-              <HomePlan key={p.id} plan={p} now={now} joined />
-            ))}
+        {failed ? (
+          <View className="-mx-space-5">
+            <ErrorState error={ojoroErrorOf(feed.error)} onRetry={() => void qc.invalidateQueries({ queryKey: ['home'] })} />
           </View>
         ) : null}
 
-        {/* Pulled in */}
-        {(invited.data ?? []).length > 0 ? (
-          <View role="region" aria-label="Pulled in">
-            <Divider label="PULLED IN" />
-            {(invited.data ?? []).map((p) => (
-              <ActivityStrip
-                key={p.id}
-                activity={p.title ?? p.sport_name}
-                time={clock(p.starts_at, TZ)}
-                place={p.place_name ?? 'Place to be agreed'}
-                count={p.member_count}
-                capacity={p.capacity}
-                onPress={() => router.push(routes.plan(p.id))}
-              />
-            ))}
-          </View>
-        ) : null}
-
-        {/* Forming near you */}
-        {loading ? (
-          <View {...loadingProps('Loading plans near you')}>
+        {feedLoading ? (
+          <View className="gap-space-4" {...loadingProps('Loading your feed')}>
+            <Skeleton kind="strip" />
             <Skeleton kind="object" />
           </View>
-        ) : formingRows.length > 0 ? (
-          <View className="gap-space-4" role="region" aria-label="Forming near you">
-            <Divider label="FORMING NEAR YOU" />
-            {formingRows.map((p) => (
-              <NearbyPlanObject key={p.plan_id} plan={p} now={now} />
-            ))}
-          </View>
         ) : null}
 
-        {/* Last game */}
-        {lastRecap ? (
-          <View className="gap-space-4" role="region" aria-label="Last game">
-            <Divider label={recapWhen(lastRecap.recap.occurred_at, now, TZ)} />
-            <Pressable
-              role="link"
-              accessibilityHint="Opens the recap"
-              onPress={() => router.push(routes.recap(lastRecap.recap.activity_id))}
-              testID="home-recap"
+        {/* The action feed, in rank order. */}
+        {sections.map((section) => {
+          if (section.kind === 'down_for') return null;
+          const label = sectionLabel(section.kind);
+          return (
+            <View
+              key={`${section.kind}-${section.cards[0]?.position ?? 0}`}
+              className="gap-space-4"
+              role="region"
+              aria-label={label ?? section.kind}
+              testID={`feed-${section.kind}`}
             >
-              <Situation id="after" className="gap-space-2 p-space-5">
-                <Text variant="overline">{`RECAP${lastRecap.title ? ` · ${lastRecap.title.toUpperCase()}` : ''}`}</Text>
-                <Text variant="display-md">{recapHeadline(lastRecap.recap)}</Text>
-                <Text variant="body-sm">
-                  {`${recapLine(lastRecap.recap)} `}
-                  <Text variant="body-sm" style={{ fontWeight: '700' }}>
-                    Run it back?
-                  </Text>
-                </Text>
-              </Situation>
-            </Pressable>
-          </View>
-        ) : null}
+              {label ? <Divider label={label} kind={section.kind === 'needs_you' ? 'strong' : 'hair'} /> : null}
+              {section.cards.map((c) => (
+                <FeedCardView
+                  key={`${c.card}-${c.position}`}
+                  card={c}
+                  now={now}
+                  timeZone={tz}
+                  note={c.notification_id ? (noteById.get(c.notification_id) ?? null) : null}
+                  plan={plans.data?.find((p) => p.id === c.plan_id) ?? null}
+                  rowActions={rowActions}
+                  onOpen={() => openCard(c)}
+                />
+              ))}
+            </View>
+          );
+        })}
 
         {/* End of feed */}
-        {!loading ? (
-          <View className="items-center gap-space-3 pt-space-4" role="region" aria-label="End of feed">
-            <Graphic kind="o" size={48} />
-            <Text variant="display-sm" className="text-center" role="heading">
-              {quiet ? "THAT'S EVERYTHING." : "YOU'RE CAUGHT UP."}
-            </Text>
-            <Text variant="body" muted className="text-center">
-              {quiet ? "Start something and it'll be here tomorrow." : 'Go do something.'}
-            </Text>
-          </View>
+        {!feedLoading && !failed ? (
+          <FeedEnd
+            testID="feed-end"
+            title={quiet ? "THAT'S EVERYTHING." : (end?.title ?? "YOU'RE CAUGHT UP.")}
+            message={quiet ? "Start something and it'll be here tomorrow." : (end?.reason ?? 'Go do something.')}
+          />
         ) : null}
       </View>
 
@@ -346,8 +342,113 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
   );
 }
 
+/** One feed card, drawn by kind with its participation action. */
+function FeedCardView({
+  card,
+  now,
+  timeZone,
+  note,
+  plan,
+  rowActions,
+  onOpen,
+}: {
+  card: FeedCard;
+  now: Date;
+  timeZone: string;
+  note: NotificationFacts | null;
+  plan: PlanCard | null;
+  rowActions: RowActions;
+  onOpen: () => void;
+}) {
+  switch (card.card) {
+    case 'needs_you':
+      // The same row as Updates (icon, time, inline action); the card's words if the row isn't loaded yet.
+      return note ? (
+        <View testID={`feed-card-${card.position}`}>
+          <UpdateRow row={note} now={now} timeZone={timeZone} unread={!note.read_at} actions={rowActions} />
+        </View>
+      ) : (
+        <View testID={`feed-card-${card.position}`}>
+          <NotificationRow title={card.title} body={card.reason ?? undefined} icon="bell" tone="strong" onPress={onOpen} />
+        </View>
+      );
+    case 'your_plan':
+      if (isLiveCard(card) || !plan) {
+        return (
+          <View testID={`feed-card-${card.position}`}>
+            <ActivityStrip
+              activity={card.title}
+              time={card.starts_at ? clock(card.starts_at, timeZone) : ''}
+              place={card.place_name ?? 'Place to be agreed'}
+              {...(card.member_count !== null ? { count: card.member_count } : null)}
+              {...(card.capacity !== null ? { capacity: card.capacity } : null)}
+              status={isLiveCard(card) ? 'live' : 'forming'}
+              onPress={onOpen}
+            />
+          </View>
+        );
+      }
+      return (
+        <View testID={`feed-card-${card.position}`}>
+          <HomePlan plan={plan} now={now} joined />
+        </View>
+      );
+    case 'crew_suggestion':
+      return (
+        <View testID={`feed-card-${card.position}`}>
+          <Panel
+            overline="OJORO NOTICED A PLAN"
+            title={card.title}
+            body={crewSuggestionLine(card)}
+            actions={
+              <Button variant="secondary" compact onPress={onOpen} accessibilityLabel={`Open the chat: ${card.title}`}>
+                OPEN THE CHAT
+              </Button>
+            }
+          />
+        </View>
+      );
+    case 'crew_plan':
+    case 'plan_forming': {
+      const p = cardToNearby(card);
+      return p ? (
+        <View testID={`feed-card-${card.position}`}>
+          <NearbyPlanObject plan={p} now={now} reason={card.card === 'plan_forming' ? card.reason : null} />
+        </View>
+      ) : null;
+    }
+    case 'recap':
+      return <RecapCard card={card} now={now} timeZone={timeZone} onOpen={onOpen} />;
+    default:
+      return null;
+  }
+}
+
+/** Your last game (LAST THURSDAY): the recap object in the after situation. RUN IT BACK lives on the recap. */
+function RecapCard({ card, now, timeZone, onOpen }: { card: FeedCard; now: Date; timeZone: string; onOpen: () => void }) {
+  const recap = useRecap(card.activity_id);
+  const r = recap.data ?? null;
+  return (
+    <View className="gap-space-4" testID="home-recap-block">
+      <Divider label={recapWhen(card.starts_at ?? new Date().toISOString(), now, timeZone)} />
+      <Pressable role="link" accessibilityHint="Opens the recap" onPress={onOpen} testID="home-recap">
+        <Situation id="after" className="gap-space-2 p-space-5">
+          <Text variant="overline">{`RECAP · ${card.title.toUpperCase()}`}</Text>
+          <Text variant="display-md">{r ? recapHeadline(r) : `${card.people ?? ''} PLAYED.`.trim()}</Text>
+          <Text variant="body-sm">
+            {`${r ? recapLine(r) : `${card.reason ?? ''}.`} `}
+            <Text variant="body-sm" style={{ fontWeight: '700' }}>
+              Run it back?
+            </Text>
+          </Text>
+        </Situation>
+      </Pressable>
+    </View>
+  );
+}
+
 /** A plan forming near you: I'M DOWN joins it here and opens it. */
-function NearbyPlanObject({ plan, now }: { plan: NearbyPlan; now: Date }) {
+function NearbyPlanObject({ plan, now, reason }: { plan: NearbyPlan; now: Date; reason?: string | null }) {
   const router = useRouter();
   const toast = useToast();
   const imDown = useImDown(plan.plan_id);
@@ -379,6 +480,11 @@ function NearbyPlanObject({ plan, now }: { plan: NearbyPlan; now: Date }) {
         joined={joined}
         onJoin={onJoin}
       />
+      {reason ? (
+        <Text variant="body-sm" muted className="mx-space-5 pt-space-2">
+          {`${reason.charAt(0).toUpperCase()}${reason.slice(1)}.`}
+        </Text>
+      ) : null}
       <TextButton
         onPress={() => router.push(routes.plan(plan.plan_id))}
         className="mx-space-5 self-end"
