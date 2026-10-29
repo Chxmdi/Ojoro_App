@@ -155,3 +155,27 @@ export {
   STAMP_SIZE,
   type PassportStampProps,
 } from './components/PassportStamp';
+export { UserMiniCard, type UserMiniCardProps, type UserStat } from './components/UserMiniCard';
+export {
+  Panel,
+  PANEL_TITLE_VARIANTS,
+  type PanelProps,
+  type PanelTitleVariant,
+} from './components/Panel';
+export { Band, type BandProps } from './components/Band';
+export {
+  LatentDemand,
+  latentDemandModel,
+  LATENT_DEMAND_NOTE,
+  LATENT_DEMAND_VARIANTS,
+  type LatentDemandProps,
+  type LatentDemandVariant,
+} from './components/LatentDemand';
+export {
+  FeedEnd,
+  feedEndLayout,
+  FEED_END_SIZES,
+  type FeedEndProps,
+  type FeedEndSize,
+} from './components/FeedEnd';
+export { ChipRow, type ChipRowProps } from './components/ChipRow';
