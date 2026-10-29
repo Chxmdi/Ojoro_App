@@ -142,6 +142,225 @@ export type Database = {
           },
         ];
       };
+      activity_followers: {
+        Row: {
+          activity_id: string;
+          created_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id: string;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          activity_id?: string;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activity_followers_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_followers_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_followers_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      activity_live: {
+        Row: {
+          activity_id: string;
+          follower_count: number;
+          last_update_at: string | null;
+          reaction_counts: NonNullable<Json>;
+          score_logged_by: string | null;
+          score_updated_at: string | null;
+          team_a_score: number | null;
+          team_b_score: number | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id: string;
+          follower_count?: number;
+          last_update_at?: string | null;
+          reaction_counts?: NonNullable<Json>;
+          score_logged_by?: string | null;
+          score_updated_at?: string | null;
+          team_a_score?: number | null;
+          team_b_score?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          activity_id?: string;
+          follower_count?: number;
+          last_update_at?: string | null;
+          reaction_counts?: NonNullable<Json>;
+          score_logged_by?: string | null;
+          score_updated_at?: string | null;
+          team_a_score?: number | null;
+          team_b_score?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activity_live_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: true;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_live_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: true;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_live_score_logged_by_fkey';
+            columns: ['score_logged_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      activity_reactions: {
+        Row: {
+          activity_id: string;
+          created_at: string;
+          reaction: Database['public']['Enums']['reaction_word'];
+          update_id: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id: string;
+          created_at?: string;
+          reaction: Database['public']['Enums']['reaction_word'];
+          update_id?: string | null;
+          user_id: string;
+        };
+        Update: {
+          activity_id?: string;
+          created_at?: string;
+          reaction?: Database['public']['Enums']['reaction_word'];
+          update_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activity_reactions_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_reactions_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_reactions_update_id_fkey';
+            columns: ['update_id'];
+            isOneToOne: false;
+            referencedRelation: 'activity_updates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_reactions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      activity_updates: {
+        Row: {
+          activity_id: string;
+          audience: Database['public']['Enums']['update_audience'];
+          author_id: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['update_kind'];
+          reaction_counts: NonNullable<Json>;
+          team_a_score: number | null;
+          team_b_score: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id: string;
+          audience?: Database['public']['Enums']['update_audience'];
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          kind: Database['public']['Enums']['update_kind'];
+          reaction_counts?: NonNullable<Json>;
+          team_a_score?: number | null;
+          team_b_score?: number | null;
+        };
+        Update: {
+          activity_id?: string;
+          audience?: Database['public']['Enums']['update_audience'];
+          author_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['update_kind'];
+          reaction_counts?: NonNullable<Json>;
+          team_a_score?: number | null;
+          team_b_score?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activity_updates_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_updates_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activity_updates_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       attendance: {
         Row: {
           activity_id: string;
@@ -261,6 +480,239 @@ export type Database = {
             columns: ['blocker_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chat_suggestion_dismissals: {
+        Row: {
+          created_at: string;
+          suggestion_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          suggestion_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          suggestion_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_suggestion_dismissals_suggestion_id_fkey';
+            columns: ['suggestion_id'];
+            isOneToOne: false;
+            referencedRelation: 'chat_suggestions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_suggestion_dismissals_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      chat_suggestions: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          crew_id: string;
+          day_key: string;
+          day_label: string;
+          expires_at: string;
+          id: string;
+          interested_ids: string[];
+          last_message_id: string | null;
+          place_ids: string[];
+          plan_id: string | null;
+          proposed_times: string[];
+          sport_id: string;
+          status: Database['public']['Enums']['suggestion_status'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          crew_id: string;
+          day_key: string;
+          day_label: string;
+          expires_at: string;
+          id?: string;
+          interested_ids?: string[];
+          last_message_id?: string | null;
+          place_ids?: string[];
+          plan_id?: string | null;
+          proposed_times?: string[];
+          sport_id: string;
+          status?: Database['public']['Enums']['suggestion_status'];
+          updated_at?: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          crew_id?: string;
+          day_key?: string;
+          day_label?: string;
+          expires_at?: string;
+          id?: string;
+          interested_ids?: string[];
+          last_message_id?: string | null;
+          place_ids?: string[];
+          plan_id?: string | null;
+          proposed_times?: string[];
+          sport_id?: string;
+          status?: Database['public']['Enums']['suggestion_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chat_suggestions_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_suggestions_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_suggestions_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_suggestions_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'plans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'chat_suggestions_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crew_members: {
+        Row: {
+          crew_id: string;
+          invited_by: string | null;
+          joined_at: string;
+          role: Database['public']['Enums']['crew_role'];
+          user_id: string;
+          via: Database['public']['Enums']['crew_join_via'];
+        };
+        ComputedFields: never;
+        Insert: {
+          crew_id: string;
+          invited_by?: string | null;
+          joined_at?: string;
+          role?: Database['public']['Enums']['crew_role'];
+          user_id: string;
+          via: Database['public']['Enums']['crew_join_via'];
+        };
+        Update: {
+          crew_id?: string;
+          invited_by?: string | null;
+          joined_at?: string;
+          role?: Database['public']['Enums']['crew_role'];
+          user_id?: string;
+          via?: Database['public']['Enums']['crew_join_via'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crew_members_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crew_members_invited_by_fkey';
+            columns: ['invited_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crew_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crews: {
+        Row: {
+          archived_at: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          is_private: boolean;
+          member_count: number;
+          name: string;
+          sport_id: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          is_private?: boolean;
+          member_count?: number;
+          name: string;
+          sport_id?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          is_private?: boolean;
+          member_count?: number;
+          name?: string;
+          sport_id?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crews_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crews_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
             referencedColumns: ['id'];
           },
         ];
@@ -415,6 +867,88 @@ export type Database = {
           },
         ];
       };
+      messages: {
+        Row: {
+          activity_id: string | null;
+          body: string | null;
+          created_at: string;
+          crew_id: string | null;
+          deleted_at: string | null;
+          edited_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['message_kind'];
+          mention_ids: string[];
+          payload: Json | null;
+          reply_to: string | null;
+          sender_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          crew_id?: string | null;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['message_kind'];
+          mention_ids?: string[];
+          payload?: Json | null;
+          reply_to?: string | null;
+          sender_id: string;
+        };
+        Update: {
+          activity_id?: string | null;
+          body?: string | null;
+          created_at?: string;
+          crew_id?: string | null;
+          deleted_at?: string | null;
+          edited_at?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['message_kind'];
+          mention_ids?: string[];
+          payload?: Json | null;
+          reply_to?: string | null;
+          sender_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'messages_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: false;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_reply_to_fkey';
+            columns: ['reply_to'];
+            isOneToOne: false;
+            referencedRelation: 'messages';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'messages_sender_id_fkey';
+            columns: ['sender_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       moment_tags: {
         Row: {
           created_at: string;
@@ -506,6 +1040,180 @@ export type Database = {
           {
             foreignKeyName: 'moments_author_id_fkey';
             columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notification_mutes: {
+        Row: {
+          created_at: string;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          until: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          until?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          object_id?: string;
+          object_kind?: Database['public']['Enums']['notification_object'];
+          until?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notification_mutes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notification_preferences: {
+        Row: {
+          quiet_end: string;
+          quiet_hours_enabled: boolean;
+          quiet_start: string;
+          show_details: boolean;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          quiet_end?: string;
+          quiet_hours_enabled?: boolean;
+          quiet_start?: string;
+          show_details?: boolean;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          quiet_end?: string;
+          quiet_hours_enabled?: boolean;
+          quiet_start?: string;
+          show_details?: boolean;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notification_preferences_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: true;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notification_settings: {
+        Row: {
+          push: boolean;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          push: boolean;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          push?: boolean;
+          type?: Database['public']['Enums']['notification_type'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notification_settings_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          acted_at: string | null;
+          activity_id: string | null;
+          actor_count: number;
+          actor_ids: string[];
+          bundle_key: string;
+          count: number;
+          created_at: string;
+          crew_id: string | null;
+          data: NonNullable<Json>;
+          id: string;
+          message_id: string | null;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          plan_id: string | null;
+          pushed_at: string | null;
+          read_at: string | null;
+          recipient_id: string;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          acted_at?: string | null;
+          activity_id?: string | null;
+          actor_count?: number;
+          actor_ids?: string[];
+          bundle_key: string;
+          count?: number;
+          created_at?: string;
+          crew_id?: string | null;
+          data?: NonNullable<Json>;
+          id?: string;
+          message_id?: string | null;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          plan_id?: string | null;
+          pushed_at?: string | null;
+          read_at?: string | null;
+          recipient_id: string;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at?: string;
+        };
+        Update: {
+          acted_at?: string | null;
+          activity_id?: string | null;
+          actor_count?: number;
+          actor_ids?: string[];
+          bundle_key?: string;
+          count?: number;
+          created_at?: string;
+          crew_id?: string | null;
+          data?: NonNullable<Json>;
+          id?: string;
+          message_id?: string | null;
+          object_id?: string;
+          object_kind?: Database['public']['Enums']['notification_object'];
+          plan_id?: string | null;
+          pushed_at?: string | null;
+          read_at?: string | null;
+          recipient_id?: string;
+          type?: Database['public']['Enums']['notification_type'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_recipient_id_fkey';
+            columns: ['recipient_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
             referencedColumns: ['id'];
@@ -891,6 +1599,7 @@ export type Database = {
           cost_cents: number;
           created_at: string;
           created_by: string;
+          crew_id: string | null;
           currency: string;
           deadline_at: string;
           duration_minutes: number;
@@ -923,6 +1632,7 @@ export type Database = {
           cost_cents?: number;
           created_at?: string;
           created_by: string;
+          crew_id?: string | null;
           currency?: string;
           deadline_at: string;
           duration_minutes: number;
@@ -954,6 +1664,7 @@ export type Database = {
           cost_cents?: number;
           created_at?: string;
           created_by?: string;
+          crew_id?: string | null;
           currency?: string;
           deadline_at?: string;
           duration_minutes?: number;
@@ -983,6 +1694,13 @@ export type Database = {
             columns: ['created_by'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'plans_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
             referencedColumns: ['id'];
           },
           {
@@ -1155,6 +1873,42 @@ export type Database = {
           },
           {
             foreignKeyName: 'pull_me_in_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      push_tokens: {
+        Row: {
+          created_at: string;
+          id: string;
+          last_seen_at: string;
+          platform: Database['public']['Enums']['push_platform'];
+          token: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          last_seen_at?: string;
+          platform: Database['public']['Enums']['push_platform'];
+          token: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          last_seen_at?: string;
+          platform?: Database['public']['Enums']['push_platform'];
+          token?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'push_tokens_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -1626,6 +2380,8 @@ export type Database = {
           cost_cents: number;
           created_at: string;
           created_by: string;
+          crew_id: string | null;
+          crew_name: string | null;
           currency: string;
           deadline_at: string;
           duration_minutes: number;
@@ -1670,6 +2426,13 @@ export type Database = {
             referencedColumns: ['id'];
           },
           {
+            foreignKeyName: 'plans_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'plans_host_id_fkey';
             columns: ['host_id'];
             isOneToOne: false;
@@ -1708,6 +2471,87 @@ export type Database = {
       };
     };
     Functions: {
+      act_on_notification: {
+        Args: { p_id: string };
+        Returns: {
+          acted_at: string | null;
+          activity_id: string | null;
+          actor_count: number;
+          actor_ids: string[];
+          bundle_key: string;
+          count: number;
+          created_at: string;
+          crew_id: string | null;
+          data: NonNullable<Json>;
+          id: string;
+          message_id: string | null;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          plan_id: string | null;
+          pushed_at: string | null;
+          read_at: string | null;
+          recipient_id: string;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'notifications';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      activity_live: {
+        Args: { p_activity_id: string };
+        Returns: {
+          activity_id: string;
+          can_log_score: boolean;
+          can_post: boolean;
+          crew_following: string;
+          effective_status: Database['public']['Enums']['activity_status'];
+          ended_at: string;
+          ends_at: string;
+          follower_count: number;
+          i_follow: boolean;
+          is_host: boolean;
+          last_update_at: string;
+          live_at: string;
+          my_reaction: Database['public']['Enums']['reaction_word'];
+          place_name: string;
+          playing_count: number;
+          reaction_counts: Json;
+          score_logged_by: string;
+          score_logged_by_host: boolean;
+          score_logged_by_name: string;
+          score_updated_at: string;
+          server_now: string;
+          sport_id: string;
+          starts_at: string;
+          team_a_label: string;
+          team_a_score: number;
+          team_b_label: string;
+          team_b_score: number;
+        }[];
+      };
+      activity_messages: {
+        Args: { p_activity_id: string; p_before?: string; p_limit?: number };
+        Returns: {
+          body: string;
+          created_at: string;
+          edited_at: string;
+          id: string;
+          is_deleted: boolean;
+          is_hidden: boolean;
+          is_mine: boolean;
+          kind: Database['public']['Enums']['message_kind'];
+          mentions_me: boolean;
+          payload: Json;
+          reply_to: string;
+          sender_avatar_path: string;
+          sender_id: string;
+          sender_name: string;
+        }[];
+      };
       activity_roster: {
         Args: { p_activity_id: string };
         Returns: {
@@ -1725,6 +2569,25 @@ export type Database = {
           waitlisted_at: string;
         }[];
       };
+      activity_updates_feed: {
+        Args: { p_activity_id: string; p_before?: string; p_limit?: number };
+        Returns: {
+          author_avatar_path: string;
+          author_id: string;
+          author_is_host: boolean;
+          author_name: string;
+          body: string;
+          created_at: string;
+          id: string;
+          is_deleted: boolean;
+          kind: Database['public']['Enums']['update_kind'];
+          my_reaction: Database['public']['Enums']['reaction_word'];
+          reaction_counts: Json;
+          team_a_score: number;
+          team_b_score: number;
+        }[];
+      };
+      add_crew_members: { Args: { p_crew_id: string; p_user_ids: string[] }; Returns: number };
       add_moment: {
         Args: {
           p_activity_id: string;
@@ -1786,6 +2649,32 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      chat_suggestions: {
+        Args: { p_crew_id: string };
+        Returns: {
+          accepted_at: string;
+          accepted_by: string;
+          accepted_by_name: string;
+          created_at: string;
+          crew_id: string;
+          day_label: string;
+          expires_at: string;
+          free_count: number;
+          id: string;
+          interested_count: number;
+          interested_ids: string[];
+          interested_names: string[];
+          member_count: number;
+          place_ids: string[];
+          place_names: string[];
+          plan_id: string;
+          proposed_times: string[];
+          sport_id: string;
+          sport_name: string;
+          status: Database['public']['Enums']['suggestion_status'];
+          updated_at: string;
+        }[];
+      };
       check_in: {
         Args: { p_activity_id: string; p_idempotency_key: string; p_lat: number; p_lng: number };
         Returns: Database['public']['CompositeTypes']['attendance_state'];
@@ -1826,6 +2715,32 @@ export type Database = {
         SetofOptions: {
           from: '*';
           to: 'result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_crew: {
+        Args: {
+          p_idempotency_key: string;
+          p_member_ids?: string[];
+          p_name: string;
+          p_sport_id?: string;
+        };
+        Returns: {
+          archived_at: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          is_private: boolean;
+          member_count: number;
+          name: string;
+          sport_id: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'crews';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -1897,10 +2812,57 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      crew_invite_code: { Args: { p_crew_id: string; p_rotate?: boolean }; Returns: string };
+      crew_messages: {
+        Args: { p_before?: string; p_crew_id: string; p_limit?: number };
+        Returns: {
+          body: string;
+          created_at: string;
+          edited_at: string;
+          id: string;
+          is_deleted: boolean;
+          is_hidden: boolean;
+          is_mine: boolean;
+          kind: Database['public']['Enums']['message_kind'];
+          mentions_me: boolean;
+          payload: Json;
+          reply_to: string;
+          sender_avatar_path: string;
+          sender_id: string;
+          sender_name: string;
+        }[];
+      };
+      crew_roster: {
+        Args: { p_crew_id: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          games_with_me: number;
+          is_me: boolean;
+          joined_at: string;
+          role: Database['public']['Enums']['crew_role'];
+          user_id: string;
+        }[];
+      };
+      crew_view: {
+        Args: { p_crew_id: string };
+        Returns: {
+          created_at: string;
+          crew_id: string;
+          free_tonight: number;
+          member_count: number;
+          my_role: Database['public']['Enums']['crew_role'];
+          name: string;
+          sport_id: string;
+          time_zone: string;
+        }[];
+      };
       decline_invite: {
         Args: { p_invite_id: string };
         Returns: Database['public']['Enums']['invite_status'];
       };
+      delete_message: { Args: { p_message_id: string }; Returns: boolean };
+      delete_update: { Args: { p_update_id: string }; Returns: boolean };
       discover_search: {
         Args: { p_limit?: number; p_query?: string; p_sport_id?: string; p_when?: string };
         Returns: {
@@ -1923,6 +2885,7 @@ export type Database = {
           title: string;
         }[];
       };
+      dismiss_suggestion: { Args: { p_suggestion_id: string }; Returns: boolean };
       down_for_nearby: {
         Args: { p_limit?: number; p_sport_id?: string };
         Returns: {
@@ -1936,10 +2899,34 @@ export type Database = {
           window_start: string;
         }[];
       };
+      edit_message: {
+        Args: { p_body: string; p_message_id: string };
+        Returns: {
+          activity_id: string | null;
+          body: string | null;
+          created_at: string;
+          crew_id: string | null;
+          deleted_at: string | null;
+          edited_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['message_kind'];
+          mention_ids: string[];
+          payload: Json | null;
+          reply_to: string | null;
+          sender_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'messages';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       end_activity: {
         Args: { p_activity_id: string };
         Returns: Database['public']['Enums']['activity_status'];
       };
+      follow_activity: { Args: { p_activity_id: string }; Returns: boolean };
       further_out: {
         Args: { p_limit?: number };
         Returns: {
@@ -1992,6 +2979,30 @@ export type Database = {
           starting_soon: number;
         }[];
       };
+      home_feed: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          action: string;
+          activity_id: string;
+          capacity: number;
+          card: string;
+          crew_id: string;
+          href: string;
+          member_count: number;
+          notification_id: string;
+          object_id: string;
+          object_kind: string;
+          people: number;
+          place_name: string;
+          plan_id: string;
+          position: number;
+          reason: string;
+          sport_id: string;
+          sport_name: string;
+          starts_at: string;
+          title: string;
+        }[];
+      };
       host_check_in: {
         Args: { p_activity_id: string; p_user_id: string };
         Returns: Database['public']['CompositeTypes']['attendance_state'];
@@ -2012,6 +3023,7 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      join_crew: { Args: { p_code: string }; Returns: string };
       join_waitlist: {
         Args: { p_activity_id: string; p_idempotency_key: string };
         Returns: Database['public']['CompositeTypes']['attendance_state'];
@@ -2035,6 +3047,7 @@ export type Database = {
           window_start: string;
         }[];
       };
+      leave_crew: { Args: { p_crew_id: string }; Returns: boolean };
       leave_plan: {
         Args: { p_idempotency_key: string; p_plan_id: string };
         Returns: Database['public']['CompositeTypes']['plan_state'];
@@ -2045,6 +3058,52 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      log_score: {
+        Args: { p_activity_id: string; p_team_a: number; p_team_b: number };
+        Returns: {
+          activity_id: string;
+          follower_count: number;
+          last_update_at: string | null;
+          reaction_counts: NonNullable<Json>;
+          score_logged_by: string | null;
+          score_updated_at: string | null;
+          team_a_score: number | null;
+          team_b_score: number | null;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'activity_live';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      make_this_a_game: {
+        Args: {
+          p_capacity?: number;
+          p_idempotency_key?: string;
+          p_place_id?: string;
+          p_poll_closes_at?: string;
+          p_suggestion_id: string;
+          p_time_options?: string[];
+        };
+        Returns: Database['public']['CompositeTypes']['make_game_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'make_game_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      mark_notifications_read: { Args: { p_before?: string; p_ids?: string[] }; Returns: number };
+      mute_object: {
+        Args: {
+          p_object_id: string;
+          p_object_kind: Database['public']['Enums']['notification_object'];
+          p_until?: string;
+        };
+        Returns: boolean;
+      };
       my_blocks: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -2052,6 +3111,56 @@ export type Database = {
           display_name: string;
           user_id: string;
         }[];
+      };
+      my_crews: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          crew_id: string;
+          joined_at: string;
+          last_message_at: string;
+          member_count: number;
+          name: string;
+          role: Database['public']['Enums']['crew_role'];
+          sport_id: string;
+        }[];
+      };
+      my_notifications: {
+        Args: { p_limit?: number };
+        Returns: {
+          acted_at: string;
+          action: string;
+          activity_id: string;
+          actor_count: number;
+          actor_ids: string[];
+          actor_names: string[];
+          body: string;
+          count: number;
+          created_at: string;
+          crew_id: string;
+          data: Json;
+          href: string;
+          id: string;
+          message_id: string;
+          needs_you: boolean;
+          object_id: string;
+          object_kind: Database['public']['Enums']['notification_object'];
+          plan_id: string;
+          read_at: string;
+          section: string;
+          title: string;
+          type: Database['public']['Enums']['notification_type'];
+          updated_at: string;
+        }[];
+      };
+      notification_preferences: {
+        Args: Record<PropertyKey, never>;
+        Returns: Database['public']['CompositeTypes']['notification_prefs_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'notification_prefs_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       ojoro_now: {
         Args: { p_sport_id?: string; p_within_minutes?: number };
@@ -2152,6 +3261,28 @@ export type Database = {
           title: string;
         }[];
       };
+      post_update: {
+        Args: { p_activity_id: string; p_body: string; p_idempotency_key: string };
+        Returns: {
+          activity_id: string;
+          audience: Database['public']['Enums']['update_audience'];
+          author_id: string | null;
+          body: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['update_kind'];
+          reaction_counts: NonNullable<Json>;
+          team_a_score: number | null;
+          team_b_score: number | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'activity_updates';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       profile_reputation: {
         Args: { p_user_id: string };
         Returns: {
@@ -2245,6 +3376,20 @@ export type Database = {
           used: number;
         }[];
       };
+      react: {
+        Args: {
+          p_activity_id: string;
+          p_reaction: Database['public']['Enums']['reaction_word'];
+          p_update_id?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['reaction_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'reaction_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       recap_for_me: {
         Args: { p_activity_id: string };
         Returns: {
@@ -2270,6 +3415,11 @@ export type Database = {
           user_id: string;
         }[];
       };
+      register_push_token: {
+        Args: { p_platform: Database['public']['Enums']['push_platform']; p_token: string };
+        Returns: string;
+      };
+      remove_crew_member: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       remove_moment: { Args: { p_moment_id: string }; Returns: boolean };
       report: {
         Args: {
@@ -2320,12 +3470,75 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      send_message: {
+        Args: {
+          p_activity_id?: string;
+          p_body: string;
+          p_crew_id?: string;
+          p_idempotency_key: string;
+          p_mention_ids?: string[];
+          p_reply_to?: string;
+        };
+        Returns: {
+          activity_id: string | null;
+          body: string | null;
+          created_at: string;
+          crew_id: string | null;
+          deleted_at: string | null;
+          edited_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['message_kind'];
+          mention_ids: string[];
+          payload: Json | null;
+          reply_to: string | null;
+          sender_id: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'messages';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       set_area: {
         Args: { p_area: string; p_discovery_radius_km?: number };
         Returns: Database['public']['CompositeTypes']['area_state'];
         SetofOptions: {
           from: '*';
           to: 'area_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      set_crew_role: {
+        Args: {
+          p_crew_id: string;
+          p_role: Database['public']['Enums']['crew_role'];
+          p_user_id: string;
+        };
+        Returns: Database['public']['Enums']['crew_role'];
+      };
+      set_notification_preferences: {
+        Args: {
+          p_quiet_end?: string;
+          p_quiet_hours_enabled?: boolean;
+          p_quiet_start?: string;
+          p_show_details?: boolean;
+        };
+        Returns: Database['public']['CompositeTypes']['notification_prefs_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'notification_prefs_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      set_notification_type: {
+        Args: { p_push: boolean; p_type: Database['public']['Enums']['notification_type'] };
+        Returns: Database['public']['CompositeTypes']['notification_prefs_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'notification_prefs_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -2415,7 +3628,18 @@ export type Database = {
           window_start: string;
         }[];
       };
+      transfer_crew_ownership: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       unblock_user: { Args: { p_user_id: string }; Returns: boolean };
+      unfollow_activity: { Args: { p_activity_id: string }; Returns: boolean };
+      unmute_object: {
+        Args: {
+          p_object_id: string;
+          p_object_kind: Database['public']['Enums']['notification_object'];
+        };
+        Returns: boolean;
+      };
+      unread_count: { Args: Record<PropertyKey, never>; Returns: number };
+      unregister_push_token: { Args: { p_token: string }; Returns: boolean };
       untag_me: { Args: { p_moment_id: string }; Returns: boolean };
       update_profile: {
         Args: {
@@ -2462,22 +3686,48 @@ export type Database = {
       activity_status: 'confirmed' | 'live' | 'after' | 'complete' | 'cancelled';
       attendance_rule: 'check_in' | 'check_in_host_confirms';
       attendance_status: 'confirmed' | 'waitlisted' | 'cancelled' | 'checked_in';
-      audience: 'public' | 'friends' | 'invite_only';
+      audience: 'public' | 'friends' | 'invite_only' | 'crew';
       check_in_method: 'location' | 'host';
+      crew_join_via: 'created' | 'added' | 'code';
+      crew_role: 'owner' | 'admin' | 'member';
       day_part: 'morning' | 'midday' | 'evening';
       invite_kind: 'pull_in' | 'run_it_back';
       invite_status: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired';
       member_via: 'host' | 'im_down' | 'down_for' | 'invite';
-      plan_source: 'down_for' | 'quick' | 'run_it_back';
+      message_kind: 'text' | 'system';
+      notification_object: 'plan' | 'activity' | 'crew' | 'challenge';
+      notification_type:
+        | 'need_one_more'
+        | 'game_on'
+        | 'participant_update'
+        | 'activity_changed'
+        | 'check_in_open'
+        | 'live'
+        | 'result_to_confirm'
+        | 'recap_ready'
+        | 'run_it_back_invite'
+        | 'pull_in_invite'
+        | 'waitlist_promoted'
+        | 'crew_poll'
+        | 'crew_plan'
+        | 'mention'
+        | 'crew_member_joined'
+        | 'challenge_response';
+      plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat';
       plan_status: 'forming' | 'game_on' | 'expired' | 'cancelled';
       proposal_status: 'proposed' | 'verified' | 'superseded';
       pull_scope: 'connections' | 'nearby';
+      push_platform: 'ios' | 'android' | 'web';
+      reaction_word: 'lets_go' | 'respect' | 'hold_that' | 'run_it_back';
       report_reason: 'spam' | 'harassment' | 'unsafe' | 'impersonation' | 'inappropriate' | 'other';
-      report_subject: 'profile' | 'plan' | 'activity' | 'moment' | 'result';
+      report_subject: 'profile' | 'plan' | 'activity' | 'moment' | 'result' | 'message' | 'update';
       reputation_kind: 'shows_up' | 'respectful' | 'welcomes_beginners' | 'great_host';
       signal_status: 'active' | 'matched' | 'withdrawn' | 'expired';
       skill_level: 'learning' | 'casual' | 'intermediate' | 'advanced';
+      suggestion_status: 'open' | 'accepted' | 'expired';
       team_side: 'a' | 'b';
+      update_audience: 'everyone' | 'participants';
+      update_kind: 'kick_off' | 'score' | 'check_in' | 'full_time' | 'post';
       verification_level:
         | 'self_recorded'
         | 'participant_confirmed'
@@ -2517,6 +3767,23 @@ export type Database = {
         sharing: boolean | null;
         expires_at: string | null;
       };
+      make_game_state: {
+        plan_id: string | null;
+        suggestion_id: string | null;
+        crew_id: string | null;
+        created: boolean | null;
+        starts_at: string | null;
+        time_option_count: number | null;
+        message_id: string | null;
+      };
+      notification_prefs_state: {
+        quiet_hours_enabled: boolean | null;
+        quiet_start: string | null;
+        quiet_end: string | null;
+        show_details: boolean | null;
+        time_zone: string | null;
+        push_off: Database['public']['Enums']['notification_type'][] | null;
+      };
       plan_state: {
         plan_id: string | null;
         status: Database['public']['Enums']['plan_status'] | null;
@@ -2531,6 +3798,12 @@ export type Database = {
         sent: number | null;
         skipped: number | null;
         remaining: number | null;
+      };
+      reaction_state: {
+        activity_id: string | null;
+        update_id: string | null;
+        reaction_counts: Json | null;
+        my_reaction: Database['public']['Enums']['reaction_word'] | null;
       };
       result_state: {
         proposal_id: string | null;
@@ -2661,22 +3934,49 @@ export const Constants = {
       activity_status: ['confirmed', 'live', 'after', 'complete', 'cancelled'],
       attendance_rule: ['check_in', 'check_in_host_confirms'],
       attendance_status: ['confirmed', 'waitlisted', 'cancelled', 'checked_in'],
-      audience: ['public', 'friends', 'invite_only'],
+      audience: ['public', 'friends', 'invite_only', 'crew'],
       check_in_method: ['location', 'host'],
+      crew_join_via: ['created', 'added', 'code'],
+      crew_role: ['owner', 'admin', 'member'],
       day_part: ['morning', 'midday', 'evening'],
       invite_kind: ['pull_in', 'run_it_back'],
       invite_status: ['pending', 'accepted', 'declined', 'revoked', 'expired'],
       member_via: ['host', 'im_down', 'down_for', 'invite'],
-      plan_source: ['down_for', 'quick', 'run_it_back'],
+      message_kind: ['text', 'system'],
+      notification_object: ['plan', 'activity', 'crew', 'challenge'],
+      notification_type: [
+        'need_one_more',
+        'game_on',
+        'participant_update',
+        'activity_changed',
+        'check_in_open',
+        'live',
+        'result_to_confirm',
+        'recap_ready',
+        'run_it_back_invite',
+        'pull_in_invite',
+        'waitlist_promoted',
+        'crew_poll',
+        'crew_plan',
+        'mention',
+        'crew_member_joined',
+        'challenge_response',
+      ],
+      plan_source: ['down_for', 'quick', 'run_it_back', 'chat'],
       plan_status: ['forming', 'game_on', 'expired', 'cancelled'],
       proposal_status: ['proposed', 'verified', 'superseded'],
       pull_scope: ['connections', 'nearby'],
+      push_platform: ['ios', 'android', 'web'],
+      reaction_word: ['lets_go', 'respect', 'hold_that', 'run_it_back'],
       report_reason: ['spam', 'harassment', 'unsafe', 'impersonation', 'inappropriate', 'other'],
-      report_subject: ['profile', 'plan', 'activity', 'moment', 'result'],
+      report_subject: ['profile', 'plan', 'activity', 'moment', 'result', 'message', 'update'],
       reputation_kind: ['shows_up', 'respectful', 'welcomes_beginners', 'great_host'],
       signal_status: ['active', 'matched', 'withdrawn', 'expired'],
       skill_level: ['learning', 'casual', 'intermediate', 'advanced'],
+      suggestion_status: ['open', 'accepted', 'expired'],
       team_side: ['a', 'b'],
+      update_audience: ['everyone', 'participants'],
+      update_kind: ['kick_off', 'score', 'check_in', 'full_time', 'post'],
       verification_level: [
         'self_recorded',
         'participant_confirmed',
