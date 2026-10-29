@@ -238,7 +238,7 @@ try {
   await step('report and block are one tap away from the Rivalry', async () => {
     await open(Y.page, `/rivalry/${rivalryId}`, 'rivalry-screen');
     await Y.page.getByTestId('header-more').click();
-    await Y.page.getByText(/report this event/i).first().waitFor({ timeout: 15_000 });
+    await Y.page.getByText(/report this rivalry/i).first().waitFor({ timeout: 15_000 });
     await Y.page.keyboard.press('Escape');
     await open(Y.page, `/rivalry/${rivalryId}`, 'rivalry-rematch-offer');
   });

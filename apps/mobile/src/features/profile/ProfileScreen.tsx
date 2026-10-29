@@ -22,6 +22,8 @@ import {
   TextButton,
   useToast,
 } from '@/design-system';
+import { useMyRivalries } from '@/features/challenges/data';
+import { rivalryLink, rivalryWith } from '@/features/challenges/logic';
 import { YourCrews } from '@/features/crews/CrewsScreens';
 import { useReportBlock } from '@/features/safety';
 import { firstName } from '@/features/safety/reasons';
@@ -174,6 +176,10 @@ function ProfileBody({
   const passport = usePassport(id, profile.history_visible);
   const together = gamesWithMe(profile.games_with_me);
   const meta = [profile.handle ? `@${profile.handle}` : null, profile.area].filter(Boolean).join(' · ');
+  // Your rivalry with them, from your side ("RIVALRY · 5–3"): Step 5 screens: A.
+  const rivalries = useMyRivalries(!self);
+  const rivalryRow = self ? null : rivalryWith(rivalries.data ?? [], { userId: id });
+  const rivalry = rivalryRow ? rivalryLink(rivalryRow) : null;
 
   return (
     <>
@@ -211,6 +217,20 @@ function ProfileBody({
               {`Challenge ${first}. No stakes, ever.`}
             </Text>
           </View>
+        ) : null}
+        {rivalry ? (
+          <StripList>
+            <Strip
+              title={rivalry.title}
+              titleVariant="title-sm"
+              meta={rivalry.meta}
+              trailing="chevron"
+              href={`/rivalry/${rivalryRow?.rivalry_id}` as Href}
+              accessibilityLabel={rivalry.label}
+              accessibilityHint="Opens the rivalry"
+              testID="profile-rivalry"
+            />
+          </StripList>
         ) : null}
 
         {profile.history_visible ? (

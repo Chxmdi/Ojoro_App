@@ -473,13 +473,13 @@ Competition (PRD M6). Contract: `docs/COMPETITION_CONTRACT.md`.
 |---|---|
 | First names for people | The record, header, form and badges use first names ("CHIMDI 5 / MARCUS 3"), as designed; crew rivalries keep the full crew name. |
 | Three recent meetings, then EARLIER MEETINGS | The design shows three; the rest are a tap away so the rematch block stays near the record. Each row opens that meeting's result (`/event/[id]`). |
-| Meeting line | Times and distances read "22:48 vs 23:31", scores "3–3" (from the viewer's side); without values, "Marcus by 1:02". Verification words: "participant confirmed", "organizer reviewed". The PNG's "device verified" isn't possible until device verification (M10). |
+| Meeting line | Times and distances read "22:48 vs 23:31", scores "3–3" (from the viewer's side). Results always carry both values, so the "Marcus by 1:02" form isn't used. Verification words: "participant confirmed", "organizer reviewed". The PNG's "device verified" isn't possible until device verification (M10). |
 | Rematch states the design doesn't show | Their request, you can answer: the Rematch component (RUN IT BACK accepts via `accept_call_out`, NOT YET declines; toast "Not yet. Marcus can ask again any time."). Nothing pending and you're in it: REMATCH? with "Ask Marcus to go again: the 5K, same rules, two weeks on." and RUN IT BACK (`run_it_back_challenge(last_event_id)`). You asked: "You asked for a rematch. Waiting on Marcus." Someone else can't answer (spectator, non-captain): "Marcus asked for a rematch." A next meeting is already on: SEE THE NEXT MEETING. Spectators with nothing pending: "Only Chimdi and Marcus can ask for a rematch." |
 | The promise line | "Accepting creates a new Call-Out linked to this rivalry. Saturday's result stays exactly as it is." uses the day name within a week of the last meeting, the date after that ("The result from 14 Sep…"). |
 | "See the Call-Out flow" | Reads "See the Call-Out" and opens the pending rematch Call-Out (`/challenge/[id]`). |
-| Report/block | The header's more button reports the latest event of the rivalry; in a person-vs-person rivalry you're in, it can also block the other person. Crews and spectators report only. After a block, back to Compete. |
+| Report/block | The header's more button reports the rivalry (subject `rivalry`); in a person-vs-person rivalry you're in, it can also block the other person. Crews and spectators report only. After a block, back to Compete. |
 | Privacy | When fewer meetings are listed than the record counts (some were only open to the people in them), a note says so; the record still counts every verified result. |
-| Realtime without a contract channel | The screen listens to `call_outs` and `challenge_events` filtered by `rivalry_id` (both published, RLS applies) and refetches on any change. |
+| Realtime | `rivalrySubscription(rivalryId)` (`call_outs` and `challenge_events` by `rivalry_id`); any change refetches the view and meetings. |
 
 ## Step 5 screens: B
 

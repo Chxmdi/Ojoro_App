@@ -137,7 +137,7 @@ function Today({
         }),
       });
       if (result.action === Share.sharedAction)
-        track('cta_tapped', { cta: 'challenge_shared', event_id: eventId });
+        track('challenge_shared', { event_id: eventId, from: 'event_today' });
     } catch {
       toast.show({ kind: 'error', message: "Sharing isn't available here." });
     }

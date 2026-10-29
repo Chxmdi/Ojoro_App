@@ -4,26 +4,17 @@
  * orients every row to the viewer (side `a` is you when you're in the rivalry), so nothing here
  * decides who is who. No React Native imports.
  */
-import type {
-  ChallengeScoring,
-  ChallengeStage,
-  RivalryMeeting as ContractMeeting,
-  RivalryView as ContractView,
-} from '@ojoro/contracts';
+import type { ChallengeScoring, ChallengeStage, RivalryMeeting, RivalryView } from '@ojoro/contracts';
 
 import { formatChallengeValue } from '@ojoro/contracts';
 
 import { firstName, shortDate, zonedParts } from '../activities/format';
 
-type Nullable<T> = { [K in keyof T]: T[K] | null };
+/** `rivalry_view` (the contract types its nullable columns). */
+export type RivalryViewRow = RivalryView;
 
-/** `rivalry_view`: the generated types say non-null, but every "last", "next" and "rematch" field can be null. */
-export type RivalryViewRow = Nullable<ContractView> &
-  Pick<ContractView, 'rivalry_id' | 'kind' | 'a_name' | 'b_name' | 'i_am_in' | 'meetings' | 'a_wins' | 'b_wins' | 'draws'>;
-
-/** `rivalry_meetings`: values and the place can be null. */
-export type RivalryMeetingRow = Nullable<ContractMeeting> &
-  Pick<ContractMeeting, 'event_id' | 'starts_at' | 'title' | 'scoring' | 'winner'>;
+/** `rivalry_meetings`, newest first. */
+export type RivalryMeetingRow = RivalryMeeting;
 
 export type Side = 'a' | 'b' | 'd';
 
@@ -82,28 +73,20 @@ export function sourceWords(source: string | null | undefined): string | null {
 
 /**
  * The score part of a meeting line, from side a: "22:48 vs 23:31" for times and distances,
- * "3–3" for scores and rounds. Null when a value is missing.
+ * "3–3" for scores and rounds.
  */
-export function meetingScore(
-  m: Pick<RivalryMeetingRow, 'a_value' | 'b_value' | 'scoring' | 'unit'>,
-): string | null {
-  if (m.a_value === null || m.b_value === null) return null;
+export function meetingScore(m: Pick<RivalryMeetingRow, 'a_value' | 'b_value' | 'scoring' | 'unit'>): string {
   if (m.scoring === 'time' || m.scoring === 'distance') {
     const a = formatChallengeValue(m.a_value, m.scoring, m.unit);
     const b = formatChallengeValue(m.b_value, m.scoring, m.unit);
-    return a && b ? `${a} vs ${b}` : null;
+    return `${a ?? ''} vs ${b ?? ''}`;
   }
   return `${Math.round(m.a_value)}–${Math.round(m.b_value)}`;
 }
 
 /** "22:48 vs 23:31 · participant confirmed". */
-export function meetingLine(m: RivalryMeetingRow, aName: string, bName: string): string {
-  const score =
-    meetingScore(m) ??
-    (m.margin !== null && side(m.winner) !== 'd' && side(m.winner)
-      ? `${m.winner === 'a' ? aName : bName} by ${shortMargin(m.margin, m.scoring).toLowerCase()}`
-      : null);
-  return [score, sourceWords(m.source)].filter(Boolean).join(' · ');
+export function meetingLine(m: RivalryMeetingRow): string {
+  return [meetingScore(m), sourceWords(m.source)].filter(Boolean).join(' · ');
 }
 
 /**

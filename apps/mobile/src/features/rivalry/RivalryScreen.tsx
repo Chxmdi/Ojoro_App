@@ -100,21 +100,17 @@ export function RivalryScreen({ id }: { id: string }) {
 }
 
 /**
- * Report and block from the rivalry: the latest event between you (the person to block is the
+ * Report and block from the rivalry (report subject `rivalry`). The person to block is the
  * other side when it's two people and you're one of them). Crews and spectators report only.
  */
-function reportTarget(view: RivalryViewRow): ReportBlockTarget | null {
+function reportTarget(view: RivalryViewRow): ReportBlockTarget {
   const person = view.kind === 'people' && view.i_am_in && view.b_id ? view.b_id : undefined;
-  const eventId = view.last_event_id ?? view.next_event_id;
-  if (eventId) {
-    return {
-      subjectKind: 'challenge_event',
-      subjectId: eventId,
-      personName: person ? view.b_name : `${view.a_name} and ${view.b_name}`,
-      ...(person ? { personId: person } : null),
-    };
-  }
-  return person ? { subjectKind: 'profile', subjectId: person, personName: view.b_name } : null;
+  return {
+    subjectKind: 'rivalry',
+    subjectId: view.rivalry_id,
+    personName: person ? view.b_name : `${view.a_name} and ${view.b_name}`,
+    ...(person ? { personId: person } : null),
+  };
 }
 
 function RivalryBody({
@@ -209,7 +205,7 @@ function MeetingRow({
 }) {
   const badge = meetingBadge(meeting.winner, aName, bName);
   const title = meetingTitle(meeting);
-  const line = meetingLine(meeting, aName, bName);
+  const line = meetingLine(meeting);
   const date = meetingDate(meeting.starts_at, meeting.time_zone);
   return (
     <Pressable

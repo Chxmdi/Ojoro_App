@@ -24,9 +24,9 @@ const ART_W = 540;
 
 export function PosterScreen({ eventId }: { eventId: string }) {
   const poster = useEventPoster(eventId);
-  // The poster read has no target ("5K"); the event view (usually cached) does.
+  // The event view (usually cached) says which side is yours.
   const view = useEvent(eventId).data?.row;
-  const target = view?.target ?? null;
+  const target = poster.data?.target ?? null;
   // Your side first (contract rule 9); everyone else sees the challenger first.
   const yoursFirst = view?.my_side === 'b';
   const toast = useToast();
@@ -51,7 +51,7 @@ export function PosterScreen({ eventId }: { eventId: string }) {
         }),
       });
       if (result.action === Share.sharedAction)
-        track('cta_tapped', { cta: 'challenge_shared', event_id: eventId });
+        track('challenge_shared', { event_id: eventId, from: 'poster' });
     } catch {
       toast.show({ kind: 'error', message: "Sharing isn't available here." });
     }
@@ -103,13 +103,16 @@ function posterFacts(row: EventPoster, target: number | null, swap: boolean) {
   return {
     a: sideName(swap ? row.b_name : row.a_name, false),
     b: sideName(swap ? row.a_name : row.b_name, false),
-    discipline: disciplineLabel({
-      title: row.title,
-      sport_name: row.sport_name,
-      target,
-      scoring: row.scoring ?? 'score',
-      unit: row.unit,
-    }),
+    // The title is the label ("5K"); the target only when there's no title.
+    discipline: row.title?.trim()
+      ? row.title.trim().toUpperCase()
+      : disciplineLabel({
+          title: null,
+          sport_name: row.sport_name,
+          target,
+          scoring: row.scoring ?? 'score',
+          unit: row.unit,
+        }),
     when: row.starts_at ? posterWhen(row.starts_at, row.time_zone ?? 'America/Toronto') : '',
     where: [row.place_name, row.place_city].filter(Boolean).join(', '),
   };
