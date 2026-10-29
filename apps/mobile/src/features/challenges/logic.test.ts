@@ -29,6 +29,8 @@ import {
   posterWhen,
   replyFor,
   orderRivalries,
+  rivalryLink,
+  rivalryWith,
   rivalryModel,
   rivalryStrip,
   ruleRows,
@@ -404,6 +406,24 @@ describe('Compete', () => {
     expect(orderRivalries([fresh, riv()]).map((r) => r.rivalry_id)).toEqual(['r1', 'r0']);
     expect(orderRivalries([riv(), fresh]).map((r) => r.rivalry_id)).toEqual(['r1', 'r0']);
     expect(orderRivalries([fresh]).map((r) => r.rivalry_id)).toEqual(['r0']);
+  });
+
+  it('finds your rivalry with a person or a crew and names the score from your side', () => {
+    const rows = [
+      riv({ rivalry_id: 'r0', meetings: 0, opponent_user_id: 'u-m' }),
+      riv({ opponent_user_id: 'u-m', opponent_crew_id: null }),
+      riv({ rivalry_id: 'rc', kind: 'crews', opponent_crew_id: 'c9', opponent_user_id: null }),
+    ];
+    expect(rivalryWith(rows, { userId: 'u-m' })?.rivalry_id).toBe('r1');
+    expect(rivalryWith(rows, { crewId: 'c9' })?.rivalry_id).toBe('rc');
+    expect(rivalryWith(rows, { userId: 'nobody' })).toBeNull();
+    expect(rivalryWith(rows, {})).toBeNull();
+    expect(rivalryLink(riv())).toEqual({
+      title: 'RIVALRY · 4–3',
+      meta: '8 meetings · 1 drawn · next 5K · Sat 12 Oct',
+      label: 'Rivalry with Marcus: you 4, them 3. 8 meetings · 1 drawn · next 5K · Sat 12 Oct.',
+    });
+    expect(rivalryLink(riv({ meetings: 1, draws: 0, next_title: null })).meta).toBe('1 meeting');
   });
 });
 

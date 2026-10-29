@@ -67,11 +67,13 @@ export function useMyChallengeEvents() {
   });
 }
 
-export function useMyRivalries() {
+/** Yours and your crews', most recently active first (you are side a). */
+export function useMyRivalries(enabled = true) {
   return useQuery({
     queryKey: challengeKeys.rivalries,
-    queryFn: async () => (await rpc('my_rivalries', { p_limit: 10 })) as unknown as RivalryRowFacts[],
+    queryFn: async () => (await rpc('my_rivalries', { p_limit: 50 })) as unknown as RivalryRowFacts[],
     retry: retryNetwork,
+    enabled,
   });
 }
 

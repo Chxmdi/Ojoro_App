@@ -119,14 +119,12 @@ describe('meetings', () => {
     expect(meetingScore(meeting())).toBe('22:48 vs 23:31');
     expect(meetingScore(meeting({ scoring: 'score', a_value: 3, b_value: 3 }))).toBe('3–3');
     expect(meetingScore(meeting({ scoring: 'distance', a_value: 5.2, b_value: 4.9 }))).toBe('5.2 km vs 4.9 km');
-    expect(meetingScore(meeting({ a_value: null }))).toBeNull();
   });
-  it('builds the line, falling back to the margin', () => {
-    expect(meetingLine(meeting(), 'Chimdi', 'Marcus')).toBe('22:48 vs 23:31 · participant confirmed');
-    expect(meetingLine(meeting({ a_value: null, winner: 'b', margin: 62 }), 'Chimdi', 'Marcus')).toBe(
-      'Marcus by 1:02 · participant confirmed',
+  it('builds the line', () => {
+    expect(meetingLine(meeting())).toBe('22:48 vs 23:31 · participant confirmed');
+    expect(meetingLine(meeting({ scoring: 'score', a_value: 3, b_value: 3, source: 'organizer_review' }))).toBe(
+      '3–3 · organizer reviewed',
     );
-    expect(meetingLine(meeting({ a_value: null, winner: 'd', margin: 0, source: null }), 'C', 'M')).toBe('');
   });
   it('badges the winner the same way the form cells do', () => {
     expect(meetingBadge('a', 'Chimdi', 'Marcus')).toEqual({ text: 'CHIMDI', tone: 'signal' });

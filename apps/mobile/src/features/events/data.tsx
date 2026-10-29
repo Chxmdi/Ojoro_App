@@ -300,7 +300,7 @@ export function usePredict(eventId: string) {
       rpc('predict_challenge', { p_event_id: eventId, p_side: side }),
     retry: retryNetwork,
     onMutate: async (side) => {
-      track('cta_tapped', { cta: 'prediction_made', side, event_id: eventId });
+      track('prediction_made', { side, event_id: eventId });
       return { prev: await p.begin((row) => applyPrediction(row, side)) };
     },
     onError: (_e, _v, ctx) => p.rollback(ctx?.prev),
@@ -313,16 +313,13 @@ export function usePredict(eventId: string) {
 export function useBack(eventId: string) {
   const p = useEventPatch(eventId);
   return useMutation({
-    // p_side null stops backing (contract); the generated type doesn't say it's nullable.
+    // No side stops backing (contract).
     mutationFn: (side: ChallengeSide | null) =>
-      rpc('back_challenge', { p_event_id: eventId, p_side: side as ChallengeSide }),
+      rpc('back_challenge', side ? { p_event_id: eventId, p_side: side } : { p_event_id: eventId }),
     retry: retryNetwork,
     onMutate: async (side) => {
-      track('cta_tapped', {
-        cta: side ? 'crowd_backed' : 'crowd_unbacked',
-        side,
-        event_id: eventId,
-      });
+      if (side) track('crowd_backed', { side, event_id: eventId });
+      else track('cta_tapped', { cta: 'crowd_unbacked', event_id: eventId });
       return { prev: await p.begin((row) => applyBacking(row, side)) };
     },
     onError: (_e, _v, ctx) => p.rollback(ctx?.prev),

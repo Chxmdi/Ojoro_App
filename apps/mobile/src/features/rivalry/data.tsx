@@ -7,7 +7,7 @@
  * RUN IT BACK and accept carry an idempotency key per intention; NOT YET (decline) is idempotent on
  * the server for the same person. All three are safely retried.
  */
-import type { RealtimeSubscription } from '@ojoro/contracts';
+import { rivalrySubscription } from '@ojoro/contracts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { track } from '@/lib/analytics';
@@ -51,23 +51,6 @@ export function useRivalryMeetings(id: string, enabled = true) {
   });
 }
 
-/**
- * The contract has no rivalry channel, so this listens to the two tables a rivalry's screen
- * depends on, filtered by `rivalry_id` (both are in the realtime publication; RLS applies): a
- * rematch call-out sent, answered or withdrawn, and an event scheduled, going live or completing
- * (a new result). Realtime is a hint: each change refetches.
- */
-export function rivalrySubscription(id: string): RealtimeSubscription {
-  const filter = `rivalry_id=eq.${id}`;
-  return {
-    channel: `rivalry:${id}`,
-    changes: [
-      { event: '*', schema: 'public', table: 'call_outs', filter },
-      { event: '*', schema: 'public', table: 'challenge_events', filter },
-    ],
-  };
-}
-
 export function useRivalryRealtime(id: string) {
   useRealtimeRefetch(id ? rivalrySubscription(id) : null, [rivalryKeys.all(id)]);
 }
@@ -80,7 +63,7 @@ export function useRunItBack(id: string) {
     mutationFn: (eventId: string) =>
       rpc('run_it_back_challenge', { p_event_id: eventId, p_idempotency_key: intent.key() }),
     retry: retryNetwork,
-    onMutate: (eventId) => track('run_it_back_tapped', { rivalry_id: id, event_id: eventId, from: 'rivalry' }),
+    onMutate: (eventId) => track('rematch_requested', { rivalry_id: id, event_id: eventId, from: 'rivalry' }),
     onSettled: (_d, error) => {
       intent.settle(error);
       return qc.invalidateQueries({ queryKey: rivalryKeys.all(id) });
@@ -97,7 +80,7 @@ export function useAcceptRematch(id: string) {
       rpc('accept_call_out', { p_call_out_id: callOutId, p_idempotency_key: intent.key() }),
     retry: retryNetwork,
     onMutate: (callOutId) =>
-      track('run_it_back_tapped', { rivalry_id: id, call_out_id: callOutId, from: 'rivalry', answer: 'accept' }),
+      track('rematch_accepted', { rivalry_id: id, call_out_id: callOutId, from: 'rivalry' }),
     onSettled: (_d, error) => {
       intent.settle(error);
       return qc.invalidateQueries({ queryKey: rivalryKeys.all(id) });

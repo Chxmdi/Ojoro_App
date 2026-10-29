@@ -124,6 +124,12 @@ function CallOutBody({ view, online, dataUpdatedAt }: { view: CallOutFacts; onli
 
   const myCrews = useMyCrews();
   const crewChoices = acceptCrewChoices(view, myCrews.data ?? []);
+  const openCrew = view.format === 'crew_vs_crew' && view.is_open;
+  // Your crews may have changed since the list was cached: read them fresh for an open crew Call-Out.
+  useEffect(() => {
+    if (openCrew) void myCrews.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per Call-Out.
+  }, [openCrew, view.id]);
   const acceptAs = (asCrew: string | null) =>
     accept.accept({
       asCrew,

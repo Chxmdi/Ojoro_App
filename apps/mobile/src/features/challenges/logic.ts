@@ -12,6 +12,7 @@ import type {
   ChallengeFormat,
   ChallengeScoring,
   ChallengeStage,
+  RivalryRow,
   RpcArgs,
 } from '@ojoro/contracts';
 import { CALL_OUT_MESSAGE_MAX_LENGTH } from '@ojoro/contracts';
@@ -509,20 +510,20 @@ export function eventStrip(r: EventRowFacts, now: number): StripModel {
   };
 }
 
-/** What Compete needs from `my_rivalries`. */
-export type RivalryRowFacts = {
-  rivalry_id: string;
-  kind: 'people' | 'crews';
-  a_name: string;
-  b_name: string;
-  a_wins: number;
-  b_wins: number;
-  draws: number;
-  meetings: number;
+/**
+ * A `my_rivalries` row (`RivalryRow`), with the columns the contract marks nullable typed as such
+ * (rule 8). You are always side `a`; `opponent_user_id` / `opponent_crew_id` name side `b`.
+ */
+type RivalryNullable = 'form' | 'next_event_id' | 'next_title' | 'next_starts_at' | 'next_time_zone' | 'last_active_at' | 'opponent_user_id' | 'opponent_crew_id';
+export type RivalryRowFacts = Omit<RivalryRow, RivalryNullable> & {
   form: readonly string[] | null;
   next_title: string | null;
   next_starts_at: string | null;
   next_time_zone: string | null;
+  next_event_id?: string | null | undefined;
+  last_active_at?: string | null | undefined;
+  opponent_user_id?: string | null | undefined;
+  opponent_crew_id?: string | null | undefined;
 };
 
 export type RivalryModel = {
@@ -577,6 +578,33 @@ export function rivalryStrip(r: RivalryRowFacts): StripModel {
       .join(' · '),
     trailing: { kind: 'badge', word: 'RIVALRY', tone: 'neutral' },
     href: `/rivalry/${r.rivalry_id}`,
+  };
+}
+
+/** Your rivalry with this person (or crew), if there is one with a meeting. */
+export function rivalryWith(
+  rows: readonly RivalryRowFacts[],
+  who: { userId?: string | null; crewId?: string | null },
+): RivalryRowFacts | null {
+  return (
+    rows.find(
+      (r) =>
+        r.meetings > 0 &&
+        ((who.userId && r.opponent_user_id === who.userId) || (who.crewId && r.opponent_crew_id === who.crewId)),
+    ) ?? null
+  );
+}
+
+/** "RIVALRY · 5–3", your wins first (draws aren't in the score, as in "rivalry 3–4"). */
+export function rivalryLink(r: RivalryRowFacts): { title: string; meta: string; label: string } {
+  const next = rivalryModel(r).next;
+  const meta = [`${r.meetings} meeting${r.meetings === 1 ? '' : 's'}`, r.draws > 0 ? `${r.draws} drawn` : null, next ? `next ${next}` : null]
+    .filter((p): p is string => !!p)
+    .join(' · ');
+  return {
+    title: `RIVALRY · ${r.a_wins}–${r.b_wins}`,
+    meta,
+    label: `Rivalry with ${shortName(r.b_name, r.kind === 'crews')}: you ${r.a_wins}, them ${r.b_wins}. ${meta}.`,
   };
 }
 
