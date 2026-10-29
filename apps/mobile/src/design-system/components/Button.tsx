@@ -37,6 +37,8 @@ export type ButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   committed?: boolean;
   /** Full width. */
   block?: boolean;
+  /** 16pt sides instead of 24 (the designs' inline override for actions in dense rows, e.g. Updates). Not for commit. */
+  compact?: boolean;
   /** Keep the label, add a spinner, ignore presses. */
   loading?: boolean;
   /** Navigate with Expo Router instead of (or as well as) `onPress`. */
@@ -114,6 +116,7 @@ export function Button({
   variant = 'primary',
   committed = false,
   block = false,
+  compact = false,
   loading = false,
   disabled,
   href,
@@ -211,7 +214,7 @@ export function Button({
     >
       <Animated.View style={press.style}>
         <View
-          className={`flex-row items-center justify-center gap-space-2 rounded-pill border-2 py-space-2 ${surfaceClass(variant, isCommitted)}`}
+          className={`flex-row items-center justify-center gap-space-2 rounded-pill border-2 py-space-2 ${compact && variant !== 'commit' ? surfaceClass(variant, isCommitted).replace('px-space-6', 'px-space-4') : surfaceClass(variant, isCommitted)}`}
         >
           {loading ? <ActivityIndicator size="small" color={toneColour} /> : null}
           <Animated.View style={[labelStyle, labelRow]}>
