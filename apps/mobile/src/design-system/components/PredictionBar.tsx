@@ -63,7 +63,8 @@ export function PredictionBar({
   const split = predictionSplit(a, b);
   const label = predictionLabel({ question, a, b, picked, locked });
   const choosing = !!onPick && !locked;
-  const pct = (n: number) => (split.empty ? '–' : `${n}%`);
+  // Nobody has picked: 0% each over an empty track (a count, never a dash).
+  const pct = (n: number) => `${n}%`;
 
   const sideA = (
     <View className="items-start gap-space-1">

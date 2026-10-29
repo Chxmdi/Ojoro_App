@@ -138,3 +138,15 @@ export const OnEachSituation: Story = {
     </EachSituation>
   ),
 };
+
+/** EventToday: Ojoro's update on the confirmed ground. Black meets oxblood, so the strip carries the 2px white mark-ring. */
+export const SystemOnConfirmed: Story = {
+  parameters: onSituation('confirmed'),
+  args: {
+    kind: 'system',
+    time: '8:31',
+    body: 'BOTH ARE HERE.',
+    author: undefined,
+    side: undefined,
+  },
+};
