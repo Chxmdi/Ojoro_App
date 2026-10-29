@@ -56,6 +56,7 @@ function view(over: Partial<RivalryViewRow> = {}): RivalryViewRow {
     rematch_title: null,
     rematch_starts_at: null,
     rematch_can_answer: false,
+    rematch_of_event_id: null,
     ...over,
   };
 }
