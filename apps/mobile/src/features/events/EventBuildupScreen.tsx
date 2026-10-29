@@ -20,6 +20,7 @@ import { Pressable, View } from 'react-native';
 import {
   Badge,
   Button,
+  Chip,
   ChallengeEventHero,
   Comment,
   CrowdSupport,
@@ -36,7 +37,6 @@ import {
   Skeleton,
   Text,
   TextButton,
-  useThemeColor,
   useToast,
 } from '@/design-system';
 import { useReportBlock } from '@/features/safety';
@@ -235,17 +235,14 @@ function Buildup({
             <View className="flex-row flex-wrap items-center gap-space-5">
               {/* Competitors follow too (EventBuildup.png: Chimdi, a competitor, is Following). */}
               {row.i_follow !== null ? (
-                <Button
-                  variant={row.i_follow ? 'primary' : 'secondary'}
+                // A selected Chip, as the prototype draws it: inverse fill and a check when following.
+                <Chip
+                  selected={!!row.i_follow}
                   onPress={() => follow.mutate(!row.i_follow)}
-                  accessibilityLabel={
-                    row.i_follow ? 'Following. Tap to stop following' : 'Follow this event'
-                  }
-                  aria-pressed={!!row.i_follow}
                   testID="event-follow"
                 >
-                  {row.i_follow ? <FollowingLabel /> : 'FOLLOW'}
-                </Button>
+                  {row.i_follow ? 'Following' : 'Follow'}
+                </Chip>
               ) : null}
               {row.audience === 'public' ? (
                 <Button
@@ -328,19 +325,6 @@ function Buildup({
       <PostSheet eventId={eventId} visible={postSheet} onClose={() => setPostSheet(false)} />
       <PollSheet eventId={eventId} visible={pollSheet} onClose={() => setPollSheet(false)} />
     </Screen>
-  );
-}
-
-/** The pressed FOLLOW: a check and "Following" on the signal fill (EventBuildup.png). */
-function FollowingLabel() {
-  const colour = useThemeColor('on-signal');
-  return (
-    <>
-      <Icon name="check" size={18} color={colour} />
-      <Text variant="title-sm" tone="on-signal">
-        Following
-      </Text>
-    </>
   );
 }
 
