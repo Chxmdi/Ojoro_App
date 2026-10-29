@@ -12,12 +12,12 @@ import {
   type ActivityObjectModel,
   type ActivityObjectStatus,
 } from './ActivityObject.logic';
-import { LiveTag } from './ActivityStrip';
 import { AvatarCluster, type Person } from './AvatarCluster';
 import { Badge } from './Badge';
 import { Button } from './Button';
 import { useBreakthroughWipe } from './GameOnPoster';
 import { Icon, type IconName } from './Icon';
+import { LiveIndicator } from './LiveIndicator';
 import { Progress } from './Progress';
 import { Text } from './Text';
 
@@ -129,7 +129,7 @@ function ActivityBody({
             {/* Badge sets self-start; the wrapper lets the row centre it on the title, as `.oj-row` does. */}
             <View>
               {model.tag.kind === 'live' ? (
-                <LiveTag />
+                <LiveIndicator decorative />
               ) : (
                 <Badge tone={model.tag.tone}>{model.tag.text}</Badge>
               )}

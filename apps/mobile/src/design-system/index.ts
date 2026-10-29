@@ -179,3 +179,71 @@ export {
   type FeedEndSize,
 } from './components/FeedEnd';
 export { ChipRow, type ChipRowProps } from './components/ChipRow';
+export {
+  LiveIndicator,
+  useLivePulse,
+  liveLabel,
+  liveWord,
+  LIVE_WORD,
+  LIVE_PULSE_LOW,
+  LIVE_COUNTER_LOW,
+  type LiveIndicatorProps,
+} from './components/LiveIndicator';
+export {
+  ReactionBar,
+  REACTIONS,
+  reactionLabel,
+  toggleReaction,
+  type Reaction,
+  type ReactionWord,
+  type ReactionBarProps,
+} from './components/ReactionBar';
+export {
+  HypePost,
+  HYPE_POST_KINDS,
+  POST_KIND,
+  hypePostLabel,
+  type HypePostKind,
+  type HypeStat,
+  type HypePostProps,
+} from './components/HypePost';
+export {
+  LiveScoreHeader,
+  LiveClock,
+  useNow,
+  formatClock,
+  clockLabel,
+  freshness,
+  scoreLabel,
+  STALE_AFTER_MS,
+  type Freshness,
+  type ScoreSide,
+  type LiveScoreHeaderProps,
+  type LiveClockProps,
+} from './components/LiveScoreHeader';
+export {
+  ChatMessage,
+  ChatNotice,
+  isGrouped,
+  chatMessageLabel,
+  CHAT_GAP,
+  GROUPED_GAP,
+  GROUP_WINDOW_MS,
+  CHAT_MESSAGE_STATUSES,
+  type ChatMessageStatus,
+  type ChatReply,
+  type ChatMessageProps,
+  type ChatNoticeProps,
+} from './components/ChatMessage';
+export { ChatComposer, type ChatComposerProps } from './components/ChatComposer';
+export { GameSuggestion, type GameSuggestionProps } from './components/GameSuggestion';
+export {
+  NotificationRow,
+  NotificationGroup,
+  NOTIFICATION_TONES,
+  groupLabel,
+  notificationLabel,
+  type NotificationTone,
+  type NotificationRowProps,
+  type NotificationGroupProps,
+} from './components/NotificationRow';
