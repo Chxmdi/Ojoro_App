@@ -69,7 +69,8 @@ schema_paths = []
 enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+# seed_liquidity.sql (Step 3) is also safe to re-run on a running stack to refresh its times.
+sql_paths = ["./seed.sql", "./seed_liquidity.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
@@ -286,6 +287,8 @@ max_frequency = "5s"
 15555550101 = "123456"
 15555550102 = "123456"
 15555550103 = "123456"
+# Nneka B, the quiet-area (FirstHome) user from seed_liquidity.sql.
+15555550120 = "123456"
 # A brand-new user for the auth/onboarding e2e (apps/mobile/e2e/auth-onboarding.e2e.mjs). Not seeded:
 # the e2e deletes and recreates it on every run.
 15555550199 = "123456"

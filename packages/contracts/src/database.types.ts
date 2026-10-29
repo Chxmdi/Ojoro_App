@@ -1645,6 +1645,7 @@ export type Database = {
           place_lng: number | null;
           place_name: string | null;
           place_surface: string | null;
+          place_time_zone: string | null;
           poll_closes_at: string | null;
           source: Database['public']['Enums']['plan_source'];
           source_activity_id: string | null;
@@ -1734,6 +1735,17 @@ export type Database = {
         };
         Returns: string;
       };
+      areas_list: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          area: string;
+          city: string;
+          label: string;
+          lat: number;
+          lng: number;
+          place_count: number;
+        }[];
+      };
       assign_team: {
         Args: {
           p_activity_id: string;
@@ -1784,6 +1796,30 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      concierge_suggest: {
+        Args: { p_limit?: number; p_minutes?: number; p_sport_id?: string; p_text?: string };
+        Returns: {
+          capacity: number;
+          demand_count: number;
+          distance_km: number;
+          duration_minutes: number;
+          kind: string;
+          member_count: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          plan_id: string;
+          played_with_count: number;
+          reason: string;
+          reasons: string[];
+          sport_id: string;
+          sport_name: string;
+          starts_at: string;
+          title: string;
+          window_end: string;
+          window_start: string;
+        }[];
+      };
       confirm_result: {
         Args: { p_idempotency_key: string; p_proposal_id: string };
         Returns: Database['public']['CompositeTypes']['result_state'];
@@ -1810,6 +1846,21 @@ export type Database = {
         SetofOptions: {
           from: '*';
           to: 'down_for_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_from_demand: {
+        Args: {
+          p_idempotency_key: string;
+          p_sport_id: string;
+          p_window_end: string;
+          p_window_start: string;
+        };
+        Returns: Database['public']['CompositeTypes']['plan_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'plan_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -1850,6 +1901,28 @@ export type Database = {
         Args: { p_invite_id: string };
         Returns: Database['public']['Enums']['invite_status'];
       };
+      discover_search: {
+        Args: { p_limit?: number; p_query?: string; p_sport_id?: string; p_when?: string };
+        Returns: {
+          avatar_path: string;
+          capacity: number;
+          distance_km: number;
+          effective_status: string;
+          games_with_me: number;
+          handle: string;
+          id: string;
+          kind: string;
+          member_count: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          plans_tonight: number;
+          sport_id: string;
+          sport_name: string;
+          starts_at: string;
+          title: string;
+        }[];
+      };
       down_for_nearby: {
         Args: { p_limit?: number; p_sport_id?: string };
         Returns: {
@@ -1867,6 +1940,33 @@ export type Database = {
         Args: { p_activity_id: string };
         Returns: Database['public']['Enums']['activity_status'];
       };
+      further_out: {
+        Args: { p_limit?: number };
+        Returns: {
+          action: string;
+          activity_id: string;
+          capacity: number;
+          distance_km: number;
+          ends_at: string;
+          kind: string;
+          member_count: number;
+          minutes_to_start: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          place_time_zone: string;
+          plan_id: string;
+          played_with_count: number;
+          reason: string;
+          reasons: string[];
+          sport_id: string;
+          sport_name: string;
+          spots_left: number;
+          starts_at: string;
+          status: string;
+          title: string;
+        }[];
+      };
       give_reputation: {
         Args: {
           p_activity_id: string;
@@ -1874,6 +1974,23 @@ export type Database = {
           p_subject_id: string;
         };
         Returns: boolean;
+      };
+      home_density: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          area: string;
+          day_number: number;
+          demand_buckets: number;
+          friends_free_now: number;
+          further_out_count: number;
+          games_near: number;
+          has_area: boolean;
+          low_density: boolean;
+          people_down_near: number;
+          plans_near: number;
+          radius_km: number;
+          starting_soon: number;
+        }[];
       };
       host_check_in: {
         Args: { p_activity_id: string; p_user_id: string };
@@ -1905,6 +2022,19 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      latent_demand: {
+        Args: { p_sport_id?: string };
+        Returns: {
+          day: string;
+          part: Database['public']['Enums']['day_part'];
+          people_count: number;
+          sport_id: string;
+          sport_name: string;
+          suggested_start: string;
+          window_end: string;
+          window_start: string;
+        }[];
+      };
       leave_plan: {
         Args: { p_idempotency_key: string; p_plan_id: string };
         Returns: Database['public']['CompositeTypes']['plan_state'];
@@ -1921,6 +2051,69 @@ export type Database = {
           blocked_at: string;
           display_name: string;
           user_id: string;
+        }[];
+      };
+      ojoro_now: {
+        Args: { p_sport_id?: string; p_within_minutes?: number };
+        Returns: {
+          action: string;
+          activity_id: string;
+          capacity: number;
+          distance_km: number;
+          ends_at: string;
+          kind: string;
+          member_count: number;
+          minutes_to_start: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          place_time_zone: string;
+          plan_id: string;
+          played_with_count: number;
+          reason: string;
+          reasons: string[];
+          sport_id: string;
+          sport_name: string;
+          spots_left: number;
+          starts_at: string;
+          status: string;
+          title: string;
+        }[];
+      };
+      people_to_move_with: {
+        Args: { p_limit?: number };
+        Returns: {
+          area: string;
+          avatar_path: string;
+          crews: number;
+          display_name: string;
+          games_with_me: number;
+          handle: string;
+          overlap_day_of_week: number;
+          overlap_part: Database['public']['Enums']['day_part'];
+          played_together: boolean;
+          reason: string;
+          sessions: number;
+          shared_sports: string[];
+          sports: string[];
+          user_id: string;
+        }[];
+      };
+      places_nearby: {
+        Args: { p_limit?: number; p_sport_id?: string };
+        Returns: {
+          area: string;
+          city: string;
+          distance_km: number;
+          floodlit_until: string;
+          is_free: boolean;
+          name: string;
+          place_id: string;
+          plans_forming: number;
+          plans_tonight: number;
+          sport_ids: string[];
+          surface: string;
+          time_zone: string;
         }[];
       };
       plan_roster: {
@@ -2032,10 +2225,15 @@ export type Database = {
           already_invited: boolean;
           avatar_path: string;
           display_name: string;
+          distance_km: number;
           free_at_plan_time: boolean;
           games_with_me: number;
           plays_sport: boolean;
+          position: string;
           pull_me_in: boolean;
+          reason: string;
+          shared_title: string;
+          tier: string;
           user_id: string;
         }[];
       };
@@ -2122,6 +2320,16 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      set_area: {
+        Args: { p_area: string; p_discovery_radius_km?: number };
+        Returns: Database['public']['CompositeTypes']['area_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'area_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       set_pull_me_in: {
         Args: {
           p_enabled: boolean;
@@ -2139,6 +2347,16 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      sports_nearby: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          has_demand: boolean;
+          place_count: number;
+          plan_count: number;
+          sport_id: string;
+          sport_name: string;
+        }[];
       };
       start_activity: {
         Args: { p_activity_id: string };
@@ -2172,6 +2390,30 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      surprise_me: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          capacity: number;
+          demand_count: number;
+          distance_km: number;
+          duration_minutes: number;
+          kind: string;
+          member_count: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          plan_id: string;
+          played_with_count: number;
+          reason: string;
+          reasons: string[];
+          sport_id: string;
+          sport_name: string;
+          starts_at: string;
+          title: string;
+          window_end: string;
+          window_start: string;
+        }[];
       };
       unblock_user: { Args: { p_user_id: string }; Returns: boolean };
       untag_me: { Args: { p_moment_id: string }; Returns: boolean };
@@ -2245,6 +2487,12 @@ export type Database = {
       visibility: 'everyone' | 'friends' | 'crews' | 'only_me';
     };
     CompositeTypes: {
+      area_state: {
+        area: string | null;
+        area_lat: number | null;
+        area_lng: number | null;
+        discovery_radius_km: number | null;
+      };
       attendance_state: {
         activity_id: string | null;
         status: Database['public']['Enums']['attendance_status'] | null;
