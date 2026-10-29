@@ -408,9 +408,12 @@ select is((select a_name || ' vs ' || b_name from public.challenge_event_view(te
 select tests.login(6);
 select is(public.join_challenge_lineup(tests.id('crew_ev')), 2, 'a member joins the lineup');
 select is(public.join_challenge_lineup(tests.id('crew_ev')), 2, 'idempotent');
-select tests.login(3);
+select tests.login(12);
 select throws_ok(format($$select public.join_challenge_lineup(%L)$$, tests.id('crew_ev')), 'P0001', 'not_competitor',
   'outsiders can''t join a crew''s lineup');
+select tests.login(3);
+select throws_ok(format($$select * from public.challenge_event_view(%L)$$, tests.id('crew_ev')), 'P0001',
+  'challenge_event_not_found', 'someone with a block with a competitor doesn''t see the event');
 
 -- Report and block reach call-outs.
 select tests.login(2);

@@ -16,6 +16,7 @@ import {
   shortMargin,
   sourceWords,
   type RivalryMeetingRow,
+  withShownNames,
   type RivalryViewRow,
 } from './logic';
 
@@ -80,6 +81,13 @@ function meeting(over: Partial<RivalryMeetingRow> = {}): RivalryMeetingRow {
 }
 
 describe('header and form', () => {
+  it('uses first names for people, full names for crews', () => {
+    const v = withShownNames(view({ a_name: 'Chimdi O', b_name: 'Marcus T', rematch_from_name: 'Marcus T' }));
+    expect([v.a_name, v.b_name, v.rematch_from_name]).toEqual(['Chimdi', 'Marcus', 'Marcus']);
+    expect(withShownNames(view({ a_name: 'Chimdi O', rematch_from_name: null })).rematch_from_name).toBeNull();
+    const crews = view({ kind: 'crews', a_name: 'Lights FC', b_name: 'Mile End Runners' });
+    expect(withShownNames(crews)).toBe(crews);
+  });
   it('names both sides in capitals', () => {
     expect(headerTitle(view())).toBe('CHIMDI · MARCUS');
   });

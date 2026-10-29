@@ -13,7 +13,7 @@ import type {
 
 import { formatChallengeValue } from '@ojoro/contracts';
 
-import { shortDate, zonedParts } from '../activities/format';
+import { firstName, shortDate, zonedParts } from '../activities/format';
 
 type Nullable<T> = { [K in keyof T]: T[K] | null };
 
@@ -29,6 +29,20 @@ export type Side = 'a' | 'b' | 'd';
 
 function side(w: string | null | undefined): Side | null {
   return w === 'a' || w === 'b' || w === 'd' ? w : null;
+}
+
+/**
+ * People go by first name on the Rivalry ("CHIMDI 5 / MARCUS 3"), as in the design; crews keep their
+ * full name.
+ */
+export function withShownNames<T extends Pick<RivalryViewRow, 'kind' | 'a_name' | 'b_name' | 'rematch_from_name'>>(view: T): T {
+  if (view.kind !== 'people') return view;
+  return {
+    ...view,
+    a_name: firstName(view.a_name),
+    b_name: firstName(view.b_name),
+    rematch_from_name: view.rematch_from_name ? firstName(view.rematch_from_name) : view.rematch_from_name,
+  };
 }
 
 /** "CHIMDI · MARCUS" (the header). */

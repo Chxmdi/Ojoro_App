@@ -40,6 +40,10 @@ export const Minimal: Story = {
 };
 
 /** A long winner name wraps at the poster hero size. */
+export const Draw: Story = { args: { draw: true } };
+
+export const WithoutRunItBack: Story = { args: { showRunItBack: false } };
+
 export const LongName: Story = { args: { winner: 'Jean-Baptiste' } };
 
 /** Always after (stone), inside any page. */

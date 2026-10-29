@@ -21,7 +21,7 @@ export type CallOutPosterProps = {
   discipline: string;
   /** "Sat 12 Oct · 9:00". */
   when?: string | undefined;
-  /** PENDING (default) · ACCEPTED · COUNTERED · DECLINED, as a word in a badge. */
+  /** PENDING (default) · ACCEPTED · COUNTERED · DECLINED · WITHDRAWN · EXPIRED, as a word in a badge. */
   status?: CallOutStatus | undefined;
   /** Show the recipient's three choices: ACCEPT · COUNTER · PASS. */
   actions?: boolean | undefined;

@@ -28,4 +28,10 @@ describe('recapModel', () => {
     expect(m.overline).toBe('RECAP');
     expect(m.accessibilityLabel).toBe('Recap. Result verified. Lights wins. Football. 5–4.');
   });
+
+  it('heads a draw as a fact, with nobody winning', () => {
+    const m = recapModel({ winner: 'Chimdi', discipline: '5K', draw: true });
+    expect(m.headline).toBe('A DRAW.');
+    expect(m.accessibilityLabel).toBe('Recap. Result verified. A draw. 5K.');
+  });
 });

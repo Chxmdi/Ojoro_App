@@ -28,6 +28,12 @@ export type RecapPosterProps = {
   onRunItBack?: (() => void) | undefined;
   /** Not in `index.d.ts`: SHARE RECAP. */
   onShare?: (() => void) | undefined;
+  /** Not in `index.d.ts`: a verified draw (A DRAW., no crown). `winner` is then ignored. */
+  draw?: boolean | undefined;
+  /** Not in `index.d.ts`: hide RUN IT BACK for people who can't ask for a rematch. Default true. */
+  showRunItBack?: boolean | undefined;
+  /** Not in `index.d.ts`: RUN IT BACK is on its way to the server. */
+  runItBackLoading?: boolean | undefined;
   testID?: string | undefined;
 };
 
@@ -50,9 +56,12 @@ export function RecapPoster({
   stats,
   onRunItBack,
   onShare,
+  draw,
+  showRunItBack = true,
+  runItBackLoading,
   testID,
 }: RecapPosterProps) {
-  const model = recapModel({ winner, discipline, date, result, story, stats });
+  const model = recapModel({ winner, discipline, date, result, story, stats, draw });
   const [width, onLayout] = usePosterWidth();
   const signal = useThemeColor('signal');
   return (
@@ -64,7 +73,7 @@ export function RecapPoster({
             <Badge tone="verified">VERIFIED</Badge>
           </View>
           <View className="gap-space-2">
-            <Graphic kind="crown" size={40} color={signal} />
+            {draw ? null : <Graphic kind="crown" size={40} color={signal} />}
             <DisplayText size="hero" posterWidth={width}>
               {model.headline}
             </DisplayText>
@@ -86,10 +95,12 @@ export function RecapPoster({
           {story ? <Text variant="body">{story}</Text> : null}
         </View>
         <View className="flex-row flex-wrap items-center gap-space-3">
-          <Button variant="primary" onPress={onRunItBack}>
-            RUN IT BACK
-          </Button>
-          <Button variant="secondary" onPress={onShare}>
+          {showRunItBack ? (
+            <Button variant="primary" onPress={onRunItBack} loading={!!runItBackLoading} testID="recap-run-it-back">
+              RUN IT BACK
+            </Button>
+          ) : null}
+          <Button variant="secondary" onPress={onShare} testID="recap-share">
             SHARE RECAP
           </Button>
         </View>

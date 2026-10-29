@@ -123,9 +123,10 @@ begin
     else (v_e.prediction_a > v_e.prediction_b) = (v_winner = 'a')
   end;
   insert into public.challenge_results (event_id, rivalry_id, a_value, b_value, winner_side, margin, source,
-                                        submission_id, note, predicted_a, predicted_b, crowd_called_it, watched_count)
+                                        submission_id, note, predicted_a, predicted_b, crowd_called_it, watched_count,
+                                        verified_at)
   values (v_e.id, v_e.rivalry_id, p_a, p_b, v_winner, abs(p_a - p_b), p_source, p_submission, p_note,
-          v_e.prediction_a, v_e.prediction_b, v_called, v_e.follower_count);
+          v_e.prediction_a, v_e.prediction_b, v_called, v_e.follower_count, clock_timestamp());
   update public.challenge_result_submissions set status = 'confirmed' where id = p_submission;
   update public.challenge_events
      set status = 'complete', completed_at = now(), ended_at = coalesce(ended_at, now())
@@ -691,7 +692,7 @@ begin
   v_low := private.rivalry_a_is_low(v_r, v_uid);
   v_a := case when v_low then v_r.low_id else v_r.high_id end;
   v_b := case when v_low then v_r.high_id else v_r.low_id end;
-  select coalesce(array_agg(q.winner order by q.verified_at), '{}') into v_ws
+  select coalesce(array_agg(q.winner order by q.verified_at, q.starts_at), '{}') into v_ws
   from private.rivalry_results(v_r.id, v_uid) q;
   -- Streak: the run of the same winner from the latest meeting back (a draw ends it).
   if cardinality(v_ws) > 0 and v_ws[cardinality(v_ws)] <> 'd' then
@@ -703,7 +704,7 @@ begin
   end if;
   select q.event_id, q.winner, q.margin, q.scoring, q.unit, q.title
     into v_last_event, v_last_winner, v_last_margin, v_last_scoring, v_last_unit, v_last_title
-  from private.rivalry_results(v_r.id, v_uid) q order by q.verified_at desc limit 1;
+  from private.rivalry_results(v_r.id, v_uid) q order by q.verified_at desc, q.starts_at desc limit 1;
   select * into v_next from public.challenge_events e
    where e.rivalry_id = v_r.id and e.status in ('scheduled', 'live', 'verifying', 'disputed')
      and private.challenge_stage(e) <> 'cancelled' and authz.can_see_challenge_event(e.id, v_uid)
@@ -765,7 +766,7 @@ begin
   return query
   select q.* from private.rivalry_results(p_rivalry_id, v_uid) q
   where authz.can_see_challenge_event(q.event_id, v_uid)
-  order by q.verified_at desc
+  order by q.verified_at desc, q.starts_at desc
   limit least(greatest(coalesce(p_limit, 20), 1), 100);
 end;
 $$;
