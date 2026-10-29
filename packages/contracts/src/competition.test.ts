@@ -14,6 +14,7 @@ import {
   formatMargin,
   formCells,
   RESULT_AUTO_CONFIRM_HOURS,
+  rivalrySubscription,
   idempotentRpcs,
   ojoroErrorCodes,
   screenForStage,
@@ -58,6 +59,7 @@ describe('competition contract drift (CI-safe, no database needed)', () => {
         challengeEventSubscription('x'),
         callOutSubscription('x'),
         callOutsSubscription('x'),
+        rivalrySubscription('x'),
       ].flatMap((s) => s.changes.map((c) => c.table)),
     );
     const publications = migrations
@@ -198,6 +200,12 @@ describe('subscriptions', () => {
     expect(ev.changes[0]?.filter).toBe('id=eq.e1');
     expect(ev.changes.slice(1).every((c) => c.filter === 'event_id=eq.e1')).toBe(true);
     expect(callOutSubscription('c1').changes[0]?.filter).toBe('id=eq.c1');
+    const riv = rivalrySubscription('r1');
+    expect(riv.channel).toBe('rivalry:r1');
+    expect(riv.changes.map((c) => `${c.table}:${c.filter}`)).toEqual([
+      'call_outs:rivalry_id=eq.r1',
+      'challenge_events:rivalry_id=eq.r1',
+    ]);
     expect(callOutsSubscription('u1').changes.map((c) => c.filter)).toEqual([
       'opponent_id=eq.u1',
       'challenger_id=eq.u1',

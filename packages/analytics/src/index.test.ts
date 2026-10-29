@@ -9,4 +9,24 @@ describe('analytics contract', () => {
     expect(event.name).toBe('im_down_committed');
     expect(event.payload.planId).toBe('football-tonight');
   });
+
+  it('has the Step 5 client events the competition contract names', () => {
+    expect([
+      analyticsEvents.challengeShared,
+      analyticsEvents.challengeLiveViewed,
+      analyticsEvents.predictionMade,
+      analyticsEvents.crowdBacked,
+      analyticsEvents.rematchRequested,
+      analyticsEvents.rematchAccepted,
+    ]).toEqual([
+      'challenge_shared',
+      'challenge_live_viewed',
+      'prediction_made',
+      'crowd_backed',
+      'rematch_requested',
+      'rematch_accepted',
+    ]);
+    const names = Object.values(analyticsEvents);
+    expect(new Set(names).size).toBe(names.length);
+  });
 });
