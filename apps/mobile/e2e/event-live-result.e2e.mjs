@@ -321,6 +321,10 @@ try {
       'correction_open',
     );
     await shot(R.page, 'Verifying-disputed');
+    await R.page.getByText(/^You asked for a correction\./).waitFor();
+    const mine = (await remi.call('challenge_verification', { p_event_id: eventId }))[0];
+    const theirs = (await kemi.call('challenge_verification', { p_event_id: eventId }))[0];
+    assert(mine.correction_requested_by_me === true && theirs.correction_requested_by_me === false, 'only the requester can withdraw');
     await R.page.getByTestId('verifying-withdraw').click();
     await R.page.getByTestId('event-verifying').waitFor({ timeout: 20_000 });
   });

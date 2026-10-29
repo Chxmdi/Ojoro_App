@@ -115,7 +115,12 @@ export function useAcceptCallOut(id: string) {
   const qc = useQueryClient();
   const intent = useIntention();
   const m = useMutation({
-    mutationFn: (key: string) => rpc('accept_call_out', { p_call_out_id: id, p_idempotency_key: key }),
+    mutationFn: (v: { key: string; asCrew: string | null }) =>
+      rpc('accept_call_out', {
+        p_call_out_id: id,
+        p_idempotency_key: v.key,
+        ...(v.asCrew ? { p_as_crew_id: v.asCrew } : null),
+      }),
     retry: retryNetwork,
     onSuccess: () => {
       void haptics.challengeAccepted();
@@ -126,10 +131,10 @@ export function useAcceptCallOut(id: string) {
   return {
     ...m,
     /** A second tap while the first is in flight does nothing. */
-    accept(options?: { onSuccess?: (eventId: string | null) => void }) {
+    accept(options?: { asCrew?: string | null; onSuccess?: (eventId: string | null) => void }) {
       if (m.isPending) return;
       track('cta_tapped', { cta: 'call_out_accept', call_out_id: id });
-      m.mutate(intent.key(), { onSuccess: (s) => options?.onSuccess?.(s.event_id ?? null) });
+      m.mutate({ key: intent.key(), asCrew: options?.asCrew ?? null }, { onSuccess: (s) => options?.onSuccess?.(s.event_id ?? null) });
     },
   };
 }

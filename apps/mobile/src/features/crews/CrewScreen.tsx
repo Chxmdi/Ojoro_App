@@ -91,6 +91,24 @@ export function CrewScreen({ id }: { id: string }) {
           </Button>
 
           {admin ? (
+            // crew_view is members-only, so this page is always your own crew: an open crew
+            // Call-Out any other crew's owner or admins can accept (Step 5 screens: A).
+            <View className="flex-row flex-wrap items-center gap-space-3">
+              <Button
+                variant="secondary"
+                href={`/challenge/new?myCrew=${encodeURIComponent(id)}&myCrewName=${encodeURIComponent(crew.name)}` as Href}
+                disabled={!online}
+                testID="crew-call-out"
+              >
+                CALL OUT
+              </Button>
+              <Text variant="body-sm" muted className="shrink">
+                Challenge another crew. No stakes, ever.
+              </Text>
+            </View>
+          ) : null}
+
+          {admin ? (
             <View className="gap-space-3" role="region" aria-label="Invite code">
               <Divider label="INVITE CODE" />
               {code.isPending ? (

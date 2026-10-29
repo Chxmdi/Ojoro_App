@@ -65,7 +65,7 @@ function VerifyingBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: 
     disputed,
     competitor: !!row.is_competitor,
     requestedBy: v?.correction_requested_by_name ?? null,
-    isMe: false,
+    isMe: !!v?.correction_requested_by_me,
   });
 
   return (
@@ -149,8 +149,7 @@ function Checks({
   const key = useRef<string | null>(null);
   const checks = readChecks(v.checks);
   const captain = !!row.is_captain;
-  const iRequested = disputed && checks.some((c) => c.is_me) && v.correction_requested_by_name !== null &&
-    checks.find((c) => c.is_me)?.name === v.correction_requested_by_name;
+  const iRequested = disputed && !!v.correction_requested_by_me;
   const tz = row.time_zone ?? undefined;
   const otherCheck = checks.find((c) => !c.is_me && !c.done) ?? checks.find((c) => !c.is_me);
   const autoLine = disputed

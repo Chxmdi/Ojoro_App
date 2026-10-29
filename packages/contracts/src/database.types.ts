@@ -4790,6 +4790,8 @@ export type Database = {
           next_starts_at: string;
           next_time_zone: string;
           next_title: string;
+          opponent_crew_id: string;
+          opponent_user_id: string;
           rivalry_id: string;
         }[];
       };
@@ -5204,6 +5206,7 @@ export type Database = {
           rematch_from: string;
           rematch_from_name: string;
           rematch_message: string;
+          rematch_of_event_id: string;
           rematch_starts_at: string;
           rematch_title: string;
           rivalry_id: string;
@@ -5608,7 +5611,8 @@ export type Database = {
         | 'call_out'
         | 'challenge_event'
         | 'challenge_post'
-        | 'challenge_comment';
+        | 'challenge_comment'
+        | 'rivalry';
       reputation_kind: 'shows_up' | 'respectful' | 'welcomes_beginners' | 'great_host';
       rivalry_kind: 'people' | 'crews';
       signal_status: 'active' | 'matched' | 'withdrawn' | 'expired';
@@ -5986,6 +5990,7 @@ export const Constants = {
         'challenge_event',
         'challenge_post',
         'challenge_comment',
+        'rivalry',
       ],
       reputation_kind: ['shows_up', 'respectful', 'welcomes_beginners', 'great_host'],
       rivalry_kind: ['people', 'crews'],

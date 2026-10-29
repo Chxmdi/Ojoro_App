@@ -174,6 +174,18 @@ async function clearPending(a, b) {
   }
 }
 
+/** At least `n` crews this person owns (made once, reused on later runs). */
+async function ownedCrews(person, n) {
+  const owned = async () => (await person.call('my_crews')).filter((c) => c.role === 'owner').map((c) => c.crew_id);
+  let ids = await owned();
+  while (ids.length < n) {
+    await admin.from('crews').update({ created_at: new Date(Date.now() - 2 * 86_400_000).toISOString() }).eq('created_by', person.id);
+    await person.call('create_crew', { p_idempotency_key: key(), p_name: `${person.first} Runners ${ids.length + 1}`, p_sport_id: 'running' });
+    ids = await owned();
+  }
+  return ids;
+}
+
 const browser = await chromium.launch();
 let exitCode = 0;
 const contexts = [];
@@ -287,8 +299,17 @@ try {
     await Z.page.getByText('You passed on this one.').waitFor({ timeout: 20_000 });
   });
 
-  await step('The composer sends one Call-Out per tap and opens it', async () => {
-    await open(Z.page, `/challenge/new?opponent=${challenger.id}&name=${encodeURIComponent(challenger.name)}`, 'call-out-composer');
+  await step('Create offers CALL OUT, which opens the composer', async () => {
+    await open(Z.page, '/create', 'create-call-out');
+    await Z.page.getByTestId('create-call-out').click();
+    await Z.page.waitForURL(/\/challenge\/new$/, { timeout: 20_000 });
+    await Z.page.getByText('CALL SOMEONE OUT.').waitFor({ timeout: 30_000 });
+  });
+
+  await step('The composer, from a profile, sends one Call-Out per tap and opens it', async () => {
+    await open(Z.page, `/profile/${challenger.id}`, 'profile-call-out');
+    await Z.page.getByTestId('profile-call-out').click();
+    await Z.page.getByTestId('call-out-composer').waitFor({ timeout: 30_000 });
     await Z.page.getByText('CALL OUT KOFI.').waitFor();
     // Empty: validation in words.
     await Z.page.getByTestId('composer-send').click();
@@ -305,6 +326,27 @@ try {
     const mine = (await opponent.call('my_call_outs', { p_box: 'outgoing', p_limit: 100 })).filter((r) => r.title === `Hill ${tag}`);
     assert(mine.length === 1 && mine[0].id === sent, `call-outs sent: ${mine.length}`);
     await opponent.call('withdraw_call_out', { p_call_out_id: sent });
+  });
+
+  await step('An open crew Call-Out asks which crew, then accepts for it', async () => {
+    const kofiCrew = await ownedCrews(challenger, 1);
+    const zaraCrews = await ownedCrews(opponent, 2);
+    const state = await challenger.call('create_call_out', {
+      p_idempotency_key: key(),
+      p_sport_id: 'running',
+      p_title: `Relay ${tag}`,
+      p_scoring: 'time',
+      p_starts_at: inDays(3),
+      p_challenger_crew_id: kofiCrew[0],
+      p_side_size: 3,
+    });
+    await open(Z.page, `/challenge/${state.call_out_id}`, 'call-out-accept');
+    await Z.page.getByTestId('call-out-accept').click();
+    await Z.page.getByTestId('accept-crew-sheet').waitFor({ timeout: 10_000 });
+    await Z.page.getByTestId(`accept-crew-${zaraCrews[1]}`).click();
+    await Z.page.waitForURL(/\/event\/[0-9a-f-]{36}$/, { timeout: 30_000 });
+    const { data } = await admin.from('challenge_events').select('a_crew_id, b_crew_id').eq('call_out_id', state.call_out_id);
+    assert(data.length === 1 && data[0].a_crew_id === kofiCrew[0] && data[0].b_crew_id === zaraCrews[1], `event crews ${JSON.stringify(data)}`);
   });
 } catch (error) {
   exitCode = 1;
