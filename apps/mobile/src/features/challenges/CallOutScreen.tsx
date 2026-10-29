@@ -5,7 +5,8 @@
  *
  * ACCEPT creates the Challenge Event on the server in one transaction, exactly once (one key per
  * intention, reused on retry; a second tap while it runs does nothing), gives the heavy haptic and
- * goes to `/event/[id]`. The challenger sees their own call-out with TAKE IT BACK; an answered one
+ * goes to `/event/[id]`. An open crew Call-Out is accepted for one of your crews (asked in a Sheet
+ * when you run more than one). The challenger sees their own call-out with TAKE IT BACK; an answered one
  * says what happened and links on (the event, the counter).
  */
 import { router, type Href } from 'expo-router';
@@ -19,6 +20,9 @@ import {
   Modal,
   Quote,
   Screen,
+  Sheet,
+  Strip,
+  StripList,
   Text,
 } from '@/design-system';
 import { track } from '@/lib/analytics';
@@ -27,6 +31,7 @@ import { ojoroErrorOf } from '@/lib/rpc';
 import { useReportBlock } from '@/features/safety';
 
 import { useOnline } from '../activities/data';
+import { useMyCrews } from '../crews/data';
 import { LoadingState, MoreButton, ScreenHeader } from '../activities/ui';
 import { InlineError, OfflineNote, PrivacyNote } from '../profile/states';
 import { CounterSheet } from './CounterSheet';
@@ -38,6 +43,7 @@ import {
   useWithdrawCallOut,
 } from './data';
 import {
+  acceptCrewChoices,
   attribution,
   closedWords,
   headerOverline,
@@ -111,17 +117,26 @@ function CallOutBody({ view, online, dataUpdatedAt }: { view: CallOutFacts; onli
   const accept = useAcceptCallOut(view.id);
   const decline = useDeclineCallOut(view.id);
   const withdraw = useWithdrawCallOut(view.id);
-  const [sheet, setSheet] = useState<'counter' | 'pass' | 'withdraw' | null>(null);
+  const [sheet, setSheet] = useState<'counter' | 'pass' | 'withdraw' | 'crew' | null>(null);
   const now = Date.now();
   const challenger = shortName(view.challenger_name, crew);
   const failure = accept.error ?? decline.error ?? withdraw.error;
 
-  const onAccept = () =>
+  const myCrews = useMyCrews();
+  const crewChoices = acceptCrewChoices(view, myCrews.data ?? []);
+  const acceptAs = (asCrew: string | null) =>
     accept.accept({
+      asCrew,
       onSuccess: (eventId) => {
         if (eventId) router.replace(`/event/${eventId}` as Href);
       },
     });
+  // An open crew Call-Out is accepted for one of your crews: the only one silently, else ask.
+  const onAccept = () => {
+    if (!crewChoices) acceptAs(null);
+    else if (crewChoices.length === 1) acceptAs(crewChoices[0]?.crew_id ?? null);
+    else setSheet('crew');
+  };
 
   return (
     <View testID="call-out-screen">
@@ -263,6 +278,33 @@ function CallOutBody({ view, online, dataUpdatedAt }: { view: CallOutFacts; onli
           if (counterId) router.replace(`/challenge/${counterId}` as Href);
         }}
       />
+      <Sheet
+        visible={sheet === 'crew'}
+        onClose={() => setSheet(null)}
+        title="Accept for which crew?"
+      >
+        <View className="gap-space-3 pb-space-3" testID="accept-crew-sheet">
+          <Text variant="body-sm" muted>
+            {`Your crew takes on ${challenger}, ${view.side_size ?? 5} a side. You're its captain for this event.`}
+          </Text>
+          <StripList>
+            {(crewChoices ?? []).map((c) => (
+              <Strip
+                key={c.crew_id}
+                title={c.name}
+                meta={`${c.member_count} ${c.member_count === 1 ? 'member' : 'members'}`}
+                trailing="chevron"
+                onPress={() => {
+                  setSheet(null);
+                  acceptAs(c.crew_id);
+                }}
+                accessibilityHint="Accepts the Call-Out for this crew"
+                testID={`accept-crew-${c.crew_id}`}
+              />
+            ))}
+          </StripList>
+        </View>
+      </Sheet>
       <Modal
         visible={sheet === 'pass'}
         title="PASS?"

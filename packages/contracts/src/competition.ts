@@ -14,6 +14,9 @@ type Functions = Database['public']['Functions'];
 type Enums = Database['public']['Enums'];
 type RpcName = keyof Functions;
 
+/** Marks columns the generated types call non-null as `T | null` (Slice 01 rule 7). */
+export type WithNull<T, K extends keyof T> = Omit<T, K> & { [P in K]: T[P] | null };
+
 /** Every Step 5 RPC the client may call. */
 export const competitionRpcs = [
   // Call-Outs
@@ -148,9 +151,48 @@ export type ChallengeComment = Functions['challenge_comments']['Returns'][number
 export type ChallengePoll = Functions['challenge_polls']['Returns'][number];
 export type ChallengeVerification = Functions['challenge_verification']['Returns'][number];
 export type ChallengePoster = Functions['challenge_poster']['Returns'][number];
-export type RivalryView = Functions['rivalry_view']['Returns'][number];
-export type RivalryMeeting = Functions['rivalry_meetings']['Returns'][number];
-export type RivalryRow = Functions['my_rivalries']['Returns'][number];
+/**
+ * `rivalry_view`. The generated types say every column is non-null; these can be null (no
+ * meetings yet, no next event, no pending rematch).
+ */
+export type RivalryView = WithNull<
+  Functions['rivalry_view']['Returns'][number],
+  | 'streak_side'
+  | 'last_event_id'
+  | 'last_winner'
+  | 'last_margin'
+  | 'last_scoring'
+  | 'last_unit'
+  | 'last_title'
+  | 'next_event_id'
+  | 'next_title'
+  | 'next_starts_at'
+  | 'next_time_zone'
+  | 'next_stage'
+  | 'rematch_call_out_id'
+  | 'rematch_from'
+  | 'rematch_from_name'
+  | 'rematch_message'
+  | 'rematch_title'
+  | 'rematch_starts_at'
+  | 'rematch_of_event_id'
+>;
+/** `rivalry_meetings`: the place and unit can be null. */
+export type RivalryMeeting = WithNull<
+  Functions['rivalry_meetings']['Returns'][number],
+  'place_name' | 'unit'
+>;
+/** `my_rivalries`: the next event, last activity and one of the two opponent ids can be null. */
+export type RivalryRow = WithNull<
+  Functions['my_rivalries']['Returns'][number],
+  | 'next_event_id'
+  | 'next_title'
+  | 'next_starts_at'
+  | 'next_time_zone'
+  | 'last_active_at'
+  | 'opponent_user_id'
+  | 'opponent_crew_id'
+>;
 
 /** One row of `challenge_verification().checks`. */
 export interface VerificationCheck {
@@ -314,6 +356,22 @@ export function callOutsSubscription(userId: string): RealtimeSubscription {
     changes: [
       { event: '*', schema: 'public', table: 'call_outs', filter: `opponent_id=eq.${userId}` },
       { event: '*', schema: 'public', table: 'call_outs', filter: `challenger_id=eq.${userId}` },
+    ],
+  };
+}
+
+/**
+ * Rivalry (and Compete's rivalry block): a new or answered rematch call-out, and events of this
+ * rivalry changing stage (a result makes the record change). Refetch `rivalry_view` and
+ * `rivalry_meetings` on any change.
+ */
+export function rivalrySubscription(rivalryId: string): RealtimeSubscription {
+  const filter = `rivalry_id=eq.${rivalryId}`;
+  return {
+    channel: `rivalry:${rivalryId}`,
+    changes: [
+      { event: '*', schema: 'public', table: 'call_outs', filter },
+      { event: '*', schema: 'public', table: 'challenge_events', filter },
     ],
   };
 }

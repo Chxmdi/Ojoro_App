@@ -1,8 +1,8 @@
 /**
  * Create (Create.png): TELL OJORO (the rules-based Concierge: one best match with a plain WHY and
  * one confirm action, up to two more ideas), then the ways to start: Down For (the sheet), Quick
- * Plan and Activity (`/create/plan`). Call Out (M6), Crew (M7) and Route aren't built, so they
- * aren't offered. Ojoro suggests; nothing is sent or joined until the person confirms.
+ * Plan and Activity (`/create/plan`), and Call Out (`/challenge/new`, Step 5). Crew (M7) and Route
+ * aren't built, so they aren't offered. Ojoro suggests; nothing is sent or joined until the person confirms.
  */
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -59,9 +59,10 @@ export function CreateScreen() {
   const [sheet, setSheet] = useState<{ sportId: string | null } | null>(null);
   const concierge = useConcierge(text);
 
-  const open = (option: 'down_for' | 'quick_plan' | 'activity') => {
+  const open = (option: 'down_for' | 'quick_plan' | 'activity' | 'call_out') => {
     track('create_option_opened', { option });
     if (option === 'down_for') setSheet({ sportId: null });
+    else if (option === 'call_out') router.push('/challenge/new');
     else router.push(option === 'activity' ? '/create/plan?kind=activity' : '/create/plan');
   };
 
@@ -117,6 +118,14 @@ export function CreateScreen() {
               trailing="chevron"
               onPress={() => open('activity')}
               testID="create-activity"
+            />
+            <Strip
+              title="CALL OUT"
+              titleVariant="display-sm"
+              meta="Challenge someone. If they accept, it becomes an event."
+              trailing="chevron"
+              onPress={() => open('call_out')}
+              testID="create-call-out"
             />
           </View>
         </View>

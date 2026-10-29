@@ -167,7 +167,7 @@ export function CompeteScreen() {
         <View className="gap-space-2 px-space-5" role="region" aria-label="Ladders and seasons">
           <Divider label="LADDERS & SEASONS" />
           <Text variant="body-sm" muted testID="compete-ladders-empty">
-            No ladders or seasons yet. Call-Outs and rivalries are where it starts.
+            Coming: ladders that rank everyone who races the same course, and seasons of Clan-vs-Clan events. Nothing to join here yet.
           </Text>
         </View>
 

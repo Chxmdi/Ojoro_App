@@ -122,6 +122,7 @@ export type CallOutFacts = {
   is_open: boolean;
   challenger_id: string;
   challenger_name: string;
+  challenger_crew_id?: string | null | undefined;
   opponent_id: string | null;
   opponent_name: string | null;
   is_mine: boolean;
@@ -281,6 +282,18 @@ export function runsOutWords(at: string, now: number, timeZone: string = DEFAULT
   if (diff === 1) return `tomorrow at ${time}`;
   if (diff < 7) return `${p.weekday} at ${time}`;
   return `${p.weekday} ${p.day} ${p.monthName}`;
+}
+
+/**
+ * The crews you could accept an open crew Call-Out for: ones you own or admin, never the
+ * challenger's. Null when the Call-Out isn't an open crew one (accept_call_out takes no crew).
+ */
+export function acceptCrewChoices<C extends { crew_id: string; role: string }>(
+  f: Pick<CallOutFacts, 'format' | 'is_open' | 'challenger_crew_id'>,
+  myCrews: readonly C[],
+): C[] | null {
+  if (f.format !== 'crew_vs_crew' || !f.is_open) return null;
+  return myCrews.filter((c) => (c.role === 'owner' || c.role === 'admin') && c.crew_id !== f.challenger_crew_id);
 }
 
 // Compete ---------------------------------------------------------------------------------------

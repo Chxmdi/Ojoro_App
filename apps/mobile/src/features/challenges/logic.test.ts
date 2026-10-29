@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  acceptCrewChoices,
   ageWords,
   attribution,
   audienceWords,
@@ -179,6 +180,18 @@ describe('the Call-Out screen', () => {
     expect(headerOverline(facts({ is_open: true }), now)).toBe('OPEN CALL-OUT · 2H AGO');
     expect(opponentLabel(facts({ opponent_name: null }))).toBe('Anyone');
     expect(opponentLabel(facts({ opponent_name: null, format: 'crew_vs_crew' }))).toBe('Any crew');
+  });
+
+  it('offers the crews you can accept an open crew Call-Out for', () => {
+    const crews = [
+      { crew_id: 'c1', role: 'owner' },
+      { crew_id: 'c2', role: 'member' },
+      { crew_id: 'c3', role: 'admin' },
+      { crew_id: 'cx', role: 'owner' },
+    ];
+    expect(acceptCrewChoices({ format: 'crew_vs_crew', is_open: true, challenger_crew_id: 'cx' }, crews)?.map((c) => c.crew_id)).toEqual(['c1', 'c3']);
+    expect(acceptCrewChoices({ format: 'crew_vs_crew', is_open: false, challenger_crew_id: 'cx' }, crews)).toBeNull();
+    expect(acceptCrewChoices({ format: 'person_vs_person', is_open: true }, crews)).toBeNull();
   });
 
   it('picks the reply for each state', () => {

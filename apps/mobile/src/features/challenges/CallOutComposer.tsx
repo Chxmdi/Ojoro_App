@@ -1,7 +1,8 @@
 /**
  * CALL OUT (undesigned; kept minimal from the design system; docs/DESIGN_DECISIONS.md, Step 5
- * screens: A). Opened from Compete, and from a profile (`?opponent=<user id>&name=`) or a crew
- * (`?crew=<crew id>&crewName=`). Who (someone you've played with, an open call-out, or a crew), the
+ * screens: A). Opened from Compete and Create, from a profile (`?opponent=<user id>&name=`), for
+ * another crew (`?crew=<crew id>&crewName=`), or from your own crew (`?myCrew=<crew id>&myCrewName=`:
+ * an open crew Call-Out). Who (someone you've played with, an open call-out, or a crew), the
  * sport and what it is ("5K"), how it is scored and the distance, when (at least an hour out), the
  * place and course, who can watch, and your line. No stakes, ever.
  *
@@ -63,11 +64,15 @@ export type ComposerParams = {
   name?: string | undefined;
   crew?: string | undefined;
   crewName?: string | undefined;
+  /** Your own crew (its page): an open crew Call-Out for it. */
+  myCrew?: string | undefined;
+  myCrewName?: string | undefined;
 };
 
 function initialTarget(p: ComposerParams): Target | null {
   if (p.opponent) return { kind: 'person', id: p.opponent, name: p.name ?? 'Them' };
   if (p.crew) return { kind: 'crew', id: p.crew, name: p.crewName ?? null };
+  if (p.myCrew) return { kind: 'crew', id: null, name: null };
   return null;
 }
 
@@ -76,7 +81,7 @@ export function CallOutComposer(params: ComposerParams) {
   const userId = auth.status === 'signed-in' ? auth.session.user.id : null;
   const online = useOnline();
   const fixed = initialTarget(params);
-  const [form, setForm] = useState<ComposerState>(() => initialComposer(fixed));
+  const [form, setForm] = useState<ComposerState>(() => ({ ...initialComposer(fixed), myCrewId: params.myCrew ?? null }));
   const [errors, setErrors] = useState<ComposerErrors>({});
   const [now] = useState(() => new Date());
   const sports = useSportCatalog();
@@ -130,7 +135,9 @@ export function CallOutComposer(params: ComposerParams) {
               ? `CALL OUT ${shortName(fixed.name).toUpperCase()}.`
               : fixed?.kind === 'crew' && fixed.name
                 ? `CALL OUT ${fixed.name.toUpperCase()}.`
-                : 'CALL SOMEONE OUT.'}
+                : fixed?.kind === 'crew'
+                  ? 'CALL OUT A CREW.'
+                  : 'CALL SOMEONE OUT.'}
           </DisplayText>
           <Text variant="body">Set the rules. They accept, counter or pass. Bragging rights only.</Text>
         </View>

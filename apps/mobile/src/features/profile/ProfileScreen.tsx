@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { router, type Href } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
@@ -196,6 +196,22 @@ function ProfileBody({
             ) : null}
           </View>
         </View>
+
+        {!self ? (
+          // Blocked either way, profile_view returns nothing, so this never shows across a block.
+          <View className="flex-row flex-wrap items-center gap-space-3">
+            <Button
+              variant="secondary"
+              href={`/challenge/new?opponent=${encodeURIComponent(id)}&name=${encodeURIComponent(profile.display_name ?? '')}` as Href}
+              testID="profile-call-out"
+            >
+              CALL OUT
+            </Button>
+            <Text variant="body-sm" muted className="shrink">
+              {`Challenge ${first}. No stakes, ever.`}
+            </Text>
+          </View>
+        ) : null}
 
         {profile.history_visible ? (
           <View className="flex-row gap-space-3 border-t border-line pt-space-4">
