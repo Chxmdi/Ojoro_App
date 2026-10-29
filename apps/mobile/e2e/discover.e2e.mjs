@@ -240,8 +240,9 @@ try {
     await C.page.getByTestId('search-results').getByText('Football tonight').waitFor({ state: 'detached', timeout: 10_000 });
     const after = await C.page.getByTestId('search-results').getByRole('button').count();
     assert(after < before, `not narrower: ${before} → ${after}`);
-    // Tennis doubles starts this morning: tonight has none, and the empty state offers a way on.
-    await C.page.getByTestId('when-tonight').click();
+    // Tennis doubles starts within the hour, so tomorrow has none, and the empty state offers a way
+    // on. (Not "tonight": in the afternoon a start 50 minutes away is tonight.)
+    await C.page.getByTestId('when-tomorrow').click();
     await C.page.getByTestId('results-empty').waitFor({ timeout: 20_000 });
     await C.page.getByTestId('results-surprise').waitFor();
     await C.page.getByTestId('clear-search').click();
