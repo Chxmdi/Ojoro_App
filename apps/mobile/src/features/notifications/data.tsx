@@ -220,7 +220,7 @@ export function useSetType() {
 }
 
 export type MutedObject = {
-  object_kind: 'plan' | 'activity' | 'crew' | 'challenge';
+  object_kind: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event';
   object_id: string;
   until: string | null;
   name: string | null;

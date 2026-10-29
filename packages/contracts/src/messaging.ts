@@ -123,7 +123,15 @@ export type NotificationRow = Functions['my_notifications']['Returns'][number];
 export type NotificationSection = 'needs_you' | 'today' | 'earlier';
 /** What a notification's inline button does. Call the RPC named, then `act_on_notification`. */
 export type NotificationAction =
-  'im_down' | 'pull_in' | 'vote' | 'check_in' | 'confirm_result' | 'reply' | 'open';
+  | 'im_down'
+  | 'pull_in'
+  | 'vote'
+  | 'check_in'
+  | 'confirm_result'
+  | 'reply'
+  // Step 5: confirm a Challenge result (open `href`, the Verifying screen).
+  | 'confirm_challenge'
+  | 'open';
 export type HomeFeedCard = Functions['home_feed']['Returns'][number];
 export type HomeFeedCardKind =
   | 'needs_you'
