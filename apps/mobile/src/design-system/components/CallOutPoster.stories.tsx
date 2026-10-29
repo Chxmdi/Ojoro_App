@@ -40,6 +40,12 @@ export const Countered: Story = { args: { status: 'COUNTERED' } };
 /** DECLINED. */
 export const Declined: Story = { args: { status: 'DECLINED' } };
 
+/** WITHDRAWN: the challenger took it back. */
+export const Withdrawn: Story = { args: { status: 'WITHDRAWN' } };
+
+/** EXPIRED: nobody answered in time. */
+export const Expired: Story = { args: { status: 'EXPIRED' } };
+
 /** No date: the foot is the discipline alone. Long names wrap, never truncate. */
 export const LongNames: Story = {
   args: {

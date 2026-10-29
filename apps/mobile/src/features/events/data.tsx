@@ -11,6 +11,7 @@
 import {
   challengeEventSubscription,
   isRetryable,
+  toOjoroError,
   type ChallengeComment,
   type ChallengeEventView,
   type ChallengeFeedPost,
@@ -23,7 +24,8 @@ import { useMemo } from 'react';
 
 import { track } from '@/lib/analytics';
 import { useRealtimeRefetch } from '@/lib/realtime';
-import { ojoroErrorOf, rpc } from '@/lib/rpc';
+import { ojoroErrorOf, OjoroCallError, rpc } from '@/lib/rpc';
+import { supabase } from '@/lib/supabase';
 
 import { applyBacking, applyFollow, applyPrediction, applyPollVote, applyRespect } from './logic';
 
@@ -47,17 +49,29 @@ export function retryNetwork(failures: number, error: unknown): boolean {
 
 type Nullable<T> = { [K in keyof T]: T[K] | null };
 /** Columns the server always fills; the generated types claim the rest are too, but they aren't. */
-type Always = 'id' | 'stage' | 'status' | 'server_now' | 'starts_at' | 'a_name' | 'b_name' | 'format' | 'scoring';
+type Always =
+  | 'id'
+  | 'stage'
+  | 'status'
+  | 'server_now'
+  | 'starts_at'
+  | 'a_name'
+  | 'b_name'
+  | 'format'
+  | 'scoring';
 
 /** One `challenge_event_view` row, with the nullable columns typed as nullable. */
-export type EventView = Nullable<Omit<ChallengeEventView, Always>> & Pick<ChallengeEventView, Always>;
+export type EventView = Nullable<Omit<ChallengeEventView, Always>> &
+  Pick<ChallengeEventView, Always>;
 export type EventData = { row: EventView; receivedAt: number } | null;
 
 export type FeedPost = Nullable<Omit<ChallengeFeedPost, 'id' | 'kind' | 'created_at'>> &
   Pick<ChallengeFeedPost, 'id' | 'kind' | 'created_at'>;
 export type EventComment = Nullable<Omit<ChallengeComment, 'id' | 'created_at'>> &
   Pick<ChallengeComment, 'id' | 'created_at'>;
-export type EventPoll = Nullable<Omit<ChallengePoll, 'id' | 'options' | 'vote_counts' | 'question'>> &
+export type EventPoll = Nullable<
+  Omit<ChallengePoll, 'id' | 'options' | 'vote_counts' | 'question'>
+> &
   Pick<ChallengePoll, 'id' | 'options' | 'vote_counts' | 'question'>;
 export type EventPoster = Nullable<ChallengePoster>;
 
@@ -80,7 +94,9 @@ export function useEvent(eventId: string) {
 
 /** Realtime as a refetch hint for everything under ['event', id]. */
 export function useEventRealtime(eventId: string) {
-  useRealtimeRefetch(eventId ? challengeEventSubscription(eventId) : null, [eventKeys.all(eventId)]);
+  useRealtimeRefetch(eventId ? challengeEventSubscription(eventId) : null, [
+    eventKeys.all(eventId),
+  ]);
 }
 
 export function useEventFeed(eventId: string, enabled = true) {
@@ -93,7 +109,8 @@ export function useEventFeed(eventId: string, enabled = true) {
         p_limit: FEED_PAGE,
         ...(pageParam ? { p_before: pageParam } : null),
       })) as unknown as FeedPost[],
-    getNextPageParam: (last) => (last.length < FEED_PAGE ? undefined : (last[last.length - 1]?.id ?? undefined)),
+    getNextPageParam: (last) =>
+      last.length < FEED_PAGE ? undefined : (last[last.length - 1]?.id ?? undefined),
     retry: retryNetwork,
     enabled,
   });
@@ -126,7 +143,8 @@ export function useEventComments(eventId: string, enabled = true) {
 export function useEventPolls(eventId: string, enabled = true) {
   return useQuery({
     queryKey: eventKeys.polls(eventId),
-    queryFn: async () => (await rpc('challenge_polls', { p_event_id: eventId })) as unknown as EventPoll[],
+    queryFn: async () =>
+      (await rpc('challenge_polls', { p_event_id: eventId })) as unknown as EventPoll[],
     retry: retryNetwork,
     enabled,
   });
@@ -137,9 +155,34 @@ export function useEventPoster(eventId: string) {
   return useQuery({
     queryKey: eventKeys.poster(eventId),
     queryFn: async () =>
-      ((await rpc('challenge_poster', { p_event_id: eventId }))[0] ?? null) as unknown as EventPoster | null,
+      ((await rpc('challenge_poster', { p_event_id: eventId }))[0] ??
+        null) as unknown as EventPoster | null,
     retry: retryNetwork,
     enabled: !!eventId,
+  });
+}
+
+export type CompetitorRow = {
+  user_id: string;
+  side: ChallengeSide;
+  checked_in_at: string | null;
+  ready_at: string | null;
+};
+
+/** Check-in times for EventToday ("You · 8:22"). Readable by the audience; never where. */
+export function useEventCompetitors(eventId: string, enabled = true) {
+  return useQuery({
+    queryKey: [...eventKeys.all(eventId), 'competitors'] as const,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('challenge_competitors')
+        .select('user_id,side,checked_in_at,ready_at')
+        .eq('event_id', eventId);
+      if (error) throw new OjoroCallError(toOjoroError(error));
+      return (data ?? []) as CompetitorRow[];
+    },
+    retry: retryNetwork,
+    enabled: enabled && !!eventId,
   });
 }
 
@@ -158,7 +201,9 @@ function useEventPatch(eventId: string) {
     async begin(patch: (row: EventView) => EventView) {
       await qc.cancelQueries({ queryKey: eventKeys.view(eventId) });
       const prev = qc.getQueryData<EventData>(eventKeys.view(eventId));
-      qc.setQueryData<EventData>(eventKeys.view(eventId), (old) => (old ? { ...old, row: patch(old.row) } : old));
+      qc.setQueryData<EventData>(eventKeys.view(eventId), (old) =>
+        old ? { ...old, row: patch(old.row) } : old,
+      );
       return prev;
     },
     rollback(prev: EventData | undefined) {
@@ -191,7 +236,11 @@ export function useFollowEvent(eventId: string) {
     onError: (_e, _v, ctx) => p.rollback(ctx?.prev),
     onSuccess: (s) => {
       if (s.following !== null && s.follower_count !== null) {
-        p.merge({ i_follow: s.following, follower_count: s.follower_count, comments_muted: s.comments_muted });
+        p.merge({
+          i_follow: s.following,
+          follower_count: s.follower_count,
+          comments_muted: s.comments_muted,
+        });
       }
     },
     onSettled: () => p.settle(),
@@ -206,8 +255,13 @@ export function useMuteComments(eventId: string) {
       rpc('follow_challenge_event', { p_event_id: eventId, p_comments_muted: muted }),
     retry: retryNetwork,
     onMutate: async (muted) => {
-      track('cta_tapped', { cta: muted ? 'event_mute_comments' : 'event_unmute_comments', event_id: eventId });
-      return { prev: await p.begin((row) => ({ ...applyFollow(row, true), comments_muted: muted })) };
+      track('cta_tapped', {
+        cta: muted ? 'event_mute_comments' : 'event_unmute_comments',
+        event_id: eventId,
+      });
+      return {
+        prev: await p.begin((row) => ({ ...applyFollow(row, true), comments_muted: muted })),
+      };
     },
     onError: (_e, _v, ctx) => p.rollback(ctx?.prev),
     onSettled: () => p.settle(),
@@ -242,7 +296,8 @@ function crowdFields(s: CrowdState): Partial<EventView> {
 export function usePredict(eventId: string) {
   const p = useEventPatch(eventId);
   return useMutation({
-    mutationFn: (side: ChallengeSide) => rpc('predict_challenge', { p_event_id: eventId, p_side: side }),
+    mutationFn: (side: ChallengeSide) =>
+      rpc('predict_challenge', { p_event_id: eventId, p_side: side }),
     retry: retryNetwork,
     onMutate: async (side) => {
       track('cta_tapped', { cta: 'prediction_made', side, event_id: eventId });
@@ -263,7 +318,11 @@ export function useBack(eventId: string) {
       rpc('back_challenge', { p_event_id: eventId, p_side: side as ChallengeSide }),
     retry: retryNetwork,
     onMutate: async (side) => {
-      track('cta_tapped', { cta: side ? 'crowd_backed' : 'crowd_unbacked', side, event_id: eventId });
+      track('cta_tapped', {
+        cta: side ? 'crowd_backed' : 'crowd_unbacked',
+        side,
+        event_id: eventId,
+      });
       return { prev: await p.begin((row) => applyBacking(row, side)) };
     },
     onError: (_e, _v, ctx) => p.rollback(ctx?.prev),
@@ -304,7 +363,8 @@ type CommentsData = { pages: EventComment[][]; pageParams: unknown[] };
 export function useRespectComment(eventId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (commentId: string) => rpc('respect_challenge_comment', { p_comment_id: commentId }),
+    mutationFn: (commentId: string) =>
+      rpc('respect_challenge_comment', { p_comment_id: commentId }),
     retry: false,
     onMutate: async (commentId) => {
       track('reaction_tapped', { event_id: eventId, reaction: 'respect', on: 'comment' });
@@ -313,7 +373,9 @@ export function useRespectComment(eventId: string) {
       if (prev) {
         qc.setQueryData<CommentsData>(eventKeys.comments(eventId), {
           ...prev,
-          pages: prev.pages.map((page) => page.map((c) => (c.id === commentId ? applyRespect(c) : c))),
+          pages: prev.pages.map((page) =>
+            page.map((c) => (c.id === commentId ? applyRespect(c) : c)),
+          ),
         });
       }
       return { prev };
@@ -350,9 +412,15 @@ export function usePostToFeed(eventId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (v: { body: string; key: string; kind: 'statement' | 'training' | 'logistics' }) =>
-      rpc('post_challenge_update', { p_event_id: eventId, p_body: v.body, p_kind: v.kind, p_idempotency_key: v.key }),
+      rpc('post_challenge_update', {
+        p_event_id: eventId,
+        p_body: v.body,
+        p_kind: v.kind,
+        p_idempotency_key: v.key,
+      }),
     retry: retryNetwork,
-    onSuccess: (_d, v) => track('cta_tapped', { cta: 'event_post', kind: v.kind, event_id: eventId }),
+    onSuccess: (_d, v) =>
+      track('cta_tapped', { cta: 'event_post', kind: v.kind, event_id: eventId }),
     onSettled: () => qc.invalidateQueries({ queryKey: eventKeys.feed(eventId) }),
   });
 }
@@ -366,7 +434,11 @@ export function useCheckInChallenge(eventId: string) {
     onMutate: () => track('check_in_tapped', { event_id: eventId, kind: 'challenge' }),
     onSuccess: (s) => {
       if (s.a_checked_in !== null && s.b_checked_in !== null) {
-        p.merge({ a_checked_in: s.a_checked_in, b_checked_in: s.b_checked_in, ...(s.stage ? { stage: s.stage } : null) });
+        p.merge({
+          a_checked_in: s.a_checked_in,
+          b_checked_in: s.b_checked_in,
+          ...(s.stage ? { stage: s.stage } : null),
+        });
       }
     },
     onSettled: () => p.settle(),

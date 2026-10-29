@@ -282,7 +282,7 @@ export function verifyingIntro(p: { disputed: boolean; competitor: boolean; requ
     const who = p.isMe ? 'You' : p.requestedBy ? firstName(p.requestedBy) : 'A competitor';
     return {
       headline: 'ON HOLD.',
-      body: `${who} asked for a correction. The result waits until it is settled. Nobody is called the winner yet.`,
+      body: `${who} asked for a correction. The result waits until it is settled, and nobody is called the winner yet.`,
     };
   }
   return {

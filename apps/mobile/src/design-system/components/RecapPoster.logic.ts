@@ -21,12 +21,14 @@ export function recapModel(p: {
   result?: string | undefined;
   story?: string | undefined;
   stats?: readonly RecapStat[] | undefined;
+  /** Not in `index.d.ts`: a verified draw. The headline is A DRAW. and nobody wins. */
+  draw?: boolean | undefined;
 }): RecapModel {
   const stats = (p.stats ?? []).map((s) => `${s.value} ${s.label}`).join(', ');
   const parts = [
     p.date ? `Recap, ${p.date}` : 'Recap',
     'Result verified',
-    `${p.winner} wins`,
+    p.draw ? 'A draw' : `${p.winner} wins`,
     p.discipline,
     p.result,
     stats,
@@ -34,7 +36,7 @@ export function recapModel(p: {
   ].filter(Boolean);
   return {
     overline: p.date ? `RECAP · ${p.date}`.toUpperCase() : 'RECAP',
-    headline: `${p.winner.toUpperCase()} WINS.`,
+    headline: p.draw ? 'A DRAW.' : `${p.winner.toUpperCase()} WINS.`,
     accessibilityLabel: `${parts.join('. ')}.`,
   };
 }

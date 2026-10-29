@@ -514,7 +514,7 @@ export type Database = {
           title: string;
           unit: string | null;
           updated_at: string;
-          verification: Database['public']['Enums']['challenge_verification'];
+          verification: Database['public']['Enums']['challenge_verification_method'];
         };
         ComputedFields: never;
         Insert: {
@@ -546,7 +546,7 @@ export type Database = {
           title: string;
           unit?: string | null;
           updated_at?: string;
-          verification?: Database['public']['Enums']['challenge_verification'];
+          verification?: Database['public']['Enums']['challenge_verification_method'];
         };
         Update: {
           audience?: Database['public']['Enums']['challenge_audience'];
@@ -577,7 +577,7 @@ export type Database = {
           title?: string;
           unit?: string | null;
           updated_at?: string;
-          verification?: Database['public']['Enums']['challenge_verification'];
+          verification?: Database['public']['Enums']['challenge_verification_method'];
         };
         Relationships: [
           {
@@ -950,7 +950,7 @@ export type Database = {
           title: string;
           unit: string | null;
           updated_at: string;
-          verification: Database['public']['Enums']['challenge_verification'];
+          verification: Database['public']['Enums']['challenge_verification_method'];
         };
         ComputedFields: never;
         Insert: {
@@ -998,7 +998,7 @@ export type Database = {
           title: string;
           unit?: string | null;
           updated_at?: string;
-          verification: Database['public']['Enums']['challenge_verification'];
+          verification: Database['public']['Enums']['challenge_verification_method'];
         };
         Update: {
           a_captain_id?: string;
@@ -1045,7 +1045,7 @@ export type Database = {
           title?: string;
           unit?: string | null;
           updated_at?: string;
-          verification?: Database['public']['Enums']['challenge_verification'];
+          verification?: Database['public']['Enums']['challenge_verification_method'];
         };
         Relationships: [
           {
@@ -3837,7 +3837,7 @@ export type Database = {
           time_zone: string;
           title: string;
           unit: string;
-          verification: Database['public']['Enums']['challenge_verification'];
+          verification: Database['public']['Enums']['challenge_verification_method'];
         }[];
       };
       cancel_activity: {
@@ -3981,7 +3981,7 @@ export type Database = {
           time_zone: string;
           title: string;
           unit: string;
-          verification: Database['public']['Enums']['challenge_verification'];
+          verification: Database['public']['Enums']['challenge_verification_method'];
           verified_at: string;
           watched_count: number;
           winner_side: Database['public']['Enums']['team_side'];
@@ -5556,7 +5556,7 @@ export type Database = {
         | 'cancelled';
       challenge_status: 'scheduled' | 'live' | 'verifying' | 'disputed' | 'complete' | 'cancelled';
       challenge_submission_status: 'pending' | 'confirmed' | 'superseded';
-      challenge_verification: 'participant_confirmation' | 'device';
+      challenge_verification_method: 'participant_confirmation' | 'device';
       check_in_method: 'location' | 'host';
       crew_join_via: 'created' | 'added' | 'code';
       crew_role: 'owner' | 'admin' | 'member';
@@ -5928,7 +5928,7 @@ export const Constants = {
       ],
       challenge_status: ['scheduled', 'live', 'verifying', 'disputed', 'complete', 'cancelled'],
       challenge_submission_status: ['pending', 'confirmed', 'superseded'],
-      challenge_verification: ['participant_confirmation', 'device'],
+      challenge_verification_method: ['participant_confirmation', 'device'],
       check_in_method: ['location', 'host'],
       crew_join_via: ['created', 'added', 'code'],
       crew_role: ['owner', 'admin', 'member'],

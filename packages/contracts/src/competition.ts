@@ -261,7 +261,9 @@ export function formCells(
 }
 
 /** "The crowd called it" / "The crowd got it wrong" / null (draw, tie or too few predictions). */
-export function crowdOutcome(calledIt: boolean | null | undefined): 'called_it' | 'got_it_wrong' | null {
+export function crowdOutcome(
+  calledIt: boolean | null | undefined,
+): 'called_it' | 'got_it_wrong' | null {
   if (calledIt === true) return 'called_it';
   if (calledIt === false) return 'got_it_wrong';
   return null;

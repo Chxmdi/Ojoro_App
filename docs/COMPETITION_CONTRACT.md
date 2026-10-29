@@ -23,7 +23,13 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
   descriptors `challengeEventSubscription`, `callOutSubscription`, `callOutsSubscription`, and the limits
   `CALL_OUTS_PER_DAY` (10), `PREDICTION_MIN_COUNT` (5), `CHALLENGE_POST_MAX_LENGTH` (280),
   `CHALLENGE_COMMENT_MAX_LENGTH` (500), `CALL_OUT_MESSAGE_MAX_LENGTH` (140), `CHALLENGE_CHECK_IN_MINUTES` (60).
-- Tests: `supabase/tests/17_call_outs.sql`, `18_challenge_crowd.sql`, `19_challenge_result_rivalry.sql`.
+- Tests: `supabase/tests/17_call_outs.sql`, `18_challenge_crowd.sql`, `19_challenge_result_rivalry.sql`,
+  plus the local-only concurrency check `supabase/tests/race/accept_call_out_race.sh` (22 concurrent
+  ACCEPT taps on one open call-out: exactly one event).
+- Enum names: `challenge_format`, `challenge_scoring`, `challenge_audience`, `challenge_stage`,
+  `challenge_status`, `call_out_status`, `challenge_post_kind`, `challenge_poll_template`,
+  `challenge_verification_method` (not `challenge_verification`, which is the Verifying RPC),
+  `challenge_result_source`, `challenge_submission_status`, `rivalry_kind`.
 
 Contents: [Rules](#rules) · [Errors](#errors) · [Privacy and safety](#privacy-and-safety) ·
 [Model](#model) · [Stages](#stages) · [Call-Outs](#call-outs) · [Event page](#event-page) ·

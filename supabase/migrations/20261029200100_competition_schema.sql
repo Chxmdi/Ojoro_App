@@ -36,7 +36,7 @@ create type public.challenge_stage as enum (
 create type public.challenge_post_kind as enum ('system', 'statement', 'training', 'progress', 'logistics');
 create type public.challenge_poll_template as enum ('winner', 'margin', 'performance', 'first_score', 'rematch');
 -- How a result is verified. Device data (watches, GPS) is M10; until then participants confirm.
-create type public.challenge_verification as enum ('participant_confirmation', 'device');
+create type public.challenge_verification_method as enum ('participant_confirmation', 'device');
 create type public.challenge_result_source as enum ('participant_confirmation', 'organizer_review');
 create type public.challenge_submission_status as enum ('pending', 'confirmed', 'superseded');
 create type public.rivalry_kind as enum ('people', 'crews');
@@ -78,7 +78,7 @@ create table public.call_outs (
   -- The challenger's line ("Saturday. Mount Royal. Bring your legs.").
   message text check (char_length(message) <= 140),
   audience public.challenge_audience not null default 'public',
-  verification public.challenge_verification not null default 'participant_confirmation',
+  verification public.challenge_verification_method not null default 'participant_confirmation',
   -- Crew-vs-crew: people per side (5 a side). 1 for person vs person.
   side_size integer not null default 1 check (side_size between 1 and 11),
   challenger_id uuid not null references public.profiles (id) on delete cascade,
@@ -131,7 +131,7 @@ create table public.challenge_events (
   starts_at timestamptz not null,
   time_zone text not null,
   audience public.challenge_audience not null,
-  verification public.challenge_verification not null,
+  verification public.challenge_verification_method not null,
   side_size integer not null,
   rivalry_id uuid not null references public.rivalries (id),
   rematch_of_event_id uuid references public.challenge_events (id),

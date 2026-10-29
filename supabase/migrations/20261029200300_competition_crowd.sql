@@ -157,7 +157,7 @@ returns table (
   time_zone text,
   check_in_opens_at timestamptz,
   audience public.challenge_audience,
-  verification public.challenge_verification,
+  verification public.challenge_verification_method,
   side_size integer,
   rivalry_id uuid,
   rematch_of_event_id uuid,

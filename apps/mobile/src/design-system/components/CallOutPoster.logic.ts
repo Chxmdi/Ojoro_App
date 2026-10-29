@@ -4,7 +4,11 @@
  */
 import { capitalize } from './word';
 
-export const CALL_OUT_STATUSES = ['PENDING', 'ACCEPTED', 'COUNTERED', 'DECLINED'] as const;
+/**
+ * The spec's four words, plus WITHDRAWN (the challenger took it back) and EXPIRED (nobody answered
+ * in time): the contract's other call-out states (docs/DESIGN_DECISIONS.md, Step 5 screens: A).
+ */
+export const CALL_OUT_STATUSES = ['PENDING', 'ACCEPTED', 'COUNTERED', 'DECLINED', 'WITHDRAWN', 'EXPIRED'] as const;
 export type CallOutStatus = (typeof CALL_OUT_STATUSES)[number];
 
 export type CallOutModel = {

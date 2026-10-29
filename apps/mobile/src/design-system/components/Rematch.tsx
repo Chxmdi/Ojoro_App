@@ -31,6 +31,15 @@ export type RematchProps = {
 };
 
 /**
+ * The Mark in the after situation's signal. It reads the colour inside the after `Situation`, so a
+ * Rematch on a live screen still draws an oxblood Mark (the hook reads the nearest situation).
+ */
+function SignalMark() {
+  const signal = useThemeColor('signal');
+  return <Graphic kind="mark" size={64} color={signal} />;
+}
+
+/**
  * The request to go again after a result (Rematch.md, web `function
  * Rematch`): the after situation on its own root, REMATCH? at display-lg so it
  * fits a phone, the Mark in signal ink. RUN IT BACK accepts (heavy haptic;
@@ -48,7 +57,6 @@ export function Rematch({
   testID,
 }: RematchProps) {
   const model = rematchModel({ requester, opponent, discipline, lastResult, note });
-  const signal = useThemeColor('signal');
   const accept = () => {
     void haptics.challengeAccepted();
     onAccept?.();
@@ -61,7 +69,7 @@ export function Rematch({
           <DisplayText size="lg" className="shrink">
             REMATCH?
           </DisplayText>
-          <Graphic kind="mark" size={64} color={signal} />
+          <SignalMark />
         </View>
         <Text variant="body">
           <RNText style={{ fontFamily: uiFamily(700) }}>{requester}</RNText>

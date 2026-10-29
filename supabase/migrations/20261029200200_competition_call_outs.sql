@@ -823,9 +823,10 @@ begin
     return v_state;
   end if;
 
-  v_start := coalesce(p_starts_at, v_e.starts_at + interval '14 days');
+  -- Two weeks on at the same local time (DST-safe), a week later at a time until it's a day away.
+  v_start := coalesce(p_starts_at, ((v_e.starts_at at time zone v_e.time_zone) + interval '14 days') at time zone v_e.time_zone);
   while p_starts_at is null and v_start < now() + interval '1 day' loop
-    v_start := v_start + interval '7 days';
+    v_start := ((v_start at time zone v_e.time_zone) + interval '7 days') at time zone v_e.time_zone;
   end loop;
   v_o := private.create_call_out(
     v_uid, v_e.sport_id, v_e.title, v_e.scoring, v_start,
@@ -865,7 +866,7 @@ returns table (
   time_zone text,
   message text,
   audience public.challenge_audience,
-  verification public.challenge_verification,
+  verification public.challenge_verification_method,
   side_size integer,
   is_open boolean,
   challenger_id uuid,
@@ -999,7 +1000,7 @@ begin
           and (o.opponent_id = v_uid
                or authz.crew_role(o.opponent_crew_id, v_uid) in ('owner', 'admin')))
     )
-    and (o.status = 'proposed' or o.updated_at > now() - interval '7 days')
+    and (o.status = 'proposed' or coalesce(o.responded_at, o.expires_at) > now() - interval '7 days')
   order by (private.call_out_status_now(o) = 'proposed') desc, o.created_at desc
   limit least(greatest(coalesce(p_limit, 20), 1), 100);
 end;

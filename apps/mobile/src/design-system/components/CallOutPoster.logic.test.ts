@@ -16,7 +16,7 @@ describe('callOutModel', () => {
   });
 
   it('fills the badge only when accepted; every status is a word', () => {
-    expect(CALL_OUT_STATUSES).toEqual(['PENDING', 'ACCEPTED', 'COUNTERED', 'DECLINED']);
+    expect(CALL_OUT_STATUSES).toEqual(['PENDING', 'ACCEPTED', 'COUNTERED', 'DECLINED', 'WITHDRAWN', 'EXPIRED']);
     expect(callOutModel({ ...base, status: 'ACCEPTED' }).badgeTone).toBe('signal');
     expect(callOutModel({ ...base, status: 'COUNTERED' }).badgeTone).toBe('neutral');
     expect(

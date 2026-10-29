@@ -3,15 +3,40 @@
  * optimistic patches in ./data.tsx. No React Native imports. Predictions and backing are social
  * counts only: no money, odds, points or payouts in any word here.
  */
-import { PREDICTION_MIN_COUNT, formatChallengeValue, type ChallengeScoring } from '@ojoro/contracts';
+import {
+  PREDICTION_MIN_COUNT,
+  formatChallengeValue,
+  type ChallengeScoring,
+} from '@ojoro/contracts';
 
 import { clock, firstName, zonedParts } from '../activities/format';
 
 type Side = 'a' | 'b';
 
-const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
+const WEEKDAYS = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+] as const;
 const WD_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const;
-const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'] as const;
+const MONTHS = [
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC',
+] as const;
 
 // Optimistic patches -----------------------------------------------------------------------------
 
@@ -19,7 +44,11 @@ type FollowFacts = { i_follow: boolean | null; follower_count: number | null };
 
 export function applyFollow<T extends FollowFacts>(row: T, follow: boolean): T {
   if (!!row.i_follow === follow) return row;
-  return { ...row, i_follow: follow, follower_count: Math.max(0, (row.follower_count ?? 0) + (follow ? 1 : -1)) };
+  return {
+    ...row,
+    i_follow: follow,
+    follower_count: Math.max(0, (row.follower_count ?? 0) + (follow ? 1 : -1)),
+  };
 }
 
 type PredictionFacts = {
@@ -88,14 +117,100 @@ export function applyPollVote<T extends PollFacts>(poll: T, option: number): T {
   const had = poll.my_vote !== null && poll.my_vote >= 0 && poll.my_vote < counts.length;
   if (had) counts[poll.my_vote!] = Math.max(0, (counts[poll.my_vote!] ?? 0) - 1);
   counts[option] = (counts[option] ?? 0) + 1;
-  return { ...poll, vote_counts: counts, my_vote: option, total_votes: (poll.total_votes ?? 0) + (had ? 0 : 1) };
+  return {
+    ...poll,
+    vote_counts: counts,
+    my_vote: option,
+    total_votes: (poll.total_votes ?? 0) + (had ? 0 : 1),
+  };
 }
 
 type RespectFacts = { respected: boolean | null; respect_count: number | null };
 
 export function applyRespect<T extends RespectFacts>(c: T): T {
   const on = !c.respected;
-  return { ...c, respected: on, respect_count: Math.max(0, (c.respect_count ?? 0) + (on ? 1 : -1)) };
+  return {
+    ...c,
+    respected: on,
+    respect_count: Math.max(0, (c.respect_count ?? 0) + (on ? 1 : -1)),
+  };
+}
+
+// Sides ------------------------------------------------------------------------------------------
+
+/**
+ * Screens put your side first (contract rule 9): CHIMDI VS MARCUS for Chimdi even when Marcus is
+ * side a. `first` is the stored side shown on the left; spectators see a first.
+ */
+export type Orientation = { first: Side; second: Side };
+
+export function orient(mySide: Side | null | undefined): Orientation {
+  return mySide === 'b' ? { first: 'b', second: 'a' } : { first: 'a', second: 'b' };
+}
+
+/** The shown position ('a' = left) of a stored side, and back. */
+export function toShown(side: Side | null | undefined, o: Orientation): Side | undefined {
+  if (!side) return undefined;
+  return side === o.first ? 'a' : 'b';
+}
+
+export function fromShown(shown: Side, o: Orientation): Side {
+  return shown === 'a' ? o.first : o.second;
+}
+
+type SideFacts = {
+  a_name: string;
+  b_name: string;
+  a_user_id: string | null;
+  b_user_id: string | null;
+  a_checked_in: boolean | null;
+  b_checked_in: boolean | null;
+  a_ready: boolean | null;
+  b_ready: boolean | null;
+  prediction_a_pct: number | null;
+  prediction_b_pct: number | null;
+  backing_a: number | null;
+  backing_b: number | null;
+  crew_backing_a: number | null;
+  crew_backing_b: number | null;
+  format: string;
+};
+
+export type ShownSide = {
+  side: Side;
+  /** Display name: first name for people, the crew's name for crews. */
+  name: string;
+  fullName: string;
+  userId: string | null;
+  checkedIn: boolean;
+  ready: boolean;
+  pct: number;
+  backing: number;
+  crewBacking: number;
+};
+
+/** Both sides in the order shown (yours first). */
+export function shownSides(
+  row: SideFacts,
+  mySide: Side | null | undefined,
+): { a: ShownSide; b: ShownSide; o: Orientation } {
+  const o = orient(mySide);
+  const crew = row.format === 'crew_vs_crew';
+  const one = (side: Side): ShownSide => {
+    const full = side === 'a' ? row.a_name : row.b_name;
+    return {
+      side,
+      name: sideName(full, crew),
+      fullName: full,
+      userId: side === 'a' ? row.a_user_id : row.b_user_id,
+      checkedIn: !!(side === 'a' ? row.a_checked_in : row.b_checked_in),
+      ready: !!(side === 'a' ? row.a_ready : row.b_ready),
+      pct: (side === 'a' ? row.prediction_a_pct : row.prediction_b_pct) ?? 0,
+      backing: (side === 'a' ? row.backing_a : row.backing_b) ?? 0,
+      crewBacking: (side === 'a' ? row.crew_backing_a : row.crew_backing_b) ?? 0,
+    };
+  };
+  return { a: one(o.first), b: one(o.second), o };
 }
 
 // Words -----------------------------------------------------------------------------------------
@@ -108,7 +223,11 @@ export function sideName(name: string | null | undefined, crew: boolean): string
 }
 
 /** Header dateline: "SAT 12 OCT · MOUNT ROYAL". */
-export function dateline(startsAt: string, timeZone: string, place: string | null | undefined): string {
+export function dateline(
+  startsAt: string,
+  timeZone: string,
+  place: string | null | undefined,
+): string {
   const p = zonedParts(startsAt, timeZone);
   const date = `${WD_SHORT[p.weekday]} ${p.day} ${MONTHS[p.month - 1]}`;
   const where = (place ?? '').trim();
@@ -134,11 +253,9 @@ export function lockTime(startsAt: string, timeZone: string): string {
 
 export const SOCIAL_ONLY = 'Social only: no money, no points, no odds.';
 
-/** The line under WHO TAKES IT? before the start. */
+/** The line under WHO TAKES IT? before the start (`myPick` names the side picked). */
 export function predictionNote(v: {
-  myPick: Side | null;
-  aName: string;
-  bName: string;
+  myPick: string | null;
   locked: boolean;
   count: number;
   startsAt: string;
@@ -147,10 +264,12 @@ export function predictionNote(v: {
 }): string {
   if (v.locked) return `${countWord(v.count, 'prediction')}. Locked when the race went live.`;
   const until = lockTime(v.startsAt, v.timeZone);
-  const hidden = v.count < PREDICTION_MIN_COUNT ? ` The split shows from ${PREDICTION_MIN_COUNT} predictions.` : '';
+  const hidden =
+    v.count < PREDICTION_MIN_COUNT
+      ? ` The split shows from ${PREDICTION_MIN_COUNT} predictions.`
+      : '';
   if (v.myPick) {
-    const name = v.myPick === 'a' ? v.aName : v.bName;
-    return `You picked ${name}. Change it any time before ${until}. ${SOCIAL_ONLY}${hidden}`;
+    return `You picked ${v.myPick}. Change it any time before ${until}. ${SOCIAL_ONLY}${hidden}`;
   }
   if (v.competitor) return `You can only pick yourself. ${SOCIAL_ONLY}${hidden}`;
   return `Tap a side to pick. Change it any time before ${until}. ${SOCIAL_ONLY}${hidden}`;
@@ -164,7 +283,12 @@ export function todayPredictionNote(count: number, locked: boolean): string {
 }
 
 /** "6 of your Crew back Chimdi. Backing never affects the result." */
-export function crewBackingLine(v: { crewA: number; crewB: number; aName: string; bName: string }): string {
+export function crewBackingLine(v: {
+  crewA: number;
+  crewB: number;
+  aName: string;
+  bName: string;
+}): string {
   const tail = 'Backing never affects the result.';
   const a = Math.max(0, v.crewA);
   const b = Math.max(0, v.crewB);
@@ -234,15 +358,24 @@ export type HypeView =
 /** How a feed post is drawn (HypePost kind, badge side, training stats). */
 export function hypeView(p: FeedPostFacts, names: { a: string; b: string }): HypeView {
   if (p.is_deleted || !p.body) return { hidden: true };
-  const sideName = p.author_side ? (p.author_side === 'a' ? names.a : names.b).toUpperCase() : undefined;
+  const sideName = p.author_side
+    ? (p.author_side === 'a' ? names.a : names.b).toUpperCase()
+    : undefined;
   if (p.kind === 'system' || !p.author_id) {
-    return { hidden: false, kind: 'system', body: p.body.toUpperCase(), side: undefined, stats: [] };
+    return {
+      hidden: false,
+      kind: 'system',
+      body: p.body.toUpperCase(),
+      side: undefined,
+      stats: [],
+    };
   }
   const stats = trainingStats(p.stats);
   if ((p.kind === 'training' || p.kind === 'progress') && stats.length > 0) {
     return { hidden: false, kind: 'evidence', body: p.body, side: sideName, stats };
   }
-  if (p.author_role === 'competitor') return { hidden: false, kind: 'competitor', body: p.body, side: sideName, stats: [] };
+  if (p.author_role === 'competitor')
+    return { hidden: false, kind: 'competitor', body: p.body, side: sideName, stats: [] };
   return { hidden: false, kind: 'supporter', body: p.body, side: undefined, stats: [] };
 }
 
@@ -254,7 +387,11 @@ export function trainingStats(json: unknown): { value: string; label: string }[]
   if (typeof o.distance_km === 'number' && Number.isFinite(o.distance_km) && o.distance_km >= 0) {
     out.push({ value: `${o.distance_km.toFixed(1)} KM`, label: 'distance' });
   }
-  if (typeof o.time_seconds === 'number' && Number.isFinite(o.time_seconds) && o.time_seconds >= 0) {
+  if (
+    typeof o.time_seconds === 'number' &&
+    Number.isFinite(o.time_seconds) &&
+    o.time_seconds >= 0
+  ) {
     out.push({ value: formatChallengeValue(o.time_seconds, 'time') ?? '', label: 'time' });
   }
   return out;
@@ -267,10 +404,14 @@ export function commentBadge(badge: string | null | undefined): string | undefin
   return undefined;
 }
 
-export function validateComment(text: string, max: number): { ok: true; body: string } | { ok: false; error: string } {
+export function validateComment(
+  text: string,
+  max: number,
+): { ok: true; body: string } | { ok: false; error: string } {
   const body = text.trim();
   if (!body) return { ok: false, error: 'Write something first.' };
-  if (body.length > max) return { ok: false, error: `Keep it under ${max} characters. ${body.length} now.` };
+  if (body.length > max)
+    return { ok: false, error: `Keep it under ${max} characters. ${body.length} now.` };
   return { ok: true, body };
 }
 
@@ -303,12 +444,20 @@ export function nextStageChange(
 }
 
 /** The hero's countdown target on the device clock: the start shifted by server/device skew. */
-export function countdownTarget(startsAt: string, serverNowIso: string, receivedAt: number): number {
+export function countdownTarget(
+  startsAt: string,
+  serverNowIso: string,
+  receivedAt: number,
+): number {
   return Date.parse(startsAt) - (Date.parse(serverNowIso) - receivedAt);
 }
 
 /** "9:00 · Cartier monument" under the names on the day. */
-export function whenLine(startsAt: string, timeZone: string, place: string | null | undefined): string {
+export function whenLine(
+  startsAt: string,
+  timeZone: string,
+  place: string | null | undefined,
+): string {
   const where = (place ?? '').trim();
   return where ? `${clock(startsAt, timeZone)} · ${where}` : clock(startsAt, timeZone);
 }
@@ -331,7 +480,12 @@ function trimNumber(n: number): string {
 }
 
 /** A check-in row's note: "You · 8:22 · watch connected", "8:31", "Not here yet". */
-export function checkInNote(v: { me: boolean; checkedIn: boolean; at?: string | null; timeZone: string }): string {
+export function checkInNote(v: {
+  me: boolean;
+  checkedIn: boolean;
+  at?: string | null;
+  timeZone: string;
+}): string {
   const parts: string[] = [];
   if (v.me) parts.push('You');
   if (v.checkedIn) {
@@ -343,7 +497,10 @@ export function checkInNote(v: { me: boolean; checkedIn: boolean; at?: string | 
 }
 
 /** The Ojoro update on the day, from check-ins: BOTH ARE HERE. / CHIMDI IS HERE. / null. */
-export function arrivalHeadline(a: { name: string; in: boolean }, b: { name: string; in: boolean }): string | null {
+export function arrivalHeadline(
+  a: { name: string; in: boolean },
+  b: { name: string; in: boolean },
+): string | null {
   if (a.in && b.in) return 'BOTH ARE HERE.';
   if (a.in) return `${a.name.toUpperCase()} IS HERE.`;
   if (b.in) return `${b.name.toUpperCase()} IS HERE.`;
@@ -351,12 +508,25 @@ export function arrivalHeadline(a: { name: string; in: boolean }, b: { name: str
 }
 
 /** The line above I'M READY. */
-export function readyLine(v: { competitor: boolean; meReady: boolean; otherReady: boolean; otherName: string; checkedIn: boolean }): string {
+export function readyLine(v: {
+  competitor: boolean;
+  meReady: boolean;
+  otherReady: boolean;
+  otherName: string;
+  checkedIn: boolean;
+}): string {
   if (!v.competitor) return 'The race goes live when both press start. Predictions lock then.';
   if (!v.checkedIn) return 'Check in when you get there. Check-in opens an hour before the start.';
   if (v.meReady && v.otherReady) return 'Both ready. Going live.';
   if (v.meReady) return `You're ready. The race goes live when ${v.otherName} is too.`;
   return 'The race goes live when you both press start on your watch. Nothing to do here until then.';
+}
+
+/** Why an event was called off (`cancel_reason`). */
+export function calledOffLine(reason: string | null | undefined): string {
+  if (reason === 'no_show') return 'Nobody started it within 3 hours of the start.';
+  if (reason === 'no_result') return 'It went live, but no result came in within a day.';
+  return 'A captain called it off before it went live.';
 }
 
 // Poster ----------------------------------------------------------------------------------------
@@ -370,7 +540,13 @@ export function posterWhen(startsAt: string, timeZone: string): string {
 }
 
 /** The share message that goes with the poster (no exclamation marks, no emoji). */
-export function posterShareText(v: { a: string; b: string; discipline: string; when: string; link: string | null }): string {
+export function posterShareText(v: {
+  a: string;
+  b: string;
+  discipline: string;
+  when: string;
+  link: string | null;
+}): string {
   const head = `${v.a} vs ${v.b}. ${v.discipline}, ${v.when}. Who takes it? Follow, predict and back on Ojoro.`;
   return v.link ? `${head} ${v.link}` : head;
 }
