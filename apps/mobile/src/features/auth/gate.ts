@@ -100,7 +100,7 @@ export function returnablePath(pathname: string | null | undefined): string | nu
   if (!pathname) return null;
   const path = pathname.split('?')[0]?.split('#')[0] ?? '';
   if (path === '' || path === '/' || !path.startsWith('/')) return null;
-  const blocked = ['/welcome', '/phone', '/code', '/name', '/sports', '/when', '/privacy', '/storybook'];
+  const blocked = ['/welcome', '/phone', '/code', '/name', '/sports', '/when', '/area', '/privacy', '/storybook'];
   if (blocked.some((b) => path === b || path.startsWith(`${b}/`))) return null;
   if (path.includes('..')) return null;
   return pathname;

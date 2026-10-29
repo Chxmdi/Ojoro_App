@@ -28,7 +28,7 @@ export default function OnboardWhen() {
       radius_km: draft.radiusKm,
       pull_me_in: draft.pullMeIn.length,
     });
-    router.push('/privacy');
+    router.push('/area');
   };
 
   return (

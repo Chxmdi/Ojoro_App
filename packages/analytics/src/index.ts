@@ -58,6 +58,28 @@ export const analyticsEvents = {
   timeVoted: 'time_voted',
   gameOnShown: 'game_on_shown',
   imDownFailed: 'im_down_failed',
+  // Step 3: Discover. The server records discover_searched, ojoro_now_served, latent_demand_shown,
+  // surprise_me_served and demand_plan_created; the client sends taps only.
+  discoverFilterChanged: 'discover_filter_changed',
+  discoverResultOpened: 'discover_result_opened',
+  ojoroNowItemOpened: 'ojoro_now_item_opened',
+  makeItHappenTapped: 'make_it_happen_tapped',
+  makeItHappenFailed: 'make_it_happen_failed',
+  surpriseMeTapped: 'surprise_me_tapped',
+  suggestionOpened: 'suggestion_opened',
+  personCardOpened: 'person_card_opened',
+  areaPromptTapped: 'area_prompt_tapped',
+  // Step 3: Create, FirstHome, the area picker. The server records area_set, concierge_suggested,
+  // latent_demand_shown, down_for_created, plan_created and demand_plan_created; taps only here.
+  areaPicked: 'area_picked',
+  quickDownForTapped: 'quick_down_for_tapped',
+  furtherOutOpened: 'further_out_opened',
+  inviteFriendsTapped: 'invite_friends_tapped',
+  conciergeConfirmed: 'concierge_confirmed',
+  conciergeMoreIdeasTapped: 'concierge_more_ideas_tapped',
+  createOptionOpened: 'create_option_opened',
+  planFormSubmitted: 'plan_form_submitted',
+  planFormInvalid: 'plan_form_invalid',
 } as const;
 
 export type AnalyticsEvent =
