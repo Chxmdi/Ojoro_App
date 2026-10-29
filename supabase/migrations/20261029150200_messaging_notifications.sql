@@ -259,14 +259,14 @@ as $$
 $$;
 
 -- Every visible notification of one person, with its group, action, link and words.
---   group: needs_you (unread, not acted on, and its action still makes sense), today, earlier.
+--   section: needs_you (unread, not acted on, and its action still makes sense), today, earlier.
 --   action: what the inline button does; call the existing RPC (im_down, vote_time, check_in,
 --           confirm_result, pull_in) and then act_on_notification(). 'open' = just navigate.
 create or replace function private.notification_feed(p_uid uuid)
 returns table (
   id uuid,
   type public.notification_type,
-  "group" text,
+  section text,
   needs_you boolean,
   action text,
   href text,
@@ -470,7 +470,7 @@ create or replace function public.my_notifications(p_limit integer default 50)
 returns table (
   id uuid,
   type public.notification_type,
-  "group" text,
+  section text,
   needs_you boolean,
   action text,
   href text,
@@ -502,7 +502,7 @@ declare
 begin
   return query
   select f.* from private.notification_feed(v_uid) f
-  order by case f."group" when 'needs_you' then 0 when 'today' then 1 else 2 end, f.updated_at desc, f.id
+  order by case f.section when 'needs_you' then 0 when 'today' then 1 else 2 end, f.updated_at desc, f.id
   limit least(greatest(coalesce(p_limit, 50), 1), 200);
 end;
 $$;

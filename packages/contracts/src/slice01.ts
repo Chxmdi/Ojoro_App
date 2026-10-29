@@ -6,6 +6,7 @@
  */
 import type { Database } from './database.types';
 import { liquidityErrorCodes } from './liquidity';
+import { messagingErrorCodes } from './messaging';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -90,6 +91,11 @@ export const idempotentRpcs = [
   'run_it_back',
   // Step 3 (liquidity.ts)
   'create_from_demand',
+  // Step 4 (messaging.ts)
+  'create_crew',
+  'send_message',
+  'make_this_a_game',
+  'post_update',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -149,6 +155,8 @@ export const ojoroErrorCodes = [
   'not_author',
   // Step 3: Liquidity (liquidity.ts, docs/LIQUIDITY_CONTRACT.md)
   ...liquidityErrorCodes,
+  // Step 4: Messaging and feed (messaging.ts, docs/MESSAGING_CONTRACT.md)
+  ...messagingErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

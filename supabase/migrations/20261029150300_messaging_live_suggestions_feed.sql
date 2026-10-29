@@ -727,24 +727,22 @@ declare
   v_crew public.crews%rowtype;
   v_tz text;
   v_msgs record;
-  v_texts text[] := '{}';
-  v_senders uuid[] := '{}';
+  v_texts text[] := '{}'::text[];
+  v_senders uuid[] := '{}'::uuid[];
   v_last uuid;
   v_all text;
   v_sport text;
   v_day text;
-  v_day_text text;
   v_part text;
-  v_hours numeric[] := '{}';
+  v_hours numeric[] := '{}'::numeric[];
   v_before numeric;
   v_m text[];
-  v_i integer;
   v_h numeric;
   v_date date;
   v_today date;
   v_dow integer;
-  v_times timestamptz[] := '{}';
-  v_interested uuid[] := '{}';
+  v_times timestamptz[] := '{}'::timestamptz[];
+  v_interested uuid[] := '{}'::uuid[];
   v_places uuid[];
   v_day_key text;
   v_label text;
@@ -791,7 +789,6 @@ begin
   for v_i in reverse cardinality(v_texts) .. 1 loop
     select (array_agg(m[1]))[count(*)] into v_day from regexp_matches(v_texts[v_i], c_days, 'g') m;
     if v_day is not null then
-      v_day_text := v_texts[v_i];
       exit;
     end if;
   end loop;
