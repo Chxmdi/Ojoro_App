@@ -57,7 +57,7 @@ function EventStageRouter({ eventId, buildup }: { eventId: string; buildup: bool
         <EventHeader title="CHALLENGE EVENT" eventId={eventId} />
         {event.isPending ? (
           <LoadingState label="Loading the event" kinds={['object', 'strip', 'strip']} />
-        ) : event.isError ? (
+        ) : event.isError && ojoroErrorOf(event.error).code !== 'challenge_event_not_found' ? (
           <View className="px-space-5 pt-space-8">
             <InlineError
               message={errorMessage(ojoroErrorOf(event.error))}
