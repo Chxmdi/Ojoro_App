@@ -1,8 +1,8 @@
 /**
  * Home (Main.png, Slice 01 parts): the Ojoro Daily headline (TONIGHT.), Down For, your plans,
  * plans you were pulled into, FORMING NEAR YOU and the recap of your last game, then the end of
- * the feed. Crew momentum and Challenges are not in Slice 01 and are left out. A quiet area gets
- * the FirstHome pattern: an honest line and one-tap Down For chips.
+ * the feed. Crew momentum and Challenges are not in Slice 01 and are left out. A quiet area
+ * (`home_density().low_density`) gets FirstHome instead.
  */
 import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -11,7 +11,6 @@ import { Pressable, View } from 'react-native';
 
 import {
   ActivityStrip,
-  Chip,
   Divider,
   DownFor,
   Graphic,
@@ -31,14 +30,14 @@ import { useAuth } from '@/lib/auth';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf } from '@/lib/rpc';
 
+import { AreaPrompt } from '../area/AreaPrompt';
 import { useCreateDownFor, useMySignals, useSports, useWithdrawDownFor } from '../downfor/data';
 import { DownForSheet } from '../downfor/DownForSheet';
 import { signalLine, tonightArgs, type WindowId } from '../downfor/logic';
-import { useImDown, useMyArea, useNow, useOnline, usePlanRoster, type PlanCard } from '../plans/data';
+import { useImDown, useMyArea, useNow, useOnline, usePlanRoster } from '../plans/data';
 import { AsOf, ErrorState, OfflineBanner, routes } from '../plans/parts';
-import { displayStatus, formingVariant } from '../plans/planLogic';
 import { clock, DEFAULT_TIME_ZONE, dailyDate, planWhen } from '../plans/time';
-import { useDownsNearby, useHomeRealtime, useInvitedPlans, useLastRecap, useMyPlans, usePlansNearby } from './data';
+import { useDownsNearby, useHomeDensity, useHomeRealtime, useInvitedPlans, useLastRecap, useMyPlans, usePlansNearby } from './data';
 import {
   bestMove,
   dailyBody,
@@ -56,12 +55,39 @@ import {
   recapWhen,
   type NearbyPlan,
 } from './homeLogic';
+import { FirstHome } from './FirstHome';
+import { HomePlan } from './HomePlan';
+import { QuickDownFor } from './QuickDownFor';
 
 const TZ = DEFAULT_TIME_ZONE;
 
 type SheetPreset = { sportId: string | null; windowId?: WindowId };
 
+/**
+ * Home: FirstHome when the area is quiet (`home_density().low_density`), else the Main feed. While
+ * the density is unknown the Main skeleton shows; if it can't be read, Main (which has its own
+ * states) is the honest fallback.
+ */
 export function HomeScreen() {
+  const density = useHomeDensity();
+  const row = density.data;
+  if (density.isPending) return <HomeSkeleton />;
+  if (row?.low_density) return <FirstHome density={row} densityUpdatedAt={density.dataUpdatedAt} />;
+  return <MainHome hasArea={row ? row.has_area : true} />;
+}
+
+function HomeSkeleton() {
+  return (
+    <Screen situation="calm" scroll gutter={false}>
+      <View className="gap-space-6 px-space-5 pt-space-12" {...loadingProps('Loading Home')}>
+        <Skeleton kind="text" lines={3} />
+        <Skeleton kind="object" />
+      </View>
+    </Screen>
+  );
+}
+
+function MainHome({ hasArea }: { hasArea: boolean }) {
   const auth = useAuth();
   const userId = auth.status === 'signed-in' ? auth.session.user.id : null;
   const router = useRouter();
@@ -149,6 +175,7 @@ export function HomeScreen() {
       </View>
 
       <View className="gap-space-10 px-space-5 pb-space-10 pt-space-4" testID="home-feed">
+        <AreaPrompt userId={userId} show={!hasArea} />
         {/* Ojoro Daily */}
         <View className="gap-space-3" role="region" aria-label="Ojoro Daily">
           <Text variant="overline">{`OJORO DAILY · ${dailyDate(now, TZ)}`}</Text>
@@ -214,20 +241,13 @@ export function HomeScreen() {
             </TextButton>
           </View>
         ) : !loading ? (
-          <View className="gap-space-3" role="region" aria-label="Say what you're down for">
-            <Divider label="SAY WHAT YOU'RE DOWN FOR" />
-            <Text variant="body-sm">One tap. It expires on its own, and Ojoro gathers people around it.</Text>
-            <View className="flex-row flex-wrap gap-space-2" role="group" aria-label="Quick Down For">
-              {(sports.data ?? []).slice(0, 3).map((s) => (
-                <Chip key={s.id} onPress={() => setSheet({ sportId: s.id, windowId: 'tonight' })}>
-                  {`${s.name} tonight`}
-                </Chip>
-              ))}
-              <Chip onPress={() => setSheet({ sportId: null })} testID="down-for-something-else">
-                Something else
-              </Chip>
-            </View>
-          </View>
+          <QuickDownFor
+            sports={(sports.data ?? []).map((sp) => ({ id: sp.id, name: sp.name }))}
+            downFor={(signals.data ?? []).map((sg) => sg.sport_id)}
+            radiusKm={area.data?.discovery_radius_km}
+            onSomethingElse={() => setSheet({ sportId: null })}
+            source="home"
+          />
         ) : null}
 
         {/* Your plans: forming, or GAME ON reached while you were elsewhere. */}
@@ -323,32 +343,6 @@ export function HomeScreen() {
         source="home"
       />
     </Screen>
-  );
-}
-
-/** A plan you're in: forming (YOU'RE DOWN) or GAME ON (OPEN GAME). The object leads to the plan. */
-function HomePlan({ plan, now, joined }: { plan: PlanCard; now: Date; joined: boolean }) {
-  const router = useRouter();
-  const roster = usePlanRoster(plan.id);
-  const status = displayStatus(plan, now);
-  return (
-    <View className="-mx-space-5">
-      <PlanForming
-        activity={plan.sport_name}
-        count={plan.member_count}
-        capacity={plan.capacity}
-        participants={(roster.data ?? []).map((r) => ({ name: r.display_name }))}
-        time={planWhen(plan.starts_at, now, TZ)}
-        place={plan.place_name ?? 'Place to be agreed'}
-        variant={formingVariant(plan.member_count, plan.capacity, status)}
-        joined={joined}
-        onInvite={() => router.push(routes.pullIn(plan.id))}
-        onOpen={() => plan.activity_id && router.push(routes.activity(plan.activity_id))}
-      />
-      <TextButton onPress={() => router.push(routes.plan(plan.id))} className="mx-space-5 self-end" testID={`see-plan-${plan.id}`}>
-        SEE THE PLAN
-      </TextButton>
-    </View>
   );
 }
 

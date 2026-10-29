@@ -60,7 +60,10 @@ export function TextButton({
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
       testID={testID}
-      className={['self-start', className].filter(Boolean).join(' ')}
+      // Default to hugging its label; a caller's own self-* alignment wins.
+      className={[/\bself-/.test(className ?? '') ? null : 'self-start', className]
+        .filter(Boolean)
+        .join(' ')}
       style={[noBrowserOutline, disabled ? { opacity: opacity['opacity-disabled'] } : null]}
     >
       <View className="min-h-[32px] justify-center px-space-1">

@@ -475,7 +475,7 @@ function UnavailableProfile({ userId }: { userId: string }) {
 
 /** The You header's more button: privacy, blocked people, sign out. Not designed. */
 function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const go = (href: '/settings/privacy' | '/settings/blocked') => {
+  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area') => {
     onClose();
     router.push(href);
   };
@@ -505,6 +505,14 @@ function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           meta="Sports, Passport and free times"
           trailing="chevron"
           onPress={() => go('/settings/privacy')}
+        />
+        <Strip
+          title="Your area"
+          titleVariant="title-sm"
+          meta="The neighbourhood Ojoro shows things around"
+          trailing="chevron"
+          onPress={() => go('/settings/area')}
+          testID="settings-area"
         />
         <Strip
           title="Blocked people"

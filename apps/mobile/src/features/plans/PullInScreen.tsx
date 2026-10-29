@@ -6,13 +6,15 @@
 import type { PlanStatus } from '@ojoro/contracts';
 import { useFocusEffect, useIsFocused, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import * as Linking from 'expo-linking';
+import { ScrollView, Share, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   Avatar,
   Button,
   Chip,
+  IconButton,
   loadingProps,
   PlanForming,
   Sheet,
@@ -26,7 +28,7 @@ import { track } from '@/lib/analytics';
 import { useAuth } from '@/lib/auth';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf } from '@/lib/rpc';
-import { PULL_IN_QUOTA } from '@ojoro/contracts';
+import { PULL_IN_QUOTA, type PullInCandidate } from '@ojoro/contracts';
 
 import {
   useNow,
@@ -115,7 +117,8 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
   const rows = (roster.data ?? []) as RosterRow[];
   const remaining = quota.data?.remaining ?? PULL_IN_QUOTA;
   const total = quota.data?.quota ?? PULL_IN_QUOTA;
-  const list = (candidates.data ?? []) as Candidate[];
+  // Ranked on the server (tier, Pull Me In, free then, games together); `reason` is its line.
+  const list = (candidates.data ?? []) as (Candidate & Pick<PullInCandidate, 'tier' | 'reason'>)[];
   const pickedNames = list.filter((c) => picked.includes(c.user_id)).map((c) => c.display_name);
   const day = dayLabel(plan.starts_at, now, tz);
 
@@ -141,6 +144,18 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
         } else setError(errorMessage(err));
       },
     });
+  };
+
+  const share = async () => {
+    track('plan_shared', { plan_id: id, source: 'pull_in' });
+    const url = Linking.createURL(`/plan/${id}`);
+    try {
+      await Share.share({
+        message: `${planTitle(plan, now, tz)}. ${planWhen(plan.starts_at, now, tz)}${plan.place_name ? ` at ${plan.place_name}` : ''}. ${url}`,
+      });
+    } catch {
+      toast.show({ kind: 'neutral', message: "Sharing isn't available here." });
+    }
   };
 
   let content;
@@ -176,13 +191,14 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
                 <View
                   key={c.user_id}
                   role="listitem"
-                  className="min-h-[64px] flex-row items-center gap-space-3 border-b border-line py-space-2"
+                  className="min-h-[64px] flex-row items-center gap-space-3 border-b border-line py-space-3"
+                  testID={`candidate-${c.tier ?? 'played_together'}-${c.user_id}`}
                 >
                   <Avatar name={c.display_name} size="md" />
                   <View className="flex-1">
                     <Text variant="title-sm">{c.display_name}</Text>
-                    <Text variant="caption" muted>
-                      {candidateReason(c, plan.sport_name, day)}
+                    <Text variant="body-sm" muted testID={`reason-${c.user_id}`}>
+                      {c.reason?.trim() || candidateReason(c, plan.sport_name, day)}
                     </Text>
                   </View>
                   <Chip
@@ -206,7 +222,11 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
 
   return (
     <View className="flex-1">
-      <TopBar title={`PLAN · ${planTitle(plan, now, tz)}`} onBack={close} />
+      <TopBar
+        title={`PLAN · ${planTitle(plan, now, tz)}`}
+        onBack={close}
+        right={<IconButton icon="share" label="Share plan" onPress={() => void share()} />}
+      />
       <PlanForming
         activity={plan.sport_name}
         count={plan.member_count}

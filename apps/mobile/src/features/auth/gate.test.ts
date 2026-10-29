@@ -120,6 +120,7 @@ describe('returnablePath', () => {
     expect(returnablePath('/plan/abc')).toBe('/plan/abc');
     expect(returnablePath('/activity/abc?x=1')).toBe('/activity/abc?x=1');
     expect(returnablePath('/settings/privacy')).toBe('/settings/privacy');
+    expect(returnablePath('/settings/area')).toBe('/settings/area');
   });
 
   it('drops home, auth, onboarding and odd paths', () => {
@@ -129,6 +130,7 @@ describe('returnablePath', () => {
     expect(returnablePath('/welcome')).toBeNull();
     expect(returnablePath('/code')).toBeNull();
     expect(returnablePath('/sports')).toBeNull();
+    expect(returnablePath('/area')).toBeNull();
     expect(returnablePath('plan/abc')).toBeNull();
     expect(returnablePath('/plan/../x')).toBeNull();
   });

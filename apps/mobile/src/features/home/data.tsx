@@ -1,13 +1,14 @@
 /** Home reads (contract, Screens: Main). Everything sits under ['home'] so one invalidation refreshes it. */
-import { invitesSubscription } from '@ojoro/contracts';
-import { useQuery } from '@tanstack/react-query';
+import { createFromDemandArgs, invitesSubscription, type LatentDemandBucket } from '@ojoro/contracts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
 
+import { newIdempotencyKey } from '@/lib/idempotency';
 import { useRealtimeRefetch } from '@/lib/realtime';
 import { rpc } from '@/lib/rpc';
 import { supabase } from '@/lib/supabase';
 
-import { check, checkRows, type PlanCard } from '../plans/data';
-
+import { check, checkRows, retryNetwork, type PlanCard } from '../plans/data';
 
 export function useDownsNearby() {
   return useQuery({ queryKey: ['home', 'downs'], queryFn: () => rpc('down_for_nearby', {}) });
@@ -107,4 +108,83 @@ export function useLastRecap(userId: string | null) {
 /** Invites addressed to you refresh Home (contract, Realtime: Home). */
 export function useHomeRealtime(userId: string | null) {
   useRealtimeRefetch(userId ? invitesSubscription(userId) : null, [['home']]);
+}
+
+/* ---------- Step 3: FirstHome (docs/LIQUIDITY_CONTRACT.md) ---------- */
+
+/** Picks the normal Main feed or FirstHome, honestly (one row). */
+export function useHomeDensity() {
+  return useQuery({
+    queryKey: ['home', 'density'],
+    queryFn: async () => (await rpc('home_density', {}))[0] ?? null,
+  });
+}
+
+/** Latent demand near you. A logged read: plain POST rpc, never `{ get: true }`. */
+export function useLatentDemand(enabled: boolean) {
+  return useQuery({
+    queryKey: ['home', 'demand'],
+    enabled,
+    queryFn: () => rpc('latent_demand', {}),
+  });
+}
+
+/** A BIT FURTHER OUT: beyond your radius, up to twice it. */
+export function useFurtherOut(enabled: boolean) {
+  return useQuery({
+    queryKey: ['home', 'further'],
+    enabled,
+    queryFn: () => rpc('further_out', { p_limit: 5 }),
+  });
+}
+
+/** Your sports, main first (self only), to choose the demand and the quick chips. */
+export function useMySportIds(userId: string | null) {
+  return useQuery({
+    queryKey: ['me', 'sports', userId],
+    enabled: userId !== null,
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const rows = checkRows(
+        await supabase.from('user_sports').select('sport_id, is_main').eq('user_id', userId ?? ''),
+      );
+      return [...rows].sort((a, b) => Number(b.is_main) - Number(a.is_main)).map((r) => r.sport_id);
+    },
+  });
+}
+
+/**
+ * I'M DOWN on a latent demand bucket: create_from_demand with one key per tap (retries reuse it,
+ * so the server forms or joins exactly one plan). A second tap while it's saving does nothing.
+ */
+export function useCreateFromDemand() {
+  const qc = useQueryClient();
+  const busy = useRef(false);
+  const mutation = useMutation({
+    retry: retryNetwork,
+    mutationFn: (v: { bucket: Pick<LatentDemandBucket, 'sport_id' | 'suggested_start' | 'window_end'>; key: string }) =>
+      rpc('create_from_demand', createFromDemandArgs(v.bucket, v.key)),
+    onSettled: () => {
+      void qc.invalidateQueries({ queryKey: ['home'] });
+      void qc.invalidateQueries({ queryKey: ['create'] });
+    },
+  });
+  const tap = (
+    bucket: Pick<LatentDemandBucket, 'sport_id' | 'suggested_start' | 'window_end'>,
+    options?: Parameters<typeof mutation.mutate>[1],
+  ) => {
+    if (busy.current || mutation.isPending) return;
+    busy.current = true;
+    mutation.mutate(
+      { bucket, key: newIdempotencyKey() },
+      {
+        ...options,
+        onSettled: (...args) => {
+          busy.current = false;
+          options?.onSettled?.(...args);
+        },
+      },
+    );
+  };
+  return { ...mutation, tap };
 }

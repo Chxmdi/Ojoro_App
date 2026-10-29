@@ -173,6 +173,18 @@ async function main() {
       await byTestId(page, 'radius-5').click();
       await byTestId(page, 'pull-me-in-football').click();
       await byTestId(page, 'when-continue').click();
+      await waitPath(page, '/area');
+    });
+
+    await step('area: a neighbourhood from the list, searchable, required to continue', async () => {
+      await page.getByText('An area, never an address.', { exact: false }).first().waitFor({ timeout: T });
+      await byTestId(page, 'area-save').click();
+      await page.getByText('Pick the area you usually play in.').waitFor({ timeout: T });
+      await byTestId(page, 'area-search').fill('zzz');
+      await byTestId(page, 'areas-no-match').waitFor({ timeout: T });
+      await byTestId(page, 'area-search').fill('plat');
+      await byTestId(page, 'area-Plateau').click();
+      await byTestId(page, 'area-save').click();
       await waitPath(page, '/privacy');
     });
 
@@ -208,6 +220,9 @@ async function main() {
       check(pmi.length === 1 && pmi[0].sport_id === 'football', 'pull me in');
       const { data: radius } = await admin.from('profile_private').select('discovery_radius_km').eq('user_id', id).single();
       check(radius.discovery_radius_km === 5, 'radius');
+      const { data: area } = await admin.from('profile_private').select('area_lat, area_lng').eq('user_id', id).single();
+      const { data: label } = await admin.from('profiles').select('area').eq('id', id).single();
+      check(label.area === 'Plateau, Montréal' && area.area_lat === 45.52 && area.area_lng === -73.58, 'area');
     });
 
     await step('You shows the new profile, levels to the owner, and the visibility line', async () => {
