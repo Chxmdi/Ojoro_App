@@ -8,6 +8,9 @@
 --   +1 555 555 0102  Marcus T
 --   +1 555 555 0103  Lena R
 -- Everyone else has a 0104+ number that is not a test number (no sign-in).
+--
+-- Step 3 (Liquidity) sample data is in seed_liquidity.sql, loaded right after this file and safe to
+-- re-run on a running stack (docs/LIQUIDITY_CONTRACT.md §Local data).
 
 -- Places (public centroids; meeting points are per plan) ----------------------------------------------------
 
