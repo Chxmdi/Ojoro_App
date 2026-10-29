@@ -32,6 +32,7 @@ import {
   type Verification,
 } from './liveData';
 import {
+  autoConfirmLine,
   checkRow,
   confirmLabel,
   CORRECTION_NOTE,
@@ -151,6 +152,13 @@ function Checks({
   const iRequested = disputed && checks.some((c) => c.is_me) && v.correction_requested_by_name !== null &&
     checks.find((c) => c.is_me)?.name === v.correction_requested_by_name;
   const tz = row.time_zone ?? undefined;
+  const otherCheck = checks.find((c) => !c.is_me && !c.done) ?? checks.find((c) => !c.is_me);
+  const autoLine = disputed
+    ? null
+    : autoConfirmLine(v.auto_confirms_at ?? null, tz, {
+        iNeedToConfirm: !!v.i_need_to_confirm,
+        other: otherCheck ? firstName(otherCheck.name) : null,
+      });
 
   useEffect(() => {
     // A new submission is a new intention.
@@ -201,6 +209,15 @@ function Checks({
           </Text>
         ) : null}
       </View>
+
+      {autoLine ? (
+        <View className="flex-row items-start gap-space-2" testID="verifying-auto-confirm">
+          <Icon name="clock" size={20} />
+          <Text variant="body-sm" className="flex-1" style={{ fontVariant: ['tabular-nums'] }}>
+            {autoLine}
+          </Text>
+        </View>
+      ) : null}
 
       <View testID="verifying-checks" role="list">
         {checks.map((c) => {

@@ -788,7 +788,7 @@ export function composerSummary(f: Pick<ComposerState, 'target'>): string {
       : f.target?.kind === 'crew'
         ? f.target.name ?? 'Any crew'
         : 'Anyone who sees it';
-  const answer = f.target?.kind === 'open' || (f.target?.kind === 'crew' && !f.target.id) ? 'can accept it' : 'can accept, counter or pass';
+  const answer = !f.target || f.target.kind === 'open' || (f.target.kind === 'crew' && !f.target.id) ? 'can accept it' : 'can accept, counter or pass';
   return `${who} ${answer}. Accepting creates the Challenge Event. No stakes, ever.`;
 }
 

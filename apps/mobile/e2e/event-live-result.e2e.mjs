@@ -303,6 +303,7 @@ try {
     await open(R.page, `/event/${eventId}`, 'event-verifying');
     await R.page.getByTestId('check-them').getByText('Kemi confirmed both times').waitFor();
     await R.page.getByTestId('check-me').getByText('Your confirmation').waitFor();
+    await R.page.getByTestId('verifying-auto-confirm').getByText(/^Final at .+ unless you confirm or ask for a correction\.$/).waitFor();
     await shot(R.page, 'Verifying');
     await R.page.getByTestId('verifying-correct').click();
     await R.page.getByTestId('correction-note').fill('My time was 23:21.');

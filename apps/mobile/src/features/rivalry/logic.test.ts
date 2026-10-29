@@ -230,6 +230,9 @@ describe('rematch promise', () => {
       "Accepting creates a new Call-Out linked to this rivalry. Saturday's result stays exactly as it is.",
     );
   });
+  it('names the day for a meeting dated later today', () => {
+    expect(rematchPromise(true, { starts_at: '2026-10-14T18:00:00Z', time_zone: TZ }, now)).toMatch(/Wednesday's result/);
+  });
   it('names the date after that', () => {
     expect(rematchPromise(false, { starts_at: '2026-09-14T13:00:00Z', time_zone: null }, now)).toBe(
       'Asking sends a new Call-Out linked to this rivalry. The result from 14 Sep stays exactly as it is.',

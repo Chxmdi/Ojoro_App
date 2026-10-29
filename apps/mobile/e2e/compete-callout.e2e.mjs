@@ -115,7 +115,16 @@ async function browserAs(browser, person) {
 }
 
 async function open(page, path, testId) {
-  await page.goto(`${APP}${path}`, { waitUntil: 'load', timeout: 180_000 });
+  // The shared dev server can be slow to serve a page, or restart, while others rebuild: try again.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await page.goto(`${APP}${path}`, { waitUntil: 'load', timeout: 180_000 });
+      break;
+    } catch (error) {
+      if (attempt >= 4) throw error;
+      await sleep(20_000);
+    }
+  }
   if (testId) await page.getByTestId(testId).first().waitFor({ timeout: 60_000 });
 }
 
