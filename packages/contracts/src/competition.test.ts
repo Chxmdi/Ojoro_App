@@ -13,6 +13,7 @@ import {
   formatChallengeValue,
   formatMargin,
   formCells,
+  RESULT_AUTO_CONFIRM_HOURS,
   idempotentRpcs,
   ojoroErrorCodes,
   screenForStage,
@@ -65,6 +66,12 @@ describe('competition contract drift (CI-safe, no database needed)', () => {
       .map((p) => p.slice(0, p.indexOf(';')))
       .join('\n');
     for (const table of tables) expect(publications, table).toContain(`public.${table}`);
+  });
+
+  it('the auto-confirm hours match the database', () => {
+    expect(migrations).toContain(
+      `function private.result_auto_confirm_hours() returns integer\nlanguage sql immutable set search_path = '' as $$ select ${RESULT_AUTO_CONFIRM_HOURS} $$`,
+    );
   });
 
   it('stages match the enum', () => {

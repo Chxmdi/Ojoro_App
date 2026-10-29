@@ -4046,6 +4046,7 @@ export type Database = {
         Args: { p_event_id: string };
         Returns: {
           a_value: number;
+          auto_confirms_at: string;
           b_value: number;
           checks: Json;
           confirmed_count: number;
@@ -5542,7 +5543,8 @@ export type Database = {
       challenge_format: 'person_vs_person' | 'crew_vs_crew';
       challenge_poll_template: 'winner' | 'margin' | 'performance' | 'first_score' | 'rematch';
       challenge_post_kind: 'system' | 'statement' | 'training' | 'progress' | 'logistics';
-      challenge_result_source: 'participant_confirmation' | 'organizer_review';
+      challenge_result_source:
+        'participant_confirmation' | 'organizer_review' | 'unanswered_auto_confirmed';
       challenge_scoring: 'time' | 'distance' | 'score' | 'rounds';
       challenge_stage:
         | 'accepted'
@@ -5913,7 +5915,11 @@ export const Constants = {
       challenge_format: ['person_vs_person', 'crew_vs_crew'],
       challenge_poll_template: ['winner', 'margin', 'performance', 'first_score', 'rematch'],
       challenge_post_kind: ['system', 'statement', 'training', 'progress', 'logistics'],
-      challenge_result_source: ['participant_confirmation', 'organizer_review'],
+      challenge_result_source: [
+        'participant_confirmation',
+        'organizer_review',
+        'unanswered_auto_confirmed',
+      ],
       challenge_scoring: ['time', 'distance', 'score', 'rounds'],
       challenge_stage: [
         'accepted',

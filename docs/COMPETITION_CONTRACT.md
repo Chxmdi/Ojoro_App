@@ -9,7 +9,8 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
 `docs/DESIGN_DECISIONS.md` ("Step 5 backend").
 
 - Schema: `supabase/migrations/20261029200000_competition_enums.sql`, `…200100_competition_schema.sql`,
-  `…200200_competition_call_outs.sql`, `…200300_competition_crowd.sql`, `…200400_competition_live_result.sql`.
+  `…200200_competition_call_outs.sql`, `…200300_competition_crowd.sql`, `…200400_competition_live_result.sql`,
+  `…200500_competition_auto_confirm_enum.sql`, `…200510_competition_auto_confirm.sql`.
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases `CallOutView`, `CallOutRow`,
   `ChallengeEventView`, `ChallengeEventRow`, `ChallengeFeedPost`, `ChallengeComment`, `ChallengePoll`,
   `ChallengeVerification`, `VerificationCheck`, `ChallengePoster`, `RivalryView`, `RivalryMeeting`,
@@ -22,8 +23,10 @@ by code, idempotency keys, effective status, no raw location) still applies. Jud
   `challengeCountdown`, `formatChallengeValue`, `formatMargin`, `formCells`, `crowdOutcome`, realtime
   descriptors `challengeEventSubscription`, `callOutSubscription`, `callOutsSubscription`, and the limits
   `CALL_OUTS_PER_DAY` (10), `PREDICTION_MIN_COUNT` (5), `CHALLENGE_POST_MAX_LENGTH` (280),
-  `CHALLENGE_COMMENT_MAX_LENGTH` (500), `CALL_OUT_MESSAGE_MAX_LENGTH` (140), `CHALLENGE_CHECK_IN_MINUTES` (60).
+  `CHALLENGE_COMMENT_MAX_LENGTH` (500), `CALL_OUT_MESSAGE_MAX_LENGTH` (140), `CHALLENGE_CHECK_IN_MINUTES` (60),
+  `RESULT_AUTO_CONFIRM_HOURS` (48).
 - Tests: `supabase/tests/17_call_outs.sql`, `18_challenge_crowd.sql`, `19_challenge_result_rivalry.sql`,
+  `20_challenge_auto_confirm.sql`,
   plus the local-only concurrency check `supabase/tests/race/accept_call_out_race.sh` (22 concurrent
   ACCEPT taps on one open call-out: exactly one event).
 - Enum names: `challenge_format`, `challenge_scoring`, `challenge_audience`, `challenge_stage`,
@@ -161,7 +164,7 @@ changed`, `side`, `kind`, `stats`, `threshold`, `template`, `closes_at`, `value`
 | `challenge_comments` | audience, minus blocked authors | `post_id`*, `parent_id`* (one level), `author_id`, `body`*, `respect_count`, `reply_count`, `deleted_at`*. |
 | `challenge_polls` | audience | `template`, `question`, `options`, `vote_counts`, `threshold`*, `closes_at`. |
 | `challenge_result_submissions`, `challenge_result_confirmations`, `challenge_corrections` | Competitors and organizers | NOT FINAL values and the checks. |
-| `challenge_results` | audience | Insert-only: `a_value`, `b_value`, `winner_side`* (null = draw), `margin`, `source` (`participant_confirmation` / `organizer_review`), `note`*, `predicted_a`, `predicted_b` (at lock), `crowd_called_it`*, `watched_count`, `verified_at`. |
+| `challenge_results` | audience | Insert-only: `a_value`, `b_value`, `winner_side`* (null = draw), `margin`, `source` (`participant_confirmation` / `organizer_review` / `unanswered_auto_confirmed`), `note`*, `predicted_a`, `predicted_b` (at lock), `crowd_called_it`*, `watched_count`, `verified_at`. |
 | `rivalries` | When one of its events is visible | `kind` (`people` / `crews`), `low_id`, `high_id`. One per pair. The record is computed. |
 
 ## Stages
@@ -177,7 +180,7 @@ changed`, `side`, `kind`, `stats`, `threshold`, `template`, `closes_at`, `value`
 | `live` | both captains checked in and pressed I'M READY | live | EventLive | progress takes over |
 | `verifying` | a result was submitted and isn't confirmed by both captains | after | Verifying | VERIFYING. |
 | `disputed` | a correction was requested | after | Verifying | VERIFYING. (paused) |
-| `complete` | both captains confirmed (or an organizer review settled it) | after | Result | CHIMDI WINS. |
+| `complete` | both captains confirmed, the other side didn't answer within 48 h (auto-confirmed), or an organizer review settled it | after | Result | CHIMDI WINS. |
 | `cancelled` | a captain called it off before LIVE, nobody started it within 3 h of the start (`no_show`), or LIVE for 24 h with no result (`no_result`) | calm | EventBuildup (CALLED OFF.) | |
 
 Predictions lock when the stored status leaves `scheduled` **or** the start time passes
@@ -356,6 +359,14 @@ logged by Chimdi" from `progress_updated_at` + `server_now` (use Step 4's `liveF
 Verification is **participant confirmation** until device data (M10): both captains must confirm the
 same numbers. Nobody is called the winner before that.
 
+**Unanswered results stand after 48 hours** (`RESULT_AUTO_CONFIRM_HOURS`, one constant in
+`private.result_auto_confirm_hours()`): if the other captain neither confirms nor requests a correction
+within 48 h of the submission, the minute job finalises the submitted numbers with `result_source =
+'unanswered_auto_confirmed'`, posts the milestone `auto_confirmed` ("NO ANSWER IN 48 HOURS. THE RESULT
+STANDS.") and the result, and notifies both sides and the followers (`challenge_milestone`, `result`).
+An open correction (`disputed`) never auto-finalises. A new submission restarts the 48 h. Result: show
+the source in words ("Confirmed after 48 hours without an answer").
+
 **`submit_challenge_result(p_event_id, p_a_value, p_b_value, p_idempotency_key, p_note = null) →
 challenge_result_state { event_id, submission_id*, stage, a_value*, b_value*, confirmed_count,
 needed_count (2), i_confirmed, verified, winner_side* }`** A captain, once LIVE (also from VERIFYING /
@@ -374,14 +385,16 @@ BOTH TIMES. When both captains have confirmed: COMPLETE (insert-only `challenge_
 CORRECTION ("A correction pauses the result. An organizer reviews it within 24 hours."): stage
 `disputed`. Ends by a new submission (then confirm), **`withdraw_challenge_correction(p_event_id)`**
 (the requester), or an organizer review (`private.resolve_challenge_dispute`, service role only; no
-staff tooling yet). Errors: `not_competitor`, `result_already_verified`, `challenge_not_live`.
+staff tooling yet). While it's open the 48 h auto-confirm doesn't run. Errors: `not_competitor`, `result_already_verified`, `challenge_not_live`.
 
 **`challenge_verification(p_event_id) → 1 row`** Verifying: `event_id`, `stage`, `submission_id`*,
 `a_value`*, `b_value`* (SUBMITTED · NOT FINAL), `submitted_by`*, `submitted_by_name`*, `submitted_at`*,
 `note`*, `checks` (jsonb `VerificationCheck[]`: one confirmation row per captain, yours last: "Marcus
 confirmed both times · DONE", "Your confirmation · WAITING"), `confirmed_count`, `needed_count`,
 `i_need_to_confirm` (show CONFIRM BOTH TIMES), `correction_open`, `correction_requested_by_name`*,
-`correction_note`*, `correction_requested_at`*, `review_due_at`*. Competitors and organizers only
+`correction_note`*, `correction_requested_at`*, `review_due_at`*, `auto_confirms_at`* (when the pending
+numbers stand if nobody answers: "Final at Sat 9:23 unless you confirm or ask for a correction"; null
+while a correction is open). Competitors and organizers only
 (`not_competitor`). There is no device check row until M10 (the design's "GPS data received" row isn't
 returned).
 
