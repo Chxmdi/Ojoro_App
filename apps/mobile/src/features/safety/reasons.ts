@@ -20,6 +20,8 @@ const SUBJECT_WORDS: Record<ReportSubjectKind, string> = {
   activity: 'game',
   moment: 'photo',
   result: 'score',
+  message: 'message',
+  update: 'update',
 };
 
 export function subjectWord(kind: ReportSubjectKind): string {
