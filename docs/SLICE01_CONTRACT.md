@@ -13,6 +13,10 @@ are in ADR 0002 and in `docs/DESIGN_DECISIONS.md` ("Slice 01 backend").
   `effectivePlanStatus`, `effectiveActivityStatus`, `checkInWindowState`.
 - Tests: `npx supabase test db` (pgTAP, `supabase/tests/*.sql`); concurrency check:
   `bash supabase/tests/race/im_down_race.sh` (local only).
+- **Step 3 (Liquidity, M4):** Ojoro Now, latent demand, Create From Demand, Surprise Me, the Concierge
+  stub, Discover, FirstHome and the Need One More ranking are in
+  [`LIQUIDITY_CONTRACT.md`](LIQUIDITY_CONTRACT.md). It also adds `plan_cards.place_time_zone` and new
+  columns on `pull_in_candidates` (below).
 
 Contents: [Rules for clients](#rules-for-clients) · [Errors](#errors) · [Idempotency](#idempotency) ·
 [Tables and views](#tables-and-views) · [RPCs](#rpcs) · [Down For matching](#down-for-matching) ·
@@ -163,7 +167,7 @@ blocked the other; blocked pairs never see each other's rows anywhere.
 
 | Table / view | Visible to | Notes |
 |---|---|---|
-| `plan_cards` (view) | Plans you can see | Everything a plan card or the Plan screen header needs: `id`, `sport_id`, `sport_name`, `sport_family`, `title` (nullable; build "FOOTBALL TONIGHT" from sport + time when null), `starts_at`, `duration_minutes`, `capacity` (the lock threshold), `member_count`, `spots_left`, `audience`, `deadline_at`, `poll_closes_at`, `status`, **`effective_status`**, `source` (`down_for`/`quick`/`run_it_back`), `source_activity_id`, `host_id`, `created_by`, `place_id`, `place_name`, `place_area`, `place_surface`, `place_floodlit_until`, `place_is_free`, `place_lat`, `place_lng`, `level_label`, `team_a_label`, `team_b_label`, `teams_note`, `kit_note`, `cost_cents`, `currency`, `attendance_rule`, `locked_at`, `created_at`, `activity_id` (set after GAME ON), `i_am_in`. |
+| `plan_cards` (view) | Plans you can see | Everything a plan card or the Plan screen header needs: `id`, `sport_id`, `sport_name`, `sport_family`, `title` (nullable; build "FOOTBALL TONIGHT" from sport + time when null), `starts_at`, `duration_minutes`, `capacity` (the lock threshold), `member_count`, `spots_left`, `audience`, `deadline_at`, `poll_closes_at`, `status`, **`effective_status`**, `source` (`down_for`/`quick`/`run_it_back`), `source_activity_id`, `host_id`, `created_by`, `place_id`, `place_name`, `place_area`, `place_surface`, `place_floodlit_until`, `place_is_free`, `place_lat`, `place_lng`, `level_label`, `team_a_label`, `team_b_label`, `teams_note`, `kit_note`, `cost_cents`, `currency`, `attendance_rule`, `locked_at`, `created_at`, `activity_id` (set after GAME ON), `i_am_in`, `place_time_zone` (Step 3; format times in it). |
 | `plans` | Same | Base table (subscribe to it for realtime). |
 | `plan_meeting_points` | **Members and the host only** | `label` ("North pitch, by the lights"), `lat`/`lng` (nullable). The exact spot. Non-members and invitees get nothing; show "The exact pitch is shared with people in the plan only." |
 | `plan_time_options` | Plans you can see | Time poll: `id`, `starts_at`, `vote_count`. No rows = no poll. |
@@ -305,6 +309,8 @@ at the plan's time (only when their availability setting includes you), then gam
 people `pull_in` accepts are listed (connections, or Pull Me In `nearby` within their radius of the
 place); members and blocked people never. Reason line from the facts: "6 games with you",
 "Pull Me In is on for football", "free tonight". Errors: `plan_not_found`, `not_member`.
+Step 3 re-ranks it by relationship tier and appends `tier`, `shared_title`, `position`, `distance_km`,
+`reason` (LIQUIDITY_CONTRACT §Need One More ranking).
 
 **`pull_in(p_plan_id, p_invitee_ids uuid[], p_idempotency_key) → pull_in_result { sent, skipped, remaining }`**
 All or nothing. 3 pull-in invites per plan per inviter (and 20 a day). People already in or already
