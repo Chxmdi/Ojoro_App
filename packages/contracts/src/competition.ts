@@ -121,6 +121,11 @@ export const CHALLENGE_POST_MAX_LENGTH = 280;
 export const CHALLENGE_COMMENT_MAX_LENGTH = 500;
 /** Longest challenger's line (message) and course line, in characters. */
 export const CALL_OUT_MESSAGE_MAX_LENGTH = 140;
+/**
+ * A submitted result the other side neither confirms nor corrects within this many hours is final
+ * (source `unanswered_auto_confirmed`). Verifying shows `auto_confirms_at`.
+ */
+export const RESULT_AUTO_CONFIRM_HOURS = 48;
 /** Check-in opens this many minutes before the start. */
 export const CHALLENGE_CHECK_IN_MINUTES = 60;
 

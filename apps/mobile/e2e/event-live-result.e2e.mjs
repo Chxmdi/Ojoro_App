@@ -116,7 +116,7 @@ async function expectError(promise, code) {
   try {
     await promise;
   } catch (e) {
-    if (!String(e.message).includes(code)) throw new Error(`expected ${code}, got ${e.message}`);
+    if (!String(e.message).includes(code)) throw new Error(`expected ${code}, got ${e.message}`, { cause: e });
     return;
   }
   throw new Error(`expected ${code}, but it went through`);
