@@ -26,6 +26,7 @@ const SUBJECT_WORDS: Record<ReportSubjectKind, string> = {
   challenge_event: 'event',
   challenge_post: 'post',
   challenge_comment: 'comment',
+  rivalry: 'rivalry',
 };
 
 export function subjectWord(kind: ReportSubjectKind): string {

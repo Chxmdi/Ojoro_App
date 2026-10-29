@@ -117,6 +117,17 @@ export const analyticsEvents = {
   liveShared: 'live_shared',
   activityFollowTapped: 'activity_follow_tapped',
   activityUnfollowTapped: 'activity_unfollow_tapped',
+  // Step 5: Compete, Call-Outs, Challenge Events, Rivalry. The server records callout_*,
+  // challenge_*, prediction_cast/changed, backing_selected and the rematch events
+  // (docs/COMPETITION_CONTRACT.md §Analytics); the client sends taps and what only it sees.
+  // Call-Out taps go through cta_tapped (call_out_accept, call_out_counter, call_out_pass,
+  // call_out_withdraw, call_out_send).
+  challengeShared: 'challenge_shared',
+  challengeLiveViewed: 'challenge_live_viewed',
+  predictionMade: 'prediction_made',
+  crowdBacked: 'crowd_backed',
+  rematchRequested: 'rematch_requested',
+  rematchAccepted: 'rematch_accepted',
 } as const;
 
 export type AnalyticsEvent =
