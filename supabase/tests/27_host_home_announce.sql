@@ -353,5 +353,13 @@ select ok(exists (select 1 from public.my_notifications() where type::text = 'ho
 select tests.logout();
 select is(private.generic_copy('host_update'), 'A session you''re in has an update.', 'lock-screen words');
 
+-- Report reaches a program; not across a block.
+select tests.login(7);
+select lives_ok($$select public.report('host_program', tests.id('prog'), 'spam')$$, 'report a program');
+select tests.block(1, 7);
+select tests.login(7);
+select throws_ok($$select public.report('host_program', tests.id('prog'), 'spam')$$, 'P0001', 'subject_not_found',
+                 'not one whose host blocked you');
+
 select * from finish();
 rollback;

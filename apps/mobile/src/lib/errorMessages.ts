@@ -140,7 +140,6 @@ const messages: Record<OjoroErrorCode | 'permission_denied' | 'network' | 'unkno
   refund_already_decided: 'That refund has already been decided.',
   refund_amount_invalid: 'Pick an amount less than the full payment.',
   refund_undo_closed: "It's too late to undo that decision.",
-  audit_immutable: "That record can't be changed.",
   league_not_found: "We can't find that league.",
   league_invalid: 'Check the league details and try again.',
   team_not_found: "We can't find that team.",

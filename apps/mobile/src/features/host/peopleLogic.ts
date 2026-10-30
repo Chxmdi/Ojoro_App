@@ -352,6 +352,39 @@ export function messageError(body: string, max = HOST_ANNOUNCEMENT_MAX_LENGTH): 
   return null;
 }
 
+/** How long after its start a session still takes announcements ("running late", "moved"). */
+export const ANNOUNCE_AFTER_START_MS = 3 * 60 * 60_000;
+
+/**
+ * The session an announcement is about: the one asked for (`?session=`), else the next session
+ * that hasn't ended (started up to 3 hours ago counts), skipped ones excluded.
+ */
+export function pickAnnounceSession(
+  week: readonly { kind: string | null; session_id: string | null; status: string | null; starts_at: string | null }[],
+  now: Date,
+  requested?: string | null,
+): string | null {
+  if (requested) return requested;
+  const next = week
+    .filter((w) => w.kind === 'session' && w.session_id && w.status !== 'skipped' && w.starts_at)
+    .filter((w) => new Date(w.starts_at!).getTime() + ANNOUNCE_AFTER_START_MS > now.getTime())
+    .sort((a, b) => new Date(a.starts_at!).getTime() - new Date(b.starts_at!).getTime())[0];
+  return next?.session_id ?? null;
+}
+
+/** The next session that hasn't started: where INVITE THEM BACK sends people. */
+export function nextSession<T extends { kind: string | null; session_id: string | null; status: string | null; starts_at: string | null }>(
+  week: readonly T[],
+  now: Date,
+): T | null {
+  return (
+    week
+      .filter((w) => w.kind === 'session' && w.session_id && w.status !== 'skipped' && w.starts_at)
+      .filter((w) => new Date(w.starts_at!).getTime() > now.getTime())
+      .sort((a, b) => new Date(a.starts_at!).getTime() - new Date(b.starts_at!).getTime())[0] ?? null
+  );
+}
+
 /** "PINNED · FROM ADE, YOUR HOST". */
 export function pinnedOverline(authorName: string, pinned: boolean): string {
   const first = authorName.trim().split(/\s+/)[0] ?? authorName;

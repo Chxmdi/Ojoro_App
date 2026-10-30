@@ -62,9 +62,15 @@ describe('host contract drift (CI-safe, no database needed)', () => {
   });
 
   it('the limits match the server', () => {
-    expect(migrations).toContain(`host_pushes_per_session()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_PUSHES_PER_SESSION} $$`);
-    expect(migrations).toContain(`host_undo_minutes()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_UNDO_MINUTES} $$`);
-    expect(migrations).toContain(`host_experienced_games()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_EXPERIENCED_GAMES} $$`);
+    expect(migrations).toContain(
+      `host_pushes_per_session()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_PUSHES_PER_SESSION} $$`,
+    );
+    expect(migrations).toContain(
+      `host_undo_minutes()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_UNDO_MINUTES} $$`,
+    );
+    expect(migrations).toContain(
+      `host_experienced_games()\nreturns integer language sql immutable set search_path = '' as $$ select ${HOST_EXPERIENCED_GAMES} $$`,
+    );
   });
 
   it('every realtime table is in the publication', () => {
@@ -81,7 +87,13 @@ describe('host contract drift (CI-safe, no database needed)', () => {
 
 describe('host helpers', () => {
   it('sends only what changed', () => {
-    const loaded = { name: 'Tuesday 7-a-side', start_time: '19:30:00', repeat_days: [2], price_cents: 800, until_on: null };
+    const loaded = {
+      name: 'Tuesday 7-a-side',
+      start_time: '19:30:00',
+      repeat_days: [2],
+      price_cents: 800,
+      until_on: null,
+    };
     expect(
       seriesChanges(loaded, {
         name: 'Tuesday 7-a-side',
@@ -118,7 +130,13 @@ describe('host helpers', () => {
   });
 
   it('badges the week in words', () => {
-    const base = { kind: 'session', status: 'scheduled', capacity: 14, in_count: 14, asking_count: 0 };
+    const base = {
+      kind: 'session',
+      status: 'scheduled',
+      capacity: 14,
+      in_count: 14,
+      asking_count: 0,
+    };
     expect(weekBadge(base)).toBe('FULL');
     expect(weekBadge({ ...base, in_count: 8, capacity: 10 })).toBe('8 / 10');
     expect(weekBadge({ ...base, in_count: 9, capacity: 12, asking_count: 2 })).toBe('2 ASKING');

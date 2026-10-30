@@ -289,7 +289,7 @@ select throws_ok(format($$select * from public.clan_view(%L)$$, tests.id('clan')
 -- Requests --------------------------------------------------------------------------------------------------
 select tests.login(2);
 select tests.keep('req', (public.join_clan(tests.id('clan'), 'I run 5K most weeks')).request_id);
-select is((select status || ' ' || changed from (select (public.join_clan(tests.id('clan'))).*) x), 'requested false',
+select is((select status || ' ' || changed from public.join_clan(tests.id('clan')) x), 'requested false',
   'asking again: the same request');
 select tests.login(4);
 select throws_ok(format($$select public.decide_clan_request(%L, true)$$, tests.id('req')), 'P0001',
@@ -349,7 +349,7 @@ select is((public.create_clan_run(tests.id('rkey'), tests.id('clan'), 'running',
 select throws_ok(format($$select public.create_clan_run(gen_random_uuid(), %L, 'running', 'Huge', now() + interval '2 hours', 900)$$,
   tests.id('clan')), 'P0001', 'capacity_invalid', 'up to 500');
 select tests.login(5);
-select is((select stage::text || ' ' || down_count from (select (public.join_clan_run(tests.id('run'))).*) x), 'game_on 2',
+select is((select stage::text || ' ' || down_count from public.join_clan_run(tests.id('run')) x), 'game_on 2',
   'GAME ON at the minimum');
 select is((public.join_clan_run(tests.id('run'))).changed, false, 'again: same state');
 select tests.login(6);
@@ -360,7 +360,7 @@ select is((public.join_clan_run(tests.id('run'))).down_count, 3, 'full now');
 select tests.login(8);
 select throws_ok(format($$select public.join_clan_run(%L)$$, tests.id('run')), 'P0001', 'clan_run_full', 'capacity holds');
 select tests.login(5);
-select is((select status::text || ' ' || down_count from (select (public.leave_clan_run(tests.id('run'))).*) x), 'game_on 2',
+select is((select status::text || ' ' || down_count from public.leave_clan_run(tests.id('run')) x), 'game_on 2',
   'leaving keeps GAME ON');
 select tests.login(2);
 select throws_ok(format($$select public.leave_clan_run(%L)$$, tests.id('run')), 'P0001', 'invalid_argument',

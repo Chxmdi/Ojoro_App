@@ -89,7 +89,6 @@ export const hostOpsErrorCodes = [
   'refund_already_decided',
   'refund_amount_invalid',
   'refund_undo_closed',
-  'audit_immutable',
   'league_not_found',
   'league_invalid',
   'team_not_found',

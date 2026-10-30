@@ -82,7 +82,7 @@ New codes (words in `apps/mobile/src/lib/errorMessages.ts`):
 | `refund_already_decided` | Decided another way already (UNDO first). | Current status |
 | `refund_amount_invalid` | Partial must be 1 .. refundable − 1. | Refundable cents |
 | `refund_undo_closed` | Over 10 minutes, or the provider already answered. | |
-| `audit_immutable` | The audit trail can't be changed. | |
+| `audit_immutable` | (Trigger, not reachable from the app.) The audit trail can't be changed. | |
 | `league_not_found` | Unknown league, or you can't see it. | |
 | `league_invalid` | Bad league settings, fixtures already generated, fewer than 2 teams, bad slot. | The part |
 | `team_not_found` | Unknown team in this league. | |

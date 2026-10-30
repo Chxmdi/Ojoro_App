@@ -146,11 +146,11 @@ export type HostAnnouncementState = CompositeTypes['host_announcement_state'];
 export type HostNeedsYouItem = CompositeTypes['host_needs_you_item'];
 export type HostWeekItem = CompositeTypes['host_week_item'];
 
-export type MyHostProgram = WithNull<Row<'my_host_programs'>, 'area' | 'sport_id' | 'next_session_at'>;
-export type HostHome = WithNull<
-  Row<'host_home'>,
-  'area' | 'last30_showed_up_pct'
+export type MyHostProgram = WithNull<
+  Row<'my_host_programs'>,
+  'area' | 'sport_id' | 'next_session_at'
 >;
+export type HostHome = WithNull<Row<'host_home'>, 'area' | 'last30_showed_up_pct'>;
 export type SeriesView = WithNull<
   Row<'series_view'>,
   'place_area' | 'until_on' | 'teams_note' | 'kit_note' | 'first_session_on' | 'applies_from'
@@ -219,7 +219,10 @@ export type AnnouncementHistoryRow = WithNull<
   Row<'host_announcement_history'>,
   'session_id' | 'activity_id' | 'session_name' | 'session_starts_at' | 'template' | 'pinned_until'
 >;
-export type PinnedAnnouncement = WithNull<Row<'session_pinned_announcement'>, 'message_id' | 'pinned_until'>;
+export type PinnedAnnouncement = WithNull<
+  Row<'session_pinned_announcement'>,
+  'message_id' | 'pinned_until'
+>;
 
 /** Keys `create_series` / `update_series` accept in their settings object. */
 export const SERIES_SETTING_KEYS = [
@@ -329,10 +332,9 @@ export const REFUND_WINDOW_LABEL: Record<HostRefundWindow, string> = {
 };
 
 /** THIS WEEK badge for a session row. Status is in words, never colour only. */
-export function weekBadge(item: Pick<
-  HostWeekItem,
-  'kind' | 'status' | 'capacity' | 'in_count' | 'asking_count'
->): string {
+export function weekBadge(
+  item: Pick<HostWeekItem, 'kind' | 'status' | 'capacity' | 'in_count' | 'asking_count'>,
+): string {
   if (item.kind !== 'session') return (item.kind ?? '').toUpperCase();
   if (item.status === 'skipped') return 'SKIPPED';
   if ((item.asking_count ?? 0) > 0) return `${item.asking_count} ASKING`;
@@ -374,14 +376,22 @@ export function hostProgramSubscription(programId: string): RealtimeSubscription
  * HostRoster / HostRequests: the session, its activity's attendance and its join requests. Treat
  * every event as a refetch hint for `session_view`, `session_roster` and `session_requests`.
  */
-export function hostSessionSubscription(sessionId: string, activityId: string): RealtimeSubscription {
+export function hostSessionSubscription(
+  sessionId: string,
+  activityId: string,
+): RealtimeSubscription {
   return {
     channel: `host-session:${sessionId}`,
     changes: [
       { event: 'UPDATE', schema: 'public', table: 'host_sessions', filter: `id=eq.${sessionId}` },
       { event: 'UPDATE', schema: 'public', table: 'activities', filter: `id=eq.${activityId}` },
       { event: '*', schema: 'public', table: 'attendance', filter: `activity_id=eq.${activityId}` },
-      { event: '*', schema: 'public', table: 'host_join_requests', filter: `session_id=eq.${sessionId}` },
+      {
+        event: '*',
+        schema: 'public',
+        table: 'host_join_requests',
+        filter: `session_id=eq.${sessionId}`,
+      },
     ],
   };
 }
