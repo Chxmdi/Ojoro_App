@@ -104,19 +104,24 @@ export function hasTarget(target: StampTarget): boolean {
   return Boolean(target.entry || target.activity || target.event);
 }
 
-export function findStamp(stamps: readonly PassportStamp[], target: StampTarget): PassportStamp | null {
-  if (!hasTarget(target)) return null;
-  return (
-    stamps.find(
-      (s) =>
-        (target.entry && s.entry_id === target.entry) ||
-        (target.activity && s.activity_id === target.activity) ||
-        (target.event && s.challenge_event_id === target.event),
-    ) ?? null
-  );
+/**
+ * How to fetch the stamp a link points at, whatever page it's on: by its id (`passport_entry`), or by
+ * its game / Challenge (`passport_entry_for`, for the Passport's owner). Null when there's no target.
+ */
+export function entryLookup(
+  target: StampTarget,
+  ownerId: string,
+):
+  | { rpc: 'passport_entry'; args: { p_entry_id: string } }
+  | { rpc: 'passport_entry_for'; args: { p_activity_id?: string; p_event_id?: string; p_user_id: string } }
+  | null {
+  if (target.entry) return { rpc: 'passport_entry', args: { p_entry_id: target.entry } };
+  if (target.activity) return { rpc: 'passport_entry_for', args: { p_activity_id: target.activity, p_user_id: ownerId } };
+  if (target.event) return { rpc: 'passport_entry_for', args: { p_event_id: target.event, p_user_id: ownerId } };
+  return null;
 }
 
-/** `/passport?activity=…`: the link from a Recap's stamp (and `?event=` from a Result). */
+/** `/passport?entry=…` (or `?activity=` / `?event=` when the entry id isn't known): Recap and Result stamps. */
 export function passportHrefFor(target: StampTarget): string {
   const q = target.entry
     ? `entry=${encodeURIComponent(target.entry)}`

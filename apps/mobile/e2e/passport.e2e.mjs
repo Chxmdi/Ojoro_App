@@ -274,7 +274,7 @@ async function main() {
         await open(pc.page, `/event/${challengeStamp.challenge_event_id}`, 'result-you');
         await pc.page.getByTestId('result-you').getByText(/Added to your Passport/).waitFor({ timeout: 30_000 });
         await pc.page.getByTestId('result-you').click();
-        await pc.page.waitForURL(/\/passport\?event=/, { timeout: 30_000 });
+        await pc.page.waitForURL(/\/passport\?entry=/, { timeout: 30_000 });
         await pc.page.getByTestId('passport-target').getByText('OPEN THE RESULT').waitFor({ timeout: 30_000 });
       });
     } else console.log('skip Result link: no Challenge stamp in the seed');
@@ -283,13 +283,34 @@ async function main() {
       await step("Recap: the stamp opens the Passport at that game's stamp", async () => {
         await open(pc.page, `/activity/${gameStamp.activity_id}/recap`, 'passport-stamp');
         await pc.page.getByTestId('passport-stamp').click();
-        await pc.page.waitForURL(/\/passport\?activity=/, { timeout: 30_000 });
-        await pc.page.getByTestId('passport-headline').waitFor({ timeout: 30_000 });
-        // The stamp sits on top when it's among the latest page.
-        const latest = stamps.slice(0, 12).some((s) => s.activity_id === gameStamp.activity_id);
-        if (latest) await pc.page.getByTestId('passport-target').getByText('OPEN THE RECAP').waitFor({ timeout: 30_000 });
+        await pc.page.waitForURL(/\/passport\?entry=/, { timeout: 30_000 });
+        await pc.page.getByTestId('passport-target').getByText('OPEN THE RECAP').waitFor({ timeout: 30_000 });
       });
     } else console.log('skip Recap link: no game stamp in the seed');
+
+    await step('an old stamp, past the first page, still shows on top; ?activity= and ?event= find theirs', async () => {
+      const oldest = stamps[stamps.length - 1];
+      await open(pc.page, `/passport?entry=${oldest.entry_id}`, 'passport-target');
+      const oldGame = [...stamps].reverse().find((s) => s.activity_id);
+      if (oldGame) {
+        await open(pc.page, `/passport?activity=${oldGame.activity_id}`, 'passport-target');
+        await pc.page.getByTestId('passport-target').getByText('OPEN THE RECAP').waitFor();
+      }
+      const oldChallenge = [...stamps].reverse().find((s) => s.challenge_event_id);
+      if (oldChallenge) {
+        await open(pc.page, `/passport?event=${oldChallenge.challenge_event_id}`, 'passport-target');
+        await pc.page.getByTestId('passport-target').getByText('OPEN THE RESULT').waitFor();
+      }
+    });
+
+    await step('a milestone stamp opens its Recap or Result', async () => {
+      const view = await C.call('passport_view', { p_user_id: C.id });
+      const m = view.milestones.find((x) => x.activity_id || x.challenge_event_id);
+      if (!m) return console.log('  no linked milestone in the seed');
+      await open(pc.page, '/passport', 'passport-milestones');
+      await pc.page.getByTestId(`milestone-${m.entry_id}`).click();
+      await pc.page.waitForURL(m.activity_id ? /\/activity\/.+\/recap/ : /\/event\//, { timeout: 30_000 });
+    });
   } finally {
     await A.call('clear_goal').catch(() => {});
     await A.call('set_goals_visibility', { p_visibility: 'friends' }).catch(() => {});

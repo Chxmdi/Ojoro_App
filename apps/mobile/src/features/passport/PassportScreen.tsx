@@ -32,6 +32,7 @@ import { ojoroErrorOf } from '@/lib/rpc';
 
 import {
   usePassportAchievements,
+  usePassportEntry,
   usePassportRealtime,
   usePassportReputation,
   usePassportStamps,
@@ -43,7 +44,6 @@ import {
   emptyStampsLine,
   FILTER_BYS,
   filterValues,
-  findStamp,
   hasTarget,
   headlineLines,
   passportOverline,
@@ -272,9 +272,15 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 /** The stamp a Recap or Result link opened: on top, with what it was and the way back to it. */
 function TargetStamp({ userId, target, tz }: { userId: string; target: StampTarget; tz: string }) {
-  const stamps = usePassportStamps(userId, { by: 'all' });
-  const rows = useMemo(() => stamps.data?.pages.flat() ?? [], [stamps.data]);
-  const found = findStamp(rows, target);
+  const entry = usePassportEntry(userId, target);
+  const found = entry.data ?? null;
+  if (entry.isPending) {
+    return (
+      <View {...loadingProps('Loading this stamp')}>
+        <Skeleton kind="text" lines={2} />
+      </View>
+    );
+  }
   if (!found) return null;
   const props = stampProps(found, tz);
   const href = stampHref(found);
@@ -304,7 +310,9 @@ function Milestones({ view }: { view: PassportView }) {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-space-5">
         <View className="flex-row gap-space-2 px-space-5 py-space-3">
           {view.milestones.map((m, i) => (
-            <PassportStamp key={m.entry_id} {...stampProps(m, view.time_zone)} tilt={i % 2 === 0} />
+            <StampLink key={m.entry_id} href={stampHref(m)} kind={m.kind} label={milestoneLabel(m, view.time_zone)} testID={`milestone-${m.entry_id}`}>
+              <PassportStamp {...stampProps(m, view.time_zone)} tilt={i % 2 === 0} />
+            </StampLink>
           ))}
         </View>
       </ScrollView>
@@ -496,11 +504,36 @@ function StampTile({ stamp, tz, tilt }: { stamp: StampRow; tz: string; tilt: boo
   const props = stampProps(stamp, tz);
   const href = stampHref(stamp);
   const label = `${props.title}, ${props.place}, ${props.date}. ${stampLine(stamp)}.`;
-  const content = <PassportStamp {...props} tilt={tilt} />;
+  return (
+    <StampLink href={href} kind={stamp.kind} label={label} testID={`stamp-${stamp.entry_id}`}>
+      <PassportStamp {...props} tilt={tilt} />
+    </StampLink>
+  );
+}
+
+function milestoneLabel(m: PassportView['milestones'][number], tz: string): string {
+  const p = stampProps(m, tz);
+  return `${p.title}, ${p.place}, ${p.date}.`;
+}
+
+/** A stamp that opens its Recap or Result when there is one to open; otherwise one plain element. */
+function StampLink({
+  href,
+  kind,
+  label,
+  testID,
+  children,
+}: {
+  href: string | null;
+  kind: StampRow['kind'];
+  label: string;
+  testID: string;
+  children: ReactNode;
+}) {
   if (!href) {
     return (
-      <View accessible accessibilityLabel={label} style={{ width: STAMP_SIZE }} testID={`stamp-${stamp.entry_id}`}>
-        {content}
+      <View accessible accessibilityLabel={label} style={{ width: STAMP_SIZE }} testID={testID}>
+        {children}
       </View>
     );
   }
@@ -509,11 +542,11 @@ function StampTile({ stamp, tz, tilt }: { stamp: StampRow; tz: string; tilt: boo
       onPress={() => router.push(href as Href)}
       accessibilityRole="link"
       accessibilityLabel={label}
-      accessibilityHint={stamp.kind === 'challenge' ? 'Opens the result' : 'Opens the recap'}
+      accessibilityHint={kind === 'challenge' ? 'Opens the result' : 'Opens the recap'}
       style={({ pressed }) => ({ width: STAMP_SIZE, opacity: pressed ? 0.7 : 1 })}
-      testID={`stamp-${stamp.entry_id}`}
+      testID={testID}
     >
-      {content}
+      {children}
     </Pressable>
   );
 }

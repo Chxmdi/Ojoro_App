@@ -9,7 +9,7 @@ import {
   fieldOfDetail,
   filterKey,
   filterValues,
-  findStamp,
+  entryLookup,
   goalBody,
   hasTarget,
   headlineLines,
@@ -145,14 +145,23 @@ describe('stamps', () => {
     expect(stampLine(stamp({ place_game_number: 25 }))).toContain('25th');
   });
 
-  it('finds the stamp a link points at', () => {
-    const list = [stamp(), challenge];
+  it('fetches the stamp a link points at, on any page', () => {
     expect(hasTarget({})).toBe(false);
-    expect(findStamp(list, {})).toBeNull();
-    expect(findStamp(list, { activity: 'a1' })?.entry_id).toBe('e1');
-    expect(findStamp(list, { event: 'ev1' })?.entry_id).toBe('e2');
-    expect(findStamp(list, { entry: 'e2' })?.entry_id).toBe('e2');
-    expect(findStamp(list, { entry: 'nope' })).toBeNull();
+    expect(entryLookup({}, 'u1')).toBeNull();
+    expect(entryLookup({ entry: 'e2', activity: 'a1' }, 'u1')).toEqual({ rpc: 'passport_entry', args: { p_entry_id: 'e2' } });
+    expect(entryLookup({ activity: 'a1' }, 'u1')).toEqual({
+      rpc: 'passport_entry_for',
+      args: { p_activity_id: 'a1', p_user_id: 'u1' },
+    });
+    expect(entryLookup({ event: 'ev1' }, 'u1')).toEqual({
+      rpc: 'passport_entry_for',
+      args: { p_event_id: 'ev1', p_user_id: 'u1' },
+    });
+  });
+
+  it('links milestone stamps when the game or Challenge is visible', () => {
+    expect(stampHref({ activity_id: null, challenge_event_id: 'ev9' })).toBe('/event/ev9');
+    expect(stampHref({ activity_id: null, challenge_event_id: null })).toBeNull();
   });
 
   it('builds passport links', () => {
