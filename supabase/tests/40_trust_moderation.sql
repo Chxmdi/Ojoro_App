@@ -371,6 +371,22 @@ begin
 end;
 $$;
 
+-- tests.u(n) checked in to a finished session of this program p_ago ago.
+create function tests.host_played(p_program uuid, p_users integer[], p_ago interval default '7 days')
+returns uuid language plpgsql security definer as $$
+declare
+  v_sess uuid;
+  v_act uuid;
+begin
+  v_sess := tests.host_session(p_program, -p_ago, 20);
+  v_act := tests.activity_of(v_sess);
+  insert into public.attendance (activity_id, user_id, status, confirmed_at, checked_in_at, check_in_method)
+  select v_act, tests.u(n), 'checked_in', now() - p_ago - interval '1 day', now() - p_ago, 'host' from unnest(p_users) n;
+  update public.activities set confirmed_count = cardinality(p_users), checked_in_count = cardinality(p_users) where id = v_act;
+  return v_sess;
+end;
+$$;
+
 -- Step 8 TRUST: staff, the moderation queue (cases, severity, de-duplication), staff reads and writes,
 -- hidden content, paused accounts, places, and the audit log nobody can edit.
 select no_plan();
@@ -632,6 +648,61 @@ select ok((select count(*) from private.trust_audit where action in ('hide_conte
 select throws_ok($$update private.trust_audit set reason = 'edited'$$, 'P0001', 'audit_immutable', 'the audit log cannot be edited');
 select throws_ok($$delete from private.trust_audit$$, 'P0001', 'audit_immutable', 'or deleted');
 select throws_ok($$truncate private.trust_audit$$, 'P0001', 'audit_immutable', 'or truncated');
+
+-- Account deletion ------------------------------------------------------------------------------------------------
+-- tests.u(1) hosted, played, challenged, created a crew, a clan and a program, paid a host and was refunded.
+select tests.keep('forming', tests.make_plan(1, 6));
+select tests.join(2, tests.id('forming'));
+select tests.keep('live', tests.live_game(1, array[1, 2, 3]));
+select tests.keep('past', tests.stamp(1, '3 days'));
+select tests.keep('ev', tests.result(1, 2, 1500, 1600));
+select tests.keep('open_co', tests.call_out(1, 3));
+select tests.keep('dcrew', tests.make_crew(1, array[2, 3]));
+select tests.login(1);
+select tests.keep('clan', (public.create_clan(gen_random_uuid(), 'Deletion Clan', 'open')).id);
+select tests.keep('msg', (public.send_message(gen_random_uuid(), 'Last words.', tests.id('dcrew'))).id);
+select public.report('profile', tests.u(9), 'spam');
+select tests.logout();
+select tests.keep('dprog', tests.host_program(1));
+select tests.keep('dsess', tests.host_session(tests.id('dprog'), '2 days', 6, false));
+select tests.keep('done', tests.host_played(tests.id('dprog'), array[2, 3]));
+insert into public.host_ops_audit (program_id, actor_id, action, subject_type) values (tests.id('dprog'), tests.u(1), 'test', 'test');
+-- Money: u1 paid a drop-in to u5's program and got part of it back.
+select tests.keep('prog5', tests.host_program(5));
+insert into public.host_charges (id, program_id, user_id, kind, amount_cents, currency, status, method, paid_at)
+values ('40000000-0000-4000-8000-000000000001', tests.id('prog5'), tests.u(1), 'pack', 7000, 'CAD', 'paid', 'app', now() - interval '3 days');
+insert into public.host_refunds (program_id, charge_id, user_id, amount_cents, currency, reason)
+values (tests.id('prog5'), '40000000-0000-4000-8000-000000000001', tests.u(1), 2000, 'CAD', 'host_decision');
+select tests.keep('result_count', null);
+select is(tests.err($$delete from auth.users where id = tests.u(1)$$), 'ok', 'an account that hosted, played and paid can be deleted');
+select is((select count(*)::integer from public.profiles where id = tests.u(1)), 0, 'the profile is gone');
+select is((select status::text from public.plans where id = tests.id('forming')), 'cancelled', 'their forming plan is called off');
+select is((select count(*)::integer from public.plan_members where plan_id = tests.id('forming') and user_id = tests.u(2)), 1,
+          'its members are kept');
+select is((select host_id from public.activities where id = tests.id('live')), private.former_member(), 'a game they hosted stays, by a former member');
+select is((select host_id from public.activities where id = tests.id('past')), private.former_member(), 'and past games');
+select is((select count(*)::integer from public.challenge_results where event_id = tests.id('ev')), 1, 'results are never removed');
+select is((select a_captain_id from public.challenge_events where id = tests.id('ev')), private.former_member(), 'the event keeps its side');
+select is((select challenger_id from public.call_outs where event_id = tests.id('ev')), private.former_member(),
+          'the Call-Out behind an event stays');
+select is((select count(*)::integer from public.call_outs where id = tests.id('open_co')), 0, 'an open Call-Out goes with them');
+select is((select created_by from public.crews where id = tests.id('dcrew')), private.former_member(), 'the crew stays');
+select is((select created_by from public.clans where id = tests.id('clan')), private.former_member(), 'the clan stays');
+select isnt((select archived_at from public.host_programs where id = tests.id('dprog')), null, 'their program is archived');
+select is((select status::text from public.activities where id = tests.activity_of(tests.id('dsess'))), 'cancelled',
+          'its sessions still to come are called off');
+select is((select actor_id from public.host_ops_audit where action = 'test' and program_id = tests.id('dprog')), null,
+          'ledger audit rows stay, without them');
+select is((select user_id from public.host_charges where id = '40000000-0000-4000-8000-000000000001'), private.former_member(),
+          'a host keeps the charge in their ledger');
+select is((select user_id from public.host_refunds where charge_id = '40000000-0000-4000-8000-000000000001'), private.former_member(),
+          'and the refund');
+select is((select count(*)::integer from public.messages where id = tests.id('msg')), 0, 'their own messages go with them');
+select is((select count(*)::integer from public.reports where subject_id = tests.u(9)), 0, 'and their reports');
+select throws_ok(format('update public.challenge_results set a_value = 1 where event_id = %L', tests.id('ev')),
+                 'P0001', 'result_already_verified', 'results are still final after the deletion');
+select throws_ok($$delete from public.profiles where id = private.former_member()$$, 'P0001', 'invalid_argument',
+                 'the placeholder stays');
 
 select * from finish();
 rollback;

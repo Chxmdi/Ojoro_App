@@ -265,11 +265,14 @@ const MONEY_OR_GAMBLING =
   /\b(bets?|betting|wager\w*|odds|stakes?|payouts?|jackpot|gambl\w*|casino|cash|money|dollars?|cents?|prizes?|price[sd]?|pay|paid|fee|fees|points?|tokens?|credits?)\b|[$€£¥₦]/i;
 const SENSITIVE =
   /\b(gender|race|racial|ethnic\w*|religio\w*|church|mosque|sexual\w*|gay|straight|pregnan\w*|disab\w*|health|illness|age|aged|older|younger|old|young|elderly|teens?|kids?|women|woman|men|man|girls?|boys?|female|male)\b/i;
+/** Areas, not addresses: no street words, unit numbers or postal codes. */
+const ADDRESS =
+  /\b(rue|street|st|avenue|ave|boulevard|blvd|road|rd|chemin|apt|apartment|suite|unit|floor|postal|zip)\b|\b[a-z]\d[a-z]\s?\d[a-z]\d\b/i;
 const EMOJI = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{20E3}]/u;
 const MARKUP = /https?:|www\.|[@#<>{}[\]`*_|\\]|\n|\bc\d+\b/i;
 
 /** Every number the WHY may use for this candidate: its counts, distances, durations and facts. */
-export function allowedNumbers(c: Candidate, set: CandidateSet, text: string, now: Date): Set<string> {
+export function allowedNumbers(c: Candidate, set: CandidateSet, _text: string, now: Date): Set<string> {
   const out = new Set<string>(['1']);
   const add = (n: number | null | undefined) => {
     if (n === null || n === undefined || !Number.isFinite(n)) return;
@@ -290,7 +293,9 @@ export function allowedNumbers(c: Candidate, set: CandidateSet, text: string, no
   add(until);
   if (until >= 60) add(Math.round(until / 60));
   add(set.parse.minutes);
-  for (const s of [...(c.reasons ?? []), text]) for (const m of s.match(/\d+(?:\.\d+)?/g) ?? []) out.add(m);
+  // Numbers from the person's own text are not allowed: echoing them is how an address or a phone
+  // number would get into the WHY. Their minutes come in through the parse above.
+  for (const s of c.reasons ?? []) for (const m of s.match(/\d+(?:\.\d+)?/g) ?? []) out.add(m);
   return out;
 }
 
@@ -303,7 +308,7 @@ export function checkWhy(raw: string, c: Candidate, set: CandidateSet, text: str
     .trim();
   if (why.length < 8 || why.length > WHY_MAX_CHARS) return null;
   if (why.includes('!') || why.includes('?') || EMOJI.test(why) || MARKUP.test(why)) return null;
-  if (MONEY_OR_GAMBLING.test(why) || SENSITIVE.test(why)) return null;
+  if (MONEY_OR_GAMBLING.test(why) || SENSITIVE.test(why) || ADDRESS.test(why)) return null;
   const allowed = allowedNumbers(c, set, text, now);
   for (const n of why.match(/\d+(?:\.\d+)?/g) ?? []) if (!allowed.has(n)) return null;
   // Sentence case inside "Why: …": lower the first letter unless it starts a name.

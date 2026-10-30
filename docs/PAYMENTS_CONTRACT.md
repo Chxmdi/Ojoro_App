@@ -18,7 +18,8 @@ functions, map errors by code, one idempotency key per intention). Judgment call
 > (`private.host_application_fee_cents()`); nothing else knows it. The app never computes a fee.
 
 - Schema: `supabase/migrations/20261031030000_payments_enums.sql`, `…030100_payments_schema.sql`,
-  `…030200_payments_checkout.sql`, `…030300_payments_webhook.sql`, `…030400_payments_queue.sql`.
+  `…030200_payments_checkout.sql`, `…030300_payments_webhook.sql`, `…030400_payments_queue.sql`,
+  `…030500_payments_provider_reads.sql`.
 - Edge functions (Deno, `npm:stripe@23.0.0`, API version pinned by the SDK): `supabase/functions/`
   `payments-checkout`, `payments-connect`, `payments-return`, `payments-drain`, `stripe-webhook`;
   shared code `supabase/functions/_shared/stripe*.ts` (logic is pure and unit-tested with vitest).
@@ -146,6 +147,7 @@ Idempotency-Key). A checkout whose page expired: start a new one with a new key.
   `payment_account` (`HostPaymentAccount`, with `can_onboard` for owners), `disputes` (open), and
   `provider_payouts` (last 6 Stripe payouts). Past payouts turn `paid` / `failed` when Stripe pays the
   matching week.
+- **`host_insights`** (Step 6) reports the same `provider` and `payments_connected`.
 - **`host_payment_account(p_program_id) → HostPaymentAccount`** (hosts).
 - **`host_decision_state`** (refund decisions) reports the refund's `provider` and `refund_status`.
 

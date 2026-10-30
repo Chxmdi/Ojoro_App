@@ -394,6 +394,8 @@ select is(public.host_payment_account(tests.id('prog')) ->> 'status', 'not_conne
 select is(public.host_payment_account(tests.id('prog')) ->> 'can_onboard', 'true', 'the owner can connect');
 select is(public.host_money_view(tests.id('prog')) ->> 'payments_connected', 'false', 'HostMembership: not connected');
 select is(public.host_money_view(tests.id('prog')) ->> 'provider', 'none', 'no provider yet');
+select is(public.host_insights(tests.id('prog')) ->> 'provider', 'none', 'Insights: no provider yet');
+select is(public.host_insights(tests.id('prog')) ->> 'payments_connected', 'false', 'Insights: not connected');
 select is(public.payments_connect_context(tests.id('prog')) ->> 'program_name', 'Test Pickup', 'the owner gets the context');
 select tests.login(2);
 select is(public.host_payment_account(tests.id('prog')) ->> 'can_onboard', 'false', 'co-hosts see it but cannot connect');
@@ -440,6 +442,9 @@ select is((select count(*) from private.analytics_events where name = 'payments_
 select tests.login(1);
 select is(public.host_money_view(tests.id('prog')) ->> 'payments_connected', 'true', 'HostMembership: connected');
 select is(public.host_money_view(tests.id('prog')) ->> 'provider', 'stripe', 'through Stripe');
+select is(public.host_insights(tests.id('prog')) ->> 'provider', 'stripe', 'Insights report Stripe');
+select is(public.host_insights(tests.id('prog')) ->> 'payments_connected', 'true', 'and connected');
+select is(jsonb_typeof(public.host_insights(tests.id('prog')) -> 'weeks'), 'array', 'the Step 6 insights are all there');
 select is(public.host_money_view(tests.id('prog')) #>> '{payment_account,status}', 'ready', 'with the account state');
 select is(jsonb_typeof(public.host_money_view(tests.id('prog')) -> 'disputes'), 'array', 'and disputes');
 select is(jsonb_typeof(public.host_money_view(tests.id('prog')) -> 'next_payout'), 'object', 'the Step 6 view is all there');
