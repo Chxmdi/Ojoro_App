@@ -23,6 +23,7 @@ import {
   Screen,
   Strip,
   Text,
+  TextButton,
   useToast,
 } from '@/design-system';
 import { track } from '@/lib/analytics';
@@ -50,6 +51,7 @@ import {
   checkInNote,
   moveDown,
   moveUp,
+  paymentDue,
   positionWord,
   rosterBadge,
   rosterCountLabel,
@@ -192,7 +194,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
               <ParticipantList>
                 {shown.map((r) => {
                   const badge = rosterBadge(r);
-                  const due = r.payment_status === 'due';
+                  const due = paymentDue(r.payment_status);
                   const action = checkInMode && !r.checked_in_at ? 'MARK IN' : due && !checkInMode ? 'MARK PAID' : undefined;
                   return (
                     <ParticipantRow
@@ -227,15 +229,13 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
             )}
             {inRows.length > SHOWN_AT_FIRST ? (
               <View className="mt-space-2 self-start">
-                <Button
-                  variant="ghost"
+                <TextButton
                   onPress={() => setShowAll((s) => !s)}
-                  aria-expanded={showAll}
-                  className="-ml-space-5"
+                  accessibilityLabel={showAll ? 'Show fewer people' : `Show all ${inRows.length} people in`}
                   testID="roster-show-all"
                 >
                   {showAll ? 'SHOW FEWER' : `SHOW ALL ${inRows.length}`}
-                </Button>
+                </TextButton>
               </View>
             ) : null}
           </View>

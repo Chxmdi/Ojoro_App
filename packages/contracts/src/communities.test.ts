@@ -40,7 +40,7 @@ describe('communities contract drift (CI-safe, no database needed)', () => {
 
   it('idempotent RPCs take p_idempotency_key and are listed with the others', () => {
     for (const name of communitiesIdempotentRpcs) {
-      const start = migrations.lastIndexOf(`function public.${name}(`);
+      const start = migrations.lastIndexOf(`create or replace function public.${name}(`);
       const signature = migrations.slice(start, migrations.indexOf(')\nreturns', start));
       expect(signature, name).toContain('p_idempotency_key uuid');
       expect(idempotentRpcs as readonly string[]).toContain(name);

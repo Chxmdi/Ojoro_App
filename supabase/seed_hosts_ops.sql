@@ -212,14 +212,14 @@ begin
          now() - make_interval(days => 33 + i * 5), now() - make_interval(days => 33 + i * 5)
   from generate_series(1, 4) i;
 
-  -- 5. Past payouts (frozen, as the designs show them). PAID: no provider is connected, so in the app
-  --    these would wait as 'scheduled'; the sample history shows the finished state.
+  -- 5. Past payouts (frozen totals, as the designs show them). No provider is connected, so they wait as
+  --    'scheduled' (never shown as PAID until there is one).
   insert into public.host_payouts (program_id, period_start, period_end, pays_on, currency, gross_cents, refunds_cents,
                                    fee_cents, net_cents, session_count, pass_count, refund_count, note, lines, status, paid_at)
   select c_program, v_start - make_interval(days => 7 * x.k), v_start - make_interval(days => 7 * (x.k - 1)),
          ((v_start - make_interval(days => 7 * (x.k - 1))) at time zone v_tz)::date, 'CAD',
          x.gross, x.refunds, x.fee, x.gross - x.refunds - x.fee, x.sessions, x.passes, x.refund_n, x.note,
-         x.lines::jsonb, 'paid', v_start - make_interval(days => 7 * (x.k - 1)) + interval '9 hours'
+         x.lines::jsonb, 'scheduled', null
   from (values
     (1, 42800, 800, 3400, 5, 6, 1, null,
      '[{"kind":"drop_in","count":26,"unit_cents":800,"amount_cents":20800},{"kind":"monthly_renewal","count":4,"unit_cents":3500,"amount_cents":14000},{"kind":"pack","count":1,"unit_cents":7000,"amount_cents":7000}]'),

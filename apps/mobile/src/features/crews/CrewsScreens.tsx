@@ -2,7 +2,7 @@
  * Crews outside CrewHome, none of them designed (docs/DESIGN_DECISIONS.md, Step 4 screens):
  * `/crew` (your crews, START A CREW, JOIN WITH A CODE), `/crew/new` (a name, a usual sport, people
  * you've played with) and `/crew/join` (an invite code). Plus `YourCrews`, the small block that
- * links here from You.
+ * links here from You, now with clans and host programs.
  */
 import { isRetryable } from '@ojoro/contracts';
 import { router, useLocalSearchParams, type Href } from 'expo-router';
@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import {
+  Badge,
   Button,
   Chip,
   DisplayText,
@@ -27,6 +28,8 @@ import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf } from '@/lib/rpc';
 
+import { useMyClans } from '../clans/data';
+import { useMyHostPrograms } from '../host/data';
 import { useOnline } from '../activities/data';
 import { InlineError, OfflineNote, ScreenHeader } from '../activities/ui';
 import {
@@ -37,6 +40,7 @@ import {
   usePlayedWith,
   useSportsCatalog,
 } from './data';
+import { communityRows } from './homeLogic';
 import { CREW_NAME_MAX, crewRowMeta, normalizeCode, validateCrewName } from './logic';
 
 /** `/crew`: your crews, most recently active first. */
@@ -73,7 +77,7 @@ export function CrewsScreen() {
                 title={c.name}
                 meta={crewRowMeta(c)}
                 trailing="chevron"
-                href={`/crew/${c.crew_id}/chat` as Href}
+                href={`/crew/${c.crew_id}` as Href}
                 testID={`crew-row-${c.crew_id}`}
               />
             ))}
@@ -266,40 +270,61 @@ export function JoinCrewScreen() {
 }
 
 /**
- * The crews entry for You (or Home): up to three crews and a link to all of them, or START A
- * CREW when you have none. Mount it where the profile lists what you do.
+ * You → "CREWS, CLANS & HOSTING" (You.png): your crews (each opens Crew Home), your clans and the
+ * host programs you run or co-host (HostHome), with the count in the display face and a badge for
+ * what it is. Availability is mentioned as overlap only.
  */
 export function YourCrews() {
   const crews = useMyCrews();
-  const rows = crews.data ?? [];
+  const clans = useMyClans();
+  const programs = useMyHostPrograms();
+  const crewRows = crews.data ?? [];
+  const rows = communityRows({
+    crews: crewRows.slice(0, 3),
+    clans: clans.data ?? [],
+    programs: programs.data ?? [],
+  });
+  const pending = crews.isPending || clans.isPending || programs.isPending;
+  const failed = [crews, clans, programs].find((q) => q.isError && !q.data);
   return (
-    <View className="gap-space-2" role="region" aria-label="Crews" testID="your-crews">
-      <Divider label={rows.length > 0 ? `CREWS · ${rows.length}` : 'CREWS'} />
-      {crews.isPending ? (
-        <View {...loadingProps('Loading your crews')}>
+    <View className="gap-space-2" role="region" aria-label="Crews, clans and hosting" testID="your-crews">
+      <Divider label="CREWS, CLANS & HOSTING" />
+      {pending && rows.length === 0 ? (
+        <View {...loadingProps('Loading your crews, clans and hosting')}>
           <Skeleton kind="strip" />
         </View>
-      ) : rows.length === 0 ? (
+      ) : rows.length === 0 && !failed ? (
         <Text variant="body-sm" muted>
-          No crews yet.
+          No crews or clans yet. A crew is the people you play with most.
         </Text>
       ) : (
         <StripList>
-          {rows.slice(0, 3).map((c) => (
+          {rows.map((r) => (
             <Strip
-              key={c.crew_id}
-              title={c.name}
+              key={r.key}
+              leading={String(r.count)}
+              leadingLabel={r.countLabel}
+              title={r.title}
               titleVariant="title-sm"
-              meta={crewRowMeta(c)}
-              trailing="chevron"
-              href={`/crew/${c.crew_id}/chat` as Href}
+              meta={r.meta}
+              trailing={<Badge>{r.badge}</Badge>}
+              href={r.href as Href}
+              testID={`your-${r.key}`}
             />
           ))}
         </StripList>
       )}
+      {failed ? (
+        <InlineError message={errorMessage(ojoroErrorOf(failed.error))} action="RETRY" onAction={() => void failed.refetch()} />
+      ) : null}
+      {crewRows.length > 0 ? (
+        <Text variant="caption" muted>
+          Your usual free times are shared with your crews as overlap only.
+        </Text>
+      ) : null}
       <View className="flex-row flex-wrap gap-space-4">
         <TextButton onPress={() => router.push('/crew' as Href)} testID="your-crews-all">
-          {rows.length > 0 ? 'ALL CREWS' : 'START OR JOIN A CREW'}
+          {crewRows.length > 0 ? 'ALL CREWS' : 'START OR JOIN A CREW'}
         </TextButton>
       </View>
     </View>

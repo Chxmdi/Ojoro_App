@@ -317,7 +317,7 @@ Ade B (`+1 555 555 0101`, code 123456). Times are relative to now.
 | Pass Sunday beginners (free) | `c7200000-0000-4000-8000-000000000004` |
 | Lena R's refund request | `c7300000-0000-4000-8000-000000000001` (renewed on the 1st for $35, cancelled 3 days in, her note) |
 | Next payout | 22 drop-ins × $8, 6 renewals × $35, 1 × 10-pack, −$8 (Dayo's automatic refund), −$36 placeholder fee → **$412** |
-| Past payouts | last 3 Fridays: $386 (5 sessions · 1 refund), $402 (5 sessions), $344 (4 sessions · rain-out on Thursday), `paid` |
+| Past payouts | last 3 Fridays: $386 (5 sessions · 1 refund), $402 (5 sessions), $344 (4 sessions · rain-out on Thursday), `scheduled` (no provider: never PAID) |
 | Tonight's Tuesday roster | 13 of 14 settled; Sam K and Rina K PAID $8; Priya 10-PACK 4 left; Tomás $8 AT FIELD; Dayo REFUNDED |
 | League Winter League | `c7000000-0000-4000-8000-000000000001`: 6 teams (`c7100000-…-000000000001`..`06`: Mile End Strikers, Thursday FC, Lachine Locos, Plateau Crew, Saint-Henri United, Concordia Old Boys), 10 Saturdays at Jeanne-Mance, 30 fixtures, round 3 this Saturday, 64 players + 9 free agents (Yara M, Kofi A, Chimdi O referee) |
 | Result to confirm | Round 2 Thursday FC 4–2 Plateau Crew, played last Thursday after the rain-out, both captains sent 4–2, 13 of 14 checked in |

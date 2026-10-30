@@ -505,8 +505,12 @@ export function parseRefundAmount(input: string, refundableCents: number): { cen
   return { cents };
 }
 
-/** Payout status in words (never colour only). */
-export function payoutStatusWord(status: string): string {
+/**
+ * Payout status in words (never colour only). With no payments provider nothing has moved, so a
+ * payout is only a record: it never says PAID until payments are connected.
+ */
+export function payoutStatusWord(status: string, connected: boolean): string {
+  if (!connected) return 'NOT SENT';
   return ({ paid: 'PAID', scheduled: 'SCHEDULED', failed: 'DIDN’T GO THROUGH' } as Record<string, string>)[status] ??
     status.replace(/_/g, ' ').toUpperCase();
 }

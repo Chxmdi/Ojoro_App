@@ -25,7 +25,6 @@ import {
   Screen,
   Text,
   TextButton,
-  useMotion,
   useToast,
 } from '@/design-system';
 import { track } from '@/lib/analytics';
@@ -209,7 +208,6 @@ function PersonRow({
   open: boolean;
   onToggle: () => void;
 }) {
-  const motion = useMotion();
   const badge = personBadge(person);
   const meta = personMeta(person, timeZone);
   return (
@@ -235,10 +233,7 @@ function PersonRow({
         {badge ? <Badge>{badge}</Badge> : null}
         <View
           aria-hidden
-          style={{
-            transform: [{ rotate: open ? '90deg' : '0deg' }],
-            ...(motion.reduced ? null : { transitionProperty: 'transform', transitionDuration: '200ms' }),
-          }}
+          style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }}
         >
           <Icon name="forward" size={18} />
         </View>
