@@ -545,6 +545,7 @@ People CRM, announcements. Contract: `docs/HOSTS_CONTRACT.md`.
 | Money through seams | The roster's payment column, People's pass, "13 of 14 settled", ops needs-you items and league week rows come from five `private.host_*` functions that return null/nothing in the core and are replaced by the ops ledger (BE-HOST-OPS). The core never reads ledger tables. |
 | New notification types | `host_request`, `host_update`, `host_announcement`, with words in a redefined `private.notification_feed` / `generic_copy` (the Step 5 versions plus these cases). |
 | Seed numbers are approximate | `seed_hosts.sql` generates the season deterministically from per-person habits; HostHome matches the PNG (31 of 36, 3 waiting, 2 asking) but People counts are close to, not exactly, 86 / 23 / 18 / 9 / 6. |
+| Owner decisions (Step 6) | (1) The host deciding a join request sees the requester's self-declared level for the session's sport (`session_requests.stated_level`, shown as "Says: beginner"); nowhere else. (2) No verification exists: `id_verified` / `host_verified` stay false and screens hide VERIFIED badges. (3) No program-wide announcements for now. |
 
 ## Step 6 BE-HOST-OPS
 

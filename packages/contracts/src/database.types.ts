@@ -9550,6 +9550,7 @@ export type Database = {
           shared_names: string[];
           show_up_of: number;
           showed_up: number;
+          stated_level: Database['public']['Enums']['skill_level'];
           status: Database['public']['Enums']['host_request_status'];
           undo_until: string;
           user_id: string;
