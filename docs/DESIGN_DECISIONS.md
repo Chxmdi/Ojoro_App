@@ -822,6 +822,9 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | Staff is not a JWT claim | Checked per call from `private.staff_members`, so a revoke takes effect at once. The first admin of an environment is granted with SQL (`private.grant_staff`). |
 | Rate limits as table triggers | New limits (host join requests 20/day, announcements 10/hour/author) are BEFORE INSERT triggers so every write path is covered without copying the host RPCs; seeds and the service role (no `auth.uid()`) aren't limited. |
 | Paused screen and appeal sheet | Not designed (HANDOFF.md "What isn't designed yet"): calm ground, one display line, reason/end/note in words, APPEAL and SIGN OUT; the appeal sheet copies the report sheet's anatomy (Sheet, Chip, Input). The show-up entry is one caption and a TextButton under You's reputation, shown only when a game counts as missed. |
+| Account deletion keeps history | Deleting an Auth user used to fail on NO ACTION references (plans → games, results, ledgers). A BEFORE DELETE trigger on profiles calls off what hasn't happened, moves required person columns to one "Former member" placeholder (banned Auth user) and nulls optional ones, and keeps Call-Outs behind events, result submissions and host ledger rows under the placeholder. Results and ledger audit stay insert-only except during that one deletion. A placeholder (not nullable host columns) keeps every NOT NULL rule and every read working. |
+| Trust notifications | Pause started, account back, appeal decided: own types on an `account` object only the recipient can see, written by triggers so every path notifies. No notification when a pause simply runs out (no row changes). |
+| Down For test isolation | `05_down_for` closed its own matching to local seed plans (seed_places' runs tonight) inside its rolled-back transaction; the seed and Pulse sample are unchanged. |
 
 ## Step 8 BE-PAYMENTS
 
