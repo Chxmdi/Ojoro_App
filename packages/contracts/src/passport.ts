@@ -23,6 +23,8 @@ type Row<F extends RpcName> = Functions[F]['Returns'] extends (infer R)[] ? R : 
 export const passportRpcs = [
   'passport_view',
   'passport_stamps',
+  'passport_entry',
+  'passport_entry_for',
   'passport_achievements',
   'passport_reputation',
   'passport_goal',
@@ -128,6 +130,9 @@ export type PassportMonthGroup = { month: string; stamps: number; minutes: numbe
 
 export type PassportMilestone = {
   entry_id: string;
+  /** The game (Recap) or Challenge (Result) it came from; null unless the viewer can see it. */
+  activity_id: string | null;
+  challenge_event_id: string | null;
   milestone: PassportMilestoneKind;
   /** For `place_games` (games at the place) and `stamps` (stamps in all). */
   count: number | null;
@@ -193,6 +198,27 @@ export type PassportView = {
 
 export type PassportStamp = WithNull<
   Row<'passport_stamps'>,
+  | 'place_id'
+  | 'place_name'
+  | 'place_area'
+  | 'place_time_zone'
+  | 'activity_id'
+  | 'challenge_event_id'
+  | 'title'
+  | 'scoring'
+  | 'unit'
+  | 'value'
+  | 'outcome'
+  | 'place_number'
+  | 'place_game_number'
+  | 'previous_best'
+  | 'milestone'
+  | 'milestone_count'
+>;
+
+/** `passport_entry(p_entry_id)` / `passport_entry_for(...)`: one stamp, with its owner. */
+export type PassportEntryDetail = WithNull<
+  Row<'passport_entry'>,
   | 'place_id'
   | 'place_name'
   | 'place_area'
