@@ -74,7 +74,9 @@ enabled = true
 # seed_communities.sql (Step 6, CrewHome / Clan / Clash) is safe to re-run too (needs seed_competition.sql's crowd).
 # seed_hosts.sql (Step 6, Host OS core) rebuilds Plateau Pickup; run seed_hosts_ops.sql after it.
 # seed_hosts_ops.sql (Step 6, passes, ledger, Winter League) is safe to re-run; it needs seed_hosts.sql.
-sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql", "./seed_communities.sql", "./seed_hosts.sql", "./seed_hosts_ops.sql"]
+# seed_places.sql (Step 7, Pulse / Place) is safe to re-run; run it after seed_communities.sql and seed_hosts.sql.
+# seed_passport.sql (Step 7, Chimdi's Passport, goal, reputation) is safe to re-run; it needs seed_competition.sql and seed_communities.sql.
+sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql", "./seed_communities.sql", "./seed_hosts.sql", "./seed_hosts_ops.sql", "./seed_places.sql", "./seed_passport.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.

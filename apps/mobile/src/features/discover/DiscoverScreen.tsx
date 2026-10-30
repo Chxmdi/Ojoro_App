@@ -1,8 +1,8 @@
 /**
  * Discover (Discover.png, docs/LIQUIDITY_CONTRACT.md §Discover): search with kind, sport and time
  * chips; Ojoro Now in the forming band with latent demand (a count only) and Surprise Me; people to
- * move with; places near you; the end of the feed. Crews & Clans (M7) and the Pulse map (M8) are
- * left out (docs/DESIGN_DECISIONS.md, Step 3 screens).
+ * move with; places near you (each opens its Place); the end of the feed. MAP opens Pulse (M8).
+ * Crews & Clans (M7) are left out (docs/DESIGN_DECISIONS.md, Step 3 screens).
  */
 import type { DiscoverWhen } from '@ojoro/contracts';
 import { onlineManager, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { Chip, ChipRow, FeedEnd, Input, Screen, Text, TextButton, useToast } from '@/design-system';
+import { Button, Chip, ChipRow, FeedEnd, Input, Screen, Text, TextButton, useToast } from '@/design-system';
 import { clockTime, updatedAt } from '@/lib/age';
 import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
@@ -18,6 +18,7 @@ import { ojoroErrorOf } from '@/lib/rpc';
 
 import { useSports } from '../downfor/data';
 import { DownForSheet } from '../downfor/DownForSheet';
+import { placeRoutes } from '../places/routes';
 import { useNow, useOnline } from '../plans/data';
 import { OfflineBanner, routes } from '../plans/parts';
 import {
@@ -189,9 +190,21 @@ export function DiscoverScreen() {
   return (
     <Screen situation="calm" scroll>
       <View className="gap-space-4 pb-space-6 pt-space-4">
-        <Text variant="display-lg" role="heading">
-          DISCOVER
-        </Text>
+        <View className="flex-row items-center justify-between gap-space-3">
+          <Text variant="display-lg" role="heading" className="shrink">
+            DISCOVER
+          </Text>
+          <Button
+            variant="secondary"
+            compact
+            href={placeRoutes.pulse()}
+            onPress={() => track('pulse_opened', { source: 'discover' })}
+            accessibilityLabel="Map. Opens Pulse, the map of what's on near you"
+            testID="discover-map"
+          >
+            MAP
+          </Button>
+        </View>
         <Input
           label="Search"
           icon="search"
