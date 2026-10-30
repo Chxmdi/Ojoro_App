@@ -11,6 +11,7 @@ import {
   columnHeight,
   columnLabel,
   endLabel,
+  endLabelBottom,
   readout,
   toggleLabel,
 } from './ColumnChart.logic';
@@ -114,6 +115,7 @@ export function ColumnChart({
   const view = viewProp ?? ownView;
   const [hot, setHot] = useState<number | null>(null);
   const [plotWidth, setPlotWidth] = useState(0);
+  const [labelWidth, setLabelWidth] = useState(0);
   const tint = useThemeColor('tint');
   const ink = useThemeColor('text');
 
@@ -201,6 +203,7 @@ export function ColumnChart({
             </View>
             {current && last >= 0 ? (
               <Text
+                onLayout={(e) => setLabelWidth(e.nativeEvent.layout.width)}
                 variant="label-sm"
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
@@ -209,7 +212,12 @@ export function ColumnChart({
                   {
                     position: 'absolute',
                     right: Math.max(0, (colWidth - barWidth) / 2),
-                    bottom: columnHeight(data[last]!.value, top, height) + 6,
+                    bottom: endLabelBottom(
+                      data.map((d) => columnHeight(d.value, top, height)),
+                      colWidth,
+                      barWidth,
+                      labelWidth,
+                    ),
                   },
                 ]}
               >

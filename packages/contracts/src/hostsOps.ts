@@ -502,12 +502,12 @@ export function percent(rate: number | null): string {
   return rate == null ? '–' : `${Math.round(rate * 100)}%`;
 }
 
-/** Change in points between two rates: "+3 pts", "−2 pts", "Same". Null when either is missing. */
+/** Change in points between two rates: "+3 pts", "−1 pt", "Same". Null when either is missing. */
 export function pointsChange(now: number | null, before: number | null): string | null {
   if (now == null || before == null) return null;
   const d = Math.round(now * 100) - Math.round(before * 100);
   if (d === 0) return 'Same';
-  return `${d > 0 ? '+' : '−'}${Math.abs(d)} pts`;
+  return `${d > 0 ? '+' : '−'}${Math.abs(d)} ${Math.abs(d) === 1 ? 'pt' : 'pts'}`;
 }
 
 /** Relative change: "+12%", "−4%", "Same". Null when there's nothing before. */

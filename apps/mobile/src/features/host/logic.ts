@@ -172,22 +172,36 @@ function needsYouWords(
         href: item.session_id ? `${base}/session/${item.session_id}` : null,
       };
     }
-    case 'refund_request':
+    case 'refund_request': {
+      const days = num(d.days_in);
+      const what = str(d.pass_name) ?? name;
       return {
         title: `${plural(count || 1, 'refund request')}`,
-        meta: [str(d.person_name) ?? item.user_names?.[0] ?? null, str(d.what) ?? name, str(d.when)]
+        meta: [
+          item.user_names?.[0] ?? null,
+          what ? what.charAt(0).toLowerCase() + what.slice(1) : null,
+          days != null ? `cancelled ${plural(days, 'day')} in` : null,
+        ]
           .filter(Boolean)
           .join(' · '),
         action: 'DECIDE',
         href: `${base}/payments`,
       };
-    case 'league_result':
+    }
+    case 'league_result': {
+      const home = str(d.home) ?? item.user_names?.[0] ?? null;
+      const away = str(d.away) ?? item.user_names?.[1] ?? null;
+      const hg = num(d.home_goals);
+      const ag = num(d.away_goals);
+      const score = home && away && hg != null && ag != null ? `${home} ${hg}–${ag} ${away}` : home && away ? `${home} v ${away}` : name;
+      const leagueId = str(d.league_id);
       return {
         title: 'League result to confirm',
-        meta: [str(d.score_line) ?? name, str(d.state)].filter(Boolean).join(' · '),
+        meta: [score, d.both_agree === true ? 'both captains agree' : 'captains don’t agree yet'].join(' · '),
         action: 'CONFIRM',
-        href: item.object_id ? `${base}/league/${item.object_id}` : null,
+        href: leagueId ? `${base}/league/${leagueId}` : null,
       };
+    }
     default:
       return {
         title: count > 1 ? `${name} · ${count}` : name,

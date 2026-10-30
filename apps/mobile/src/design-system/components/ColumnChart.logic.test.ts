@@ -6,6 +6,7 @@ import {
   columnHeight,
   columnLabel,
   endLabel,
+  endLabelBottom,
   readout,
   toggleLabel,
 } from './ColumnChart.logic';
@@ -54,5 +55,24 @@ describe('labels', () => {
     expect(endLabel(3, 'THIS MONTH')).toBe('THIS MONTH · 3');
     expect(toggleLabel('chart')).toBe('SHOW AS TABLE');
     expect(toggleLabel('table')).toBe('SHOW AS CHART');
+  });
+});
+
+describe('endLabelBottom', () => {
+  // 12 columns of 27pt, 18pt bars: a ~90pt label spans the last 4 columns.
+  const heights = [114, 123, 132, 120, 141, 156, 147, 135, 150, 93, 162, 51];
+  it('clears the tallest column the label spans', () => {
+    expect(endLabelBottom(heights, 27, 18, 90)).toBe(162 + 6);
+    expect(endLabelBottom([10, 200, 30, 40, 50], 27, 18, 40)).toBe(50 + 6);
+  });
+  it('sits on the last column when it is the tallest', () => {
+    expect(endLabelBottom([10, 20, 174], 27, 18, 90)).toBe(174 + 6);
+  });
+  it('clears every column until the label is measured', () => {
+    expect(endLabelBottom([10, 200, 30], 27, 18, 0)).toBe(206);
+    expect(endLabelBottom([], 27, 18, 90)).toBe(6);
+  });
+  it('never spans more columns than exist', () => {
+    expect(endLabelBottom([40, 5], 10, 6, 500)).toBe(46);
   });
 });

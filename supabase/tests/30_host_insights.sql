@@ -343,6 +343,14 @@ select is((select split_part(t, chr(10), 1) from csv), 'date,record,kind,descrip
 select is((select count(*) from csv, regexp_split_to_table(t, chr(10)) l where l like '%,charge,%')::int, 2, 'one row per charge');
 select ok((select t like '%,refund,host_decision,,Tester 2,-8.00,CAD,pending,,none,%' from csv), 'refunds are negative');
 select tests.logout();
+select is((select provolatile::text from pg_proc where oid = 'public.host_insights_csv(uuid, integer)'::regprocedure), 'v',
+          'the export records an event, so it is volatile (PostgREST runs stable functions read-only)');
+select is((select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+           where n.nspname = 'public' and p.provolatile <> 'v'
+             and p.proname in ('host_insights_csv', 'create_host_pass', 'grant_host_pass', 'mark_paid_at_field',
+                               'decide_host_refund', 'undo_host_refund_decision', 'confirm_league_result',
+                               'dispute_league_result', 'submit_league_result', 'ask_league_referee')), 0::bigint,
+          'no writing RPC is stable');
 select is(private.csv_cell('=SUM(A1)'), '"''=SUM(A1)"', 'formulas are defused');
 select is(private.csv_cell('Hello, "you"'), '"Hello, ""you"""', 'commas and quotes are quoted');
 select is(private.csv_cell('-12.50'), '-12.50', 'negative numbers stay numbers');

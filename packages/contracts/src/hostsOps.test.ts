@@ -99,6 +99,8 @@ describe('hostsOps contract', () => {
     expect(pointsChange(0.91, 0.88)).toBe('+3 pts');
     expect(pointsChange(0.6, 0.62)).toBe('−2 pts');
     expect(pointsChange(0.6, 0.6)).toBe('Same');
+    expect(pointsChange(0.61, 0.6)).toBe('+1 pt');
+    expect(pointsChange(0.59, 0.6)).toBe('−1 pt');
     expect(pointsChange(null, 0.6)).toBeNull();
     expect(relativeChange(154400, 137900)).toBe('+12%');
     expect(relativeChange(96, 100)).toBe('−4%');
