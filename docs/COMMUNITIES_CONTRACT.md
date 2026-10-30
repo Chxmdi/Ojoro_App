@@ -13,7 +13,11 @@ effective status computed on read, no raw location) still applies. Judgment call
 - Schema: `supabase/migrations/20261030100000_communities_enums.sql`, `…100010_communities_report.sql`,
   `…100100_communities_schema.sql`, `…100200_communities_crew_home.sql`, `…100300_communities_clans.sql`,
   `…100400_communities_clash.sql`, `…100500_communities_time_realtime_grants.sql`,
-  `…100600_communities_followups.sql`, `…100700_communities_followups.sql`.
+  `…100600_communities_followups.sql` (short names, rolling THIS WEEK, backing counts),
+  `…100700_communities_followups.sql` (create/update clan take the short name),
+  `…100800_communities_crew_availability.sql` (FREE TONIGHT honours "crews"),
+  `…100900_communities_clash_next_event.sql`, `…101000_communities_chat_read_clock.sql`,
+  `…101100_communities_clash_one_open.sql`.
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases (nullable columns already marked
   `| null`, use these rather than the raw `Functions[…]['Returns']`): `CrewHome`, `CrewFreeTonight`,
   `CrewDownFor`, `CrewRitual`, `CrewVersus`, `CrewRivalry`, `CrewMemory`, `ClanView`, `MyClan`, `ClanRun`,
