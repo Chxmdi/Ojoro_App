@@ -102,6 +102,16 @@ export const trustErrorCodes = [
   'announcement_rate_limited',
 ] as const;
 
+/** Notification types the trust backend sends (object_kind `account`, object_id = the recipient). */
+export const trustNotificationTypes = [
+  'account_paused',
+  'account_restored',
+  'appeal_decided',
+] as const satisfies readonly Enums['notification_type'][];
+
+/** Shown as the host of history kept after an account is deleted (`private.former_member()`). */
+export const FORMER_MEMBER_ID = 'f0000000-0000-4000-8000-000000000000';
+
 // Constants ----------------------------------------------------------------------------------------------------
 
 export const STAFF_PAGE_DEFAULT = 50;

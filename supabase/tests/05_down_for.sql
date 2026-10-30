@@ -142,8 +142,8 @@ select throws_ok(format($$insert into public.intent_signals (user_id, sport_id, 
 
 -- Local seed data (seed_places.sql's runs tonight, other samples) has real forming plans nearby that a
 -- signal could rightly join. These assertions are about the test's own plan, so other people's forming
--- plans are taken out of matching for this transaction only (rolled back with everything else).
-update public.plans set audience = 'invite_only'
+-- plans are closed to matching (deadline passed) for this transaction only (rolled back with everything else).
+update public.plans set deadline_at = now() - interval '1 minute'
  where status = 'forming' and host_id not in (select tests.u(n) from generate_series(1, 12) n);
 
 -- Matching: a compatible signal forms a plan with both people in it.

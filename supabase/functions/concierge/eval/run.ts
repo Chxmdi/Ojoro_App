@@ -4,7 +4,7 @@
  *   Dry run (mock client, no network, no key):
  *     node supabase/functions/concierge/eval/run.ts --dry-run
  *   Live (calls the Claude API with ANTHROPIC_API_KEY; costs money; the owner runs it):
- *     ANTHROPIC_API_KEY=... npx -y deno@2.1.4 run --allow-env --allow-net --allow-read --allow-write \
+ *     ANTHROPIC_API_KEY=... npx -y deno@2.1.4 run --allow-env --allow-net --allow-read --allow-write --allow-sys \
  *       supabase/functions/concierge/eval/run.ts --live
  *
  * Options: --only <id,id>, --timeout <ms> (live default 8000, the function's), --out <dir>
