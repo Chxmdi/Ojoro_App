@@ -124,8 +124,17 @@ async function browserAs(browser, person) {
 }
 
 async function open(page, path, testId) {
-  await page.goto(`${APP}${path}`, { waitUntil: 'load', timeout: 240_000 });
-  if (testId) await page.getByTestId(testId).first().waitFor({ timeout: 90_000 });
+  // The shared dev server restarts now and then (connection refused / reset): wait and try again.
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      await page.goto(`${APP}${path}`, { waitUntil: 'commit', timeout: 240_000 });
+      break;
+    } catch (error) {
+      if (attempt >= 6 || !/ERR_CONNECTION|ERR_EMPTY_RESPONSE/.test(String(error))) throw error;
+      await new Promise((r) => setTimeout(r, 30_000));
+    }
+  }
+  if (testId) await page.getByTestId(testId).first().waitFor({ timeout: 240_000 });
 }
 
 const results = [];
