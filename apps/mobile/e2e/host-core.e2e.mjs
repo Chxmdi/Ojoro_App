@@ -281,6 +281,26 @@ try {
     });
   });
 
+  await step('HostSeries: skipping a session people are in asks for a reason, shows it, and restores', async () => {
+    await open(H.page, `/host/${state.program}/series/${state.series}`, 'host-series');
+    const sessions = await host.call('series_sessions', { p_series_id: state.series, p_limit: 4 });
+    const ours = sessions.find((s) => s.session_id === state.session);
+    assert(ours && ours.in_count > 0, 'our session with the player in is among the next 4');
+    await H.page.getByTestId(`series-session-${ours.occurs_on}-skip`).click();
+    await H.page.getByTestId('skip-reason').fill('Field booked for a tournament');
+    await H.page.getByTestId('skip-confirm').click();
+    await H.page.getByTestId(`series-session-${ours.occurs_on}`).filter({ hasText: 'Field booked for a tournament' }).waitFor({ timeout: 20_000 });
+    await until('skipped with the reason', async () => {
+      const { data } = await admin.from('host_sessions').select('status, skip_reason').eq('id', state.session);
+      return data?.[0]?.status === 'skipped' && data[0].skip_reason === 'Field booked for a tournament';
+    });
+    await H.page.getByTestId(`series-session-${ours.occurs_on}-restore`).click();
+    await until('restored', async () => {
+      const { data } = await admin.from('host_sessions').select('status').eq('id', state.session);
+      return data?.[0]?.status === 'scheduled';
+    }, 20_000);
+  });
+
   await step('a non-host opening a host link gets the not-allowed page, not a crash', async () => {
     await open(J.page, `/host/${state.program}`, 'host-not-allowed');
     await open(J.page, `/host/${state.program}/session/${state.session}`, 'host-not-allowed');

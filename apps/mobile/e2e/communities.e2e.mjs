@@ -244,7 +244,7 @@ async function main() {
     });
 
     await step('Clash: proposed, accepted, then the poster puts your clan first', async () => {
-      const y = await B.call('create_clan', { p_idempotency_key: key(), p_name: `E2E Hares ${tag}`, p_short_name: 'HARES', p_join_policy: 'invite', p_sport_id: 'running' });
+      const y = await B.call('create_clan', { p_idempotency_key: key(), p_name: `E2E Hares ${tag}`, p_short_name: 'HARES', p_join_policy: 'request', p_sport_id: 'running' });
       clanY = y.id;
       // B is in both clans now; leave X so each side is one clan's people.
       await B.call('leave_clan', { p_clan_id: clanX });

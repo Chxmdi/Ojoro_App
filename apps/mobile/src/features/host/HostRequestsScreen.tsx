@@ -68,7 +68,7 @@ export function HostRequestsScreen({ programId, sessionId }: { programId: string
   const now = new Date();
 
   useEffect(() => {
-    track('screen_viewed', { screen: 'host_requests', program_id: programId, session_id: sessionId });
+    track('host_requests_viewed', { program_id: programId, session_id: sessionId });
     // UNDO goes away when its 10 minutes are up.
     const t = setInterval(() => tick((n) => n + 1), 30_000);
     return () => clearInterval(t);
@@ -208,7 +208,10 @@ export function HostRequestsScreen({ programId, sessionId }: { programId: string
                         <TextButton
                           accessibilityLabel={`Undo the answer to ${r.display_name}`}
                           disabled={!online}
-                          onPress={() => undo.mutate(r.request_id)}
+                          onPress={() => {
+                            track('host_request_undo_tapped', { program_id: programId, session_id: sessionId, approved: r.status === 'approved' });
+                            undo.mutate(r.request_id);
+                          }}
                           testID={`request-${r.user_id}-undo`}
                         >
                           UNDO

@@ -219,9 +219,9 @@ export function useUpdateSeries(programId: string, seriesId: string) {
 export function useSkipSession(programId: string, seriesId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { sessionId: string; skip: boolean }) =>
+    mutationFn: (v: { sessionId: string; skip: boolean; reason?: string | undefined }) =>
       v.skip
-        ? rpc('skip_session', { p_session_id: v.sessionId })
+        ? rpc('skip_session', { p_session_id: v.sessionId, ...(v.reason ? { p_reason: v.reason } : null) })
         : rpc('restore_session', { p_session_id: v.sessionId }),
     retry: retryNetwork,
     onMutate: async (v) => {
@@ -230,7 +230,7 @@ export function useSkipSession(programId: string, seriesId: string) {
       const previous = qc.getQueryData<SeriesSession[]>(key);
       qc.setQueryData<SeriesSession[]>(key, (rows) =>
         (rows ?? []).map((r) =>
-          r.session_id === v.sessionId ? { ...r, status: v.skip ? 'skipped' : 'scheduled', skip_reason: null } : r,
+          r.session_id === v.sessionId ? { ...r, status: v.skip ? 'skipped' : 'scheduled', skip_reason: v.skip ? (v.reason ?? null) : null } : r,
         ),
       );
       return { previous };

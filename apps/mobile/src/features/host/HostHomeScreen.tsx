@@ -44,7 +44,7 @@ export function HostHomeScreen({ programId }: { programId: string }) {
   const base = `/host/${programId}`;
 
   useEffect(() => {
-    track('screen_viewed', { screen: 'host_home', program_id: programId });
+    track('host_home_viewed', { program_id: programId });
   }, [programId]);
 
   const weekRows = (week.data ?? []).map((w) => weekRow(programId, w, home?.time_zone ?? 'America/Toronto'));
@@ -115,6 +115,7 @@ export function HostHomeScreen({ programId }: { programId: string }) {
                       variant={i === 0 ? 'primary' : 'secondary'}
                       compact
                       href={row.href as Href}
+                      onPress={() => track('host_needs_you_tapped', { program_id: programId, kind: row.kind, action: row.action })}
                       accessibilityLabel={`${row.action}: ${row.title}`}
                       testID={`needs-you-${i}-action`}
                     >

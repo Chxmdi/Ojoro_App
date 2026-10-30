@@ -116,6 +116,7 @@ export function withoutWeekday(name: string, weekday: number): string {
 
 export type NeedsYouRow = {
   key: string;
+  kind: string;
   title: string;
   meta: string;
   action: string;
@@ -143,10 +144,20 @@ export function needsYouRow(programId: string, item: HostNeedsYouItem, index: nu
   const name = item.name ?? 'A session';
   const base = `/host/${programId}`;
   const key = `${item.kind ?? 'item'}-${item.session_id ?? item.object_id ?? index}`;
+  const row = needsYouWords(base, item, d, count, name);
+  return { key, kind: item.kind ?? 'item', ...row };
+}
+
+function needsYouWords(
+  base: string,
+  item: HostNeedsYouItem,
+  d: Record<string, unknown>,
+  count: number,
+  name: string,
+): Omit<NeedsYouRow, 'key' | 'kind'> {
   switch (item.kind) {
     case 'join_requests':
       return {
-        key,
         title: `${plural(count, 'person', 'people')} asked to join`,
         meta: [name, d.approval_required === false ? null : 'approval on'].filter(Boolean).join(' · '),
         action: 'REVIEW',
@@ -155,7 +166,6 @@ export function needsYouRow(programId: string, item: HostNeedsYouItem, index: nu
     case 'waitlist_choice': {
       const waiting = num(d.waiting);
       return {
-        key,
         title: `${plural(count, 'spot')} to fill`,
         meta: [name, waiting != null ? `${waiting} waiting` : null, 'you choose who’s in'].filter(Boolean).join(' · '),
         action: 'CHOOSE',
@@ -164,7 +174,6 @@ export function needsYouRow(programId: string, item: HostNeedsYouItem, index: nu
     }
     case 'refund_request':
       return {
-        key,
         title: `${plural(count || 1, 'refund request')}`,
         meta: [str(d.person_name) ?? item.user_names?.[0] ?? null, str(d.what) ?? name, str(d.when)]
           .filter(Boolean)
@@ -174,7 +183,6 @@ export function needsYouRow(programId: string, item: HostNeedsYouItem, index: nu
       };
     case 'league_result':
       return {
-        key,
         title: 'League result to confirm',
         meta: [str(d.score_line) ?? name, str(d.state)].filter(Boolean).join(' · '),
         action: 'CONFIRM',
@@ -182,7 +190,6 @@ export function needsYouRow(programId: string, item: HostNeedsYouItem, index: nu
       };
     default:
       return {
-        key,
         title: count > 1 ? `${name} · ${count}` : name,
         meta: str(d.meta) ?? '',
         action: 'OPEN',
