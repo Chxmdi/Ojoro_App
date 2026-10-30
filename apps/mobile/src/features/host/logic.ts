@@ -611,10 +611,15 @@ export function rosterMeta(r: RosterRow, tz: string, now: Date): string {
   return parts.join(' · ');
 }
 
+/** Owed and not collected yet (`due`, `due_at_field`): the host can mark it paid at the field. */
+export function paymentDue(status: string | null | undefined): boolean {
+  return status === 'due' || status === 'due_at_field';
+}
+
 /** The roster badge: HOST, or how the spot is paid (ops ledger), or MEMBER. Words, never colour. */
 export function rosterBadge(r: RosterRow): { label: string; signal: boolean } | null {
   if (r.is_host) return { label: 'HOST', signal: true };
-  if (r.payment_label) return { label: r.payment_label.toUpperCase(), signal: r.payment_status === 'due' };
+  if (r.payment_label) return { label: r.payment_label.toUpperCase(), signal: paymentDue(r.payment_status) };
   if (r.is_member) return { label: 'MEMBER', signal: false };
   return null;
 }

@@ -27,6 +27,13 @@ const SUBJECT_WORDS: Record<ReportSubjectKind, string> = {
   challenge_post: 'post',
   challenge_comment: 'comment',
   rivalry: 'rivalry',
+  // Step 6: communities (docs/COMMUNITIES_CONTRACT.md)
+  crew: 'crew',
+  clan: 'clan',
+  clan_run: 'run',
+  clash: 'Clash',
+  // Step 6: hosts (docs/HOSTS_CONTRACT.md)
+  host_program: 'program',
 };
 
 export function subjectWord(kind: ReportSubjectKind): string {

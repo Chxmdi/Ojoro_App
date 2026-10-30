@@ -353,6 +353,18 @@ select ok(exists (select 1 from public.my_notifications() where type::text = 'ho
 select tests.logout();
 select is(private.generic_copy('host_update'), 'A session you''re in has an update.', 'lock-screen words');
 
+-- Ops ledger updates bring their own words (data.text).
+select tests.logout();
+select private.notify(array[tests.u(2)], 'host_update', 'activity', tests.activity_of(tests.id('s')), null, 'host_refund:test',
+  jsonb_build_object('change', 'refund_decided', 'text', 'Ade refunded $8 for Tuesday.'), p_activity => tests.activity_of(tests.id('s')));
+select private.notify(array[tests.u(2)], 'host_update', 'activity', tests.activity_of(tests.id('s')), null, 'host_series:test',
+  jsonb_build_object('change', 'series_updated'), p_activity => tests.activity_of(tests.id('s')));
+select tests.login(2);
+select is((select title from public.my_notifications() where type::text = 'host_update' and data ->> 'change' = 'refund_decided'),
+          'Ade refunded $8 for Tuesday.', 'ops host_update shows data.text');
+select is((select title from public.my_notifications() where type::text = 'host_update' and data ->> 'change' = 'series_updated'),
+          'Your football session changed.', 'series changes keep their words');
+
 -- Report reaches a program; not across a block.
 select tests.login(7);
 select lives_ok($$select public.report('host_program', tests.id('prog'), 'spam')$$, 'report a program');

@@ -16,7 +16,7 @@ and the others: write only through RPCs, map errors by code, idempotency keys pe
   `…200200_host_core_roster_people.sql` (HostHome, roster, requests, People, announcements, tick),
   `…200300_host_core_notifications.sql` (notification words for the new types),
   `…200400_host_core_fixes.sql` (roster order, drifting definition), `…200500_host_core_report.sql`
-  (report a program).
+  (report a program), `…200600_host_core_ops_notification_words.sql` (ops `host_update` words).
 - Client helpers in `@ojoro/contracts` (`hosts.ts`): `hostRpcs`, `hostIdempotentRpcs` (also in
   `idempotentRpcs`), `hostErrorCodes` (also in `ojoroErrorCodes`), row types (`MyHostProgram`,
   `HostHome`, `HostNeedsYouItem`, `HostWeekItem`, `SeriesView`, `SeriesSession`, `SessionView`,
@@ -326,13 +326,14 @@ chat); audiences widen who receives it.
 
 ## Seams for the ops ledger
 
-These private functions return null / nothing in the core; **BE-HOST-OPS replaces them** (`create or
+These private functions return null / nothing in the core migration; **the ops ledger replaces them**
+(it has: all five are live as of `20261030300*`; see HOSTS_OPS_CONTRACT for exact values) (`create or
 replace`, same signature) to fill the money columns without the core reading ledger tables:
 
 | Function | Fills |
 |---|---|
-| `private.host_payment_for(p_session uuid, p_user uuid) returns public.host_payment` (`status`, `label`, `amount_cents`, `currency`, `detail`) | `session_roster.payment_*` |
-| `private.host_person_pass(p_program uuid, p_user uuid) returns public.host_pass_summary` (`kind`, `label`, `renews_on`, `sessions_left`) | `host_people.pass_*`, `host_person.pass_*` |
+| `private.host_payment_for(p_session uuid, p_user uuid) returns public.host_payment` (`status`: `host`, `member`, `pass`, `paid`, `free`, `due_at_field`, `refunded`; `label`, `amount_cents`, `currency`, `detail`) | `session_roster.payment_*` |
+| `private.host_person_pass(p_program uuid, p_user uuid) returns public.host_pass_summary` (`kind`: `drop_in`, `pack`, `monthly`, `free`; `label`, `renews_on`, `sessions_left`) | `host_people.pass_*`, `host_person.pass_*` |
 | `private.host_session_settlement(p_session uuid) returns public.host_settlement` (`settled`, `total`, `note_user_id`, `note`) | `session_view.settled…` |
 | `private.host_needs_you_ops(p_program uuid) returns setof public.host_needs_you_item` | `host_needs_you` rows (refunds, league results) and `host_home.needs_you_count` |
 | `private.host_week_ops(p_program uuid, p_from timestamptz, p_to timestamptz) returns setof public.host_week_item` | `host_week` league rows and `host_home.ops_items_this_week` |
@@ -348,7 +349,7 @@ New `notification_type` values (copy in `my_notifications`, deep link to the ses
 | Type | To | `data` |
 |---|---|---|
 | `host_request` | Hosts | `session_id`: someone asked to join (bundled per session). |
-| `host_update` | People in / asking | `change`: `series_updated` (`fields`), `restored`, `request_approved`, `request_declined` ("couldn't take you this time"), `invite_back`; `session_id`. |
+| `host_update` | People in / asking | `change`: `series_updated` (`fields`), `restored`, `request_approved`, `request_declined` ("couldn't take you this time"), `invite_back`; `session_id`. Ops ledger changes (`refund_decided`, `refund_reopened`, `league_result_confirmed`, `league_result_disputed`, `referee_asked`) carry their words in `data.text`, which becomes the title. |
 | `host_announcement` | Recipients | `announcement_id`, `session_id` (push, at most 2 per session). |
 
 Existing types also fire: `waitlist_promoted`, `activity_changed` (`cancelled` on skip, `time` /

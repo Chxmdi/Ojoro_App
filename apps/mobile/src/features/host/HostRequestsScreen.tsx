@@ -190,6 +190,7 @@ export function HostRequestsScreen({ programId, sessionId }: { programId: string
                       </View>
                       <Button
                         variant="ghost"
+                        className="self-center"
                         href={`/profile/${r.user_id}` as Href}
                         accessibilityHint="Messages aren't built yet; their profile has what they've shared"
                         testID={`request-${r.user_id}-profile`}
