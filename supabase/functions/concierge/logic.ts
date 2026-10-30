@@ -267,7 +267,7 @@ const SENSITIVE =
   /\b(gender|race|racial|ethnic\w*|religio\w*|church|mosque|sexual\w*|gay|straight|pregnan\w*|disab\w*|health|illness|age|aged|older|younger|old|young|elderly|teens?|kids?|women|woman|men|man|girls?|boys?|female|male)\b/i;
 /** Areas, not addresses: no street words, unit numbers or postal codes. */
 const ADDRESS =
-  /\b(rue|street|st|avenue|ave|boulevard|blvd|road|rd|chemin|apt|apartment|suite|unit|floor|postal|zip)\b|\b[a-z]\d[a-z]\s?\d[a-z]\d\b/i;
+  /\b(rue|street|avenue|ave|boulevard|blvd|road|rd|chemin|apt|apartment|suite|unit|floor|postal|zip)\b|\b[a-z]\d[a-z]\s?\d[a-z]\d\b/i;
 const EMOJI = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{20E3}]/u;
 const MARKUP = /https?:|www\.|[@#<>{}[\]`*_|\\]|\n|\bc\d+\b/i;
 
