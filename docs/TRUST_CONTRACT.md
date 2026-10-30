@@ -422,8 +422,7 @@ profile, an unsafe report on a game update) so the queue isn't empty.
 
 ## Not built
 
-- Notifications to users when an appeal is decided or a pause starts/ends (they see it in
-  `my_account_status` / `my_appeals`).
+- A notification when a pause ends on its own at `ends_at` (needs a scheduled tick).
 - Host / clan moderator roles inside their own communities (PRD §11.1): only Ojoro staff here.
 - Age-aware restrictions (PRD §11.1): no birth date is collected yet.
 - Automated detection (spam scoring, image scanning): reports only.
