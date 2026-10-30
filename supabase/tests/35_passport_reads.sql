@@ -344,6 +344,43 @@ select is((select kind::text || '|' || title || '|' || outcome || '|' || persona
 select throws_ok(format($$select * from public.passport_stamps(%L, p_month => '2026-13')$$, tests.u(1)),
   'P0001', 'invalid_argument', 'month is YYYY-MM');
 
+-- One stamp by id, the stamp for a game / Challenge, and ids on milestones.
+select is((select kind::text || '|' || title || '|' || milestone from public.passport_entry(
+             (select entry_id from public.passport_stamps(tests.u(1)) where challenge_event_id = tests.id('r2')))),
+  'challenge|5K|personal_best', 'one stamp by id');
+select is((select count(*)::integer from public.passport_entry('00000000-0000-4000-9000-000000000999')), 0, 'unknown stamp');
+select is((select challenge_outcome from public.passport_entries where id =
+             (select entry_id from public.passport_entry_for(p_event_id => tests.id('r2')))), 'lost', 'my stamp for a Challenge');
+select is((select place_game_number from public.passport_entry_for(p_activity_id =>
+             (select activity_id from public.passport_stamps(tests.u(1)) where milestone = 'place_games'))), 5,
+  'my stamp for a game');
+select is((select count(*)::integer from public.passport_entry_for(p_activity_id => tests.id('r1'))), 0,
+  'no stamp: no row');
+select throws_ok($$select * from public.passport_entry_for()$$, 'P0001', 'invalid_argument', 'a game or a Challenge');
+select is((select (m ->> 'challenge_event_id')::uuid from jsonb_array_elements(public.passport_view(tests.u(1)) -> 'milestones') m
+           where m ->> 'milestone' = 'personal_best'), tests.id('r2'), 'milestones link to the Result');
+select isnt((select m ->> 'activity_id' from jsonb_array_elements(public.passport_view(tests.u(1)) -> 'milestones') m
+             where m ->> 'milestone' = 'place_games'), null, 'and to the Recap');
+select tests.login(2);
+select is((select challenge_outcome from public.passport_entries where id =
+             (select entry_id from public.passport_entry_for(p_event_id => tests.id('r2')))), 'won', 'u2 gets their own');
+select tests.login(3);
+select is((select count(*)::integer from public.passport_entry_for(p_event_id => tests.id('r2'), p_user_id => tests.u(1))),
+  1, 'someone they played with: visible');
+select tests.login(4);
+select is((select count(*)::integer from public.passport_entry_for(p_event_id => tests.id('r2'), p_user_id => tests.u(1))),
+  0, 'a stranger: nothing');
+select is((select count(*)::integer from public.passport_entry(
+             (select id from public.passport_entries where false))), 0, 'null id: nothing');
+select tests.logout();
+select throws_ok(format($$select * from public.passport_entry(%L)$$,
+                        (select id from public.passport_entries where user_id = tests.u(1) limit 1)),
+  'P0001', 'not_authenticated', 'signed out: refused');
+select tests.login(5);
+select is((select count(*)::integer from public.passport_entry_for(p_event_id => tests.id('r2'), p_user_id => tests.u(1))),
+  0, 'blocked: nothing');
+select tests.login(1);
+
 -- Achievements: reached tiers with when, plus the next tier of each ladder for yourself.
 select is((select achieved_at from public.passport_achievements(tests.u(1)) where ladder = 'sessions' and threshold = 1),
   (select min(occurred_at) from public.passport_entries where user_id = tests.u(1)), 'first stamp, when it happened');
