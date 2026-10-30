@@ -264,27 +264,29 @@ select tests.keep('live', tests.game_at(5, tests.id('pitch'), '-20 minutes'));
 select tests.keep('secret', tests.plan_at(7, tests.id('pitch'), '4 hours', 'invite_only'));
 
 select tests.login(10);
-select is((select count(*)::integer from public.place_tonight(tests.id('pitch'))), 2,
+select is((select count(*)::integer from public.place_tonight(tests.id('pitch'), 'week')), 2,
   'tonight here: what you can see (not the invite-only plan)');
 select is(
-  (select array_agg(kind order by starts_at) from public.place_tonight(tests.id('pitch'))),
+  (select array_agg(kind order by starts_at) from public.place_tonight(tests.id('pitch'), 'week')),
   array['activity', 'plan'], 'ordered by start, live first');
 select is(
-  (select meeting_point from public.place_tonight(tests.id('pitch')) where plan_id = tests.id('forming')),
+  (select meeting_point from public.place_tonight(tests.id('pitch'), 'week') where plan_id = tests.id('forming')),
   null, 'no meeting point for people outside the plan');
 select is(
   (select row(member_count, capacity, spots_left, level_label, i_am_in)::text
-   from public.place_tonight(tests.id('pitch')) where plan_id = tests.id('forming')),
+   from public.place_tonight(tests.id('pitch'), 'week') where plan_id = tests.id('forming')),
   row(3, 8, 5, 'Mixed level', false)::text, 'counts and level');
 select tests.login(2);
 select is(
-  (select meeting_point from public.place_tonight(tests.id('pitch')) where plan_id = tests.id('forming')),
+  (select meeting_point from public.place_tonight(tests.id('pitch'), 'week') where plan_id = tests.id('forming')),
   'North pitch', 'members see the exact spot');
 select is(
-  (select i_am_in from public.place_tonight(tests.id('pitch')) where plan_id = tests.id('forming')),
+  (select i_am_in from public.place_tonight(tests.id('pitch'), 'week') where plan_id = tests.id('forming')),
   true, 'and that they are in');
 select tests.login(10);
-select is((select tonight_count from public.place_view(tests.id('pitch'))), 2, 'place_view counts tonight');
+select is((select tonight_count from public.place_view(tests.id('pitch'))),
+  (select count(*)::integer from public.place_tonight(tests.id('pitch'), 'tonight')),
+  'place_view counts what TONIGHT HERE lists (Discover''s tonight)');
 select is(
   (select count(*)::integer from public.place_tonight(tests.id('pitch'), 'tomorrow')), 0, 'tomorrow is empty');
 
@@ -292,11 +294,11 @@ select is(
 select tests.logout();
 select tests.keep('qplan', tests.plan_at(2, tests.id('quiet'), '3 hours', 'public', 'football', 8, 2));
 select tests.login(10);
-select is((select count(*)::integer from public.place_tonight(tests.id('quiet'))), 0,
+select is((select count(*)::integer from public.place_tonight(tests.id('quiet'), 'week')), 0,
   'sensitive place: nothing listed for people not in it');
 select is((select tonight_count from public.place_view(tests.id('quiet'))), 0, 'and not counted');
 select tests.login(3);
-select is((select count(*)::integer from public.place_tonight(tests.id('quiet'))), 1,
+select is((select count(*)::integer from public.place_tonight(tests.id('quiet'), 'week')), 1,
   'sensitive place: you see what you are in');
 select tests.logout();
 

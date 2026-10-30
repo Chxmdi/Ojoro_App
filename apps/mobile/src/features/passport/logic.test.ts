@@ -254,7 +254,8 @@ describe('personal bests and achievements', () => {
       { ladder: 'places', family: 'exploration', threshold: 5, achieved: false, achieved_at: null, current: 3, context: null },
       { ladder: 'sports', family: 'exploration', threshold: 3, achieved: false, achieved_at: null, current: 2, context: null },
     ];
-    const { reached, next } = achievementRows(rows, TZ);
+    const lower = { ...rows[0]!, threshold: 1, achieved_at: '2026-03-01T12:00:00Z' };
+    const { reached, next } = achievementRows([lower, ...rows], TZ);
     expect(reached.map((r) => r.title)).toEqual(['10 GAMES AT ONE PLACE', '10 STAMPS']);
     expect(reached[0]!.meta).toBe('Jeanne-Mance · 09.10.26');
     expect(next.map((r) => r.meta)).toEqual(['2 of 3 so far', '3 of 5 so far']);

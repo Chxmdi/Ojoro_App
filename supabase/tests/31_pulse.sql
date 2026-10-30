@@ -235,39 +235,51 @@ select tests.keep('farplan', tests.plan_at(8, tests.id('far'), '3 hours'));
 select tests.login(10);
 
 select is(
-  (select activity_count from public.pulse() where marker_id = 'place:' || tests.id('pitch')),
+  (select activity_count from public.pulse(null, 'week') where marker_id = 'place:' || tests.id('pitch')),
   3, 'place marker counts what you can see: forming, GAME ON and live (not the invite-only plan)');
 select is(
   (select row(live_count, forming_count, forming_member_count, forming_capacity, live_title)::text
-   from public.pulse() where kind = 'place' and place_id = tests.id('pitch')),
+   from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch')),
   row(1, 1, 3, 8, 'Sparring')::text, 'live and forming parts of the marker: FORMING 3 / 8, the live title');
 select is(
-  (select forming_plan_id from public.pulse() where kind = 'place' and place_id = tests.id('pitch')),
+  (select forming_plan_id from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch')),
   tests.id('forming'), 'the forming pill opens that plan');
 select ok(
-  not exists (select 1 from public.pulse() where place_id = tests.id('far')),
+  not exists (select 1 from public.pulse(null, 'week') where place_id = tests.id('far')),
   'places beyond your radius are left out');
 select ok(
-  exists (select 1 from public.pulse(null, 'tonight', 25) where place_id = tests.id('far')),
+  exists (select 1 from public.pulse(null, 'week', 25) where place_id = tests.id('far')),
   'a wider radius brings them in');
 select ok(
-  (select summary from public.pulse() where kind = 'place' and place_id = tests.id('pitch'))
-    like 'Test Pitch: 3 activities tonight, football forming at 3 of 8, Sparring live now.',
+  (select summary from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch'))
+    like 'Test Pitch: 3 activities this week, football forming at 3 of 8, Sparring live now.',
   'summary is the text alternative for the marker');
 select is(
-  (select round(lat::numeric, 4) from public.pulse() where kind = 'place' and place_id = tests.id('pitch')),
+  (select round(lat::numeric, 4) from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch')),
   45.5165, 'place markers carry the public centroid');
 select is(
-  (select activity_count from public.pulse() where kind = 'area' and area = 'Plateau'),
+  (select activity_count from public.pulse(null, 'week') where kind = 'area' and area = 'Plateau'),
   3, 'the area aggregate sums its places');
 
 -- Filters.
 select is(
-  (select activity_count from public.pulse('running') where kind = 'place' and place_id = tests.id('pitch')),
+  (select activity_count from public.pulse('running', 'week') where kind = 'place' and place_id = tests.id('pitch')),
   null, 'sport filter: nothing for running here, so no marker');
-select ok(
-  not exists (select 1 from public.pulse(null, 'tomorrow') where kind = 'place' and place_id = tests.id('pitch')),
-  'tomorrow: nothing tonight shows');
+select is(
+  coalesce((select live_count from public.pulse(null, 'tomorrow') where kind = 'place' and place_id = tests.id('pitch')), 0),
+  0, 'tomorrow: the game live now is not counted');
+select tests.logout();
+select is(
+  (select row(w_from, w_until)::text from private.pulse_window('tonight', 'America/Toronto')),
+  row(greatest(now(), (((now() at time zone 'America/Toronto')::date + interval '17 hours') at time zone 'America/Toronto')),
+      private.tonight_end('America/Toronto'))::text,
+  'tonight is Discover''s tonight: from 5 PM (or now) until 4 AM');
+select is(
+  (select includes_now from private.pulse_window('tonight', 'America/Toronto')),
+  (now() at time zone 'America/Toronto')::time >= time '17:00'
+    or (now() at time zone 'America/Toronto')::time < time '04:00',
+  'live games count tonight only once the evening has started');
+select tests.login(10);
 select is(
   (select activity_count from public.pulse(null, 'now') where kind = 'place' and place_id = tests.id('pitch')),
   1, 'now: only the live game (nothing starts in the next hour)');
@@ -280,7 +292,7 @@ select throws_ok($$ select * from public.pulse('quidditch') $$, 'P0001', 'sport_
 -- Visibility: the invite-only plan counts for its host only.
 select tests.login(7);
 select is(
-  (select activity_count from public.pulse() where kind = 'place' and place_id = tests.id('pitch')),
+  (select activity_count from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch')),
   4, 'the host sees their own invite-only plan counted');
 
 -- Blocks: a blocked host's plan isn't counted.
@@ -288,7 +300,7 @@ select tests.logout();
 select tests.block(10, 1);
 select tests.login(10);
 select is(
-  (select activity_count from public.pulse() where kind = 'place' and place_id = tests.id('pitch')),
+  (select activity_count from public.pulse(null, 'week') where kind = 'place' and place_id = tests.id('pitch')),
   2, 'a plan hosted by someone you blocked is not counted');
 select tests.logout();
 delete from public.blocks where blocker_id = tests.u(10);
@@ -297,22 +309,22 @@ delete from public.blocks where blocker_id = tests.u(10);
 select tests.plan_at(2, tests.id('quiet'), '3 hours');
 select tests.login(10);
 select ok(
-  not exists (select 1 from public.pulse() where place_id = tests.id('quiet')),
+  not exists (select 1 from public.pulse(null, 'week') where place_id = tests.id('quiet')),
   'a sensitive place is never a marker of its own');
 select is(
-  (select activity_count from public.pulse() where kind = 'area' and area = 'Plateau'),
+  (select activity_count from public.pulse(null, 'week') where kind = 'area' and area = 'Plateau'),
   3, 'one activity at a sensitive place does not reach the area count');
 select tests.logout();
 select tests.plan_at(3, tests.id('quiet'), '4 hours');
 select tests.plan_at(4, tests.id('quiet'), '5 hours');
 select tests.login(10);
 select is(
-  (select activity_count from public.pulse() where kind = 'area' and area = 'Plateau'),
+  (select activity_count from public.pulse(null, 'week') where kind = 'area' and area = 'Plateau'),
   6, 'from three, the sensitive place counts in its area');
 select is(
-  (select suppressed from public.pulse_place(tests.id('quiet'))), true, 'the sheet suppresses a sensitive place');
+  (select suppressed from public.pulse_place(tests.id('quiet'), null, 'week')), true, 'the sheet suppresses a sensitive place');
 select is(
-  (select activity_count from public.pulse_place(tests.id('quiet'))), null, 'with no counts');
+  (select activity_count from public.pulse_place(tests.id('quiet'), null, 'week')), null, 'with no counts');
 select tests.logout();
 
 -- Latent demand: counts only, from k = 3 people, never you, never across a block.
@@ -320,50 +332,53 @@ select tests.signal(1);
 select tests.signal(2);
 select tests.login(10);
 select ok(
-  not exists (select 1 from public.pulse() where kind = 'demand' and area = 'Plateau'),
+  not exists (select 1 from public.pulse(null, 'week') where kind = 'demand' and area = 'Plateau'),
   'two people wanting volleyball is not shown');
 select tests.logout();
 select tests.signal(3);
 select tests.signal(10);
 select tests.login(10);
 select is(
-  (select people_count from public.pulse() where kind = 'demand' and area = 'Plateau' and sport_id = 'volleyball'),
+  (select people_count from public.pulse(null, 'week') where kind = 'demand' and area = 'Plateau' and sport_id = 'volleyball'),
   3, 'three people (not you) is a demand marker');
+select ok(
+  not exists (select 1 from public.pulse(null, 'week') where kind = 'demand' and area <> 'Plateau'),
+  'each person counts once, in their nearest area only');
 select is(
-  (select summary from public.pulse() where kind = 'demand' and area = 'Plateau' and sport_id = 'volleyball'),
-  '3 people want volleyball near Plateau tonight.', 'demand summary is a count near an area');
+  (select summary from public.pulse(null, 'week') where kind = 'demand' and area = 'Plateau' and sport_id = 'volleyball'),
+  '3 people want volleyball near Plateau this week.', 'demand summary is a count near an area');
 select is(
-  (select row(place_id, place_name, activity_count)::text from public.pulse()
+  (select row(place_id, place_name, activity_count)::text from public.pulse(null, 'week')
    where kind = 'demand' and area = 'Plateau'),
   row(null::uuid, null::text, null::integer)::text, 'demand markers name no place');
 select is(
-  (select people_count from public.pulse('football') where kind = 'demand'), null,
+  (select people_count from public.pulse('football', 'week') where kind = 'demand'), null,
   'sport filter applies to demand');
 select tests.logout();
 select tests.block(10, 3);
 select tests.login(10);
 select ok(
-  not exists (select 1 from public.pulse() where kind = 'demand' and area = 'Plateau'),
+  not exists (select 1 from public.pulse(null, 'week') where kind = 'demand' and area = 'Plateau'),
   'a blocked person does not count, so two is hidden again');
 select tests.logout();
 delete from public.blocks where blocker_id = tests.u(10);
 select tests.plan_at(11, tests.id('pitch'), '3 hours', 'public', 'volleyball', 8, 1);
 select tests.login(10);
 select ok(
-  not exists (select 1 from public.pulse() where kind = 'demand' and area = 'Plateau'),
+  not exists (select 1 from public.pulse(null, 'week') where kind = 'demand' and area = 'Plateau'),
   'a volleyball plan forming in the area replaces the demand marker');
 select tests.logout();
 
 -- The sheet.
 select tests.login(10);
 select is(
-  (select headline from public.pulse_place(tests.id('pitch'), 'football')),
-  '3 activities tonight. Football is forming at 3 / 8 for '
+  (select headline from public.pulse_place(tests.id('pitch'), 'football', 'week')),
+  '3 activities this week. Football is forming at 3 / 8 for '
     || to_char((select starts_at from public.plans where id = tests.id('forming')) at time zone 'America/Toronto', 'FMHH12:MI')
     || '.',
   'sheet headline: count and the forming plan');
 select is(
-  (select facts from public.pulse_place(tests.id('pitch'), 'football')),
+  (select facts from public.pulse_place(tests.id('pitch'), 'football', 'week')),
   'Football · turf · floodlit until 11 PM · 0.6 km', 'sheet facts: sport, surface, lights, distance');
 select throws_ok(format('select * from public.pulse_place(%L)', gen_random_uuid()), 'P0001', 'place_unknown',
   'unknown place');
@@ -376,7 +391,7 @@ select ok(
 select is((select provolatile::text from pg_proc where proname = 'pulse' and pronamespace = 'public'::regnamespace),
   'v', 'pulse is volatile (call it with POST)');
 select ok(not has_function_privilege('anon', 'public.pulse(text, text, integer)', 'execute'), 'anon cannot call pulse');
-select throws_ok($$ select * from public.pulse() $$, 'P0001', 'not_authenticated', 'signed out');
+select throws_ok($$ select * from public.pulse(null, 'week') $$, 'P0001', 'not_authenticated', 'signed out');
 
 select * from finish();
 rollback;

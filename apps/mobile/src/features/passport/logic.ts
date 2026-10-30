@@ -254,12 +254,19 @@ export function personalBestMeta(pb: PassportPersonalBest, timeZone?: string): s
 export type AchievementRow = { key: string; title: string; meta: string; achieved: boolean };
 
 /**
- * Reached tiers (newest first) and, for yourself, the next tier of each ladder ("6 of 10"), the
- * closest first. Words only: no points, nothing to spend.
+ * The highest tier reached on each ladder (newest first) and, for yourself, the next tier of each
+ * ladder ("6 of 10"), the closest first. Words only: no points, nothing to spend.
  */
 export function achievementRows(rows: readonly PassportAchievement[], timeZone?: string) {
-  const reached: AchievementRow[] = rows
-    .filter((a) => a.achieved)
+  // Only the highest tier reached on each ladder (and place): 25 STAMPS says 10 STAMPS already.
+  const top = new Map<string, PassportAchievement>();
+  for (const a of rows) {
+    if (!a.achieved) continue;
+    const k = `${a.ladder}-${a.context ?? ''}`;
+    const held = top.get(k);
+    if (!held || a.threshold > held.threshold) top.set(k, a);
+  }
+  const reached: AchievementRow[] = [...top.values()]
     .sort((a, b) => (b.achieved_at ?? '').localeCompare(a.achieved_at ?? ''))
     .map((a) => ({
       key: `${a.ladder}-${a.threshold}-${a.context ?? ''}`,
