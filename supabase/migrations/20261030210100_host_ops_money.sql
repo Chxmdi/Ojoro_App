@@ -1,5 +1,5 @@
 -- Step 6 BE-HOST-OPS: the money ledger (HostMembership, the roster's payment status, refunds, payouts).
--- Schema: 20261030300000_host_ops_schema.sql. Contract: docs/HOSTS_OPS_CONTRACT.md.
+-- Schema: 20261030210000_host_ops_schema.sql. Contract: docs/HOSTS_OPS_CONTRACT.md.
 --
 -- NO MONEY MOVES: provider = 'none' everywhere; no call leaves the database. Real money is Step 8.
 

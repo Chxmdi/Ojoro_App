@@ -1,5 +1,5 @@
 -- Step 6 BE-HOST-OPS: league / season operations (HostSeason; PRD §13 tournament & season operations,
--- §9.15). Schema: 20261030300000_host_ops_schema.sql. Contract: docs/HOSTS_OPS_CONTRACT.md.
+-- §9.15). Schema: 20261030210000_host_ops_schema.sql. Contract: docs/HOSTS_OPS_CONTRACT.md.
 --
 -- Captains send a score; the host confirms it (CONFIRM RESULT) or disputes it. A confirmed result is a
 -- host_league_results row, insert-only: standings are computed from those rows on every read, with the

@@ -13,7 +13,7 @@
 -- integer cents plus an ISO currency.
 --
 -- The Ojoro service fee is a PLACEHOLDER and lives in exactly one place: private.host_service_fee_cents()
--- (20261030300100). Nothing else knows the rate.
+-- (20261030210100). Nothing else knows the rate.
 --
 -- Model:
 --   host_passes             What a program sells: drop-in, 10-pack (pack), monthly, free.
