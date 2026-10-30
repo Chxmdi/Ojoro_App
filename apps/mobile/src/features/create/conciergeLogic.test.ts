@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
+import type { ConciergeAnswer, ConciergeIdea } from '@ojoro/contracts';
+
 import {
+  answerIdeas,
+  answerKey,
+  answerWhy,
   conciergeErrorLine,
+  invokeOutcome,
+  nothingFitsPanel,
+  rulesFallback,
   conciergeQuery,
   confirmLabel,
   ideaCount,
@@ -92,5 +100,63 @@ describe('Concierge', () => {
     expect(conciergeErrorLine('invalid_argument', 'minutes')).toContain('15 minutes to 8 hours');
     expect(conciergeErrorLine('sport_unknown', null)).toContain("doesn't know that sport");
     expect(conciergeErrorLine('network', null)).toBeNull();
+  });
+});
+
+describe('Concierge answers', () => {
+  const best = { ...plan, matched: true } as unknown as ConciergeIdea;
+  const other = { ...plan, plan_id: 'p2', reason: "it's 2 km away", matched: true } as unknown as ConciergeIdea;
+  const answer: ConciergeAnswer = {
+    source: 'ai',
+    fallback_reason: null,
+    outcome: 'match',
+    best,
+    why: 'it fits your 90 minutes and 3 people you know are in',
+    more: [other],
+    start: null,
+    sport_id: 'football',
+  };
+
+  it("uses the answer's WHY for the best match and each idea's reason for the rest", () => {
+    expect(answerWhy(answer, best as unknown as Idea)).toBe('Why: it fits your 90 minutes and 3 people you know are in.');
+    expect(answerWhy(answer, other as unknown as Idea)).toBe("Why: it's 2 km away.");
+    expect(answerWhy({ ...answer, why: null }, best as unknown as Idea)).toBe(ideaWhy(plan));
+  });
+
+  it('lists the best match first and keys the answer', () => {
+    expect(answerIdeas(answer).map((i) => i.plan_id)).toEqual(['p1', 'p2']);
+    expect(answerIdeas({ best: null, more: [other] }).map((i) => i.plan_id)).toEqual(['p2']);
+    expect(answerKey(answer)).toBe('match||p1|p2');
+    expect(answerKey(undefined)).toBe('');
+  });
+
+  it('says how to start something when nothing fits, in fixed words', () => {
+    expect(nothingFitsPanel({ outcome: 'nothing_fits', start: 'down_for' })).toMatchObject({ action: "SAY YOU'RE DOWN", start: 'down_for' });
+    expect(nothingFitsPanel({ outcome: 'nothing_fits', start: null }).start).toBe('down_for');
+    expect(nothingFitsPanel({ outcome: 'nothing_fits', start: 'quick_plan' }).action).toBe('QUICK PLAN');
+    expect(nothingFitsPanel({ outcome: 'nothing_fits', start: 'activity' }).action).toBe('ACTIVITY');
+    expect(nothingFitsPanel({ outcome: 'nothing_fits', start: 'call_out' }).action).toBe('CALL OUT');
+    const off = nothingFitsPanel({ outcome: 'not_movement', start: 'call_out' });
+    expect(off).toMatchObject({ overline: 'TELL OJORO WHAT YOU WANT TO DO', start: 'down_for' });
+    for (const s of ['down_for', 'quick_plan', 'activity', 'call_out'] as const) {
+      const p = nothingFitsPanel({ outcome: 'nothing_fits', start: s });
+      expect(p.body).not.toMatch(/!|\$|money|odds/);
+    }
+  });
+
+  it('decides between the answer, the rules fallback and an error', () => {
+    expect(invokeOutcome(200, answer)).toEqual({ kind: 'answer', answer });
+    expect(invokeOutcome(200, { nope: true })).toEqual({ kind: 'fallback' });
+    expect(invokeOutcome(null, null)).toEqual({ kind: 'fallback' });
+    expect(invokeOutcome(404, { message: 'not found' })).toEqual({ kind: 'fallback' });
+    expect(invokeOutcome(503, { code: 'BOOT_ERROR' })).toEqual({ kind: 'fallback' });
+    const bad = { code: 'P0001', message: 'invalid_argument', details: 'text' };
+    expect(invokeOutcome(400, bad)).toEqual({ kind: 'error', body: bad });
+    expect(invokeOutcome(502, bad)).toEqual({ kind: 'fallback' });
+  });
+
+  it('shapes the rules rows when the function is unreachable', () => {
+    const a = rulesFallback([plan as never]);
+    expect(a).toMatchObject({ source: 'rules', fallback_reason: 'unreachable', outcome: 'match' });
   });
 });

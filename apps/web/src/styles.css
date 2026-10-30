@@ -1,0 +1,542 @@
+/*
+ * Ojoro staff admin. Colours, spacing, radius and type come from the CSS variables that
+ * lib/tokensCss.ts builds from @ojoro/design-tokens. Six colours only, through semantic tokens.
+ * Square corners except pills (things you press) and the disc (people). No shadows.
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+}
+body {
+  min-height: 100vh;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+a {
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  background: var(--inverse);
+  color: var(--on-inverse);
+  padding: var(--space-3) var(--space-4);
+  z-index: 10;
+}
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+/* Type ------------------------------------------------------------------------------------------ */
+.display {
+  font-family: 'Anton', 'Inter', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin: 0;
+}
+.display-sm {
+  font-size: var(--display-sm-size);
+  line-height: var(--display-sm-line);
+  letter-spacing: var(--display-sm-tracking);
+}
+.display-xs {
+  font-size: var(--display-xs-size);
+  line-height: var(--display-xs-line);
+  letter-spacing: var(--display-xs-tracking);
+}
+.title {
+  font-size: var(--title-size);
+  line-height: var(--title-line);
+  font-weight: var(--title-weight);
+  letter-spacing: var(--title-tracking);
+  margin: 0;
+}
+.title-sm {
+  font-size: var(--title-sm-size);
+  line-height: var(--title-sm-line);
+  font-weight: var(--title-sm-weight);
+  margin: 0;
+}
+.body-sm {
+  font-size: var(--body-sm-size);
+  line-height: var(--body-sm-line);
+}
+.label {
+  font-size: var(--label-size);
+  line-height: var(--label-line);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+}
+.label-sm {
+  font-size: var(--label-sm-size);
+  line-height: var(--label-sm-line);
+  font-weight: var(--label-sm-weight);
+  letter-spacing: var(--label-sm-tracking);
+  text-transform: uppercase;
+}
+.caption {
+  font-size: var(--caption-size);
+  line-height: var(--caption-line);
+  font-weight: var(--caption-weight);
+}
+.muted {
+  color: var(--text-muted);
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.mono {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: var(--caption-size);
+  word-break: break-all;
+}
+
+/* Shell ----------------------------------------------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 0 var(--space-8);
+  min-height: 64px;
+  border-bottom: var(--border-strong) solid var(--text);
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+.nav {
+  display: flex;
+  gap: var(--space-1);
+  flex: 1;
+  flex-wrap: wrap;
+}
+.nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  text-decoration: none;
+  border-bottom: var(--border-strong) solid transparent;
+}
+.nav a[aria-current='page'] {
+  border-bottom-color: var(--signal);
+}
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.section {
+  border-top: var(--border-hair) solid var(--line);
+  padding-top: var(--space-6);
+  margin-top: var(--space-8);
+}
+.section > h2 {
+  margin: 0 0 var(--space-4);
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: var(--space-10);
+}
+@media (max-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  main {
+    padding: var(--space-5);
+  }
+  .topbar {
+    padding: 0 var(--space-5);
+    gap: var(--space-4);
+  }
+}
+.raised {
+  background: var(--surface-raised);
+  padding: var(--space-5);
+}
+dl.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+}
+dl.facts dt {
+  color: var(--text-muted);
+}
+dl.facts dd {
+  margin: 0;
+}
+
+/* Buttons --------------------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  border: var(--border-strong) solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 140ms cubic-bezier(0.2, 0, 0, 1);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.btn-primary {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--on-signal);
+}
+.btn-inverse {
+  background: var(--inverse);
+  border-color: var(--inverse);
+  color: var(--on-inverse);
+}
+.btn-ghost {
+  border-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0 var(--space-3);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn-small {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+}
+
+/* Forms ----------------------------------------------------------------------------------------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.input,
+.select,
+.textarea {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-hair) solid var(--line-strong);
+  border-radius: var(--radius-none);
+  background: var(--surface);
+}
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+.input[aria-invalid='true'],
+.textarea[aria-invalid='true'] {
+  border-width: var(--border-strong);
+  border-color: var(--text);
+}
+.field-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-weight: 600;
+}
+.filters {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding: var(--space-4) 0;
+  border-top: var(--border-hair) solid var(--line);
+  border-bottom: var(--border-hair) solid var(--line);
+  margin-bottom: var(--space-4);
+}
+.filters .field {
+  min-width: 160px;
+}
+
+/* Tables ---------------------------------------------------------------------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  /* Contains the screen-reader-only spans inside cells, so they never widen the page. */
+  position: relative;
+}
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+}
+table.data caption {
+  text-align: left;
+  padding-bottom: var(--space-3);
+}
+table.data th {
+  text-align: left;
+  border-bottom: var(--border-strong) solid var(--text);
+  padding: var(--space-2) var(--space-3);
+  vertical-align: bottom;
+}
+table.data td {
+  border-bottom: var(--border-hair) solid var(--line);
+  padding: var(--space-3);
+  vertical-align: top;
+}
+table.data tbody tr:hover {
+  background: var(--surface-raised);
+}
+table.data td a.row-link {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+/* Status: always words; icon and border weight carry it too, never colour alone. ---------------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border: var(--border-hair) solid var(--line-strong);
+  font-size: var(--label-sm-size);
+  line-height: var(--label-sm-line);
+  font-weight: var(--label-sm-weight);
+  letter-spacing: var(--label-sm-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tag-strong {
+  border-width: var(--border-strong);
+  border-color: var(--text);
+}
+.tag-signal {
+  background: var(--signal);
+  color: var(--on-signal);
+  border-color: var(--signal);
+}
+.tag-quiet {
+  border-style: dashed;
+  color: var(--text-muted);
+}
+.meter {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+}
+.meter i {
+  width: 6px;
+  height: 12px;
+  background: var(--track);
+  display: block;
+}
+.meter i.on {
+  background: var(--text);
+}
+
+/* Notices, skeletons, toasts, dialogs ---------------------------------------------------------- */
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-top: var(--border-hair) solid var(--line-strong);
+  background: var(--surface-raised);
+  margin-bottom: var(--space-4);
+}
+.notice-error {
+  border-top: var(--border-poster) solid var(--text);
+}
+.notice .notice-body {
+  flex: 1;
+}
+.notice p {
+  margin: 0;
+}
+.empty {
+  padding: var(--space-12) 0;
+  border-top: var(--border-hair) solid var(--line);
+  border-bottom: var(--border-hair) solid var(--line);
+}
+.empty p {
+  margin: var(--space-2) 0 0;
+}
+.skeleton {
+  display: block;
+  background: var(--track);
+  height: 16px;
+  margin: var(--space-3) 0;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-6);
+  transform: translateX(-50%);
+  background: var(--inverse);
+  color: var(--on-inverse);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-5);
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  max-width: calc(100vw - 32px);
+  z-index: 20;
+}
+.toast .btn {
+  color: var(--on-inverse);
+  border-color: var(--on-inverse);
+}
+.toast .btn:focus-visible {
+  outline-color: var(--on-inverse);
+}
+dialog.modal {
+  border: var(--border-strong) solid var(--text);
+  border-radius: var(--radius-none);
+  padding: var(--space-6);
+  width: min(520px, calc(100vw - 32px));
+  background: var(--surface);
+  color: var(--text);
+}
+dialog.modal::backdrop {
+  background: rgba(0, 0, 0, 0.64);
+}
+dialog.modal h2 {
+  margin: 0 0 var(--space-3);
+}
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
+}
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.action-list .btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+/* Sign in --------------------------------------------------------------------------------------- */
+.signin {
+  max-width: 420px;
+  margin: var(--space-16) auto;
+  padding: 0 var(--space-5);
+}
+.signin form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+}
+.offline-bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  background: var(--inverse);
+  color: var(--on-inverse);
+}
+.subject {
+  border: var(--border-hair) solid var(--line-strong);
+  padding: var(--space-5);
+}
+.subject blockquote {
+  margin: var(--space-3) 0 0;
+  padding-left: var(--space-4);
+  border-left: var(--border-strong) solid var(--line-strong);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.timeline li {
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-hair) solid var(--line);
+}

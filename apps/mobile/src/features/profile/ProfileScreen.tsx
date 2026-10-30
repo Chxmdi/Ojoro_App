@@ -31,6 +31,7 @@ import { rivalryLink, rivalryWith } from '@/features/challenges/logic';
 import { YourCrews } from '@/features/crews/CrewsScreens';
 import { useReportBlock } from '@/features/safety';
 import { firstName } from '@/features/safety/reasons';
+import { ShowUpAppealEntry } from '@/features/safety/ShowUpAppealEntry';
 import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf, rpc } from '@/lib/rpc';
@@ -384,6 +385,7 @@ function ReputationSection({
           {"From people you've played with. A signal only appears after 5 confirmations."}
         </Text>
       ) : null}
+      {self ? <ShowUpAppealEntry /> : null}
     </View>
   );
 }
@@ -534,7 +536,7 @@ function UnavailableProfile({ userId }: { userId: string }) {
 
 /** The You header's more button: privacy, blocked people, sign out. Not designed. */
 function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area' | '/settings/notifications') => {
+  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area' | '/settings/notifications' | '/pay') => {
     onClose();
     router.push(href);
   };
@@ -587,6 +589,14 @@ function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           meta="Unblock someone"
           trailing="chevron"
           onPress={() => go('/settings/blocked')}
+        />
+        <Strip
+          title="Passes and payments"
+          titleVariant="title-sm"
+          meta="Your packs, memberships and what you paid in the app"
+          trailing="chevron"
+          onPress={() => go('/pay')}
+          testID="settings-payments"
         />
       </StripList>
     </Sheet>

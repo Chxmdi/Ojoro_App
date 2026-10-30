@@ -25,6 +25,7 @@ import { track } from '@/lib/analytics';
 import { useUserId } from '@/lib/auth';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf } from '@/lib/rpc';
+import { SessionPayBlock } from '@/features/payments/ui';
 import { useReportBlock } from '@/features/safety';
 
 import { useCheckIn } from '../checkin/hooks';
@@ -291,6 +292,11 @@ function ActivityBody({
         </View>
 
         <GameLinks id={card.id} status={status} inGame={inGame} />
+
+        {/* Step 8: a host session's price, how my spot is paid, PAY and GET A PASS (features/payments). */}
+        {!isHost && (status === 'confirmed' || status === 'live') ? (
+          <SessionPayBlock activityId={card.id} inGame={me === 'player' || me === 'checked-in'} />
+        ) : null}
 
         <ActionSection card={card} now={now} tz={tz} online={online} isHost={isHost} status={status} me={me} />
       </View>

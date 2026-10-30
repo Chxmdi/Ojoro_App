@@ -2842,6 +2842,7 @@ export type Database = {
           pass_id: string | null;
           program_id: string;
           provider: string;
+          provider_invoice: string | null;
           provider_ref: string | null;
           recorded_by: string | null;
           session_id: string | null;
@@ -2862,6 +2863,7 @@ export type Database = {
           pass_id?: string | null;
           program_id: string;
           provider?: string;
+          provider_invoice?: string | null;
           provider_ref?: string | null;
           recorded_by?: string | null;
           session_id?: string | null;
@@ -2881,6 +2883,7 @@ export type Database = {
           pass_id?: string | null;
           program_id?: string;
           provider?: string;
+          provider_invoice?: string | null;
           provider_ref?: string | null;
           recorded_by?: string | null;
           session_id?: string | null;
@@ -2926,6 +2929,90 @@ export type Database = {
           },
           {
             foreignKeyName: 'host_charges_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_disputes: {
+        Row: {
+          amount_cents: number;
+          charge_id: string | null;
+          closed_at: string | null;
+          currency: string;
+          id: string;
+          opened_at: string;
+          program_id: string;
+          provider: string;
+          provider_ref: string;
+          provider_status: string | null;
+          reason: string | null;
+          refund_id: string | null;
+          status: Database['public']['Enums']['host_dispute_status'];
+          updated_at: string;
+          user_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          charge_id?: string | null;
+          closed_at?: string | null;
+          currency: string;
+          id?: string;
+          opened_at?: string;
+          program_id: string;
+          provider?: string;
+          provider_ref: string;
+          provider_status?: string | null;
+          reason?: string | null;
+          refund_id?: string | null;
+          status?: Database['public']['Enums']['host_dispute_status'];
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          amount_cents?: number;
+          charge_id?: string | null;
+          closed_at?: string | null;
+          currency?: string;
+          id?: string;
+          opened_at?: string;
+          program_id?: string;
+          provider?: string;
+          provider_ref?: string;
+          provider_status?: string | null;
+          reason?: string | null;
+          refund_id?: string | null;
+          status?: Database['public']['Enums']['host_dispute_status'];
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_disputes_charge_id_fkey';
+            columns: ['charge_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_charges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_disputes_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_disputes_refund_id_fkey';
+            columns: ['refund_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_refunds';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_disputes_user_id_fkey';
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
@@ -3523,6 +3610,8 @@ export type Database = {
           pass_id: string;
           period_ends_at: string | null;
           program_id: string;
+          provider: string;
+          provider_ref: string | null;
           renews: boolean;
           sessions_total: number | null;
           started_at: string;
@@ -3540,6 +3629,8 @@ export type Database = {
           pass_id: string;
           period_ends_at?: string | null;
           program_id: string;
+          provider?: string;
+          provider_ref?: string | null;
           renews?: boolean;
           sessions_total?: number | null;
           started_at?: string;
@@ -3556,6 +3647,8 @@ export type Database = {
           pass_id?: string;
           period_ends_at?: string | null;
           program_id?: string;
+          provider?: string;
+          provider_ref?: string | null;
           renews?: boolean;
           sessions_total?: number | null;
           started_at?: string;
@@ -3756,6 +3849,70 @@ export type Database = {
             columns: ['series_id'];
             isOneToOne: false;
             referencedRelation: 'host_series';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_payment_accounts: {
+        Row: {
+          account_id: string;
+          charges_enabled: boolean;
+          created_at: string;
+          created_by: string | null;
+          details_submitted: boolean;
+          disabled_reason: string | null;
+          livemode: boolean;
+          payouts_enabled: boolean;
+          program_id: string;
+          provider: string;
+          ready_at: string | null;
+          requirements_due: string[];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          account_id: string;
+          charges_enabled?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          details_submitted?: boolean;
+          disabled_reason?: string | null;
+          livemode?: boolean;
+          payouts_enabled?: boolean;
+          program_id: string;
+          provider?: string;
+          ready_at?: string | null;
+          requirements_due?: string[];
+          updated_at?: string;
+        };
+        Update: {
+          account_id?: string;
+          charges_enabled?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          details_submitted?: boolean;
+          disabled_reason?: string | null;
+          livemode?: boolean;
+          payouts_enabled?: boolean;
+          program_id?: string;
+          provider?: string;
+          ready_at?: string | null;
+          requirements_due?: string[];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_payment_accounts_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_payment_accounts_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: true;
+            referencedRelation: 'host_programs';
             referencedColumns: ['id'];
           },
         ];
@@ -4091,6 +4248,67 @@ export type Database = {
             columns: ['sport_id'];
             isOneToOne: false;
             referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_provider_payouts: {
+        Row: {
+          amount_cents: number;
+          arrival_date: string | null;
+          created_at: string;
+          currency: string;
+          failure_code: string | null;
+          id: string;
+          payout_id: string | null;
+          program_id: string;
+          provider: string;
+          provider_ref: string;
+          status: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          arrival_date?: string | null;
+          created_at?: string;
+          currency: string;
+          failure_code?: string | null;
+          id?: string;
+          payout_id?: string | null;
+          program_id: string;
+          provider?: string;
+          provider_ref: string;
+          status: string;
+          updated_at?: string;
+        };
+        Update: {
+          amount_cents?: number;
+          arrival_date?: string | null;
+          created_at?: string;
+          currency?: string;
+          failure_code?: string | null;
+          id?: string;
+          payout_id?: string | null;
+          program_id?: string;
+          provider?: string;
+          provider_ref?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_provider_payouts_payout_id_fkey';
+            columns: ['payout_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_payouts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_provider_payouts_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
             referencedColumns: ['id'];
           },
         ];
@@ -5239,6 +5457,137 @@ export type Database = {
           },
         ];
       };
+      payment_checkouts: {
+        Row: {
+          account_id: string;
+          amount_cents: number;
+          application_fee_cents: number;
+          charge_id: string | null;
+          completed_at: string | null;
+          created_at: string;
+          currency: string;
+          expires_at: string | null;
+          id: string;
+          idempotency_key: string;
+          kind: Database['public']['Enums']['payment_checkout_kind'];
+          livemode: boolean;
+          membership_id: string | null;
+          pass_id: string | null;
+          program_id: string;
+          provider: string;
+          provider_invoice: string | null;
+          provider_payment_intent: string | null;
+          provider_session_id: string | null;
+          provider_subscription: string | null;
+          refund_reason: string | null;
+          session_id: string | null;
+          status: Database['public']['Enums']['payment_checkout_status'];
+          updated_at: string;
+          url: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          account_id: string;
+          amount_cents: number;
+          application_fee_cents?: number;
+          charge_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          currency: string;
+          expires_at?: string | null;
+          id?: string;
+          idempotency_key: string;
+          kind: Database['public']['Enums']['payment_checkout_kind'];
+          livemode?: boolean;
+          membership_id?: string | null;
+          pass_id?: string | null;
+          program_id: string;
+          provider?: string;
+          provider_invoice?: string | null;
+          provider_payment_intent?: string | null;
+          provider_session_id?: string | null;
+          provider_subscription?: string | null;
+          refund_reason?: string | null;
+          session_id?: string | null;
+          status?: Database['public']['Enums']['payment_checkout_status'];
+          updated_at?: string;
+          url?: string | null;
+          user_id: string;
+        };
+        Update: {
+          account_id?: string;
+          amount_cents?: number;
+          application_fee_cents?: number;
+          charge_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          currency?: string;
+          expires_at?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          kind?: Database['public']['Enums']['payment_checkout_kind'];
+          livemode?: boolean;
+          membership_id?: string | null;
+          pass_id?: string | null;
+          program_id?: string;
+          provider?: string;
+          provider_invoice?: string | null;
+          provider_payment_intent?: string | null;
+          provider_session_id?: string | null;
+          provider_subscription?: string | null;
+          refund_reason?: string | null;
+          session_id?: string | null;
+          status?: Database['public']['Enums']['payment_checkout_status'];
+          updated_at?: string;
+          url?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'payment_checkouts_charge_id_fkey';
+            columns: ['charge_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_charges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payment_checkouts_membership_id_fkey';
+            columns: ['membership_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_memberships';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payment_checkouts_pass_id_fkey';
+            columns: ['pass_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_passes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payment_checkouts_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payment_checkouts_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'payment_checkouts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       personal_bests: {
         Row: {
           challenge_event_id: string;
@@ -6090,6 +6439,7 @@ export type Database = {
       };
       reports: {
         Row: {
+          case_id: string | null;
           created_at: string;
           id: string;
           note: string | null;
@@ -6101,6 +6451,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          case_id?: string | null;
           created_at?: string;
           id?: string;
           note?: string | null;
@@ -6111,6 +6462,7 @@ export type Database = {
           subject_kind: Database['public']['Enums']['report_subject'];
         };
         Update: {
+          case_id?: string | null;
           created_at?: string;
           id?: string;
           note?: string | null;
@@ -7005,6 +7357,10 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      begin_host_checkout: {
+        Args: { p_idempotency_key: string; p_pass_id?: string; p_session_id?: string };
+        Returns: Json;
+      };
       block_user: { Args: { p_user_id: string }; Returns: boolean };
       call_out_view: {
         Args: { p_call_out_id: string };
@@ -7685,6 +8041,9 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      concierge_ai_gate: { Args: { p_user_id: string }; Returns: Json };
+      concierge_ai_record: { Args: { p_payload: Json; p_user_id: string }; Returns: undefined };
+      concierge_candidates: { Args: { p_limit?: number; p_text?: string }; Returns: Json };
       concierge_suggest: {
         Args: { p_limit?: number; p_minutes?: number; p_sport_id?: string; p_text?: string };
         Returns: {
@@ -8630,6 +8989,7 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      host_payment_account: { Args: { p_program_id: string }; Returns: Json };
       host_people: {
         Args: { p_filter?: string; p_program_id: string; p_query?: string };
         Returns: {
@@ -8715,6 +9075,10 @@ export type Database = {
           team_count: number;
           to_confirm_count: number;
         }[];
+      };
+      host_purchase_options: {
+        Args: { p_program_id: string; p_session_id?: string };
+        Returns: Json;
       };
       host_service_fee_policy: { Args: Record<PropertyKey, never>; Returns: Json };
       host_session_check_in: {
@@ -8952,6 +9316,8 @@ export type Database = {
         };
         Returns: boolean;
       };
+      my_account_status: { Args: Record<PropertyKey, never>; Returns: Json };
+      my_appeals: { Args: Record<PropertyKey, never>; Returns: Json };
       my_blocks: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -9045,6 +9411,7 @@ export type Database = {
           upcoming_sessions: number;
         }[];
       };
+      my_missed_games: { Args: { p_limit?: number }; Returns: Json };
       my_notifications: {
         Args: { p_limit?: number };
         Returns: {
@@ -9094,6 +9461,7 @@ export type Database = {
           rivalry_id: string;
         }[];
       };
+      my_staff_role: { Args: Record<PropertyKey, never>; Returns: string };
       notification_preferences: {
         Args: Record<PropertyKey, never>;
         Returns: Database['public']['CompositeTypes']['notification_prefs_state'];
@@ -9246,6 +9614,34 @@ export type Database = {
         }[];
       };
       passport_view: { Args: { p_user_id: string }; Returns: Json };
+      payment_checkout: { Args: { p_checkout_id: string }; Returns: Json };
+      payments_attach_account: {
+        Args: { p_account_id: string; p_program_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      payments_attach_checkout: {
+        Args: {
+          p_checkout_id: string;
+          p_expires_at?: string;
+          p_provider_session_id: string;
+          p_url: string;
+        };
+        Returns: Json;
+      };
+      payments_checkout_params_for: { Args: { p_checkout_id: string }; Returns: Json };
+      payments_claim_outbox: { Args: { p_limit?: number }; Returns: Json };
+      payments_complete_outbox: {
+        Args: { p_job_id: string; p_provider_status?: string; p_result_ref: string };
+        Returns: undefined;
+      };
+      payments_connect_context: { Args: { p_program_id: string }; Returns: Json };
+      payments_fail_outbox: {
+        Args: { p_error: string; p_job_id: string; p_retryable?: boolean };
+        Returns: string;
+      };
+      payments_mode_policy: { Args: Record<PropertyKey, never>; Returns: Json };
+      payments_record_stripe_event: { Args: { p_event: Json }; Returns: Json };
+      payments_update_account: { Args: { p_account: Json }; Returns: Json };
       people_to_move_with: {
         Args: { p_limit?: number };
         Returns: {
@@ -10363,6 +10759,122 @@ export type Database = {
           sport_name: string;
         }[];
       };
+      staff_appeal: { Args: { p_appeal_id: string }; Returns: Json };
+      staff_appeals: {
+        Args: { p_cursor?: string; p_kinds?: string[]; p_limit?: number; p_status?: string[] };
+        Returns: Json;
+      };
+      staff_assign_case: {
+        Args: { p_case_id: string; p_idempotency_key?: string; p_staff_id?: string };
+        Returns: Json;
+      };
+      staff_audit_log: {
+        Args: {
+          p_actions?: string[];
+          p_actor?: string;
+          p_case_id?: string;
+          p_cursor?: string;
+          p_limit?: number;
+          p_target_user?: string;
+        };
+        Returns: Json;
+      };
+      staff_case: { Args: { p_case_id: string }; Returns: Json };
+      staff_decide_appeal: {
+        Args: {
+          p_appeal_id: string;
+          p_decision: string;
+          p_effect?: string;
+          p_idempotency_key?: string;
+          p_note_to_user?: string;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
+      staff_find_users: { Args: { p_limit?: number; p_query: string }; Returns: Json };
+      staff_hide_content: {
+        Args: {
+          p_case_id?: string;
+          p_idempotency_key?: string;
+          p_reason: string;
+          p_subject_id: string;
+          p_subject_kind: Database['public']['Enums']['report_subject'];
+        };
+        Returns: Json;
+      };
+      staff_pause_account: {
+        Args: {
+          p_case_id?: string;
+          p_ends_at?: string;
+          p_idempotency_key?: string;
+          p_note_to_user?: string;
+          p_reason: string;
+          p_reason_code: Database['public']['Enums']['report_reason'];
+          p_user_id: string;
+        };
+        Returns: Json;
+      };
+      staff_places: {
+        Args: { p_limit?: number; p_query?: string; p_sensitive?: boolean };
+        Returns: Json;
+      };
+      staff_queue: {
+        Args: {
+          p_assigned?: string;
+          p_cursor?: string;
+          p_kinds?: string[];
+          p_limit?: number;
+          p_severity?: string[];
+          p_status?: string[];
+        };
+        Returns: Json;
+      };
+      staff_resolve_case: {
+        Args: {
+          p_case_id: string;
+          p_idempotency_key?: string;
+          p_outcome: string;
+          p_reason: string;
+        };
+        Returns: Json;
+      };
+      staff_restore_account: {
+        Args: { p_idempotency_key?: string; p_reason: string; p_user_id: string };
+        Returns: Json;
+      };
+      staff_restore_content: {
+        Args: { p_hide_id: string; p_idempotency_key?: string; p_reason: string };
+        Returns: Json;
+      };
+      staff_set_place_sensitive: {
+        Args: {
+          p_idempotency_key?: string;
+          p_place_id: string;
+          p_reason: string;
+          p_sensitive: boolean;
+        };
+        Returns: Json;
+      };
+      staff_set_role: {
+        Args: { p_idempotency_key?: string; p_reason: string; p_role: string; p_user_id: string };
+        Returns: Json;
+      };
+      staff_unassign_case: {
+        Args: { p_case_id: string; p_idempotency_key?: string };
+        Returns: Json;
+      };
+      staff_user: { Args: { p_user_id: string }; Returns: Json };
+      staff_void_reputation: {
+        Args: {
+          p_activity_id?: string;
+          p_case_id?: string;
+          p_giver_id: string;
+          p_idempotency_key?: string;
+          p_reason: string;
+          p_subject_id: string;
+        };
+        Returns: Json;
+      };
       start_activity: {
         Args: { p_activity_id: string };
         Returns: Database['public']['Enums']['activity_status'];
@@ -10395,6 +10907,15 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      submit_appeal: {
+        Args: {
+          p_idempotency_key: string;
+          p_kind: string;
+          p_message: string;
+          p_subject_id: string;
+        };
+        Returns: Json;
       };
       submit_challenge_result: {
         Args: {
@@ -10781,6 +11302,7 @@ export type Database = {
       host_charge_kind: 'drop_in' | 'pack' | 'monthly' | 'monthly_renewal';
       host_charge_method: 'app' | 'at_field' | 'host_recorded';
       host_charge_status: 'due' | 'paid' | 'failed' | 'void';
+      host_dispute_status: 'open' | 'won' | 'lost';
       host_fixture_status: 'scheduled' | 'postponed' | 'played' | 'cancelled';
       host_league_result_source: 'captains_agree' | 'host_entered';
       host_league_status: 'draft' | 'active' | 'complete';
@@ -10803,7 +11325,12 @@ export type Database = {
       host_payout_status: 'scheduled' | 'paid' | 'failed';
       host_referee_status: 'asked' | 'accepted' | 'declined';
       host_refund_decision: 'full' | 'partial' | 'keep';
-      host_refund_reason: 'spot_filled' | 'host_decision' | 'session_cancelled';
+      host_refund_reason:
+        | 'spot_filled'
+        | 'host_decision'
+        | 'session_cancelled'
+        | 'provider_initiated'
+        | 'dispute_lost';
       host_refund_request_status:
         'open' | 'refunded_full' | 'refunded_partial' | 'kept' | 'withdrawn';
       host_refund_status: 'pending' | 'succeeded' | 'failed' | 'cancelled';
@@ -10844,6 +11371,11 @@ export type Database = {
         | 'host_update'
         | 'host_request';
       passport_entry_kind: 'game' | 'challenge';
+      payment_checkout_kind: 'drop_in' | 'pack' | 'monthly';
+      payment_checkout_status:
+        'creating' | 'open' | 'completed' | 'expired' | 'failed' | 'refunded';
+      payment_outbox_kind: 'refund' | 'sync_subscription' | 'cancel_subscription';
+      payment_outbox_status: 'queued' | 'sending' | 'done' | 'failed' | 'cancelled';
       place_kind:
         | 'park'
         | 'pitch'
@@ -11363,6 +11895,7 @@ export const Constants = {
       host_charge_kind: ['drop_in', 'pack', 'monthly', 'monthly_renewal'],
       host_charge_method: ['app', 'at_field', 'host_recorded'],
       host_charge_status: ['due', 'paid', 'failed', 'void'],
+      host_dispute_status: ['open', 'won', 'lost'],
       host_fixture_status: ['scheduled', 'postponed', 'played', 'cancelled'],
       host_league_result_source: ['captains_agree', 'host_entered'],
       host_league_status: ['draft', 'active', 'complete'],
@@ -11386,7 +11919,13 @@ export const Constants = {
       host_payout_status: ['scheduled', 'paid', 'failed'],
       host_referee_status: ['asked', 'accepted', 'declined'],
       host_refund_decision: ['full', 'partial', 'keep'],
-      host_refund_reason: ['spot_filled', 'host_decision', 'session_cancelled'],
+      host_refund_reason: [
+        'spot_filled',
+        'host_decision',
+        'session_cancelled',
+        'provider_initiated',
+        'dispute_lost',
+      ],
       host_refund_request_status: [
         'open',
         'refunded_full',
@@ -11433,6 +11972,10 @@ export const Constants = {
         'host_request',
       ],
       passport_entry_kind: ['game', 'challenge'],
+      payment_checkout_kind: ['drop_in', 'pack', 'monthly'],
+      payment_checkout_status: ['creating', 'open', 'completed', 'expired', 'failed', 'refunded'],
+      payment_outbox_kind: ['refund', 'sync_subscription', 'cancel_subscription'],
+      payment_outbox_status: ['queued', 'sending', 'done', 'failed', 'cancelled'],
       place_kind: [
         'park',
         'pitch',

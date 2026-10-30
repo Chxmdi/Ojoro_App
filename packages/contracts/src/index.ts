@@ -25,3 +25,12 @@ export * from './hostsOps';
 export * from './places';
 // Step 7 (Passport, goals, achievements, reputation) client contract helpers (docs/PASSPORT_CONTRACT.md).
 export * from './passport';
+// Step 8 (Trust and safety: staff, moderation queue, pauses, appeals) client contract helpers
+// (docs/TRUST_CONTRACT.md).
+export * from './trust';
+// Step 8 (Payments: Stripe Connect, Checkout, webhook ledger; test mode only) client contract helpers
+// (docs/PAYMENTS_CONTRACT.md).
+export * from './payments';
+// Step 8 (AI Movement Concierge: the `concierge` Edge Function) client contract helpers
+// (docs/CONCIERGE_CONTRACT.md).
+export * from './concierge';

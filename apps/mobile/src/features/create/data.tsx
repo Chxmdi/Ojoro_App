@@ -1,14 +1,14 @@
 /** Create reads and writes (docs/LIQUIDITY_CONTRACT.md, Create). Everything sits under ['create']. */
-import type { RpcArgs } from '@ojoro/contracts';
+import { conciergeFunction, toOjoroError, type ConciergeAnswer, type RpcArgs } from '@ojoro/contracts';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
 import { newIdempotencyKey } from '@/lib/idempotency';
-import { rpc } from '@/lib/rpc';
+import { OjoroCallError, rpc } from '@/lib/rpc';
 import { supabase } from '@/lib/supabase';
 
 import { checkRows, retryNetwork } from '../plans/data';
-import { CONCIERGE_DEBOUNCE_MS, conciergeQuery } from './conciergeLogic';
+import { CONCIERGE_DEBOUNCE_MS, conciergeQuery, invokeOutcome, rulesFallback } from './conciergeLogic';
 
 /** The text after the person stops typing for a moment. */
 export function useDebounced<T>(value: T, ms: number = CONCIERGE_DEBOUNCE_MS): T {
@@ -21,8 +21,10 @@ export function useDebounced<T>(value: T, ms: number = CONCIERGE_DEBOUNCE_MS): T
 }
 
 /**
- * TELL OJORO. A logged read (the server records `concierge_suggested`, never the text), so it's a
- * plain POST rpc, never `{ get: true }`. Only asked once there's something to read.
+ * TELL OJORO. Asks the `concierge` Edge Function (Claude, checked against the search; it logs the
+ * decision, never the text). If the function can't be reached or breaks, asks the rules stub
+ * `concierge_suggest` directly (a logged read: POST, never `{ get: true }`), so it always answers.
+ * Only asked once there's something to read.
  */
 export function useConcierge(text: string) {
   const q = conciergeQuery(useDebounced(text));
@@ -33,9 +35,37 @@ export function useConcierge(text: string) {
       enabled: q !== null,
       staleTime: 60_000,
       placeholderData: keepPreviousData,
-      queryFn: () => rpc('concierge_suggest', { p_text: q as string, p_limit: 3 }),
+      retry: retryNetwork,
+      queryFn: () => askConcierge(q as string),
     }),
   };
+}
+
+async function askConcierge(text: string): Promise<ConciergeAnswer> {
+  let status: number | null = null;
+  let body: unknown = null;
+  try {
+    const { data, error } = await supabase.functions.invoke(conciergeFunction, { body: { text } });
+    if (error) {
+      const ctx = (error as { context?: unknown }).context;
+      if (ctx && typeof (ctx as Response).json === 'function') {
+        status = (ctx as Response).status;
+        body = await (ctx as Response)
+          .clone()
+          .json()
+          .catch(() => null);
+      }
+    } else {
+      status = 200;
+      body = data;
+    }
+  } catch {
+    // Treated as unreachable below.
+  }
+  const outcome = invokeOutcome(status, body);
+  if (outcome.kind === 'answer') return outcome.answer;
+  if (outcome.kind === 'error') throw new OjoroCallError(toOjoroError(outcome.body));
+  return rulesFallback(await rpc('concierge_suggest', { p_text: text, p_limit: 3 }));
 }
 
 /** Places for the form: the public catalog with their sports. */

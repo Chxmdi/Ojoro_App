@@ -3,9 +3,11 @@
  * payout with its lines, NEEDS A DECISION (refund all / part / keep), PASSES, MEMBERS and PAST
  * PAYOUTS. Calm.
  *
- * NO MONEY MOVES: no payments provider is connected (docs/HOSTS_OPS_CONTRACT.md). The screen says so
- * plainly, payouts never claim to be paid, and the Ojoro service fee is a server-computed placeholder,
- * labelled as one. Refund decisions are recorded and authorized on the server.
+ * Step 8 (docs/PAYMENTS_CONTRACT.md): the PAYMENTS block walks the owner through Stripe's hosted
+ * onboarding (SET UP PAYOUTS → setup not finished → needs info → ready) and back; until it's ready
+ * nothing is charged in the app and the screen says so. Past payouts read PAID only when Stripe paid
+ * them. TEST MODE shows while live mode is off. The Ojoro service fee is a server-computed
+ * placeholder, labelled as one. Refund decisions are recorded and authorized on the server.
  */
 import {
   decisionSentence,
@@ -15,13 +17,12 @@ import {
   passPriceLabel,
   pastPayoutMeta,
   payoutSourceSentence,
-  type HostMoneyView,
   type HostPassItem,
   type HostPassKind,
   type HostRefundDecisionItem,
 } from '@ojoro/contracts';
 import { type Href } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -50,14 +51,19 @@ import { ojoroErrorOf } from '@/lib/rpc';
 
 import { useOnline } from '../activities/data';
 import { InlineError, LoadingState, OfflineNote, ScreenHeader } from '../activities/ui';
+import { accountView, connectReturnNote, passSaleNote, payoutWord, refundProgressNote } from '../payments/logic';
+import { TestModeNote } from '../payments/ui';
 import { HostUnavailable } from './ui';
 import {
+  accountOf,
   useArchivePass,
+  useConnect,
   useDecideRefund,
   useMoneyView,
   useSavePass,
   useUndoRefund,
   type PassDraft,
+  type PaymentsMoneyView,
 } from './moneyData';
 import {
   dateOnlyMonthDay,
@@ -65,14 +71,15 @@ import {
   payoutDate,
   payoutLands,
   payoutOverline,
-  payoutStatusWord,
   membersSentence,
   refundContext,
   refundKind,
   SERVICE_FEE_LABEL,
 } from './peopleLogic';
 
-export function HostMembershipScreen({ programId }: { programId: string }) {
+type HostMoneyView = PaymentsMoneyView;
+
+export function HostMembershipScreen({ programId, connect }: { programId: string; connect?: string | undefined }) {
   const online = useOnline();
   const money = useMoneyView(programId);
   const view = money.data ?? null;
@@ -93,7 +100,7 @@ export function HostMembershipScreen({ programId }: { programId: string }) {
           {!online ? (
             <OfflineNote dataUpdatedAt={money.dataUpdatedAt} extra="Decisions and pass changes wait until you're back." />
           ) : null}
-          <NotConnected view={view} />
+          <PaymentsAccount programId={programId} view={view} connect={connect} online={online} />
           <NextPayout view={view} />
           <Decisions programId={programId} view={view} online={online} />
           <Passes programId={programId} view={view} />
@@ -105,24 +112,118 @@ export function HostMembershipScreen({ programId }: { programId: string }) {
   );
 }
 
-/** The honest state: nothing is collected or paid out until a payments provider is connected. */
-function NotConnected({ view }: { view: HostMoneyView }) {
-  if (view.payments_connected) return null;
+/**
+ * PAYMENTS: the program's Stripe account. Not connected → SET UP PAYOUTS (Stripe-hosted onboarding),
+ * then setup not finished / needs info / ready, from Stripe's own flags. Coming back from Stripe
+ * (`?connect=return`) reads Stripe again; an expired link (`?connect=refresh`) offers a fresh one.
+ * Until it's ready, the honest note stays: nothing is charged, refunded or paid out in the app.
+ */
+function PaymentsAccount({
+  programId,
+  view,
+  connect,
+  online,
+}: {
+  programId: string;
+  view: HostMoneyView;
+  connect: string | undefined;
+  online: boolean;
+}) {
+  const account = accountOf(view);
+  const a = accountView(account);
+  const run = useConnect(programId);
+  const returned = useRef(false);
+  const ready = account.status === 'ready' && view.payments_connected;
+
+  useEffect(() => {
+    // Back from Stripe's onboarding: ask Stripe now rather than wait for the webhook.
+    if (connect === 'return' && !returned.current && account.status !== 'not_connected') {
+      returned.current = true;
+      run.mutate('refresh');
+    }
+  }, [connect, account.status, run]);
+
+  const note = connectReturnNote(connect);
   return (
-    <View
-      className="flex-row items-start gap-space-3 border-l-4 border-text bg-surface-raised p-space-4"
-      role="note"
-      testID="host-payments-not-connected"
-    >
-      <Icon name="alert" size={20} label="Note" />
-      <View className="flex-1 gap-space-1">
-        <Text variant="title-sm">Payments aren't connected yet.</Text>
-        <Text variant="body-sm" muted>
-          These are records of what people owe and paid at the field. No card is charged, no refund is sent and no
-          payout reaches your bank until payments are connected. The Ojoro service fee isn't decided; the amount shown
-          is a placeholder.
-        </Text>
+    <View className="gap-space-3" role="region" aria-label="Payments" testID="host-payments">
+      <View
+        className={`flex-row items-start gap-space-3 bg-surface-raised p-space-4 ${ready ? 'border-l-2 border-line-strong' : 'border-l-4 border-text'}`}
+        role="note"
+        testID={ready ? 'host-payments-ready' : 'host-payments-not-connected'}
+      >
+        <Icon name={ready ? 'check' : 'alert'} size={20} label={ready ? 'Ready' : 'Note'} />
+        <View className="flex-1 gap-space-2">
+          <View className="flex-row flex-wrap items-center gap-space-2">
+            <Text variant="title-sm">{a.title}</Text>
+            <Badge tone={ready ? 'verified' : 'neutral'}>{a.word}</Badge>
+          </View>
+          <Text variant="body-sm" testID="host-payments-sentence">
+            {a.body}
+          </Text>
+          {note ? (
+            <Text variant="body-sm" muted testID="host-connect-return">
+              {note}
+            </Text>
+          ) : null}
+          {!ready ? (
+            <Text variant="body-sm" muted>
+              Until then these are records of what people owe and paid at the field. No card is charged, no refund is
+              sent and no payout reaches your bank through Ojoro. The Ojoro service fee isn't decided; the amount shown is
+              a placeholder.
+            </Text>
+          ) : (
+            <Text variant="body-sm" muted>
+              People can pay for drop-ins, packs and memberships in the app. The Ojoro service fee isn't decided; the
+              amount shown is a placeholder.
+            </Text>
+          )}
+          {a.ownerOnlyNote ? (
+            <Text variant="caption" muted>
+              {a.ownerOnlyNote}
+            </Text>
+          ) : null}
+          {a.primary || a.secondary ? (
+            <View className="mt-space-1 flex-row flex-wrap gap-space-2">
+              {a.primary ? (
+                <Button
+                  variant="primary"
+                  compact
+                  loading={run.isPending && run.variables === a.primary.action}
+                  disabled={!online || run.isPending}
+                  onPress={() => run.mutate(a.primary!.action)}
+                  testID="host-connect-primary"
+                >
+                  {connect === 'refresh' && a.primary.action === 'onboard' ? 'OPEN A FRESH LINK' : a.primary.label}
+                </Button>
+              ) : null}
+              {a.secondary ? (
+                <Button
+                  variant="secondary"
+                  compact
+                  loading={run.isPending && run.variables === a.secondary.action}
+                  disabled={!online || run.isPending}
+                  onPress={() => run.mutate(a.secondary!.action)}
+                  testID="host-connect-secondary"
+                >
+                  {a.secondary.label}
+                </Button>
+              ) : null}
+            </View>
+          ) : null}
+          {run.isError ? <InlineError message={errorMessage(ojoroErrorOf(run.error))} testID="host-connect-error" /> : null}
+        </View>
       </View>
+      <TestModeNote testID="host-payments-test-mode" />
+      {(view.disputes?.length ?? 0) > 0 ? (
+        <View className="flex-row items-start gap-space-3 border-l-4 border-text p-space-4" role="alert" testID="host-disputes">
+          <Icon name="alert" size={20} label="Disputed" />
+          <Text variant="body-sm" className="flex-1">
+            {`${view.disputes!.length} ${view.disputes!.length === 1 ? 'payment is' : 'payments are'} disputed with the buyer’s bank (${view.disputes!
+              .map((d) => formatMoney(d.amount_cents, d.currency))
+              .join(', ')}). Stripe shows what to send; open Stripe to answer.`}
+          </Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -164,7 +265,7 @@ function Decisions({ programId, view, online }: { programId: string; view: HostM
         <DecisionCard key={d.request_id} programId={programId} item={d} timeZone={view.time_zone} online={online} />
       ))}
       {recent.map((r) => (
-        <DecidedRow key={r.request_id} programId={programId} decided={r} />
+        <DecidedRow key={r.request_id} programId={programId} decided={r} connected={view.payments_connected} />
       ))}
     </View>
   );
@@ -317,7 +418,15 @@ function DecisionCard({
   );
 }
 
-function DecidedRow({ programId, decided }: { programId: string; decided: HostMoneyView['recent_decisions'][number] }) {
+function DecidedRow({
+  programId,
+  decided,
+  connected,
+}: {
+  programId: string;
+  decided: HostMoneyView['recent_decisions'][number];
+  connected: boolean;
+}) {
   const undo = useUndoRefund(programId);
   const first = decided.person.display_name.split(' ')[0] ?? decided.person.display_name;
   const canUndo = decided.undo_until != null && new Date(decided.undo_until).getTime() > Date.now();
@@ -331,7 +440,7 @@ function DecidedRow({ programId, decided }: { programId: string; decided: HostMo
             first,
             decided.membership_ends_at ? dateOnlyMonthDay(decided.membership_ends_at) : undefined,
           )}
-          {decided.refund_cents > 0 ? ' Recorded; it goes out once payments are connected.' : ''}
+          {refundProgressNote(decided, connected)}
         </Text>
         {canUndo ? (
           <TextButton
@@ -400,6 +509,7 @@ function Passes({ programId, view }: { programId: string; view: HostMoneyView })
           programId={programId}
           pass={editing === 'new' ? null : editing}
           currency={view.next_payout.currency}
+          connected={view.payments_connected}
           onClose={() => setEditing(null)}
         />
       ) : null}
@@ -415,11 +525,13 @@ function PassSheet({
   programId,
   pass,
   currency,
+  connected,
   onClose,
 }: {
   programId: string;
   pass: HostPassItem | null;
   currency: string;
+  connected: boolean;
   onClose: () => void;
 }) {
   const save = useSavePass(programId);
@@ -536,7 +648,7 @@ function PassSheet({
           </>
         ) : null}
         <Text variant="caption" muted>
-          Payments aren't connected yet, so nobody can buy it in the app. You can record passes sold at the field.
+          {passSaleNote(connected)}
         </Text>
         {save.isError ? <InlineError message={errorMessage(ojoroErrorOf(save.error))} testID="host-pass-error" /> : null}
         {archive.isError ? <InlineError message={errorMessage(ojoroErrorOf(archive.error))} /> : null}
@@ -583,7 +695,7 @@ function PastPayouts({ programId, view }: { programId: string; view: HostMoneyVi
             title={formatMoney(x.net_cents, x.currency)}
             titleVariant="title-sm"
             meta={pastPayoutMeta(x)}
-            trailing={<Badge tone={connected && x.status === 'paid' ? 'verified' : 'neutral'}>{payoutStatusWord(x.status, connected)}</Badge>}
+            trailing={<Badge tone={payoutWord(x, connected) === 'PAID' ? 'verified' : 'neutral'}>{payoutWord(x, connected)}</Badge>}
             testID={`host-past-payout-${x.id}`}
           />
         ))
@@ -591,6 +703,10 @@ function PastPayouts({ programId, view }: { programId: string; view: HostMoneyVi
       {!connected && view.past_payouts.length > 0 ? (
         <Text variant="caption" muted className="pt-space-2">
           NOT SENT: the week is closed and recorded. It's paid out once payments are connected.
+        </Text>
+      ) : connected && view.past_payouts.length > 0 ? (
+        <Text variant="caption" muted className="pt-space-2">
+          PAID means Stripe has paid the week to your bank. SCHEDULED weeks are waiting for Stripe's Friday payout.
         </Text>
       ) : null}
       <View className="mt-space-4">

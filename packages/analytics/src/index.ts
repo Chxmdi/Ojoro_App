@@ -77,6 +77,8 @@ export const analyticsEvents = {
   inviteFriendsTapped: 'invite_friends_tapped',
   conciergeConfirmed: 'concierge_confirmed',
   conciergeMoreIdeasTapped: 'concierge_more_ideas_tapped',
+  // Step 8: the AI Concierge. The server records concierge_ai_decided (no words); taps only here.
+  conciergeStartTapped: 'concierge_start_tapped',
   createOptionOpened: 'create_option_opened',
   planFormSubmitted: 'plan_form_submitted',
   planFormInvalid: 'plan_form_invalid',
@@ -185,6 +187,17 @@ export const analyticsEvents = {
   createHereTapped: 'create_here_tapped',
   placeDirectionsTapped: 'place_directions_tapped',
   placeShared: 'place_shared',
+  // Step 8: Payments (Stripe, test mode). The server records payments_* (docs/PAYMENTS_CONTRACT.md
+  // §Analytics); the client sends the hosted-page opens and the return view, never amounts.
+  paymentCheckoutOpened: 'payment_checkout_opened',
+  paymentReturnViewed: 'payment_return_viewed',
+  hostConnectOpened: 'host_connect_opened',
+  // Step 8: Trust. The server records report_submitted, case_resolved, content_hidden,
+  // content_restored, account_paused, account_restored, appeal_submitted, appeal_decided and
+  // reputation_voided (docs/TRUST_CONTRACT.md §Analytics); the client sends the appeal taps.
+  pausedScreenViewed: 'paused_screen_viewed',
+  appealOpened: 'appeal_opened',
+  appealSent: 'appeal_sent',
 } as const;
 
 export type AnalyticsEvent =

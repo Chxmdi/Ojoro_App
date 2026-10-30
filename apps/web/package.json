@@ -1,12 +1,31 @@
 {
   "name": "@ojoro/web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "lint": "eslint src --max-warnings=0",
+    "dev": "vite --port 5174 --strictPort",
+    "preview": "vite preview --port 5174 --strictPort",
+    "lint": "eslint src e2e vite.config.ts --max-warnings=0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run src",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "e2e": "node e2e/admin.e2e.mjs"
+  },
+  "dependencies": {
+    "@ojoro/contracts": "workspace:*",
+    "@ojoro/design-tokens": "workspace:*",
+    "@supabase/supabase-js": "2.118.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@expo-google-fonts/anton": "0.4.2",
+    "@expo-google-fonts/inter": "0.4.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
   }
 }
