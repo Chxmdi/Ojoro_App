@@ -379,8 +379,7 @@ begin
      v_e4 - interval '7 days', null, 6),
     ('f5000000-0000-4000-8000-000000000004', c_clash, 4, '7-a-side football', 'football', 'score',
      v_e4, c_jm, 14),
-    -- No rowing in the sports list: the erg row uses cycling for its icon (docs/DESIGN_DECISIONS.md).
-    ('f5000000-0000-4000-8000-000000000005', c_clash, 5, 'Rowing erg · 2 km team', 'cycling', 'time',
+    ('f5000000-0000-4000-8000-000000000005', c_clash, 5, 'Rowing erg · 2 km team', 'rowing', 'time',
      v_e4 + interval '1 day', null, 4),
     ('f5000000-0000-4000-8000-000000000006', c_clash, 6, 'Final · 10K, every runner counts', 'running', 'time',
      v_e4 + interval '15 days', c_mr, null);

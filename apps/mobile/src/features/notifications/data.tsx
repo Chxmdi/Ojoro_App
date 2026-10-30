@@ -220,7 +220,7 @@ export function useSetType() {
 }
 
 export type MutedObject = {
-  object_kind: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event';
+  object_kind: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event' | 'clan';
   object_id: string;
   until: string | null;
   name: string | null;
@@ -242,7 +242,7 @@ export function useMutes(userId: string | null) {
       const now = Date.now();
       const live = rows.filter((r) => !r.until || Date.parse(r.until) > now);
       const ids = (kind: string) => live.filter((r) => r.object_kind === kind).map((r) => r.object_id);
-      const [plans, games, crews] = await Promise.all([
+      const [plans, games, crews, clans] = await Promise.all([
         ids('plan').length
           ? supabase.from('plan_cards').select('id, title, sport_name').in('id', ids('plan'))
           : Promise.resolve({ data: [], error: null }),
@@ -252,6 +252,9 @@ export function useMutes(userId: string | null) {
         ids('crew').length
           ? supabase.from('crews').select('id, name').in('id', ids('crew'))
           : Promise.resolve({ data: [], error: null }),
+        ids('clan').length
+          ? supabase.from('clans').select('id, name').in('id', ids('clan'))
+          : Promise.resolve({ data: [], error: null }),
       ]);
       const names = new Map<string, string>();
       for (const p of checkRows(plans as { data: { id: string | null; title: string | null; sport_name: string | null }[] | null; error: unknown }))
@@ -259,6 +262,7 @@ export function useMutes(userId: string | null) {
       for (const g of checkRows(games as { data: { id: string | null; title: string | null; sport_name: string | null }[] | null; error: unknown }))
         if (g.id) names.set(g.id, g.title ?? g.sport_name ?? '');
       for (const c of checkRows(crews as { data: { id: string; name: string }[] | null; error: unknown })) names.set(c.id, c.name);
+      for (const c of checkRows(clans as { data: { id: string; name: string }[] | null; error: unknown })) names.set(c.id, c.name);
       return live.map((r) => ({
         object_kind: r.object_kind,
         object_id: r.object_id,

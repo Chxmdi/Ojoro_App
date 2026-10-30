@@ -10268,7 +10268,7 @@ export type Database = {
       member_via: 'host' | 'im_down' | 'down_for' | 'invite';
       message_kind: 'text' | 'system';
       mission_metric: 'distance_km' | 'runs' | 'hours';
-      notification_object: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event';
+      notification_object: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event' | 'clan';
       notification_type:
         | 'need_one_more'
         | 'game_on'
@@ -10292,7 +10292,9 @@ export type Database = {
         | 'challenge_to_confirm'
         | 'host_announcement'
         | 'host_update'
-        | 'host_request';
+        | 'host_request'
+        | 'ritual_week'
+        | 'clan_request';
       plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat' | 'host_session' | 'ritual';
       plan_status: 'forming' | 'game_on' | 'expired' | 'cancelled';
       proposal_status: 'proposed' | 'verified' | 'superseded';
@@ -10838,7 +10840,7 @@ export const Constants = {
       member_via: ['host', 'im_down', 'down_for', 'invite'],
       message_kind: ['text', 'system'],
       mission_metric: ['distance_km', 'runs', 'hours'],
-      notification_object: ['plan', 'activity', 'crew', 'challenge', 'challenge_event'],
+      notification_object: ['plan', 'activity', 'crew', 'challenge', 'challenge_event', 'clan'],
       notification_type: [
         'need_one_more',
         'game_on',
@@ -10863,6 +10865,8 @@ export const Constants = {
         'host_announcement',
         'host_update',
         'host_request',
+        'ritual_week',
+        'clan_request',
       ],
       plan_source: ['down_for', 'quick', 'run_it_back', 'chat', 'host_session', 'ritual'],
       plan_status: ['forming', 'game_on', 'expired', 'cancelled'],
