@@ -3,7 +3,7 @@
  * reference `OjImage` / `.oj-image*`). No React Native imports, so it runs in Node.
  */
 
-export const IMAGE_RATIOS = ['4:5', '1:1', '16:9', '3:4'] as const;
+export const IMAGE_RATIOS = ['4:5', '1:1', '16:9', '3:4', '4:3'] as const;
 export type ImageRatio = (typeof IMAGE_RATIOS)[number];
 
 /** `4:5` (feed default) → 0.8, as a width / height number for RN's `aspectRatio`. */

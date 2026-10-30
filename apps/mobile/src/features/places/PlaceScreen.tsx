@@ -36,7 +36,13 @@ import { useReportBlock } from '@/features/safety';
 import { useOnline } from '../activities/data';
 import { goBack, InlineError, LoadingState, PrivacyNote } from '../activities/ui';
 import { directionsUrl } from '../plans/planLogic';
-import { usePlaceGroups, usePlaceHosts, usePlaceRealtime, usePlaceTonight, usePlaceView } from './data';
+import {
+  usePlaceGroups,
+  usePlaceHosts,
+  usePlaceRealtime,
+  usePlaceTonight,
+  usePlaceView,
+} from './data';
 import {
   busyBlock,
   directionsTarget,
@@ -82,11 +88,18 @@ export function PlaceScreen({ id }: { id: string }) {
         right={
           place ? (
             <>
-              <IconButton icon="share" label="Share place" onPress={() => void share()} testID="place-share" />
+              <IconButton
+                icon="share"
+                label="Share place"
+                onPress={() => void share()}
+                testID="place-share"
+              />
               <IconButton
                 icon="more"
                 label="Report this place"
-                onPress={() => reportBlock.open({ subjectKind: 'place', subjectId: id, personName: place.name })}
+                onPress={() =>
+                  reportBlock.open({ subjectKind: 'place', subjectId: id, personName: place.name })
+                }
                 testID="header-more"
               />
             </>
@@ -94,7 +107,10 @@ export function PlaceScreen({ id }: { id: string }) {
         }
       />
       {view.isPending && !place ? (
-        <LoadingState label="Loading the place" kinds={['object', 'text', 'strip', 'strip', 'strip']} />
+        <LoadingState
+          label="Loading the place"
+          kinds={['object', 'text', 'strip', 'strip', 'strip']}
+        />
       ) : !place ? (
         <PlaceUnavailable error={view.error} onRetry={() => void view.refetch()} />
       ) : (
@@ -146,7 +162,12 @@ function PlaceUnavailable({ error, onRetry }: { error: unknown; onRetry: () => v
           </View>
         </>
       ) : (
-        <InlineError message={errorMessage(e)} action="RETRY" onAction={onRetry} testID="screen-error" />
+        <InlineError
+          message={errorMessage(e)}
+          action="RETRY"
+          onAction={onRetry}
+          testID="screen-error"
+        />
       )}
     </View>
   );
@@ -165,7 +186,7 @@ function PlaceBody({
 }) {
   return (
     <View testID="place-screen">
-      <Image alt={heroAlt(place)} ratio="16:9">
+      <Image alt={heroAlt(place)} ratio="4:3">
         <Text variant="overline" muted testID="place-overline">
           {placeOverline(place)}
         </Text>
@@ -229,9 +250,7 @@ function About({ id, place, online }: { id: string; place: PlaceView; online: bo
         </View>
       ) : null}
       {place.sensitive ? (
-        <PrivacyNote>
-          This place is kept off the map. Here you see only what you're in.
-        </PrivacyNote>
+        <PrivacyNote>This place is kept off the map. Here you see only what you're in.</PrivacyNote>
       ) : null}
       <View className="flex-row flex-wrap gap-space-2 pt-space-1">
         <Button onPress={createHere} testID="create-activity-here">
@@ -245,7 +264,17 @@ function About({ id, place, online }: { id: string; place: PlaceView; online: bo
   );
 }
 
-function Section({ label, title, children, testID }: { label: string; title: string; children: ReactNode; testID: string }) {
+function Section({
+  label,
+  title,
+  children,
+  testID,
+}: {
+  label: string;
+  title: string;
+  children: ReactNode;
+  testID: string;
+}) {
   return (
     <View role="region" aria-label={title} className="gap-space-1" testID={testID}>
       <Divider label={label} />
@@ -276,10 +305,16 @@ function TonightHere({ id, sensitive }: { id: string; sensitive: boolean }) {
       {q.isPending ? (
         <SectionLoading label="Loading tonight here" />
       ) : q.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(q.error))} action="RETRY" onAction={() => void q.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(q.error))}
+          action="RETRY"
+          onAction={() => void q.refetch()}
+        />
       ) : rows.length === 0 ? (
         <Text variant="body-sm" muted className="py-space-3" testID="place-tonight-empty">
-          {sensitive ? "Nothing you're in here tonight." : 'Nothing on here tonight yet. Start something and it shows here.'}
+          {sensitive
+            ? "Nothing you're in here tonight."
+            : 'Nothing on here tonight yet. Start something and it shows here.'}
         </Text>
       ) : (
         shown.map((r) => (
@@ -315,7 +350,11 @@ function RitualsHere({ id }: { id: string }) {
       {q.isPending ? (
         <SectionLoading label="Loading rituals here" />
       ) : q.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(q.error))} action="RETRY" onAction={() => void q.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(q.error))}
+          action="RETRY"
+          onAction={() => void q.refetch()}
+        />
       ) : rows.length === 0 ? (
         <Text variant="body-sm" muted className="py-space-3">
           No regular groups meet here yet.
@@ -348,7 +387,11 @@ function HostsHere({ id }: { id: string }) {
       {q.isPending ? (
         <SectionLoading label="Loading hosts here" />
       ) : q.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(q.error))} action="RETRY" onAction={() => void q.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(q.error))}
+          action="RETRY"
+          onAction={() => void q.refetch()}
+        />
       ) : rows.length === 0 ? (
         <Text variant="body-sm" muted className="py-space-3">
           No regular hosts here yet.

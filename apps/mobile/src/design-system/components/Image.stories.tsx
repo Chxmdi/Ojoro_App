@@ -40,7 +40,7 @@ type Story = StoryObj<typeof meta>;
 /** 4:5, the feed default, driven by the controls. */
 export const Default: Story = {};
 
-/** Every ratio: 4:5 (feed) · 1:1 · 16:9 · 3:4. */
+/** Every ratio: 4:5 (feed) · 1:1 · 16:9 · 3:4 · 4:3. */
 export const Ratios: Story = {
   render: () => (
     <View>
@@ -105,6 +105,19 @@ export const OnEachSituation: Story = {
         <Text variant="display-sm">5K. 24:10.</Text>
       </Image>
     </EachSituation>
+  ),
+};
+
+/** Place hero: 4:3, area and distance over the name. */
+export const PlaceHero: Story = {
+  parameters: { ojoro: { padded: false } },
+  render: () => (
+    <Image alt="The north pitch at Jeanne-Mance under the floodlights" ratio="4:3">
+      <Text variant="overline" muted>
+        PLATEAU · 1.2 KM
+      </Text>
+      <Text variant="display-md">JEANNE-MANCE PARK.</Text>
+    </Image>
   ),
 };
 
