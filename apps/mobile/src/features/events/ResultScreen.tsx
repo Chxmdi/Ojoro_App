@@ -188,7 +188,7 @@ function ResultBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: Eve
                 title={myValue ? `${f.title} · ${myValue}` : f.title}
                 line={passportLine}
                 badge={<Badge>PASSPORT</Badge>}
-                href={(stamp ? passportHrefFor({ event: eventId }) : '/passport') as Href}
+                href={(stamp ? passportHrefFor(stamp.passport_entry_id ? { entry: stamp.passport_entry_id } : { event: eventId }) : '/passport') as Href}
                 testID="result-you"
               />
             ) : null}

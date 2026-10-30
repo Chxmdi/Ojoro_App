@@ -223,7 +223,7 @@ function RecapBody({
             accessibilityRole="link"
             accessibilityLabel={`Added to your Passport. ${stampTitle(stamp)}. ${passportLine(stamp, now, tz)}`}
             accessibilityHint="Opens your Passport at this stamp"
-            onPress={() => router.push(passportHrefFor({ activity: card.id }) as Href)}
+            onPress={() => router.push(passportHrefFor(stamp.passport_entry_id ? { entry: stamp.passport_entry_id } : { activity: card.id }) as Href)}
             className="flex-row items-center gap-space-5"
             testID="passport-stamp"
           >

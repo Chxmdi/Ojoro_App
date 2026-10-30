@@ -5,6 +5,7 @@ import {
   type ClearGoalResult,
   type GoalView,
   type PassportAchievement,
+  type PassportEntryDetail,
   type PassportReputation,
   type PassportStamp,
   type PassportStampsFilter,
@@ -19,7 +20,7 @@ import { newIdempotencyKey } from '@/lib/idempotency';
 import { useRealtimeRefetch } from '@/lib/realtime';
 import { rpc } from '@/lib/rpc';
 
-import { filterKey, type GoalArgs } from './logic';
+import { entryLookup, filterKey, type GoalArgs, type StampTarget } from './logic';
 
 /**
  * Passport reads and goal writes (docs/PASSPORT_CONTRACT.md). Keys start with 'passport' and the
@@ -33,6 +34,8 @@ export const passportKeys = {
   reputation: (userId: string) => ['passport', userId, 'reputation'] as const,
   goal: (userId: string) => ['passport', userId, 'goal'] as const,
   challenge: (eventId: string) => ['passport', 'challenge', eventId] as const,
+  entry: (userId: string, target: StampTarget) =>
+    ['passport', userId, 'entry', target.entry ?? '', target.activity ?? '', target.event ?? ''] as const,
 };
 
 /** The whole page in one call; null when there's no such person or a block either way. */
@@ -75,6 +78,25 @@ export function usePassportReputation(userId: string, enabled = true) {
     enabled: enabled && Boolean(userId),
     queryFn: async () =>
       ((await rpc('passport_reputation', { p_user_id: userId })) as unknown as PassportReputation | null) ?? null,
+  });
+}
+
+/**
+ * The stamp a Recap / Result link points at (`?entry=`, `?activity=`, `?event=`), fetched on its own so
+ * it shows whatever page it's on. Null: no stamp yet, or not visible to you.
+ */
+export function usePassportEntry(ownerId: string, target: StampTarget, enabled = true) {
+  const lookup = entryLookup(target, ownerId);
+  return useQuery({
+    queryKey: passportKeys.entry(ownerId, target),
+    enabled: enabled && Boolean(ownerId) && lookup !== null,
+    queryFn: async () => {
+      if (!lookup) return null;
+      const rows = (lookup.rpc === 'passport_entry'
+        ? await rpc('passport_entry', lookup.args)
+        : await rpc('passport_entry_for', lookup.args)) as unknown as PassportEntryDetail[];
+      return rows[0] ?? null;
+    },
   });
 }
 

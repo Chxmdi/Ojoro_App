@@ -72,6 +72,8 @@ export function playedWithLine(people: readonly RecapPerson[], meId: string): st
 }
 
 export type PassportRow = {
+  /** The stamp's id (links to it in the Passport). */
+  passport_entry_id?: string | null;
   occurred_at: string;
   ojoro_hours: number;
   place_name: string | null;
