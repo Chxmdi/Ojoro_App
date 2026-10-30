@@ -147,6 +147,7 @@ function NextPayout({ view }: { view: HostMoneyView }) {
           currency={p.currency}
           total={{ label: 'You get', amountCents: p.net_cents }}
           label="Next payout"
+          locale="en-CA"
           testID="host-payout-ledger"
         />
       </View>
@@ -390,7 +391,7 @@ function Passes({ programId, view }: { programId: string; view: HostMoneyView })
         ))
       )}
       <View className="items-center pt-space-2">
-        <Button variant="ghost" onPress={() => setEditing('new')} testID="host-pass-new">
+        <Button variant="ghost" className="self-center" onPress={() => setEditing('new')} testID="host-pass-new">
           NEW PASS
         </Button>
       </View>

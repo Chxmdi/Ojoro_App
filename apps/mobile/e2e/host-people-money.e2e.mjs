@@ -144,6 +144,14 @@ async function step(name, fn) {
   }
 }
 
+/** The text field of a design-system Input (its testID may sit on the field itself or its box). */
+function field(page, testId) {
+  return page
+    .getByTestId(testId)
+    .locator('xpath=descendant-or-self::input | descendant-or-self::textarea')
+    .first();
+}
+
 function assert(cond, message) {
   if (!cond) throw new Error(message);
 }
@@ -219,12 +227,12 @@ try {
     assert(/^(Came to \d+ of the last \d+\.|No sessions to count yet\.)$/.test(label ?? ''), `last12 "${label}"`);
     await A.page.getByTestId('host-person-tags-edit').click();
     const word = `e2e ${tag}`;
-    await A.page.getByTestId('host-person-tag-input').locator('input, textarea').first().fill(word);
-    await A.page.getByTestId('host-person-tag-input').locator('input, textarea').first().press('Enter');
+    await field(A.page, 'host-person-tag-input').fill(word);
+    await field(A.page, 'host-person-tag-input').press('Enter');
     await A.page.getByText(word.toUpperCase(), { exact: true }).waitFor({ timeout: 15_000 });
     await A.page.getByRole('button', { name: `Remove tag ${word}` }).click();
     await until('tag removed', async () => (await A.page.getByText(word.toUpperCase(), { exact: true }).count()) === 0);
-    await A.page.getByTestId('host-people-search').locator('input').fill('zzzz-nobody');
+    await field(A.page, 'host-people-search').fill('zzzz-nobody');
     await A.page.getByTestId('host-people-empty').waitFor({ timeout: 15_000 });
   });
 
@@ -232,7 +240,7 @@ try {
     await open(H.page, `/host/${program.id}/announce?session=${session.session_id}`, 'host-announce-send');
     await until('count for the session', async () => /SEND TO \d+/.test(await H.page.getByTestId('host-announce-send').innerText()));
     const msg = `E2E ${tag}: bring a light and a dark shirt.`;
-    await H.page.getByTestId('host-announce-message').locator('textarea, input').first().fill(msg);
+    await field(H.page, 'host-announce-message').fill(msg);
     const preview = await H.page.getByTestId('host-announce-preview').innerText();
     assert(preview.includes(msg), `preview "${preview}"`);
     await H.page.getByTestId('host-announce-send').click();
@@ -246,8 +254,8 @@ try {
     await open(H.page, `/host/${program.id}/payments`, 'host-payments-not-connected');
     await H.page.getByTestId('host-pass-new').click();
     await H.page.getByText('Monthly', { exact: true }).click();
-    await H.page.getByTestId('host-pass-name').locator('input').fill(`Monthly ${tag}`);
-    await H.page.getByTestId('host-pass-price').locator('input').fill('35');
+    await field(H.page, 'host-pass-name').fill(`Monthly ${tag}`);
+    await field(H.page, 'host-pass-price').fill('35');
     await H.page.getByTestId('host-pass-save').click();
     await H.page.getByText(`Monthly ${tag}`, { exact: true }).waitFor({ timeout: 20_000 });
 

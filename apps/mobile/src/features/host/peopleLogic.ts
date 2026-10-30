@@ -530,8 +530,9 @@ export function membersSentence(m: {
   if (m.cancelled_count > 0) parts.push(`${m.cancelled_count} cancelled.`);
   const mw = m.member_sessions_per_week;
   const dw = m.drop_in_sessions_per_week;
-  if (mw != null && dw != null) parts.push(`Members come to ${fmt1(mw)} sessions a week, drop-ins to ${fmt1(dw)}.`);
-  else if (mw != null) parts.push(`Members come to ${fmt1(mw)} sessions a week.`);
+  const sessions = (n: number) => `${fmt1(n)} ${fmt1(n) === '1' ? 'session' : 'sessions'}`;
+  if (mw != null && dw != null) parts.push(`Members come to ${sessions(mw)} a week, drop-ins to ${fmt1(dw)}.`);
+  else if (mw != null) parts.push(`Members come to ${sessions(mw)} a week.`);
   return parts.join(' ');
 }
 
