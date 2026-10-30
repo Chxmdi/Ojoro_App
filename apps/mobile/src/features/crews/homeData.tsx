@@ -86,7 +86,7 @@ export function useCrewMemories(id: string, enabled: boolean) {
   return useQuery({
     queryKey: crewHomeKeys.memories(id),
     queryFn: async (): Promise<MemoryView[]> => {
-      const rows = (await rpc('crew_memories', { p_crew_id: id, p_limit: 4 })) as unknown as CrewMemory[];
+      const rows = (await rpc('crew_memories', { p_crew_id: id, p_limit: 2 })) as unknown as CrewMemory[];
       const paths = rows.map((r) => r.moment_path).filter((p): p is string => !!p);
       const urls = new Map<string, string>();
       if (paths.length > 0) {

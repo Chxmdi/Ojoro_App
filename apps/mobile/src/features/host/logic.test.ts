@@ -564,6 +564,8 @@ describe('HostRequests', () => {
       'NEW TO OJORO',
       '1 OJORO GAME',
     ]);
+    expect(requestFacts(req({ ojoro_games: 0, show_up_of: 0, stated_level: 'learning' }))).toEqual(['SAYS: BEGINNER']);
+    expect(requestFacts(req({ ojoro_games: 0, show_up_of: 0, stated_level: null }))).toEqual([]);
     expect(requestContext(req({}))).toBe('You both play with Chimdi O.');
     expect(requestContext(req({ shared_names: ['A', 'B'], shared_count: 4 }))).toBe('You both play with A, B and 2 others.');
     expect(requestContext(req({ shared_names: [], shared_count: 0, new_to_ojoro: true, ojoro_games: 0 }))).toBe(

@@ -35,6 +35,7 @@ import { ojoroErrorOf } from '@/lib/rpc';
 import { useReportBlock } from '@/features/safety';
 
 import { useOnline } from '../activities/data';
+import { speakName } from '../clash/logic';
 import { InlineError, LoadingState, OfflineNote, PrivacyNote, ScreenHeader } from '../activities/ui';
 import { useNow } from '../plans/data';
 import {
@@ -380,7 +381,9 @@ function ClanClashes({ id, timeZone }: { id: string; timeZone: string }) {
     <View className="gap-space-1" role="region" aria-label="Ojoro Clash" testID="clan-clashes">
       <Divider kind="mark" label="OJORO CLASH" />
       {rows.map((c) => {
-        const row = clashRow(c, timeZone);
+        // "Fall Clash vs McGill": the short name, in the clan's own casing.
+        const opponent = c.opponent_name && c.opponent_short_name ? speakName(c.opponent_short_name, c.opponent_name) : c.opponent_name;
+        const row = clashRow({ ...c, opponent_name: opponent }, timeZone);
         return (
           <Strip
             key={c.clash_id}

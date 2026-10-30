@@ -596,3 +596,27 @@ Crew Home, Clans and Ojoro Clash backend (PRD §9.10, §9.12, §9.13, §9.15). C
 | Clan roles (owner decision) | The role → permission table in the contract (§Roles) is accepted as built. |
 | Report hook | `report()` gains crew, clan, clan_run and clash, plus `private.report_subject_visible(kind, id, viewer)` so other Step 6 kinds plug in without copying `report()` again. |
 | Unread crew chat | New `crew_chat_reads` (own rows) and `mark_crew_chat_read`; before the first mark, unread counts from when you joined. The crew chat screen (Step 4) needs to call it. |
+
+## Step 6 SCR-HOST-A
+
+HostHome, HostSeries, HostRoster, HostRequests and the `/host/[programId]` layout.
+
+| Decision | What we did |
+|---|---|
+| One host check for every host route | `app/host/[programId]/_layout.tsx` reads `host_home` once (`useProgram`); `not_program_host` / `program_not_found` shows "Only the hosts of this program can open this." with BACK TO YOU, never a crash. The layout also holds the program's realtime channel. The server still authorizes every RPC. |
+| Shared host data | `features/host/data.tsx`: every key for a program starts `['host', programId]`, so one realtime hint refetches every host screen. `features/host/ui.tsx` holds the not-allowed and error states for all host screens. |
+| Dates and times without Expo UI | Starts, Length, Weekly until and Opens for joining are fields that open a sheet of chips (half-hours 6 AM–10:30 PM; 45–180 min; no end / end of a coming month; 1–14 days), always including the saved value. Same pattern as PlanForm and quiet hours; `@expo/ui` isn't installed and the brief allows no new dependency. |
+| Place is picked from the catalog | The Place field opens the public places that play the series' sport (`usePlaces`), not free text. |
+| THIS WEEK price words | "free" when the price is 0, "members free" when members pay nothing and the series is members-first, otherwise "drop-in" (matches the PNG's Tue/Thu/Sun rows; the contract's rule would call Tuesday "members free"). |
+| THIS WEEK links | A session with people asking opens HostRequests (the PNG's SUN row); others open the roster; league rows open `league/[id]`. SERIES & TEMPLATES opens the first series in the week; LEAGUE the first league round; with none, the tool says "Nothing set up yet" and doesn't link. |
+| No "new series" (+) or series overflow menu | HostHome's + and HostSeries' "Duplicate, pause or end series" have no designed screen or RPC (no end/pause). Left out until designed. |
+| Skip with people in asks first | SKIP on a session that has people in confirms in a modal ("They're told it's off and keep their place if you restore it"); an empty one skips at once. RESTORE is immediate. Both are server writes, shown at once and rolled back on an error. |
+| Save sends only changes | SAVE CHANGES is disabled until something changed, sends `seriesChanges(loaded, edited)` with the loaded version, and on `series_version_conflict` says someone else saved and offers RELOAD. After saving it goes back to HostHome (the prototype's link) with a toast in counts. |
+| Service fee copy | The PNG's "Ojoro's service fee is shown before you save" can't be honoured (the fee isn't set), so the caption says payments aren't connected and the fee isn't set. |
+| HOST VERIFIED / ID VERIFIED | Hidden: no verification exists (coordinator decision). |
+| CHECK-IN is a mode | CHECK-IN (enabled once check-in opens) adds MARK IN to everyone in who hasn't checked in (`host_session_check_in`); DONE leaves the mode. |
+| Payments on the roster | Badges are the ops ledger's label in words (MEMBER, PAID $8, 10-PACK, $8 AT FIELD); owed spots (`due`, `due_at_field`) are the filled badge and get MARK PAID (`mark_paid_at_field`). With no ledger data for a priced session the panel says "Payments aren't connected. Nobody pays through Ojoro yet." |
+| Waitlist host choice | LET IN appears on waiting people only when a spot is open and the waitlist no longer fills itself. REORDER moves people with UP/DOWN and saves the whole order. |
+| ASK GRACE SOMETHING | Direct messages aren't built, so the button opens their profile instead (SEE GRACE'S PROFILE), where report and block also live. |
+| Stated level | `session_requests.stated_level` shows as a badge "SAYS: BEGINNER" (learning → beginner), so it reads as their own claim. Omitted when unset. |
+| Overline time on HostRequests | "<SESSION NAME> · 10:00" from the session's own name, so the weekday shows only when the series name has it. |
