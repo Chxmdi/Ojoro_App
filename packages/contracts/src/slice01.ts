@@ -11,6 +11,7 @@ import { competitionErrorCodes } from './competition';
 import { hostErrorCodes } from './hosts';
 import { communitiesErrorCodes } from './communities';
 import { hostOpsErrorCodes } from './hostsOps';
+import { passportErrorCodes } from './passport';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -137,6 +138,8 @@ export const idempotentRpcs = [
   'submit_league_result',
   'confirm_league_result',
   'ask_league_referee',
+  // Step 7: Passport (passport.ts)
+  'set_goal',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -206,6 +209,8 @@ export const ojoroErrorCodes = [
   ...communitiesErrorCodes,
   // Step 6: Host OS operations (hostsOps.ts, docs/HOSTS_OPS_CONTRACT.md)
   ...hostOpsErrorCodes,
+  // Step 7: Passport (passport.ts, docs/PASSPORT_CONTRACT.md)
+  ...passportErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

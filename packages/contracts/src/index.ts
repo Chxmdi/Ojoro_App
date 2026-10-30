@@ -21,3 +21,7 @@ export * from './communities';
 // Step 6 (Host OS operations: passes, ledger, refunds, leagues, insights) client contract helpers
 // (docs/HOSTS_OPS_CONTRACT.md).
 export * from './hostsOps';
+// Step 7 (Places and Ojoro Pulse) client contract helpers (docs/PLACES_CONTRACT.md).
+export * from './places';
+// Step 7 (Passport, goals, achievements, reputation) client contract helpers (docs/PASSPORT_CONTRACT.md).
+export * from './passport';

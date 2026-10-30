@@ -2650,6 +2650,70 @@ export type Database = {
           },
         ];
       };
+      goals: {
+        Row: {
+          achieved_at: string | null;
+          created_at: string;
+          discipline: string | null;
+          ended_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['goal_kind'];
+          scoring: Database['public']['Enums']['challenge_scoring'] | null;
+          sport_id: string | null;
+          status: Database['public']['Enums']['goal_status'];
+          target_date: string | null;
+          target_value: number;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          achieved_at?: string | null;
+          created_at?: string;
+          discipline?: string | null;
+          ended_at?: string | null;
+          id?: string;
+          kind: Database['public']['Enums']['goal_kind'];
+          scoring?: Database['public']['Enums']['challenge_scoring'] | null;
+          sport_id?: string | null;
+          status?: Database['public']['Enums']['goal_status'];
+          target_date?: string | null;
+          target_value: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          achieved_at?: string | null;
+          created_at?: string;
+          discipline?: string | null;
+          ended_at?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['goal_kind'];
+          scoring?: Database['public']['Enums']['challenge_scoring'] | null;
+          sport_id?: string | null;
+          status?: Database['public']['Enums']['goal_status'];
+          target_date?: string | null;
+          target_value?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'goals_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'goals_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       host_announcement_recipients: {
         Row: {
           announcement_id: string;
@@ -5070,9 +5134,17 @@ export type Database = {
       };
       passport_entries: {
         Row: {
-          activity_id: string;
+          activity_id: string | null;
+          challenge_event_id: string | null;
+          challenge_outcome: string | null;
+          challenge_scoring: Database['public']['Enums']['challenge_scoring'] | null;
+          challenge_side: Database['public']['Enums']['team_side'] | null;
+          challenge_title: string | null;
+          challenge_unit: string | null;
+          challenge_value: number | null;
           created_at: string;
           id: string;
+          kind: Database['public']['Enums']['passport_entry_kind'];
           minutes: number;
           occurred_at: string;
           place_game_number: number | null;
@@ -5083,9 +5155,17 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
-          activity_id: string;
+          activity_id?: string | null;
+          challenge_event_id?: string | null;
+          challenge_outcome?: string | null;
+          challenge_scoring?: Database['public']['Enums']['challenge_scoring'] | null;
+          challenge_side?: Database['public']['Enums']['team_side'] | null;
+          challenge_title?: string | null;
+          challenge_unit?: string | null;
+          challenge_value?: number | null;
           created_at?: string;
           id?: string;
+          kind?: Database['public']['Enums']['passport_entry_kind'];
           minutes: number;
           occurred_at: string;
           place_game_number?: number | null;
@@ -5095,9 +5175,17 @@ export type Database = {
           user_id: string;
         };
         Update: {
-          activity_id?: string;
+          activity_id?: string | null;
+          challenge_event_id?: string | null;
+          challenge_outcome?: string | null;
+          challenge_scoring?: Database['public']['Enums']['challenge_scoring'] | null;
+          challenge_side?: Database['public']['Enums']['team_side'] | null;
+          challenge_title?: string | null;
+          challenge_unit?: string | null;
+          challenge_value?: number | null;
           created_at?: string;
           id?: string;
+          kind?: Database['public']['Enums']['passport_entry_kind'];
           minutes?: number;
           occurred_at?: string;
           place_game_number?: number | null;
@@ -5119,6 +5207,13 @@ export type Database = {
             columns: ['activity_id'];
             isOneToOne: false;
             referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'passport_entries_challenge_event_id_fkey';
+            columns: ['challenge_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
             referencedColumns: ['id'];
           },
           {
@@ -5144,52 +5239,148 @@ export type Database = {
           },
         ];
       };
+      personal_bests: {
+        Row: {
+          challenge_event_id: string;
+          created_at: string;
+          discipline: string;
+          id: string;
+          passport_entry_id: string;
+          previous_value: number | null;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          set_at: string;
+          sport_id: string;
+          unit: string | null;
+          user_id: string;
+          value: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          challenge_event_id: string;
+          created_at?: string;
+          discipline: string;
+          id?: string;
+          passport_entry_id: string;
+          previous_value?: number | null;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          set_at: string;
+          sport_id: string;
+          unit?: string | null;
+          user_id: string;
+          value: number;
+        };
+        Update: {
+          challenge_event_id?: string;
+          created_at?: string;
+          discipline?: string;
+          id?: string;
+          passport_entry_id?: string;
+          previous_value?: number | null;
+          scoring?: Database['public']['Enums']['challenge_scoring'];
+          set_at?: string;
+          sport_id?: string;
+          unit?: string | null;
+          user_id?: string;
+          value?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'personal_bests_challenge_event_id_fkey';
+            columns: ['challenge_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'challenge_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'personal_bests_passport_entry_id_fkey';
+            columns: ['passport_entry_id'];
+            isOneToOne: false;
+            referencedRelation: 'passport_entries';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'personal_bests_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'personal_bests_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       places: {
         Row: {
           area: string;
           city: string;
           created_at: string;
+          description: string | null;
+          facilities: string[];
           floodlit_until: string | null;
           id: string;
           is_free: boolean;
+          kind: Database['public']['Enums']['place_kind'];
           lat: number;
           lng: number;
           name: string;
+          photo_path: string | null;
+          sensitive: boolean;
           slug: string;
           sport_ids: string[];
           surface: string | null;
           time_zone: string;
+          verification: Database['public']['Enums']['place_verification'];
+          verified_at: string | null;
         };
         ComputedFields: never;
         Insert: {
           area: string;
           city: string;
           created_at?: string;
+          description?: string | null;
+          facilities?: string[];
           floodlit_until?: string | null;
           id?: string;
           is_free?: boolean;
+          kind?: Database['public']['Enums']['place_kind'];
           lat: number;
           lng: number;
           name: string;
+          photo_path?: string | null;
+          sensitive?: boolean;
           slug: string;
           sport_ids?: string[];
           surface?: string | null;
           time_zone?: string;
+          verification?: Database['public']['Enums']['place_verification'];
+          verified_at?: string | null;
         };
         Update: {
           area?: string;
           city?: string;
           created_at?: string;
+          description?: string | null;
+          facilities?: string[];
           floodlit_until?: string | null;
           id?: string;
           is_free?: boolean;
+          kind?: Database['public']['Enums']['place_kind'];
           lat?: number;
           lng?: number;
           name?: string;
+          photo_path?: string | null;
+          sensitive?: boolean;
           slug?: string;
           sport_ids?: string[];
           surface?: string | null;
           time_zone?: string;
+          verification?: Database['public']['Enums']['place_verification'];
+          verified_at?: string | null;
         };
         Relationships: [];
       };
@@ -5591,6 +5782,7 @@ export type Database = {
       privacy_settings: {
         Row: {
           availability_visibility: Database['public']['Enums']['visibility'];
+          goals_visibility: Database['public']['Enums']['visibility'];
           history_visibility: Database['public']['Enums']['visibility'];
           sports_visibility: Database['public']['Enums']['visibility'];
           updated_at: string;
@@ -5599,6 +5791,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           availability_visibility?: Database['public']['Enums']['visibility'];
+          goals_visibility?: Database['public']['Enums']['visibility'];
           history_visibility?: Database['public']['Enums']['visibility'];
           sports_visibility?: Database['public']['Enums']['visibility'];
           updated_at?: string;
@@ -5606,6 +5799,7 @@ export type Database = {
         };
         Update: {
           availability_visibility?: Database['public']['Enums']['visibility'];
+          goals_visibility?: Database['public']['Enums']['visibility'];
           history_visibility?: Database['public']['Enums']['visibility'];
           sports_visibility?: Database['public']['Enums']['visibility'];
           updated_at?: string;
@@ -5724,6 +5918,36 @@ export type Database = {
             columns: ['user_id'];
             isOneToOne: false;
             referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      pulse_ticks: {
+        Row: {
+          city: string;
+          key: string;
+          place_id: string | null;
+          ticked_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          city: string;
+          key: string;
+          place_id?: string | null;
+          ticked_at?: string;
+        };
+        Update: {
+          city?: string;
+          key?: string;
+          place_id?: string | null;
+          ticked_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'pulse_ticks_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
             referencedColumns: ['id'];
           },
         ];
@@ -7021,6 +7245,29 @@ export type Database = {
           stats: Json;
         }[];
       };
+      challenge_passport_for_me: {
+        Args: { p_event_id: string };
+        Returns: {
+          best_value: number;
+          first_in_discipline: boolean;
+          goal_gap: number;
+          goal_id: string;
+          goal_target: number;
+          goal_target_date: string;
+          occurred_at: string;
+          outcome: string;
+          passport_entry_id: string;
+          personal_best: boolean;
+          place_name: string;
+          place_time_zone: string;
+          previous_best: number;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          sport_id: string;
+          title: string;
+          unit: string;
+          value: number;
+        }[];
+      };
       challenge_polls: {
         Args: { p_event_id: string };
         Returns: {
@@ -7409,6 +7656,7 @@ export type Database = {
           title: string;
         }[];
       };
+      clear_goal: { Args: Record<PropertyKey, never>; Returns: Json };
       clear_league_referee: { Args: { p_fixture_id: string }; Returns: undefined };
       comment_on_challenge: {
         Args: {
@@ -8883,6 +9131,59 @@ export type Database = {
           title: string;
         }[];
       };
+      passport_achievements: {
+        Args: { p_user_id: string };
+        Returns: {
+          achieved: boolean;
+          achieved_at: string;
+          context: string;
+          current: number;
+          family: string;
+          ladder: string;
+          threshold: number;
+        }[];
+      };
+      passport_goal: { Args: { p_user_id: string }; Returns: Json };
+      passport_reputation: { Args: { p_user_id: string }; Returns: Json };
+      passport_stamps: {
+        Args: {
+          p_before?: string;
+          p_limit?: number;
+          p_milestones_only?: boolean;
+          p_month?: string;
+          p_place_id?: string;
+          p_sport_id?: string;
+          p_user_id: string;
+        };
+        Returns: {
+          activity_id: string;
+          challenge_event_id: string;
+          entry_id: string;
+          kind: Database['public']['Enums']['passport_entry_kind'];
+          milestone: string;
+          milestone_count: number;
+          minutes: number;
+          occurred_at: string;
+          outcome: string;
+          personal_best: boolean;
+          place_area: string;
+          place_game_number: number;
+          place_id: string;
+          place_name: string;
+          place_number: number;
+          place_time_zone: string;
+          previous_best: number;
+          scoring: Database['public']['Enums']['challenge_scoring'];
+          sport_id: string;
+          sport_name: string;
+          sport_number: number;
+          stamp_number: number;
+          title: string;
+          unit: string;
+          value: number;
+        }[];
+      };
+      passport_view: { Args: { p_user_id: string }; Returns: Json };
       people_to_move_with: {
         Args: { p_limit?: number };
         Returns: {
@@ -8900,6 +9201,116 @@ export type Database = {
           shared_sports: string[];
           sports: string[];
           user_id: string;
+        }[];
+      };
+      place_busy_times: {
+        Args: { p_place_id: string };
+        Returns: {
+          day_of_week: number;
+          hour: number;
+          level: number;
+          part: Database['public']['Enums']['day_part'];
+        }[];
+      };
+      place_groups: {
+        Args: { p_place_id: string };
+        Returns: {
+          access: string;
+          cadence: string;
+          days: number[];
+          distance_km: number;
+          group_id: string;
+          group_name: string;
+          i_am_in: boolean;
+          id: string;
+          kind: string;
+          local_time: string;
+          sport_id: string;
+          sport_name: string;
+          time_zone: string;
+          title: string;
+          weeks_running: number;
+        }[];
+      };
+      place_hosts: {
+        Args: { p_limit?: number; p_place_id: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          handle: string;
+          hosted_here: number;
+          is_top: boolean;
+          program_id: string;
+          program_name: string;
+          trusted_host: boolean;
+          user_id: string;
+        }[];
+      };
+      place_tonight: {
+        Args: { p_place_id: string; p_when?: string };
+        Returns: {
+          activity_id: string;
+          capacity: number;
+          clan_id: string;
+          clan_run_id: string;
+          ends_at: string;
+          i_am_in: boolean;
+          kind: string;
+          level_label: string;
+          meeting_point: string;
+          member_count: number;
+          plan_id: string;
+          sport_id: string;
+          sport_name: string;
+          spots_left: number;
+          starts_at: string;
+          status: string;
+          time_zone: string;
+          title: string;
+        }[];
+      };
+      place_view: {
+        Args: { p_place_id: string };
+        Returns: {
+          area: string;
+          area_label: string;
+          busiest_day: number;
+          busy_levels: number[];
+          busy_part: Database['public']['Enums']['day_part'];
+          busy_summary: string;
+          city: string;
+          description: string;
+          distance_km: number;
+          facilities: string[];
+          facts: string;
+          floodlit_until: string;
+          forming_count: number;
+          has_busy_history: boolean;
+          is_free: boolean;
+          kind: Database['public']['Enums']['place_kind'];
+          lat: number;
+          live_count: number;
+          lng: number;
+          main_sport_id: string;
+          main_sport_name: string;
+          name: string;
+          photo_path: string;
+          place_id: string;
+          prefill_capacity: number;
+          prefill_duration_minutes: number;
+          prefill_sport_id: string;
+          prefill_starts_at: string;
+          sensitive: boolean;
+          slug: string;
+          sport_ids: string[];
+          sport_names: string[];
+          surface: string;
+          time_zone: string;
+          today_day: number;
+          today_rank: number;
+          tonight_count: number;
+          verification: Database['public']['Enums']['place_verification'];
+          verified_at: string;
         }[];
       };
       places_nearby: {
@@ -9122,6 +9533,63 @@ export type Database = {
           quota: number;
           remaining: number;
           used: number;
+        }[];
+      };
+      pulse: {
+        Args: { p_radius_km?: number; p_sport_id?: string; p_when?: string };
+        Returns: {
+          activity_count: number;
+          area: string;
+          city: string;
+          distance_km: number;
+          forming_capacity: number;
+          forming_count: number;
+          forming_member_count: number;
+          forming_plan_id: string;
+          forming_sport_name: string;
+          forming_starts_at: string;
+          kind: string;
+          label: string;
+          lat: number;
+          live_activity_id: string;
+          live_count: number;
+          live_title: string;
+          lng: number;
+          marker_id: string;
+          people_count: number;
+          place_id: string;
+          place_name: string;
+          sport_id: string;
+          sport_name: string;
+          summary: string;
+        }[];
+      };
+      pulse_place: {
+        Args: { p_place_id: string; p_sport_id?: string; p_when?: string };
+        Returns: {
+          activity_count: number;
+          area: string;
+          city: string;
+          distance_km: number;
+          facts: string;
+          floodlit_until: string;
+          forming_capacity: number;
+          forming_count: number;
+          forming_member_count: number;
+          forming_plan_id: string;
+          forming_sport_name: string;
+          forming_starts_at: string;
+          headline: string;
+          is_free: boolean;
+          kind: Database['public']['Enums']['place_kind'];
+          live_count: number;
+          main_sport_id: string;
+          main_sport_name: string;
+          name: string;
+          place_id: string;
+          suppressed: boolean;
+          surface: string;
+          time_zone: string;
         }[];
       };
       react: {
@@ -9693,6 +10161,22 @@ export type Database = {
         };
         Returns: Database['public']['Enums']['crew_role'];
       };
+      set_goal: {
+        Args: {
+          p_discipline?: string;
+          p_idempotency_key: string;
+          p_kind: Database['public']['Enums']['goal_kind'];
+          p_scoring?: Database['public']['Enums']['challenge_scoring'];
+          p_sport_id?: string;
+          p_target_date?: string;
+          p_target_value: number;
+        };
+        Returns: Json;
+      };
+      set_goals_visibility: {
+        Args: { p_visibility: Database['public']['Enums']['visibility'] };
+        Returns: Database['public']['Enums']['visibility'];
+      };
       set_host_league_member: {
         Args: {
           p_can_referee?: boolean;
@@ -10228,6 +10712,8 @@ export type Database = {
       crew_join_via: 'created' | 'added' | 'code';
       crew_role: 'owner' | 'admin' | 'member';
       day_part: 'morning' | 'midday' | 'evening';
+      goal_kind: 'personal_best' | 'sessions' | 'places';
+      goal_status: 'active' | 'replaced' | 'cleared';
       host_approved_via: 'host' | 'played_with' | 'experienced' | 'crews' | 'member';
       host_audience: 'session' | 'waitlist' | 'members' | 'everyone';
       host_charge_kind: 'drop_in' | 'pack' | 'monthly' | 'monthly_renewal';
@@ -10290,12 +10776,25 @@ export type Database = {
         | 'challenge_posts'
         | 'challenge_milestone'
         | 'challenge_to_confirm'
+        | 'ritual_week'
+        | 'clan_request'
         | 'host_announcement'
         | 'host_update'
-        | 'host_request'
-        | 'ritual_week'
-        | 'clan_request';
-      plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat' | 'host_session' | 'ritual';
+        | 'host_request';
+      passport_entry_kind: 'game' | 'challenge';
+      place_kind:
+        | 'park'
+        | 'pitch'
+        | 'court'
+        | 'track'
+        | 'gym'
+        | 'club'
+        | 'pool'
+        | 'trail'
+        | 'studio'
+        | 'other';
+      place_verification: 'listed' | 'community_confirmed' | 'venue_verified';
+      plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat' | 'ritual' | 'host_session';
       plan_status: 'forming' | 'game_on' | 'expired' | 'cancelled';
       proposal_status: 'proposed' | 'verified' | 'superseded';
       pull_scope: 'connections' | 'nearby';
@@ -10315,11 +10814,12 @@ export type Database = {
         | 'challenge_post'
         | 'challenge_comment'
         | 'rivalry'
-        | 'host_program'
         | 'crew'
         | 'clan'
         | 'clan_run'
-        | 'clash';
+        | 'clash'
+        | 'host_program'
+        | 'place';
       reputation_kind: 'shows_up' | 'respectful' | 'welcomes_beginners' | 'great_host';
       ritual_status: 'active' | 'paused' | 'ended';
       rivalry_kind: 'people' | 'crews';
@@ -10794,6 +11294,8 @@ export const Constants = {
       crew_join_via: ['created', 'added', 'code'],
       crew_role: ['owner', 'admin', 'member'],
       day_part: ['morning', 'midday', 'evening'],
+      goal_kind: ['personal_best', 'sessions', 'places'],
+      goal_status: ['active', 'replaced', 'cleared'],
       host_approved_via: ['host', 'played_with', 'experienced', 'crews', 'member'],
       host_audience: ['session', 'waitlist', 'members', 'everyone'],
       host_charge_kind: ['drop_in', 'pack', 'monthly', 'monthly_renewal'],
@@ -10862,13 +11364,27 @@ export const Constants = {
         'challenge_posts',
         'challenge_milestone',
         'challenge_to_confirm',
+        'ritual_week',
+        'clan_request',
         'host_announcement',
         'host_update',
         'host_request',
-        'ritual_week',
-        'clan_request',
       ],
-      plan_source: ['down_for', 'quick', 'run_it_back', 'chat', 'host_session', 'ritual'],
+      passport_entry_kind: ['game', 'challenge'],
+      place_kind: [
+        'park',
+        'pitch',
+        'court',
+        'track',
+        'gym',
+        'club',
+        'pool',
+        'trail',
+        'studio',
+        'other',
+      ],
+      place_verification: ['listed', 'community_confirmed', 'venue_verified'],
+      plan_source: ['down_for', 'quick', 'run_it_back', 'chat', 'ritual', 'host_session'],
       plan_status: ['forming', 'game_on', 'expired', 'cancelled'],
       proposal_status: ['proposed', 'verified', 'superseded'],
       pull_scope: ['connections', 'nearby'],
@@ -10888,11 +11404,12 @@ export const Constants = {
         'challenge_post',
         'challenge_comment',
         'rivalry',
-        'host_program',
         'crew',
         'clan',
         'clan_run',
         'clash',
+        'host_program',
+        'place',
       ],
       reputation_kind: ['shows_up', 'respectful', 'welcomes_beginners', 'great_host'],
       ritual_status: ['active', 'paused', 'ended'],

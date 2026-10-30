@@ -34,6 +34,8 @@ const SUBJECT_WORDS: Record<ReportSubjectKind, string> = {
   clash: 'Clash',
   // Step 6: hosts (docs/HOSTS_CONTRACT.md)
   host_program: 'program',
+  // Step 7: places (docs/PLACES_CONTRACT.md, Report)
+  place: 'place',
 };
 
 export function subjectWord(kind: ReportSubjectKind): string {

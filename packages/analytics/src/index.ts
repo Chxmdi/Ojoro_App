@@ -169,6 +169,22 @@ export const analyticsEvents = {
   hostSeasonViewed: 'host_season_viewed',
   hostInsightsViewed: 'host_insights_viewed',
   hostInsightsTableToggled: 'host_insights_table_toggled',
+  // Step 7: Passport. The server records passport_entry_added, personal_best_set, goal_set,
+  // goal_updated, goal_cleared, goal_achieved and goals_visibility_set (docs/PASSPORT_CONTRACT.md
+  // §Analytics); the client sends views and taps.
+  passportViewed: 'passport_viewed',
+  passportFilterChanged: 'passport_filter_changed',
+  goalSheetOpened: 'goal_sheet_opened',
+  // Step 7: Pulse and Place. The server records pulse_viewed and place_viewed
+  // (docs/PLACES_CONTRACT.md §Analytics); the client sends taps.
+  pulseOpened: 'pulse_opened',
+  pulseFilterChanged: 'pulse_filter_changed',
+  pulseMarkerSelected: 'pulse_marker_selected',
+  pulseViewToggled: 'pulse_view_toggled',
+  placeOpened: 'place_opened',
+  createHereTapped: 'create_here_tapped',
+  placeDirectionsTapped: 'place_directions_tapped',
+  placeShared: 'place_shared',
 } as const;
 
 export type AnalyticsEvent =

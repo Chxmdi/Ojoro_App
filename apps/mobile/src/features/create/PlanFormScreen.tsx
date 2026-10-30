@@ -5,7 +5,7 @@
  * offered. On success the plan opens.
  */
 import { useRouter } from 'expo-router';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -32,6 +32,7 @@ import { useOnline } from '../plans/data';
 import { ErrorState, InlineError, routes, TopBar } from '../plans/parts';
 import { DEFAULT_TIME_ZONE } from '../plans/time';
 import { OfflineNote } from '../profile/states';
+import { formTimeFrom } from '../places/logic';
 import { useCreatePlan, usePlaces, useSportCatalog } from './data';
 import {
   AUDIENCE_CHOICES,
@@ -79,7 +80,20 @@ function Field({
   );
 }
 
-export function PlanFormScreen({ kind }: { kind: PlanKind }) {
+export function PlanFormScreen({
+  kind,
+  placeId = null,
+  sportId = null,
+  startsAt = null,
+}: {
+  kind: PlanKind;
+  /** Prefilled place (CREATE ACTIVITY HERE on Place, CREATE HERE on Pulse). */
+  placeId?: string | null;
+  /** Prefilled sport, with a place. */
+  sportId?: string | null;
+  /** Suggested start (Place's busiest hour today), used when it fits the form's choices. */
+  startsAt?: string | null;
+}) {
   const auth = useAuth();
   const userId = auth.status === 'signed-in' ? auth.session.user.id : null;
   const router = useRouter();
@@ -90,11 +104,26 @@ export function PlanFormScreen({ kind }: { kind: PlanKind }) {
   const mine = useMySportIds(userId);
   const create = useCreatePlan();
   const [now] = useState(() => new Date());
-  const [form, setForm] = useState<PlanFormState>(() => initialPlanForm());
+  const [form, setForm] = useState<PlanFormState>(() => {
+    const time = formTimeFrom(startsAt, now, TZ);
+    const fits = time && timeChoicesFor(time.dayOffset, now, TZ).some((t) => t.minute === time.minuteOfDay);
+    return { ...initialPlanForm(), placeId, sportId, ...(fits ? time : null) };
+  });
   const [capacityTouched, setCapacityTouched] = useState(false);
   const [errors, setErrors] = useState<PlanFormErrors>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const activity = kind === 'activity';
+
+  // A prefilled sport takes its default capacity once the catalogue loads.
+  const prefillSport = sportId ? sports.data?.find((s) => s.id === sportId) : undefined;
+  useEffect(() => {
+    if (!prefillSport) return;
+    setForm((f) =>
+      f.sportId === prefillSport.id
+        ? { ...f, capacity: Math.min(CAPACITY_MAX, Math.max(CAPACITY_MIN, prefillSport.default_capacity)) }
+        : f,
+    );
+  }, [prefillSport]);
 
   const set = (patch: Partial<PlanFormState>) => {
     setForm((f) => ({ ...f, ...patch }));
@@ -111,6 +140,8 @@ export function PlanFormScreen({ kind }: { kind: PlanKind }) {
   ];
   const forSport = (places.data ?? []).filter((p) => !form.sportId || (p.sport_ids ?? []).includes(form.sportId));
   const placeRows = forSport.length > 0 ? forSport : (places.data ?? []);
+  const placeFits = (id: string | null, sport: string) =>
+    !!id && (places.data ?? []).some((p) => p.id === id && (p.sport_ids ?? []).includes(sport));
   const days = dayChoices(now, TZ);
   const times = timeChoicesFor(form.dayOffset, now, TZ);
   const dayText = days.find((d) => d.offset === form.dayOffset)?.label ?? 'Today';
@@ -184,7 +215,8 @@ export function PlanFormScreen({ kind }: { kind: PlanKind }) {
                     onPress={() =>
                       set({
                         sportId: s.id,
-                        placeId: null,
+                        // A prefilled place stays when it is for this sport too.
+                        placeId: placeFits(form.placeId, s.id) ? form.placeId : null,
                         ...(capacityTouched ? null : { capacity: Math.min(CAPACITY_MAX, Math.max(CAPACITY_MIN, s.default_capacity)) }),
                       })
                     }

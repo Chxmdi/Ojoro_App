@@ -23,6 +23,7 @@ import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
 import type { OjoroError } from '@ojoro/contracts';
 
+import { placeRoutes } from '../places/routes';
 import { AsOf, ErrorState, InlineError, routes } from '../plans/parts';
 import {
   personResultLine,
@@ -292,6 +293,8 @@ export function PlacesNearYou({
             distance={p.distance}
             lights={p.lights}
             plansTonight={p.plansTonight}
+            href={placeRoutes.place(p.key)}
+            onPress={() => track('place_opened', { place_id: p.key, source: 'discover_nearby' })}
             rule={i < places.length - 1}
             testID={`place-${p.key}`}
           />
@@ -382,6 +385,8 @@ export function Results({
                 kind={p.kind}
                 distance={p.distance}
                 plansTonight={p.plansTonight}
+                href={placeRoutes.place(p.key)}
+                onPress={() => track('place_opened', { place_id: p.key, source: 'discover_search' })}
                 rule={i < grouped.places.length - 1}
                 testID={`result-place-${p.key}`}
               />

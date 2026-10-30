@@ -175,6 +175,8 @@ const messages: Record<OjoroErrorCode | 'permission_denied' | 'network' | 'unkno
   clash_event_started: 'This event has started. Squads are set.',
   clash_event_not_started: "This event hasn't started yet.",
   squad_full: 'Your squad is full for this event.',
+  // Step 7: Passport (docs/PASSPORT_CONTRACT.md)
+  goal_invalid: "That goal doesn't add up. Check the target and the date.",
   permission_denied: "You can't do that here.",
   network: "You're offline. We'll try again when you're back.",
   unknown: "That didn't work. Try again.",
