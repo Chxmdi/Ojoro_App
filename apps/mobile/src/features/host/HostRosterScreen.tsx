@@ -86,7 +86,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
   const now = new Date();
 
   useEffect(() => {
-    track('screen_viewed', { screen: 'host_roster', program_id: programId, session_id: sessionId });
+    track('host_roster_viewed', { program_id: programId, session_id: sessionId });
     // "Starts in 50 minutes" and the check-in window move with the clock.
     const t = setInterval(() => tick((n) => n + 1), 60_000);
     return () => clearInterval(t);

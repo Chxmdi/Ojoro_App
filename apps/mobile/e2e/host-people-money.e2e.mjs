@@ -270,8 +270,12 @@ try {
       p_refund_note: 'Shifts changed. Could I get some of it back?',
     });
 
-    await H.page.reload({ waitUntil: 'load' });
-    await H.page.getByTestId('host-refund-keep').waitFor({ timeout: 60_000 });
+    // Realtime refetches the ledger; open the page again if the hint is slow.
+    try {
+      await H.page.getByTestId('host-refund-keep').waitFor({ timeout: 20_000 });
+    } catch {
+      await open(H.page, `/host/${program.id}/payments`, 'host-refund-keep');
+    }
     const ledger = await H.page.getByTestId('host-next-payout').innerText();
     assert(/placeholder/i.test(ledger), 'the service fee is labelled a placeholder');
     await H.page.getByTestId('host-refund-keep').click();

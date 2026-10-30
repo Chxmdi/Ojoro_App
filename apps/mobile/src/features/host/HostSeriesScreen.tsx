@@ -22,7 +22,6 @@ import {
   Divider,
   Icon,
   Input,
-  Modal,
   Screen,
   Sheet,
   Stepper,
@@ -90,10 +89,11 @@ export function HostSeriesScreen({ programId, seriesId }: { programId: string; s
   const [errors, setErrors] = useState<SeriesErrors>({});
   const [picker, setPicker] = useState<Picker>(null);
   const [confirmSkip, setConfirmSkip] = useState<{ id: string; date: string; people: number } | null>(null);
+  const [skipReason, setSkipReason] = useState('');
   const now = new Date();
 
   useEffect(() => {
-    track('screen_viewed', { screen: 'host_series', program_id: programId, series_id: seriesId });
+    track('host_series_viewed', { program_id: programId, series_id: seriesId });
   }, [programId, seriesId]);
 
   // The form starts from the first load, and again after a save or a reload; realtime refetches
@@ -375,7 +375,10 @@ export function HostSeriesScreen({ programId, seriesId }: { programId: string; s
                           disabled={!online || skip.isPending}
                           onPress={() => {
                             if (row.skipped) skip.mutate({ sessionId: s.session_id, skip: false });
-                            else if (s.in_count > 0) setConfirmSkip({ id: s.session_id, date: row.date, people: s.in_count });
+                            else if (s.in_count > 0) {
+                              setSkipReason('');
+                              setConfirmSkip({ id: s.session_id, date: row.date, people: s.in_count });
+                            }
                             else skip.mutate({ sessionId: s.session_id, skip: true });
                           }}
                           testID={`series-session-${s.occurs_on}-${row.action.toLowerCase()}`}
@@ -464,22 +467,47 @@ export function HostSeriesScreen({ programId, seriesId }: { programId: string; s
           />
         </>
       ) : null}
-      <Modal
+      <Sheet
         visible={!!confirmSkip}
-        title={`SKIP ${confirmSkip?.date ?? ''}?`}
-        body={
-          confirmSkip
-            ? `${confirmSkip.people === 1 ? '1 person is' : `${confirmSkip.people} people are`} in. They're told it's off and keep their place if you restore it.`
-            : ''
+        title={`Skip ${confirmSkip?.date.toLowerCase().replace(/^\w/, (c) => c.toUpperCase()) ?? ''}`}
+        onClose={() => setConfirmSkip(null)}
+        actions={
+          <>
+            <Button
+              block
+              onPress={() => {
+                if (confirmSkip) {
+                  const reason = skipReason.trim();
+                  skip.mutate({ sessionId: confirmSkip.id, skip: true, reason: reason || undefined });
+                }
+                setConfirmSkip(null);
+              }}
+              testID="skip-confirm"
+            >
+              SKIP IT
+            </Button>
+            <Button variant="ghost" block onPress={() => setConfirmSkip(null)} testID="skip-cancel">
+              KEEP IT
+            </Button>
+          </>
         }
-        confirm="SKIP IT"
-        cancel="KEEP IT"
-        onCancel={() => setConfirmSkip(null)}
-        onConfirm={() => {
-          if (confirmSkip) skip.mutate({ sessionId: confirmSkip.id, skip: true });
-          setConfirmSkip(null);
-        }}
-      />
+      >
+        <View className="gap-space-4">
+          <Text variant="body">
+            {confirmSkip
+              ? `${confirmSkip.people === 1 ? '1 person is' : `${confirmSkip.people} people are`} in. They're told it's off and keep their place if you restore it.`
+              : ''}
+          </Text>
+          <Input
+            label="Why (optional)"
+            hint="What the people already in are told, like “Field booked for a tournament”."
+            value={skipReason}
+            onChangeText={setSkipReason}
+            maxLength={120}
+            testID="skip-reason"
+          />
+        </View>
+      </Sheet>
     </Screen>
   );
 }
