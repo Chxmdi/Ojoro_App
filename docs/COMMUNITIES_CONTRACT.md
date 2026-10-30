@@ -19,7 +19,7 @@ effective status computed on read, no raw location) still applies. Judgment call
   `…100900_communities_clash_next_event.sql`, `…101000_communities_chat_read_clock.sql`,
   `…101100_communities_clash_one_open.sql`, `…101200_communities_notification_enums.sql`,
   `…101300_communities_rowing_crew_view.sql` (rowing sport; Step 4 `crew_view.free_tonight` now uses the
-  same rule as `crew_home`), and **`20261030900000_communities_notifications.sql`** (named after the Host
+  same rule as `crew_home`), and **`20261030220000_communities_notifications.sql`** (named after the Host
   OS migrations on purpose: it replaces `private.notification_feed` / `generic_copy` starting from Host
   OS core's 20261030200600 definitions; anyone redefining those later must start from this file).
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases (nullable columns already marked

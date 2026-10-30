@@ -17,8 +17,8 @@ keys). Judgment calls: `docs/DESIGN_DECISIONS.md` ("Step 6 BE-HOST-OPS").
 > currency unit), used by `private.host_service_fee_cents()`. The app never computes a fee; it shows
 > `fee_cents` from the reads and may say it's a placeholder (`fee_policy.placeholder`).
 
-- Schema: `supabase/migrations/20261030300000_host_ops_schema.sql`, `…300100_host_ops_money.sql`,
-  `…300200_host_ops_league.sql`, `…300300_host_ops_insights.sql`, `…300400_host_ops_cascade.sql`.
+- Schema: `supabase/migrations/20261030210000_host_ops_schema.sql`, `…210100_host_ops_money.sql`,
+  `…210200_host_ops_league.sql`, `…210300_host_ops_insights.sql`, `…210400_host_ops_cascade.sql`.
 - Client helpers: `packages/contracts/src/hostsOps.ts` (exported from `@ojoro/contracts`):
   `hostOpsRpcs`, `hostOpsIdempotentRpcs` (also in `idempotentRpcs`), `hostOpsErrorCodes` (also in
   `ojoroErrorCodes`), types for every jsonb read (`HostMoneyView`, `HostDecisionState`,
@@ -265,7 +265,7 @@ spreadsheet formulas defused. Save it with `insightsCsvFileName(programName)`.
 
 ## Seams filled for BE-HOST-CORE
 
-`20261030300100` / `300200` replace core's placeholders (same signatures):
+`20261030210100` / `300200` replace core's placeholders (same signatures):
 
 | Seam | Fills |
 |---|---|

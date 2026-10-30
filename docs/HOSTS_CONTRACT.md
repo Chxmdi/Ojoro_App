@@ -329,7 +329,7 @@ chat); audiences widen who receives it.
 ## Seams for the ops ledger
 
 These private functions return null / nothing in the core migration; **the ops ledger replaces them**
-(it has: all five are live as of `20261030300*`; see HOSTS_OPS_CONTRACT for exact values) (`create or
+(it has: all five are live as of `20261030210*`; see HOSTS_OPS_CONTRACT for exact values) (`create or
 replace`, same signature) to fill the money columns without the core reading ledger tables:
 
 | Function | Fills |
