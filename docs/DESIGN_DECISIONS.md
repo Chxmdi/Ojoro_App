@@ -823,6 +823,22 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | Rate limits as table triggers | New limits (host join requests 20/day, announcements 10/hour/author) are BEFORE INSERT triggers so every write path is covered without copying the host RPCs; seeds and the service role (no `auth.uid()`) aren't limited. |
 | Paused screen and appeal sheet | Not designed (HANDOFF.md "What isn't designed yet"): calm ground, one display line, reason/end/note in words, APPEAL and SIGN OUT; the appeal sheet copies the report sheet's anatomy (Sheet, Chip, Input). The show-up entry is one caption and a TextButton under You's reputation, shown only when a game counts as missed. |
 
+## Step 8 BE-PAYMENTS
+
+| Decision | Why |
+|---|---|
+| Destination charges on the platform, Express accounts | Checkout runs on Ojoro's account with `transfer_data.destination` = the host's Express account and the placeholder `application_fee_amount` / `application_fee_percent`. Refunds use `reverse_transfer` + `refund_application_fee`, so a refund pulls the money back from the host and Ojoro keeps no fee on refunded money. Owner may prefer direct charges once the fee is decided. |
+| Live mode impossible in two places | The functions refuse `sk_live_` / `rk_live_` keys and any `STRIPE_MODE` but `test` (code), and the database refuses `livemode` events and accounts while `payments_mode_policy().live_enabled` is false (a migration). Turning live on needs both changes and an owner decision. |
+| Drop-in price = the session's price for me | `host_payment_of` (session `price_cents`, or `member_price_cents` for members) is what the roster shows; the drop-in pass row is a label. Paying requires being in the session (confirmed / checked in) and `due`; capacity rules are untouched. |
+| Paid but no longer honourable → straight refund, ledger untouched | Paid at the field meanwhile, left the session, session skipped, already a member: the checkout turns `refunded` and a queue job refunds by PaymentIntent (and cancels a duplicate subscription). Avoids double rows under the one-drop-in-per-session index. |
+| Host refunds wait out UNDO before Stripe | Refund jobs from `decide_host_refund` have `not_before = +10 min`; UNDO closes once the job is sending/sent. Automatic refunds (spot filled, skipped session) go at once. |
+| Subscription changes are set-to-state | Any change to a Stripe membership's `renews` / `status` queues one `sync_subscription` that makes Stripe match at send time (so UNDO just re-syncs). Changes that came from Stripe's webhook aren't echoed back (`ojoro.payments_source`). Ending now also waits 10 minutes. |
+| Tick leaves Stripe renewals to Stripe | No `due` renewal charges for Stripe memberships; the webhook records `invoice.paid`. A Stripe membership ends from the tick only after 7 silent days past its period end. |
+| Weeks stay Ojoro's; Stripe payouts are linked | Express payouts are set weekly on Friday; a `payout.*` event whose arrival date is a closed week's `pays_on` marks that week paid/failed. Totals stay our ledger figures with the placeholder fee; Stripe's amount sits on `host_provider_payouts`. |
+| Step 6 functions wrapped, not copied | `host_money_view`, `host_decision_state`, `undo_host_refund_decision` moved to `private.*_base` and wrapped (extra keys / one more check), so BE-HOST-OPS's bodies stay the single source. Test 28's provider assertion now checks 'paypal' is refused (Stripe is allowed). |
+| Own signature check, SDK for calls | The webhook verifies `Stripe-Signature` with WebCrypto (Stripe's scheme, 5-minute tolerance, several secrets) so it is unit-tested without the SDK; `npm:stripe@23.0.0` (API 2026-09-30) makes every API call with our idempotency keys. |
+| Return links bounce through `payments-return` | Stripe sends browsers only to https URLs; the function redirects to the app scheme or an allow-listed web origin (`PAYMENTS_RETURN_ORIGINS`), never an arbitrary URL. |
+
 ## Step 8 CONCIERGE
 
 | Decision | Why |

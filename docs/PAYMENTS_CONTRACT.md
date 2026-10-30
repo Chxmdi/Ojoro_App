@@ -181,8 +181,8 @@ Session → `payments_attach_checkout` (service) → `{ url }`.
 | Free / archived / drop-in pass alone | `checkout_invalid` (`free`, `archived`, `kind`). | |
 
 Metadata on the session (and its PaymentIntent / subscription): `ojoro_checkout_id`, `ojoro_program_id`,
-`ojoro_user_id`, `ojoro_kind`, `ojoro_pass_id`, `ojoro_session_id`. The session expires after
-`PAYMENTS_CHECKOUT_MINUTES` (default 30).
+`ojoro_user_id`, `ojoro_kind`, `ojoro_pass_id`, `ojoro_session_id`. The session expires 31
+minutes after it starts (Stripe's minimum is 30), set by the database.
 
 On completion the webhook writes exactly what `grant_host_pass` / `mark_paid_at_field` would, with
 `method = 'app'` and `provider = 'stripe'`: a paid drop-in charge (updating a `due` one if there is),
@@ -295,7 +295,6 @@ Secrets live in the functions' environment (`supabase secrets set …` for a hos
 | `PAYMENTS_CRON_SECRET` | Shared with the Vault secret `payments_drain_secret`; guards `payments-drain`. |
 | `PAYMENTS_FUNCTIONS_URL` | Public base of the functions (`https://<ref>.supabase.co/functions/v1`), for return links. |
 | `PAYMENTS_RETURN_ORIGINS` | Allowed app return bases, comma-separated (default `ojoro://`). |
-| `PAYMENTS_CHECKOUT_MINUTES` | Optional, default 30 (Stripe's minimum). |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | Provided by Supabase. |
 
 Stripe dashboard (test mode): enable Connect (Express), add a webhook endpoint

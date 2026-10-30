@@ -1,0 +1,3 @@
+# Eval reports are local output; keep them out of git.
+*
+!.gitignore
