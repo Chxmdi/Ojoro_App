@@ -299,3 +299,134 @@ export function placeSubscription(placeId: string): RealtimeSubscription {
     ],
   };
 }
+
+// Map and chart adapters --------------------------------------------------------------------------------
+// Shapes match the DS AreaMap (`AreaMapPoint`, `AreaMapArea`) and BusyTimes (`BusyTimesDatum`) props
+// structurally, so screens pass them straight through.
+
+export interface PulseMapPoint {
+  id: string;
+  name: string;
+  area?: string | undefined;
+  lat: number;
+  lng: number;
+  activeCount?: number | undefined;
+  forming?: { count: number; capacity: number; sport?: string | undefined } | null | undefined;
+  wanting?: { count: number; sport: string } | null | undefined;
+  live?: { word: string } | null | undefined;
+  accessibilityLabel?: string | undefined;
+}
+
+export interface PulseMapArea {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+}
+
+/** The live pill's word: the first word of the live title, upper case ("Sparring rounds" → "SPARRING"). */
+export function liveWord(title: string | null): string {
+  const first = (title ?? '').trim().split(/\s+/)[0] ?? '';
+  return first === '' ? 'LIVE' : first.toUpperCase();
+}
+
+/**
+ * Map points from `pulse` rows: one per place marker (count, forming pill, live pill) and one per demand
+ * marker, set at its area's centroid ("5 WANT VOLLEYBALL"; demand belongs to an area, never a place).
+ * Area rows become neighbourhood labels (`pulseMapAreas`), not points.
+ */
+export function pulseMapPoints(
+  markers: readonly Pick<
+    PulseMarker,
+    | 'marker_id'
+    | 'kind'
+    | 'place_name'
+    | 'area'
+    | 'lat'
+    | 'lng'
+    | 'activity_count'
+    | 'forming_member_count'
+    | 'forming_capacity'
+    | 'forming_sport_name'
+    | 'live_title'
+    | 'live_count'
+    | 'sport_name'
+    | 'people_count'
+    | 'summary'
+  >[],
+): PulseMapPoint[] {
+  const points: PulseMapPoint[] = [];
+  for (const m of markers) {
+    if (m.kind === 'place') {
+      points.push({
+        id: m.marker_id,
+        name: m.place_name ?? m.area,
+        area: m.area,
+        lat: m.lat,
+        lng: m.lng,
+        activeCount: m.activity_count ?? 0,
+        forming:
+          m.forming_member_count != null && m.forming_capacity != null
+            ? {
+                count: m.forming_member_count,
+                capacity: m.forming_capacity,
+                sport: m.forming_sport_name ?? undefined,
+              }
+            : null,
+        live: (m.live_count ?? 0) > 0 ? { word: liveWord(m.live_title) } : null,
+        accessibilityLabel: m.summary,
+      });
+    } else if (m.kind === 'demand' && m.people_count != null && m.sport_name != null) {
+      points.push({
+        id: m.marker_id,
+        name: `Near ${m.area}`,
+        area: m.area,
+        lat: m.lat,
+        lng: m.lng,
+        wanting: { count: m.people_count, sport: m.sport_name },
+        accessibilityLabel: m.summary,
+      });
+    }
+  }
+  return points;
+}
+
+/** Neighbourhood labels from the `area` rows ("PLATEAU" at the area's 0.01° centroid). */
+export function pulseMapAreas(
+  markers: readonly Pick<PulseMarker, 'marker_id' | 'kind' | 'area' | 'lat' | 'lng'>[],
+): PulseMapArea[] {
+  return markers
+    .filter((m) => m.kind === 'area')
+    .map((m) => ({ id: m.marker_id, name: m.area.toUpperCase(), lat: m.lat, lng: m.lng }));
+}
+
+const DAY_NAME = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+] as const;
+
+/**
+ * BusyTimes data from `place_view`: seven values (Mon..Sun) in the busy part of the day, plus the index
+ * of today (0-based, or null). Empty data without history.
+ */
+export function busyTimesData(view: Pick<PlaceView, 'busy_levels' | 'today_day'>): {
+  data: { key: string; label: string; name: string; value: number }[];
+  currentIndex: number | null;
+} {
+  const levels = view.busy_levels;
+  if (levels == null || levels.length !== 7) return { data: [], currentIndex: null };
+  return {
+    data: levels.map((value, i) => ({
+      key: String(i + 1),
+      label: DAY_SHORT[i] as string,
+      name: DAY_NAME[i] as string,
+      value: Math.max(0, value),
+    })),
+    currentIndex: view.today_day >= 1 && view.today_day <= 7 ? view.today_day - 1 : null,
+  };
+}
