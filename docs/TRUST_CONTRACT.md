@@ -12,7 +12,9 @@ Judgment calls: `docs/DESIGN_DECISIONS.md` ("Step 8 TRUST").
   appeals, corrections, audit), `…040100_trust_enforcement.sql` (paused accounts, hidden content, report
   de-duplication, rate limits), `…040200_trust_staff.sql` (staff reads and writes),
   `…040300_trust_user.sql` (account status, appeals, reputation corrections on the reads),
-  `…040400_trust_surfaces.sql` (chat pages hide a paused account's messages).
+  `…040400_trust_surfaces.sql` (chat pages hide a paused account's messages),
+  `…040500_trust_notification_enums.sql` + `…040600_trust_notifications.sql` (notifications),
+  `…040700_trust_account_deletion.sql` (account deletion keeps history; sign-out while paused).
 - Client helpers: `packages/contracts/src/trust.ts` (exported from `@ojoro/contracts`): `trustRpcs`
   (app), `staffRpcs` (admin web), `trustIdempotentRpcs`, `trustErrorCodes` (also in `ojoroErrorCodes`),
   the jsonb shapes below as types, constants and word helpers.
@@ -24,7 +26,8 @@ Judgment calls: `docs/DESIGN_DECISIONS.md` ("Step 8 TRUST").
 Contents: [Rules](#rules) · [Staff accounts](#staff-accounts) · [Errors](#errors) · [Reports and the
 queue](#reports-and-the-queue) · [Staff reads](#staff-reads) · [Staff writes](#staff-writes) ·
 [Paused accounts](#paused-accounts) · [Hidden content](#hidden-content) · [Appeals](#appeals) ·
-[Reputation corrections](#reputation-corrections) · [Rate limits](#rate-limits) · [Block
+[Reputation corrections](#reputation-corrections) · [Notifications](#notifications) · [Account
+deletion](#account-deletion) · [Rate limits](#rate-limits) · [Block
 enforcement](#block-enforcement) · [App surfaces](#app-surfaces) · [Analytics](#analytics) ·
 [Local data](#local-data) · [Not built](#not-built)
 
@@ -332,6 +335,39 @@ and `signal_void` (subject, giver, optional activity). `passport_reputation`, `p
 `private.show_up_record` and the trusted-host count apply them: a voided signal is not counted, an
 `attended` game counts as showed up, an `excused` game is dropped from both numbers. Attendance and
 `reputation_signals` rows are never changed.
+
+## Notifications
+
+Written by triggers on the trust tables (so staff RPCs, upheld appeals and SQL all notify), object kind
+`account` (object_id = the recipient; only they can see it), types in `trustNotificationTypes`:
+
+| Type | When | Title / body | href |
+|---|---|---|---|
+| `account_paused` | A pause starts (not when one replaces another) | "Your account is paused." / "Until 12 November. You can appeal in the app." | none (the paused screen) |
+| `account_restored` | A pause is restored by staff or an upheld appeal | "Your account is back." / "Everything is as you left it." | `/you` |
+| `appeal_decided` | An appeal is upheld or denied | "We agreed with your appeal." or "We looked again and kept our decision." / the staff note, else words for the kind | `/you` |
+
+A pause that ends on its own at `ends_at` sends nothing (no row changes). `data`: `pause_id`, `ends_at`,
+`reason` / `appeal_id`, `kind`, `decision`, `note`.
+
+## Account deletion
+
+The only path is the Auth user being deleted (Admin API, dashboard, SQL), which cascades to the profile.
+Before the profile goes (`private.prepare_account_deletion`, BEFORE DELETE on profiles):
+
+- Called off: their forming plans, their games and clan runs still to start; their host programs archived.
+- Kept under the placeholder **Former member** (`FORMER_MEMBER_ID`, a banned Auth user that can't sign
+  in and can't be deleted): every required person column that doesn't cascade (plans, games, results,
+  Challenge sides, crews, clans, programs, series, leagues…, read from the catalog so later tables are
+  covered), Call-Outs that became events, result submissions, and hosts' ledger rows (charges, refund
+  requests, refunds). Optional ones become null (audit actors, deciders).
+- Gone with them: what is only theirs (profile, memberships, signals, Passport entries and personal
+  bests, messages, posts, reports, appeals, pauses, tokens).
+- Insert-only tables (Challenge and Clash results, personal bests, the host ledger audit) accept these
+  changes only during the deletion (transaction-local, cleared when that profile's cascades finish).
+  Trust audit rows have no foreign keys and are never touched.
+
+`unregister_push_token` works while paused (signing out always cleans up the device).
 
 ## Rate limits
 

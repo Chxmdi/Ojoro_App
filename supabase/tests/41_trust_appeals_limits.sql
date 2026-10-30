@@ -416,6 +416,9 @@ select throws_ok(format('select public.submit_appeal(%L, %L, %L, gen_random_uuid
                  'P0001', 'appeal_exists', 'one open appeal per game');
 select is((public.my_missed_games()) -> 'items' -> 0 ->> 'appeal_status', 'open', 'the miss shows its appeal');
 select tests.keep('a2', ((public.submit_appeal('show_up', tests.id('g2'), 'The host cancelled on the pitch.', gen_random_uuid())) ->> 'id')::uuid);
+-- One transaction, one now(): make the first appeal the older one.
+select tests.logout();
+update private.appeals set created_at = created_at - interval '1 minute' where id = tests.id('a1');
 
 select tests.login(12);
 select is((public.staff_appeals()) -> 'items' -> 0 ->> 'id', tests.id('a1')::text, 'oldest open appeal first');
