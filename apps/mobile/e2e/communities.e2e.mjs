@@ -265,7 +265,8 @@ async function main() {
       await pb.page.getByText('OJORO CLASH · TEST SEASON').waitFor();
       const poster = await pb.page.getByTestId('clash-poster').innerText();
       assert(poster.indexOf('HARES') < poster.indexOf('STRIDERS'), `poster order: ${poster}`);
-      await pb.page.getByTestId('clash-event-1').getByText('UPCOMING').waitFor();
+      await pb.page.getByTestId('clash-event-1').waitFor();
+      await pb.page.getByTestId('clash-event-2').waitFor();
     });
 
     await step('Clash: YOUR PART joins a squad; backing your own clan counts, the other side never', async () => {
