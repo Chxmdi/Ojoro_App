@@ -17,7 +17,11 @@ effective status computed on read, no raw location) still applies. Judgment call
   `…100700_communities_followups.sql` (create/update clan take the short name),
   `…100800_communities_crew_availability.sql` (FREE TONIGHT honours "crews"),
   `…100900_communities_clash_next_event.sql`, `…101000_communities_chat_read_clock.sql`,
-  `…101100_communities_clash_one_open.sql`.
+  `…101100_communities_clash_one_open.sql`, `…101200_communities_notification_enums.sql`,
+  `…101300_communities_rowing_crew_view.sql` (rowing sport; Step 4 `crew_view.free_tonight` now uses the
+  same rule as `crew_home`), and **`20261030900000_communities_notifications.sql`** (named after the Host
+  OS migrations on purpose: it replaces `private.notification_feed` / `generic_copy` starting from Host
+  OS core's 20261030200600 definitions; anyone redefining those later must start from this file).
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases (nullable columns already marked
   `| null`, use these rather than the raw `Functions[…]['Returns']`): `CrewHome`, `CrewFreeTonight`,
   `CrewDownFor`, `CrewRitual`, `CrewVersus`, `CrewRivalry`, `CrewMemory`, `ClanView`, `MyClan`, `ClanRun`,
@@ -40,7 +44,7 @@ effective status computed on read, no raw location) still applies. Judgment call
 Contents: [Rules](#rules) · [Errors](#errors) · [Privacy and safety](#privacy-and-safety) ·
 [Model](#model) · [Crew Home](#crew-home) · [Rituals](#rituals) · [Clans](#clans) ·
 [Club runs](#club-runs) · [Mission and leaderboard](#mission-and-leaderboard) · [Ojoro Clash](#ojoro-clash) ·
-[Realtime](#realtime) · [Analytics](#analytics) · [Screens](#screens) · [Local data](#local-data) ·
+[Notifications](#notifications) · [Realtime](#realtime) · [Analytics](#analytics) · [Screens](#screens) · [Local data](#local-data) ·
 [Not built](#not-built)
 
 ---
@@ -135,6 +139,7 @@ clan), `subject_not_found`, `report_rate_limited`.
   runs, the mission total, who runs it, Clashes); `invite` clans to members only. A block with the
   captain hides a clan (reads as `clan_not_found`). Inside a clan, blocked pairs never see each other
   in roles, roster, requests, the leaderboard, run hosts or squads; counts include everyone.
+- Step 4's `crew_view.free_tonight` uses the same rule, so the crew header and Crew Home always agree.
 - **Areas, not addresses.** Clans have an `area` and `city`; runs and Clash events use public places.
   Club-run check-in uses your position once (within 300 m of the place) and never stores it.
 - **Leaderboard** (`clan_leaderboard`): members only, club runs only, this clan only (PRD §9.15:
@@ -272,8 +277,7 @@ Easy to pause, skip, edit or end (PRD §9.12).
 | `skip_ritual_week(p_ritual_id, p_occurs_on = next, p_skip = true) → ritual_week_state { ritual_id, occurs_on, starts_at, skipped, plan_id*, clan_run_id* }` | editors and the host | Skipping calls off that week's plan or run while it's forming (members get Step 4's `activity_changed` "called off"); GAME ON → `ritual_week_locked`. `p_skip = false` puts it back (a new plan when it's due). `p_occurs_on` must be that weekday, in the future, ≤ 8 weeks ahead. |
 | `end_ritual(p_ritual_id) → ritual_status` | editors | For good; history stays. |
 
-Ritual weeks don't send their own notification yet (see [Not built](#not-built)); they appear on Crew
-Home, in `home_feed` as crew plans, and in the crew's plans.
+Each new week notifies the crew or clan (`ritual_week`, see [Notifications](#notifications)).
 
 ## Clans
 
@@ -401,6 +405,21 @@ won/lost/drawn; events from every Clash).
 Clash events are not plans: a squad is who takes part. Linking an event to a Slice 01 plan (for
 check-in and recap) is not built yet; the event's line opens its place.
 
+## Notifications
+
+Two new `notification_type`s and the `clan` `notification_object` (Step 4's `my_notifications`,
+bundling, mutes, quiet hours and would-send rules apply; `mute_object('clan', id)` silences a clan).
+
+| Type | When | To | Object · link | Needs you while | Action |
+|---|---|---|---|---|---|
+| `ritual_week` | A Ritual puts this week's plan or club run on the board (when created, resumed, put back, or by the 5-minute job) | Everyone in the crew or clan except the host | crew: `plan` · `/plan/{id}`; clan: `clan` · `/clan/{id}` (`data.clan_run_id`) | it's forming (run: not started) with room and you're not in | `im_down` |
+| `clan_request` | Someone asks to join a request clan (bundled per clan; push-throttled) | Captain, organizers, moderators, connectors (never across a block with the asker) | `clan` · `/clan/{id}` | a request is pending | `open` |
+
+Words: "Thursday football · Thu 7:30" / "Thursday FC ritual · 1 / 10 in."; club run "Tempo · 6 km · Tue
+6:30" / "Concordia Run Club · 18 / 30 down."; "Maya K asked to join Concordia Run Club." / "3 people
+asked to join …" · "Approve or decline on the clan page." Locked screens: "This week's ritual is on
+the board." / "Someone asked to join your clan."
+
 ## Realtime
 
 `postgres_changes`, filtered by RLS. Realtime is a hint: on `SUBSCRIBED` and on foreground, refetch.
@@ -461,8 +480,7 @@ Sign in as Chimdi (+1 555 555 0100). Sample content from the designs.
 
 ## Not built
 
-Notifications for Ritual weeks, clan requests and decisions, club runs and Clash moments (Step 4's
-`notification_type` and `notification_feed` words would need new types; ask before adding); a club-run
+Notifications for clan request decisions, club-run changes and Clash moments; a club-run
 screen (`clan_run_view` is ready); clan creation and Ritual editing screens (not designed); Clash
 events as plans (check-in, recap and Passport for Clash events); ladders and multi-clan leagues (host
 leagues are BE-HOST-OPS); public clan discovery in Discover; clan chat; dismissing the Make This a

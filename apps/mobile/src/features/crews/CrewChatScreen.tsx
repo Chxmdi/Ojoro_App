@@ -25,6 +25,7 @@ import { ChatView } from '../chat/ChatView';
 import { payloadEvent, type ThreadItem } from '../chat/thread';
 import { useChatMessages } from '../chat/useChat';
 import { useCrewRealtime, useCrewSuggestions, useCrewView, type Suggestion } from './data';
+import { useMarkCrewChatRead } from './homeData';
 import { crewCaption, isCrewAdmin } from './logic';
 import { CrewPlanPoll, SuggestionCard } from './MakeGame';
 
@@ -53,6 +54,12 @@ export function CrewChatScreen({ id }: { id: string }) {
   const hide = (sid: string) => setHidden((h) => new Set([...h, sid]));
   // The same pages ChatView reads (shared cache): is the accepted suggestion's line loaded?
   const thread = useChatMessages('crew', id, !!crew);
+  // Crew Home's "N NEW": read up to now on open, on each new message while open, and on leaving.
+  const newestAt = useMemo(
+    () => thread.messages.reduce<string | null>((max, m) => (!max || m.created_at > max ? m.created_at : max), null),
+    [thread.messages],
+  );
+  useMarkCrewChatRead(id, !!crew, newestAt);
   const anchoredIds = useMemo(() => {
     const out = new Set<string>();
     for (const m of thread.messages) {
@@ -132,7 +139,7 @@ export function CrewChatScreen({ id }: { id: string }) {
             }}
             testID="crew-menu-page"
           >
-            MEMBERS AND INVITE CODE
+            OPEN CREW HOME
           </Button>
           <Text variant="caption" muted>
             To report or block someone, press and hold their message, or open their profile from the members list.

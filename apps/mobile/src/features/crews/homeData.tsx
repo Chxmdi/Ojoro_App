@@ -14,7 +14,7 @@ import {
   type CrewVersus,
 } from '@ojoro/contracts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { track } from '@/lib/analytics';
 import { newIdempotencyKey } from '@/lib/idempotency';
@@ -203,4 +203,25 @@ export function useCreateRitual(crewId: string) {
       void qc.invalidateQueries({ queryKey: crewHomeKeys.home(crewId) });
     },
   });
+}
+
+/**
+ * The chat's read mark (`mark_crew_chat_read`): when the chat opens, when a message arrives while it
+ * is open, and when it closes, so Crew Home's "N NEW" clears. The server never moves it back, so
+ * repeats are harmless; failures are quiet (the count just stays until the next mark).
+ */
+export function useMarkCrewChatRead(crewId: string, enabled: boolean, newestAt: string | null) {
+  const qc = useQueryClient();
+  const mark = useRef<() => void>(() => undefined);
+  mark.current = () => {
+    if (!crewId || !enabled) return;
+    rpc('mark_crew_chat_read', { p_crew_id: crewId }).then(
+      () => void qc.invalidateQueries({ queryKey: crewHomeKeys.home(crewId) }),
+      () => undefined,
+    );
+  };
+  useEffect(() => {
+    mark.current();
+  }, [crewId, enabled, newestAt]);
+  useEffect(() => () => mark.current(), [crewId]);
 }

@@ -300,6 +300,9 @@ select is((select array_agg(user_id) from public.crew_free_tonight(tests.id('cre
 select tests.login(4);
 select is((select count(*)::integer from public.crew_free_tonight(tests.id('crew'))), 1,
   'the blocked person does not see the blocker either');
+select tests.login(1);
+select is((select free_tonight from public.crew_view(tests.id('crew'))),
+  (select free_tonight from public.crew_home(tests.id('crew'))), 'crew_view and crew_home agree');
 select tests.logout();
 update public.privacy_settings set availability_visibility = 'friends' where user_id = tests.u(3);
 select tests.login(1);
@@ -362,6 +365,14 @@ select is((public.create_ritual(tests.id('rkey'), 'football', 'Pitch night', 1, 
   tests.id('rit'), 'retry with the key: the same Ritual');
 select tests.keep('wk', (select week_plan_id from public.crew_rituals(tests.id('crew')) where ritual_id = tests.id('rit')));
 select isnt(tests.id('wk'), null, 'the week is prefilled');
+select is((select count(*)::integer from public.my_notifications() where type = 'ritual_week'), 0,
+  'the host is not told about their own Ritual');
+select tests.login(2);
+select is((select action || ' ' || needs_you || ' ' || href from public.my_notifications() where type = 'ritual_week'),
+  'im_down true /plan/' || tests.id('wk'), 'the crew hears the week is on the board');
+select ok((select title like 'Pitch night · %' and body like 'Test Crew ritual · 1 / 8 in.' from public.my_notifications()
+           where type = 'ritual_week'), 'ritual words');
+select tests.login(1);
 select tests.logout();
 select is((select audience::text || ' ' || source::text || ' ' || member_count || ' ' || (crew_id = tests.id('crew'))
            from public.plans where id = tests.id('wk')), 'crew ritual 1 true',
@@ -370,6 +381,8 @@ select tests.login(2);
 select is((public.im_down(tests.id('wk'), gen_random_uuid())).member_count, 2, 'crew mates still tap I''M DOWN');
 select is((select week_member_count || '/' || week_capacity || ' ' || week_i_am_in from public.crew_rituals(tests.id('crew'))),
   '2/8 true', 'THIS WEEK · 2 / 8');
+select is((select needs_you from public.my_notifications() where type = 'ritual_week'), false,
+  'once you''re in it no longer needs you');
 select is((select next_ritual_id from public.crew_home(tests.id('crew'))), tests.id('rit'), 'NEXT is the Ritual''s week');
 select tests.login(3);
 select throws_ok(format($$select public.skip_ritual_week(%L)$$, tests.id('rit')), 'P0001', 'not_crew_admin',

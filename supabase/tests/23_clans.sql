@@ -291,6 +291,14 @@ select tests.login(2);
 select tests.keep('req', (public.join_clan(tests.id('clan'), 'I run 5K most weeks')).request_id);
 select is((select status || ' ' || changed from public.join_clan(tests.id('clan')) x), 'requested false',
   'asking again: the same request');
+select tests.login(1);
+select is((select title || ' ' || needs_you || ' ' || href from public.my_notifications() where type = 'clan_request'),
+  'Tester 2 asked to join Test Run Club. true /clan/' || tests.id('clan'), 'the captain hears about the request');
+select ok(public.mute_object('clan', tests.id('clan')), 'mute the clan');
+select tests.logout();
+select is((select w.reason from public.notifications n cross join lateral private.would_send(n.id) w
+           where n.recipient_id = tests.u(1) and n.type = 'clan_request'), 'object_muted', 'mutes hold');
+select ok('clan_request' = any (private.push_throttled_types()), 'repeat requests are push-throttled');
 select tests.login(4);
 select throws_ok(format($$select public.decide_clan_request(%L, true)$$, tests.id('req')), 'P0001',
   'clan_request_not_found', 'only people who admit can decide');
@@ -298,6 +306,8 @@ select tests.login(1);
 select is((select count(*)::integer from public.clan_requests(tests.id('clan'))), 1, 'the captain sees the request');
 select is((select pending_requests from public.clan_view(tests.id('clan'))), 1, 'and the count');
 select is(public.decide_clan_request(tests.id('req'), true)::text, 'approved', 'approve');
+select is((select needs_you from public.my_notifications() where type = 'clan_request'), false,
+  'answered: no longer needs you');
 select is(public.decide_clan_request(tests.id('req'), false)::text, 'approved', 'answered already: stays approved');
 select is((select member_count from public.clan_view(tests.id('clan'))), 2, 'two members');
 
@@ -432,6 +442,10 @@ select tests.keep('crit', (public.create_ritual(gen_random_uuid(), 'running', 'E
 select is((select count(*)::integer from public.clan_week(tests.id('clan')) where ritual_id = tests.id('crit')), 1,
   'a clan Ritual prefills a club run');
 select is((select runs_per_week from public.clan_view(tests.id('clan'))), 1, 'Runs a week');
+select tests.login(5);
+select is((select action || ' ' || needs_you || ' ' || href from public.my_notifications() where type = 'ritual_week'),
+  'im_down true /clan/' || tests.id('clan'), 'clan members hear about the Ritual''s run');
+select tests.login(8);
 select tests.login(7);
 select throws_ok(format($$select public.create_ritual(gen_random_uuid(), 'running', 'Mine', 1, '18:30', 40, p_clan_id => %L)$$,
   tests.id('clan')), 'P0001', 'clan_role_required', 'members do not start clan Rituals');
