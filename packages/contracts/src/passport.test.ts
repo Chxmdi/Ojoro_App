@@ -31,6 +31,11 @@ describe('passport contract', () => {
     }
   });
 
+  it('lists the single-stamp reads', () => {
+    expect(passportRpcs).toContain('passport_entry');
+    expect(passportRpcs).toContain('passport_entry_for');
+  });
+
   it('registers its error codes', () => {
     for (const code of passportErrorCodes) expect(isOjoroErrorCode(code)).toBe(true);
   });

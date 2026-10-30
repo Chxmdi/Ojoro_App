@@ -17,11 +17,11 @@ everything You.png, Recap.png and Result.png show about a Passport, plus the gro
 
 - Schema: `supabase/migrations/20261031020000_passport_schema.sql` (Challenge stamps, personal bests,
   goals, goals visibility, the result trigger and the backfill), `…020100_passport_reads.sql`,
-  `…020200_passport_goals.sql`.
+  `…020200_passport_goals.sql`, `…020300_passport_entry_reads.sql` (one stamp, the stamp for a game / Challenge, ids on milestones).
 - Client helpers: `packages/contracts/src/passport.ts` (exported from `@ojoro/contracts`):
   `passportRpcs`, `passportIdempotentRpcs` (also in `idempotentRpcs`), `passportErrorCodes` (also in
   `ojoroErrorCodes`), types `PassportView`, `PassportStamp`, `PassportAchievement`, `PassportReputation`,
-  `GoalView`, `ClearGoalResult`, `ChallengePassportForMe`, args `passportStampsArgs(filter)`, words
+  `GoalView`, `ClearGoalResult`, `PassportEntryDetail`, `ChallengePassportForMe`, args `passportStampsArgs(filter)`, words
   (`stampHeadline`, `monthLabel`, `formatDuration`, `formatResultValue`, `formatGap`, `achievementTitle`,
   `achievementProgress`, `reputationLabel`, `showUpSentence`, `goalHeadline`, `goalDateLabel`,
   `goalProgressLine`, `goalGapSentence`), realtime `passportSubscription(userId)`, constants
@@ -104,7 +104,7 @@ a block either way (never says which; show the same not-found state as the profi
 | `places[]` | By place: `place_id`, `name`, `area`, `city`, `time_zone`, `stamps`, `games`, `first_at`, `last_at`. Most stamps first. |
 | `sports[]` | By sport: `sport_id`, `name`, `stamps`, `games`, `challenges`, `minutes`, `first_at`, `last_at`. |
 | `months[]` | By month in the owner's time zone: `month` (`YYYY-MM`; `monthLabel` → "OCTOBER 2026"), `stamps`, `minutes`, `places`. Newest first. Months with nothing are left out. |
-| `milestones[]` | Firsts and milestones, the latest 24, newest first: `entry_id`, `milestone` (see [Milestones](#milestones)), `count`*, `kind`, `occurred_at`, `sport_id`, `sport_name`, `place_id`*, `place_name`*, `place_time_zone`*, `title`*, `value`*, `scoring`*, `unit`*, `outcome`*. Each renders as a `PassportStamp` (`stampHeadline`, place, date). |
+| `milestones[]` | Firsts and milestones, the latest 24, newest first: `entry_id`, `activity_id`* / `challenge_event_id`* (links to the Recap / Result; null unless you can see that game / Challenge), `milestone` (see [Milestones](#milestones)), `count`*, `kind`, `occurred_at`, `sport_id`, `sport_name`, `place_id`*, `place_name`*, `place_time_zone`*, `title`*, `value`*, `scoring`*, `unit`*, `outcome`*. Each renders as a `PassportStamp` (`stampHeadline`, place, date). |
 | `personal_bests[]` | Current best per discipline, latest first: `personal_best_id`, `sport_id`, `sport_name`, `discipline`, `scoring`, `unit`*, `value` (`formatResultValue`), `previous_value`*, `first_value`, `improvements` (times beaten after the first), `set_at`, `place_name`*, `event_id`* (null unless you can see that Challenge). |
 
 ## Stamps
@@ -121,6 +121,18 @@ see it: the stamp links to the Recap / Result), `title`*, `scoring`*, `unit`*, `
 `stamp_number` (n-th stamp), `sport_number` (n-th in the sport), `place_number`* (n-th stamp at the
 place), `place_game_number`* (n-th game at the place; game stamps only), `personal_best`,
 `previous_best`*, `milestone`*, `milestone_count`*.
+
+**`passport_entry(p_entry_id) → PassportEntryDetail[]`** (0 or 1 row): one stamp, for the stamp
+detail. Same row as `passport_stamps` plus `user_id` (the owner). No row: unknown id, a block, or the
+owner's history isn't visible to you.
+
+**`passport_entry_for(p_activity_id = null, p_event_id = null, p_user_id = null) →
+PassportEntryDetail[]`** (0 or 1 row): the stamp for one game (`p_activity_id`) or one Challenge
+(`p_event_id`; exactly one of the two, else `invalid_argument`). Yours by default; `p_user_id` for
+someone else's, by their history setting. No row when there's no stamp yet (didn't play, the recap
+isn't made, the result isn't final) or it isn't visible. Recap / Result → "Passport stamp added" → this
+stamp. (`recap_for_me` already returns your game stamp's `passport_entry_id`, and
+`challenge_passport_for_me` your Challenge stamp's.)
 
 ## Milestones
 
