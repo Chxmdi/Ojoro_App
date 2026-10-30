@@ -233,7 +233,6 @@ function PassportBody({
         userId={view.user_id}
         self={self}
         visible={view.goals_visible}
-        goalsVisibility={view.goals_visibility}
         from="passport"
       />
 

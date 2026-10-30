@@ -1,4 +1,4 @@
-import { goalHeadline, type GoalView, type Visibility } from '@ojoro/contracts';
+import { goalHeadline, type GoalView } from '@ojoro/contracts';
 import { router, type Href } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -22,14 +22,12 @@ export function GoalSection({
   userId,
   self,
   visible = true,
-  goalsVisibility,
   from,
 }: {
   userId: string;
   self: boolean;
   /** Their goals setting includes you (passport_view.goals_visible); always true for yourself. */
   visible?: boolean;
-  goalsVisibility: Visibility | null;
   from: 'you' | 'passport';
 }) {
   const goal = usePassportGoal(userId, self || visible);
@@ -55,7 +53,6 @@ export function GoalSection({
           onClose={() => setEditing(false)}
           userId={userId}
           goal={data}
-          goalsVisibility={goalsVisibility}
           from={from}
         />
       ) : null}
