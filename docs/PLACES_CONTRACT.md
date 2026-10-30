@@ -259,7 +259,7 @@ Chimdi (+1 555 555 0100). Sample content from Pulse.png and Place.png.
 |---|---|---|
 | Jeanne-Mance Park | `b0000000-0000-4000-8000-000000000001` | park, community confirmed, facilities; TONIGHT HERE 7:30 Pickup football 6 / 8 (Step 1's "Football tonight"), 8:00 Women's 5 a side GAME ON, 8:30 Sprint intervals 3 / 10, then more later in the evening (12 tonight for the "12 ACTIVE" marker); RITUALS HERE Thursday FC (crew, weeks running), Sunrise run · 6 km (open clan, Sunday 7:00) and Ade's Plateau Pickup series; HOSTS HERE Ade B, TRUSTED HOST; busiest Thursday evenings, Tuesday second. |
 | Hoshino Boxing | `b0000000-0000-4000-8000-000000000005` | gym, venue verified; Sparring rounds live (Step 3) → the SPARRING pill. |
-| Hall building | `b0000000-0000-4000-8000-000000000061` | 3 running plans tonight → the small "3" disc (Downtown). |
+| Parc Jarry (Hall building runs moved here) | `b0000000-0000-4000-8000-000000000003` | 3 running plans tonight → the small "3" disc. Not downtown: Saint-Henri must stay quiet for the FirstHome sample. |
 | Plateau demand | area Plateau, Montréal | 5 want volleyball (Step 3 signals, near Parc La Fontaine). |
 | Sunrise Runners | clan `f1000000-0000-4000-8000-000000000071`, ritual `f0000000-0000-4000-8000-000000000071` | Open clan, captain Lena R. |
 
