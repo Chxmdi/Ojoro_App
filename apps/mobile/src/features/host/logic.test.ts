@@ -142,14 +142,35 @@ describe('HostHome', () => {
       href: '/host/prog/session/s1',
     });
     expect(
-      needsYouRow(P, need({ kind: 'refund_request', count: 1, detail: { person_name: 'Lena R', what: 'monthly membership' } }), 2),
-    ).toMatchObject({ title: '1 refund request', meta: 'Lena R · monthly membership', action: 'DECIDE', href: '/host/prog/payments' });
-    expect(needsYouRow(P, need({ kind: 'league_result', object_id: 'L', detail: { score_line: 'Thursday FC 4–2 Plateau Crew' } }), 3)).toMatchObject({
+      needsYouRow(
+        P,
+        need({ kind: 'refund_request', count: 1, user_names: ['Lena R'], detail: { pass_name: 'Monthly membership', days_in: 3 } }),
+        2,
+      ),
+    ).toMatchObject({ title: '1 refund request', meta: 'Lena R · monthly membership · cancelled 3 days in', action: 'DECIDE', href: '/host/prog/payments' });
+    expect(needsYouRow(P, need({ kind: 'refund_request', count: 0, user_names: null, name: null, detail: {} }), 2).meta).toBe('a session');
+    expect(
+      needsYouRow(
+        P,
+        need({
+          kind: 'league_result',
+          object_id: 'F',
+          detail: { league_id: 'L', home: 'Thursday FC', away: 'Plateau Crew', home_goals: 4, away_goals: 2, both_agree: true, result_status: 'agreed' },
+        }),
+        3,
+      ),
+    ).toMatchObject({
       title: 'League result to confirm',
-      meta: 'Thursday FC 4–2 Plateau Crew',
+      meta: 'Thursday FC 4–2 Plateau Crew · both captains agree',
       action: 'CONFIRM',
       href: '/host/prog/league/L',
     });
+    expect(
+      needsYouRow(P, need({ kind: 'league_result', name: 'Winter League', user_names: ['A', 'B'], detail: { both_agree: false } }), 3),
+    ).toMatchObject({ meta: 'A v B · captains don’t agree yet', href: null });
+    expect(needsYouRow(P, need({ kind: 'league_result', user_names: null, name: 'Winter League', detail: {} }), 3).meta).toBe(
+      'Winter League · captains don’t agree yet',
+    );
     expect(needsYouRow(P, need({ kind: 'other', count: 3, detail: null }), 4)).toMatchObject({ title: 'Sunday beginners · 3', href: null });
     expect(needsYouRow(P, need({ kind: null, count: 1, name: null, detail: [] }), 5).title).toBe('A session');
   });

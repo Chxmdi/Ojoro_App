@@ -186,6 +186,8 @@ try {
       p_idempotency_key: key(),
     });
     state.series = series.id;
+    // Nobody gets in straight away by a rule, so the player always has to ask (re-runnable).
+    await host.call('update_host_rules', { p_program_id: state.program, p_played_with: false, p_experienced: false, p_crews: false });
     const sessions = await host.call('series_sessions', { p_series_id: state.series, p_limit: 6 });
     // A session at least a day out that is already open for joining: independent of the time of day.
     const pick = sessions.find(

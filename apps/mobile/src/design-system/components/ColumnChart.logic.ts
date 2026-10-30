@@ -52,3 +52,27 @@ export function endLabel(value: number, lastLabel: string = DEFAULT_LAST_LABEL):
 export function toggleLabel(view: 'chart' | 'table'): string {
   return view === 'chart' ? 'SHOW AS TABLE' : 'SHOW AS CHART';
 }
+
+/** Space between the end label and the column under it. */
+export const END_LABEL_GAP = 6;
+
+/**
+ * Bottom offset (pt above the baseline) for the end label. The label is
+ * right-aligned to the last bar and runs left across neighbouring columns,
+ * so it sits above the tallest column it spans, never on top of one.
+ * Until the label is measured (`labelWidth` 0) it clears every column.
+ */
+export function endLabelBottom(
+  heights: readonly number[],
+  colWidth: number,
+  barWidth: number,
+  labelWidth: number,
+): number {
+  if (heights.length === 0) return END_LABEL_GAP;
+  const inset = Math.max(0, (colWidth - barWidth) / 2);
+  const spanned =
+    labelWidth > 0 && colWidth > 0
+      ? Math.min(heights.length, Math.max(1, Math.ceil((labelWidth + inset) / colWidth)))
+      : heights.length;
+  return Math.max(...heights.slice(-spanned)) + END_LABEL_GAP;
+}

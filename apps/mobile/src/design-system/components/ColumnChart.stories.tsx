@@ -79,6 +79,18 @@ export const Zeros: Story = {
   },
 };
 
+/** Seeded case: the last column is shorter than its neighbours, so LAST WEEK · 17 sits above the tallest column it spans. */
+export const ShortLast: Story = {
+  args: {
+    title: 'People per week',
+    lastLabel: 'THIS WEEK',
+    caption: undefined,
+    data: weeks.map((w, i) =>
+      i === weeks.length - 1 ? { ...w, value: 17, meta: 'Week of Sep 28 · 2 sessions so far' } : w,
+    ),
+  },
+};
+
 export const OnEachSituation: Story = {
   parameters: { ojoro: { padded: false } },
   render: (args) => (
