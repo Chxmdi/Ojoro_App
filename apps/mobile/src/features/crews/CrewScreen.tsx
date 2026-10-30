@@ -174,7 +174,7 @@ function CrewBody({
           testID="crew-momentum"
         />
         <MomentumNote momentum={crew.momentum as MomentumState} streak={crew.streak_weeks} perWeek={crew.rhythm_per_week} />
-        {crew.next_plan_id ? (
+        {crew.next_plan_id && (crew.next_i_am_in || imDown.isSuccess) ? (
           <TextButton onPress={() => router.push(`/plan/${crew.next_plan_id}` as Href)} className="self-start" testID="crew-next-open">
             SEE THE PLAN
           </TextButton>
