@@ -8,6 +8,7 @@ describe('aspectRatioOf', () => {
     expect(aspectRatioOf('1:1')).toBe(1);
     expect(aspectRatioOf('16:9')).toBeCloseTo(16 / 9);
     expect(aspectRatioOf('3:4')).toBeCloseTo(0.75);
+    expect(aspectRatioOf('4:3')).toBeCloseTo(4 / 3);
   });
 
   it('defaults to the 4:5 feed ratio', () => {

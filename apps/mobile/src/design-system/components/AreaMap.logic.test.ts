@@ -9,6 +9,7 @@ import {
   discSize,
   edgePad,
   fitLabels,
+  labelCandidates,
   labelWidth,
   emptyLine,
   fitProjection,
@@ -279,10 +280,37 @@ describe('labels', () => {
       [{ id: 'm', x: 300, y: 300, r: 40 }],
       bounds,
     );
-    expect(kept.map((l) => l.id)).toEqual(['a', 'e']);
+    expect(kept.map((l) => l.id)).toEqual(['a', 'c', 'e']);
+    // c sat on the marker: it moved just above it, not dropped.
+    const c = kept.find((l) => l.id === 'c')!;
+    expect(c.x).toBe(300);
+    expect(c.y).toBe(300 - (40 + 8 + 6));
+  });
+  it('steps a name aside from the marker on its centroid, in order', () => {
+    const m = { id: 'm', x: 200, y: 200, r: 30 };
+    const l = box('p', 200, 200);
+    expect(labelCandidates(l, m).map(({ x, y }) => [x, y])).toEqual([
+      [200, 156],
+      [200, 244],
+      [275, 200],
+      [125, 200],
+    ]);
+    // Above is off the top: it goes below.
+    const top = fitLabels([box('p', 200, 20)], [{ ...m, y: 20 }], bounds);
+    expect(top[0]!.y).toBe(64);
+  });
+  it('drops a name only when every spot collides', () => {
+    const m = { id: 'm', x: 195, y: 200, r: 30 };
+    const ring = [
+      { id: 'n', x: 195, y: 150, r: 20 },
+      { id: 's', x: 195, y: 250, r: 20 },
+      { id: 'e', x: 270, y: 200, r: 20 },
+      { id: 'w', x: 120, y: 200, r: 20 },
+    ];
+    expect(fitLabels([box('p', 195, 200)], [m, ...ring], bounds)).toEqual([]);
   });
   it('sizes the label by its word', () => {
-    expect(labelWidth('PLATEAU')).toBe(64);
+    expect(labelWidth('PLATEAU')).toBe(78);
   });
   it('pads less when the room is small', () => {
     expect(edgePad(390, 600)).toBe(56);

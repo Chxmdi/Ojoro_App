@@ -373,7 +373,7 @@ export type LabelBox = { id: string; x: number; y: number; width: number; height
 
 /** Rough width of a label-sm caps word, for collision only. */
 export function labelWidth(name: string): number {
-  return name.length * 8 + 8;
+  return name.length * 10 + 8;
 }
 
 function boxHitsCircle(b: LabelBox, c: Placed): boolean {
@@ -388,10 +388,30 @@ function boxesOverlap(a: LabelBox, b: LabelBox): boolean {
   );
 }
 
+/** Space between a moved name and the marker it steps aside from. */
+export const LABEL_GAP = 6;
+
+/**
+ * Where a name can go when its centroid is under a marker: just above it,
+ * just below it, then to its right and left. Areas and places share
+ * centroids, so the name steps aside instead of being dropped.
+ */
+export function labelCandidates(l: LabelBox, m: Placed): LabelBox[] {
+  const dy = m.r + l.height / 2 + LABEL_GAP;
+  const dx = m.r + l.width / 2 + LABEL_GAP;
+  return [
+    { ...l, x: m.x, y: m.y - dy },
+    { ...l, x: m.x, y: m.y + dy },
+    { ...l, x: m.x + dx, y: m.y },
+    { ...l, x: m.x - dx, y: m.y },
+  ];
+}
+
 /**
  * Neighbourhood names that fit: inside `bounds`, clear of every marker and of
- * each other (first come, first kept). The rest are dropped, never drawn over
- * a marker. Boxes are centred on x, y.
+ * each other (first come, first kept). A name whose centroid sits under a
+ * marker moves beside that marker (`labelCandidates`); it is dropped only
+ * when no spot is clear. Never drawn over a marker. Boxes are centred on x, y.
  */
 export function fitLabels(
   labels: readonly LabelBox[],
@@ -399,16 +419,20 @@ export function fitLabels(
   bounds: { left: number; top: number; right: number; bottom: number },
 ): LabelBox[] {
   const kept: LabelBox[] = [];
+  const fits = (l: LabelBox) =>
+    l.x - l.width / 2 >= bounds.left &&
+    l.x + l.width / 2 <= bounds.right &&
+    l.y - l.height / 2 >= bounds.top &&
+    l.y + l.height / 2 <= bounds.bottom &&
+    !markers.some((m) => boxHitsCircle(l, m)) &&
+    !kept.some((k) => boxesOverlap(k, l));
   for (const l of labels) {
-    const inside =
-      l.x - l.width / 2 >= bounds.left &&
-      l.x + l.width / 2 <= bounds.right &&
-      l.y - l.height / 2 >= bounds.top &&
-      l.y + l.height / 2 <= bounds.bottom;
-    if (!inside) continue;
-    if (markers.some((m) => boxHitsCircle(l, m))) continue;
-    if (kept.some((k) => boxesOverlap(k, l))) continue;
-    kept.push(l);
+    const covering = markers
+      .filter((m) => boxHitsCircle(l, m))
+      .sort((a, b) => Math.hypot(a.x - l.x, a.y - l.y) - Math.hypot(b.x - l.x, b.y - l.y));
+    const tries = [l, ...covering.flatMap((m) => labelCandidates(l, m))];
+    const spot = tries.find(fits);
+    if (spot) kept.push(spot);
   }
   return kept;
 }

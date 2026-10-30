@@ -23,7 +23,7 @@ export type ImageProps = {
   src?: string | undefined;
   /** Required. Describe what happened, not "photo". It's the accessibility label, and the words shown when the photo can't load. */
   alt: string;
-  /** `4:5` feed default · `1:1` · `16:9` · `3:4`. */
+  /** `4:5` feed default · `1:1` · `16:9` · `3:4` · `4:3` (Place hero). */
   ratio?: ImageRatio;
   caption?: string | undefined;
   /** Who shot it. Shown after the caption: "caption · credit". */
