@@ -44,7 +44,7 @@ export const placesErrorCodes = [
   'invalid_argument',
 ] as const;
 
-/** Time filters for Pulse and TONIGHT HERE. `tonight` (the default) runs until 4 AM local. */
+/** Time filters for Pulse and TONIGHT HERE. `tonight` (the default) is Discover's: 5 PM (or now) to 4 AM. */
 export const PULSE_WHEN = ['now', 'tonight', 'today', 'tomorrow', 'weekend', 'week'] as const;
 export type PulseWhen = (typeof PULSE_WHEN)[number];
 

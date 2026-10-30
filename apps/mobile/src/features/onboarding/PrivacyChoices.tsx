@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { Chip, Icon, Text } from '@/design-system';
@@ -12,10 +13,13 @@ export function PrivacyChoices({
   value,
   onChange,
   disabled,
+  children,
 }: {
   value: Privacy;
   onChange: (part: PrivacyPart, next: Visibility) => void;
   disabled?: boolean | undefined;
+  /** More rows in the same pattern, after the parts (Settings adds who sees your goal). */
+  children?: ReactNode;
 }) {
   return (
     <View style={{ gap: 28 }}>
@@ -42,6 +46,7 @@ export function PrivacyChoices({
           ) : null}
         </View>
       ))}
+      {children}
 
       <View className="flex-row items-start gap-space-3 bg-surface-raised p-space-4">
         <Icon name="pin" size={20} />

@@ -1,7 +1,6 @@
 import {
   passportStampsArgs,
   passportSubscription,
-  PASSPORT_STAMPS_PAGE,
   type ChallengePassportForMe,
   type ClearGoalResult,
   type GoalView,
@@ -45,6 +44,9 @@ export function usePassportView(userId: string, enabled = true) {
   });
 }
 
+/** Stamps per page on Passport detail: 12 stamps (six rows of two) before MORE STAMPS. */
+export const STAMPS_PAGE = 12;
+
 /** Stamps, newest first, a page at a time (`p_before` = the last row's time). */
 export function usePassportStamps(userId: string, filter: PassportStampsFilter, enabled = true) {
   return useInfiniteQuery({
@@ -52,9 +54,9 @@ export function usePassportStamps(userId: string, filter: PassportStampsFilter, 
     enabled: enabled && Boolean(userId),
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam }) =>
-      (await rpc('passport_stamps', passportStampsArgs(userId, filter, pageParam))) as unknown as PassportStamp[],
+      (await rpc('passport_stamps', passportStampsArgs(userId, filter, pageParam, STAMPS_PAGE))) as unknown as PassportStamp[],
     getNextPageParam: (last) =>
-      last.length >= PASSPORT_STAMPS_PAGE ? (last[last.length - 1]?.occurred_at ?? null) : null,
+      last.length >= STAMPS_PAGE ? (last[last.length - 1]?.occurred_at ?? null) : null,
   });
 }
 

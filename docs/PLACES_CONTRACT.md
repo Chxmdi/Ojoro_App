@@ -10,7 +10,8 @@ effective status computed on read, no raw location) still applies. Judgment call
 
 - Schema: `supabase/migrations/20261031010000_places_enums.sql` (`place_kind`, `place_verification`,
   report kind `place`), `…010100_places_schema.sql` (place facts, `pulse_ticks`, indexes),
-  `…010200_places_reads.sql` (the reads, the report seam).
+  `…010200_places_reads.sql` (the reads, the report seam), `…010300_places_decisions.sql` (one
+  "tonight" with Discover, demand counted once per person, sensitive set by staff).
 - Generated types: `@ojoro/contracts` (`Database`), plus row aliases with the nullable columns marked
   `| null` (use these, not the raw `Functions[…]['Returns']`): `PulseMarker`, `PulsePlace`, `PlaceView`,
   `PlaceTonightItem`, `PlaceGroup`, `PlaceHost`, `PlaceBusyTime`; enums `PlaceKind`,
@@ -47,10 +48,12 @@ Contents: [Rules](#rules) · [Errors](#errors) · [Privacy](#privacy) · [Model]
    rule 7). Use the aliases above.
 4. **Times:** format `starts_at`, `forming_starts_at`, `prefill_starts_at` in the row's `time_zone`
    (the place's). `local_time` / `floodlit_until` are wall-clock times there.
-5. **Windows (`p_when`):** `now` (the next hour, live included), `tonight` (default: from now until
-   4 AM local, live included), `today` (until midnight), `tomorrow`, `weekend`, `week` (7 days).
-   Anything else → `invalid_argument` (detail `when`). Same words as `discover_search`, except that
-   `tonight` starts now (Pulse is live), not at 5 PM.
+5. **Windows (`p_when`):** `now` (the next hour, live included), `tonight` (default: **Discover's
+   tonight**, from 5 PM local, or now if later, until 4 AM; one helper `private.tonight_window()`;
+   live games count once the evening has started), `today` (until midnight, live included),
+   `tomorrow`, `weekend`, `week` (7 days, live included). Anything else → `invalid_argument` (detail
+   `when`). Same words and the same tonight as `discover_search`. Before 5 PM, "tonight" shows only
+   what starts this evening.
 6. **Pulse has no clock of its own:** refetch every `PULSE_REFETCH_MS` while visible, on focus, and on a
    realtime hint.
 
@@ -75,7 +78,7 @@ No new codes. Raised here (SQLSTATE `P0001`, code = `error.message`):
 | Exact spots only inside plans you've joined | `place_tonight.meeting_point` ("North pitch, by the lights") is set only for the host and members of that plan; null for everyone else. |
 | Visibility | A plan counts and lists only if `authz.can_see_plan` (friends, crew and invite-only plans stay invisible to others, including in counts); a club run only if you can see its clan; crew Rituals only for crew members; invite-only clans' Rituals only for members. |
 | k-anonymity for people counts | Latent demand on Pulse (`kind = 'demand'`) shows only from **3** people (`PULSE_DEMAND_K`, the same k as `latent_demand`), never includes you, never across a block, friends-only signals only from people you've played with, and only when nothing in that sport is forming in that area. Counts only: no ids, names, places or exact times. |
-| Sensitive places (PRD §11.2) | `places.sensitive` (set by Ojoro): never a Pulse marker of its own; its activities reach the area aggregate only when the area has at least 3 of them; `pulse_place` returns `suppressed = true` with null counts; `place_view` counts and `place_tonight` list only what you're in. |
+| Sensitive places (PRD §11.2) | `places.sensitive`, set by Ojoro staff only (moderation), never by users; until admin tooling exists, with the service role / SQL: never a Pulse marker of its own; its activities reach the area aggregate only when the area has at least 3 of them; `pulse_place` returns `suppressed = true` with null counts; `place_view` counts and `place_tonight` list only what you're in. |
 | Busy times | From finished sessions of **public** plans and open/request clans' club runs in the last 12 weeks, as 0–100 levels. Nothing until 6 sessions (`PLACE_BUSY_MIN_GAMES`). |
 | Hosts here | Listed when they run a host series here (a public role), or hosted at least 5 finished games here **and** their history is visible to you. Never across a block. |
 | Realtime | `pulse_ticks` carries only a city, a place id and a time. Private plans and invite-only clans never bump a tick. |
@@ -118,8 +121,8 @@ no area, `distance_km` null). One row per marker:
 - Places: non-sensitive places with at least one thing on in the window (forming plans before their
   deadline, GAME ON games not started, live games/runs when the window includes now, club runs),
   visible to you. Ordered places (busiest first), then demand (most people first), then areas.
-- Demand: active Down For signals whose window overlaps the filter, from people whose coarse point is
-  within 2.5 km of the area's centroid (one person can count near two neighbouring areas).
+- Demand: active Down For signals whose window overlaps the filter. Each person counts once, in the
+  area nearest their coarse point (within 5 km).
 - Marker style (DS `AreaMap`): `live_count > 0` → live pill (`live_title`), `forming_plan_id` → the
   FORMING n / m pill, otherwise the count disc (`activity_count`; big with ACTIVE when it's the busiest);
   `demand` → the dashed disc. Areas are the zoomed-out layer (or labels); a renderer may skip area
@@ -164,7 +167,7 @@ inside plans you've joined." is static copy.
 | `lat`, `lng` | Public centroid, for DIRECTIONS (the OS maps app). |
 | `distance_km` | From your area; null without one. |
 | `sensitive` | See Privacy. |
-| `tonight_count`, `forming_count`, `live_count` | Until 4 AM (sensitive: only what you're in). |
+| `tonight_count`, `forming_count`, `live_count` | Tonight, Discover's definition (5 PM or now until 4 AM); the same rows as `place_tonight(id)` (sensitive: only what you're in). |
 | `has_busy_history`, `busy_part`, `busy_levels int[7]` (Mon..Sun, 0–100), `busiest_day`, `today_day`, `today_rank`, `busy_summary` | WHEN IT'S BUSY · EVENINGS: `busyPartLabel(busy_part)`, `busyTimesData(view)` (DS BusyTimes) or `busyBars(view)`, `busy_summary` ("Busiest Thursday evenings. Tonight (Tuesday) is the second busiest."). No history → hide the block or say "Not enough games here yet to tell." |
 | `prefill_sport_id`, `prefill_starts_at`, `prefill_duration_minutes`, `prefill_capacity` | CREATE ACTIVITY HERE: your main sport if the place has it, else the place's; the busiest hour here today (7 PM without history) if at least 2 h away, else the next half hour 2–2.5 h from now; the sport's default length and size. `placeCreatePrefill(view)` maps them to `create_plan` args. |
 

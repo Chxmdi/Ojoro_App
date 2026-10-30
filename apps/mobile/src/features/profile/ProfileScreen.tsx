@@ -310,7 +310,6 @@ function ProfileBody({
           userId={id}
           self={self}
           visible={self || Boolean(passportData?.goals_visible)}
-          goalsVisibility={passportData?.goals_visibility ?? null}
           from="you"
         />
       ) : null}

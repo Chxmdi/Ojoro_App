@@ -1,4 +1,4 @@
-import type { GoalKind, GoalView, Visibility } from '@ojoro/contracts';
+import type { GoalKind, GoalView } from '@ojoro/contracts';
 import { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -8,7 +8,7 @@ import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
 import { ojoroErrorOf } from '@/lib/rpc';
 
-import { useClearGoal, useSetGoal, useSetGoalsVisibility } from './data';
+import { useClearGoal, useSetGoal } from './data';
 import {
   dateOptions,
   draftFrom,
@@ -25,17 +25,10 @@ const KINDS: { kind: GoalKind; label: string }[] = [
   { kind: 'places', label: 'New places' },
 ];
 
-const AUDIENCES: { v: Visibility; label: string }[] = [
-  { v: 'friends', label: 'Friends' },
-  { v: 'crews', label: 'Your Crews' },
-  { v: 'everyone', label: 'Everyone' },
-  { v: 'only_me', label: 'Only you' },
-];
-
 /**
  * SET A GOAL / CHANGE (not designed; built from Sheet, Chip and Input). One goal at a time (PRD
  * §9.17): what kind, the sport and distance for a personal best, the target, an optional month end,
- * and who sees it. CLEAR GOAL ends the active one. Progress is never typed in: it comes from the
+ * (who sees it is in Settings → Who sees what). CLEAR GOAL ends the active one. Progress is never typed in: it comes from the
  * Passport.
  */
 export function GoalSheet({
@@ -43,14 +36,12 @@ export function GoalSheet({
   onClose,
   userId,
   goal,
-  goalsVisibility,
   from,
 }: {
   visible: boolean;
   onClose: () => void;
   userId: string;
   goal: GoalView | null;
-  goalsVisibility: Visibility | null;
   from: 'you' | 'passport';
 }) {
   const toast = useToast();
@@ -60,10 +51,8 @@ export function GoalSheet({
   const [draft, setDraft] = useState<GoalDraft>(() => draftFrom(goal, mainSport));
   const [errors, setErrors] = useState<Partial<Record<GoalField, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [audience, setAudience] = useState<Visibility>(goalsVisibility ?? 'friends');
   const setGoal = useSetGoal(userId);
   const clearGoal = useClearGoal(userId);
-  const setVisibility = useSetGoalsVisibility(userId);
 
   // Each opening is a new intention: fresh draft, fresh idempotency key.
   useEffect(() => {
@@ -71,7 +60,6 @@ export function GoalSheet({
     setDraft(draftFrom(goal, mainSport));
     setErrors({});
     setFormError(null);
-    setAudience(goalsVisibility ?? 'friends');
     setGoal.begin();
     track('goal_sheet_opened', { from, has_goal: Boolean(goal) });
     // Only on open: later goal refetches must not reset what is being typed.
@@ -99,7 +87,6 @@ export function GoalSheet({
       setErrors({ [checked.field]: checked.message });
       return;
     }
-    if (goalsVisibility !== audience) setVisibility.mutate(audience);
     setGoal.save(checked.args, {
       onSuccess: () => {
         toast.show({ kind: 'success', message: goal ? 'Goal changed.' : 'Goal set.' });
@@ -247,17 +234,6 @@ export function GoalSheet({
             ))}
           </ChipRow>
           {errors.date ? <FieldError message={errors.date} /> : null}
-        </View>
-
-        <View className="gap-space-2">
-          <Text variant="label">WHO SEES IT</Text>
-          <ChipRow label="Who sees your goal" layout="wrap" testID="goal-audience">
-            {AUDIENCES.map((a) => (
-              <Chip key={a.v} selected={audience === a.v} onPress={() => setAudience(a.v)}>
-                {a.label}
-              </Chip>
-            ))}
-          </ChipRow>
         </View>
 
         {formError ? <FieldError message={formError} /> : null}

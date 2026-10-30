@@ -7,6 +7,7 @@ import { DisplayText, IconButton, loadingProps, Screen, Skeleton, Text, useToast
 import type { Privacy, PrivacyPart, Visibility } from '@/features/onboarding/draft';
 import { privacyKey, usePrivacySettings } from '@/features/onboarding/OnboardingContext';
 import { PrivacyChoices } from '@/features/onboarding/PrivacyChoices';
+import { GoalVisibilityRow } from '@/features/passport/GoalVisibilityRow';
 import { InlineError, OfflineNote, useIsOnline } from '@/features/profile/states';
 import { track } from '@/lib/analytics';
 import { useUserId } from '@/lib/auth';
@@ -92,7 +93,9 @@ export default function PrivacySettings() {
             value={privacy.data}
             disabled={!online}
             onChange={(part, value) => save.mutate({ part, value })}
-          />
+          >
+            <GoalVisibilityRow disabled={!online} />
+          </PrivacyChoices>
         ) : privacy.isError ? (
           <InlineError
             message={errorMessage(ojoroErrorOf(privacy.error))}
