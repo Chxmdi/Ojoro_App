@@ -24,6 +24,9 @@ import {
 } from '@ojoro/contracts';
 import { isRetryable } from '@ojoro/contracts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRef } from 'react';
+
+import { newIdempotencyKey } from '@/lib/idempotency';
 
 import { useRealtimeRefetch } from '@/lib/realtime';
 import { ojoroErrorOf, rpc } from '@/lib/rpc';
@@ -178,6 +181,25 @@ export function useSessionRequests(programId: string, sessionId: string, enabled
     enabled: enabled && !!sessionId,
   });
 }
+
+/** One idempotency key per intention ("promote:<user>"), reused on a retry, cleared on an answer. */
+export function useIntentKeys() {
+  const keys = useRef(new Map<string, string>());
+  return {
+    key(intent: string): string {
+      let k = keys.current.get(intent);
+      if (!k) {
+        k = newIdempotencyKey();
+        keys.current.set(intent, k);
+      }
+      return k;
+    },
+    settle(intent: string, error: unknown): void {
+      if (!error || !isRetryable(ojoroErrorOf(error))) keys.current.delete(intent);
+    },
+  };
+}
+
 
 // Writes -----------------------------------------------------------------------------------------
 // Keyed writes take the caller's intention key (useIntentKey) so a retry never acts twice; the

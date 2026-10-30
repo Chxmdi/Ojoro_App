@@ -7,7 +7,7 @@
  * connected, so nothing is charged through Ojoro and the screen says so.
  */
 import { type Href, router } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Share, View } from 'react-native';
 
 import {
@@ -27,9 +27,8 @@ import {
 } from '@/design-system';
 import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
-import { newIdempotencyKey } from '@/lib/idempotency';
 import { ojoroErrorOf } from '@/lib/rpc';
-import { isRetryable, type RosterRow } from '@ojoro/contracts';
+import { type RosterRow } from '@ojoro/contracts';
 
 import { useOnline } from '../activities/data';
 import { firstName } from '../activities/format';
@@ -38,6 +37,7 @@ import {
   useAddSpot,
   useHostCheckIn,
   useHostSessionRealtime,
+  useIntentKeys,
   useMarkPaid,
   usePromote,
   useReorderWaitlist,
@@ -63,24 +63,6 @@ import {
 import { HostUnavailable } from './ui';
 
 const SHOWN_AT_FIRST = 8;
-
-/** One idempotency key per intention ("promote:<user>"), reused on a retry, cleared on an answer. */
-export function useIntentKeys() {
-  const keys = useRef(new Map<string, string>());
-  return {
-    key(intent: string): string {
-      let k = keys.current.get(intent);
-      if (!k) {
-        k = newIdempotencyKey();
-        keys.current.set(intent, k);
-      }
-      return k;
-    },
-    settle(intent: string, error: unknown): void {
-      if (!error || !isRetryable(ojoroErrorOf(error))) keys.current.delete(intent);
-    },
-  };
-}
 
 export function HostRosterScreen({ programId, sessionId }: { programId: string; sessionId: string }) {
   const online = useOnline();

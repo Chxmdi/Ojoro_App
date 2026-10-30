@@ -14,7 +14,9 @@ and the others: write only through RPCs, map errors by code, idempotency keys pe
 - Schema: `supabase/migrations/20261030200000_host_core.sql` (enums, tables, RLS, realtime),
   `…200100_host_core_sessions.sql` (programs, series → sessions, joining, waitlist rules, roster log),
   `…200200_host_core_roster_people.sql` (HostHome, roster, requests, People, announcements, tick),
-  `…200300_host_core_notifications.sql` (notification words for the new types).
+  `…200300_host_core_notifications.sql` (notification words for the new types),
+  `…200400_host_core_fixes.sql` (roster order, drifting definition), `…200500_host_core_report.sql`
+  (report a program).
 - Client helpers in `@ojoro/contracts` (`hosts.ts`): `hostRpcs`, `hostIdempotentRpcs` (also in
   `idempotentRpcs`), `hostErrorCodes` (also in `ojoroErrorCodes`), row types (`MyHostProgram`,
   `HostHome`, `HostNeedsYouItem`, `HostWeekItem`, `SeriesView`, `SeriesSession`, `SessionView`,
@@ -132,6 +134,9 @@ Host sessions hold **2–100** players (pickup plans keep 2–12; Slice 01 RPCs 
 - Blocked pairs never see each other in rosters, requests, People or announcements; a person blocked
   by a host can't join or ask (`plan_not_found` / `session_not_found`, never says why).
 - Declining is quiet: the person is told the host couldn't take them this time; no reason, no name.
+- **Report and block:** `report('host_program', <program id>, …)` reports a program you can see (not
+  across a block with its owner); a person's profile, the session's plan/activity and its chat are
+  reported with the existing kinds. Blocking a host hides their programs' sessions from you.
 
 ## Programs
 
