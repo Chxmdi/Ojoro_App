@@ -372,7 +372,7 @@ function Achievements({ userId, self, tz }: { userId: string; self: boolean; tz:
             NEXT
           </Text>
           <StripList>
-            {next.map((a) => (
+            {next.slice(0, 3).map((a) => (
               <Strip key={a.key} title={a.title} titleVariant="title-sm" meta={a.meta} />
             ))}
           </StripList>

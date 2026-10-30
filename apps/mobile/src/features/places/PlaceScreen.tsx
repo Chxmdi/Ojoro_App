@@ -6,7 +6,7 @@
  */
 import type { PlaceView } from '@ojoro/contracts';
 import { router, useFocusEffect, type Href } from 'expo-router';
-import { useCallback, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { Linking, Platform, Pressable, Share, View } from 'react-native';
 
 import {
@@ -24,6 +24,7 @@ import {
   Skeleton,
   Strip,
   Text,
+  TextButton,
   useToast,
   VerificationBadge,
 } from '@/design-system';
@@ -262,9 +263,14 @@ function SectionLoading({ label }: { label: string }) {
   );
 }
 
+/** TONIGHT HERE shows this many rows, then SHOW ALL n. */
+const TONIGHT_SHOWN = 5;
+
 function TonightHere({ id, sensitive }: { id: string; sensitive: boolean }) {
   const q = usePlaceTonight(id, true);
+  const [all, setAll] = useState(false);
   const rows = (q.data ?? []).map(tonightStrip);
+  const shown = all ? rows : rows.slice(0, TONIGHT_SHOWN);
   return (
     <Section label="TONIGHT HERE" title="Tonight here" testID="place-tonight">
       {q.isPending ? (
@@ -276,7 +282,7 @@ function TonightHere({ id, sensitive }: { id: string; sensitive: boolean }) {
           {sensitive ? "Nothing you're in here tonight." : 'Nothing on here tonight yet. Start something and it shows here.'}
         </Text>
       ) : (
-        rows.map((r) => (
+        shown.map((r) => (
           <View key={r.key} testID={`tonight-${r.key}`}>
             <ActivityStrip
               activity={r.activity}
@@ -290,6 +296,13 @@ function TonightHere({ id, sensitive }: { id: string; sensitive: boolean }) {
           </View>
         ))
       )}
+      {rows.length > shown.length ? (
+        <View className="pt-space-3">
+          <TextButton onPress={() => setAll(true)} testID="tonight-show-all">
+            {`SHOW ALL ${rows.length}`}
+          </TextButton>
+        </View>
+      ) : null}
     </Section>
   );
 }
