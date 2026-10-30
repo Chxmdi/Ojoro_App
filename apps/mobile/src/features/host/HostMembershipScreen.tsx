@@ -390,8 +390,8 @@ function Passes({ programId, view }: { programId: string; view: HostMoneyView })
           </View>
         ))
       )}
-      <View className="items-center pt-space-2">
-        <Button variant="ghost" className="self-center" onPress={() => setEditing('new')} testID="host-pass-new">
+      <View className="w-full flex-row justify-center pt-space-2">
+        <Button variant="ghost" onPress={() => setEditing('new')} testID="host-pass-new">
           NEW PASS
         </Button>
       </View>

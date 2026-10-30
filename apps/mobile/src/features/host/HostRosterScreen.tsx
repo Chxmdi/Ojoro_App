@@ -96,6 +96,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
   const inRows = rows.filter((r) => r.section === 'in');
   const waiting = rows.filter((r) => r.section === 'waitlist');
   const dropped = rows.filter((r) => r.section === 'dropped');
+  const dueRows = inRows.filter((r) => paymentDue(r.payment_status));
   const shown = showAll ? inRows : inRows.slice(0, SHOWN_AT_FIRST);
   const waitRows = order ?? waiting;
   const tz = v?.time_zone ?? 'America/Toronto';
@@ -174,6 +175,30 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
                     ? 'Nobody pays through Ojoro yet. Collect at the field and mark it here, and it shows in your payout.'
                     : (settle.note ?? (settle.kind === 'settled' ? 'Everyone in is paid for.' : 'Mark spots paid at the field as people pay.'))}
                 </Text>
+                {dueRows.length > 0 ? (
+                  <View className="mt-space-2 flex-row flex-wrap gap-space-2">
+                    {dueRows.map((r) => (
+                      <Button
+                        key={r.user_id}
+                        variant="secondary"
+                        compact
+                        disabled={actionsOff}
+                        loading={markPaid.isPending && markPaid.variables?.userId === r.user_id}
+                        accessibilityLabel={`Mark ${r.display_name} paid at the field`}
+                        onPress={() => {
+                          const intent = `paid:${r.user_id}`;
+                          markPaid.mutate(
+                            { userId: r.user_id, key: intents.key(intent) },
+                            { onSettled: (_d, e) => intents.settle(intent, e) },
+                          );
+                        }}
+                        testID={`roster-mark-paid-${r.user_id}`}
+                      >
+                        {`MARK ${firstName(r.display_name).toUpperCase()} PAID`}
+                      </Button>
+                    ))}
+                  </View>
+                ) : null}
               </View>
             </View>
           ) : null}
@@ -194,8 +219,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
               <ParticipantList>
                 {shown.map((r) => {
                   const badge = rosterBadge(r);
-                  const due = paymentDue(r.payment_status);
-                  const action = checkInMode && !r.checked_in_at ? 'MARK IN' : due && !checkInMode ? 'MARK PAID' : undefined;
+                  const action = checkInMode && !r.checked_in_at ? 'MARK IN' : undefined;
                   return (
                     <ParticipantRow
                       key={r.user_id}
@@ -205,17 +229,9 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
                       {...(action
                         ? {
                             action,
-                            actionLabel: `${action === 'MARK IN' ? 'Check in' : 'Mark paid at the field:'} ${r.display_name}`,
+                            actionLabel: `Check in ${r.display_name}`,
                             onAction: () => {
-                              if (actionsOff) return;
-                              if (action === 'MARK IN') checkIn.mutate(r.user_id);
-                              else {
-                                const intent = `paid:${r.user_id}`;
-                                markPaid.mutate(
-                                  { userId: r.user_id, key: intents.key(intent) },
-                                  { onSettled: (_d, e) => intents.settle(intent, e) },
-                                );
-                              }
+                              if (!actionsOff) checkIn.mutate(r.user_id);
                             },
                           }
                         : null)}

@@ -615,8 +615,69 @@ HostHome, HostSeries, HostRoster, HostRequests and the `/host/[programId]` layou
 | Service fee copy | The PNG's "Ojoro's service fee is shown before you save" can't be honoured (the fee isn't set), so the caption says payments aren't connected and the fee isn't set. |
 | HOST VERIFIED / ID VERIFIED | Hidden: no verification exists (coordinator decision). |
 | CHECK-IN is a mode | CHECK-IN (enabled once check-in opens) adds MARK IN to everyone in who hasn't checked in (`host_session_check_in`); DONE leaves the mode. |
-| Payments on the roster | Badges are the ops ledger's label in words (MEMBER, PAID $8, 10-PACK, $8 AT FIELD); owed spots (`due`, `due_at_field`) are the filled badge and get MARK PAID (`mark_paid_at_field`). With no ledger data for a priced session the panel says "Payments aren't connected. Nobody pays through Ojoro yet." |
+| Payments on the roster | Badges are the ops ledger's label in words (MEMBER, PAID $8, 10-PACK, $8 AT FIELD); owed spots (`due`, `due_at_field`) are the filled badge, and the payments panel holds MARK <NAME> PAID (`mark_paid_at_field`) for each, so rows keep one mark. With no ledger data for a priced session the panel says "Payments aren't connected. Nobody pays through Ojoro yet." |
 | Waitlist host choice | LET IN appears on waiting people only when a spot is open and the waitlist no longer fills itself. REORDER moves people with UP/DOWN and saves the whole order. |
 | ASK GRACE SOMETHING | Direct messages aren't built, so the button opens their profile instead (SEE GRACE'S PROFILE), where report and block also live. |
 | Stated level | `session_requests.stated_level` shows as a badge "SAYS: BEGINNER" (learning → beginner), so it reads as their own claim. Omitted when unset. |
 | Overline time on HostRequests | "<SESSION NAME> · 10:00" from the session's own name, so the weekday shows only when the series name has it. |
+
+## Step 6 SCR-HOST-C
+
+### HostSeason, HostInsights
+
+| Decision | Why |
+|---|---|
+| No UNDO after CONFIRM RESULT | The prototype has one; the ops contract makes confirmed results final (insert-only, never rewritten). After confirming, the block stays in place as RESULT CONFIRMED with RESULT VERIFIED and "Standings updated. Both teams told." Rows of the two teams are shaded and read "Moved with the result you confirmed". |
+| CONFIRM RESULT only on an agreed score | Without a score the server needs both captains to agree (`result_not_agreed`). When they differ, haven't sent, or it's disputed, the block says so in words and offers DISPUTE (when it makes sense). Entering the host's own score isn't designed, so it isn't offered. |
+| "moved from Saturday" instead of "after the rain-out" | The league keeps `rescheduled_from` but not why; the line says the game moved without inventing a reason. |
+| Free-agent line | The design says Ojoro offers a short team's spot to free agents; that offer isn't built (ops contract, Not built). The note says "Teams need 7 checked in by kick-off. 9 free agents are on the league list if one is short." |
+| Season tools aren't links yet | Fixtures, Teams and captains, Rules and the Season page aren't designed screens, and no league → Clash mapping exists, so the rows show their facts without a chevron; Season page carries a SOON badge. HostSeason's link to Clash waits for a public season page. |
+| Share in the HostSeason header | No public season page exists, so share sends the standings as text through the share sheet. |
+| ASK … TO REF | Uses the server's `referee_suggestion` only (never picked on the device); after asking, the line reads "Ref: Yara M · asked, waiting for an answer" (no pronoun). |
+| HostInsights last column | The last of the 12 weeks is the current one while it's running, so the end label reads THIS WEEK instead of LAST WEEK until it ends. |
+| HostInsights fee and payout wording | Tiles and ledger keep the design's "Paid out to you"; the fee line carries "placeholder", and a note under the ledger states the server's rate (from `fee_policy`, never a constant in the app) and that payments aren't connected, so nothing moves. Money uses the contracts' `formatMoney` for line labels and the en-CA locale for CAD amounts so they read "$". |
+| DOWNLOAD CSV | Fetched on demand from `host_insights_csv`. Web saves a file named by `insightsCsvFileName`; on a phone the CSV goes to the share sheet as text (no file-system dependency added). The header share icon does the same export. |
+| Chart caption | The design's "The dip in mid-September is the Thursday rain-out." is sample copy; the caption is built from skipped sessions ("The week of Sep 14 had a session called off (Thursday).") and is left out when nothing was called off. |
+
+## Step 6 SCR-COMMUNITIES
+
+### CrewHome, Clan, Clash, You → Crews, clans & hosting
+
+| Decision | What and why |
+|---|---|
+| Crew Home keeps Step 4's crew page below the design | The design ends at OPEN CREW CHAT. Members (each opens their profile, where block lives; first 5, then ALL n MEMBERS), the INVITE CODE for owners and admins, LEAVE THE CREW and REPORT THE CREW sit under it, quietly. The header keeps the design's single chat button (with the new count) instead of adding a ··· menu. |
+| CALL OUT on Crew Home | Lives in CREW VS CREW for owners and admins (the design's crew-vs-crew block), with Step 5's "Challenge another crew. No stakes, ever." |
+| FREE TONIGHT wording | "Ade, Joel, Lena and Sam are free this evening." instead of the design's "free after 7": the server only knows the evening part (Down For's evening is 6–11 PM), so naming a clock time would be a fact we don't have. Up to four first names, then "and N more". The privacy line stays word for word. |
+| Momentum never shames | MomentumMeter always writes "N WEEK STREAK"; when `crew_home.momentum` is `comeback` or `starting`, a line under it reads "Comeback week. The crew aims for 1 session a week. One this week and the rhythm is back." (or "First week. …"). See the DS request in the step report. |
+| NEXT row | I'M DOWN joins the next plan directly (Slice 01 `im_down`). SEE THE PLAN appears under it only once you're in. |
+| Ritual card | The first active or paused Ritual. THIS WEEK · n / cap opens the week's plan; SKIP A WEEK (editors and the host) asks first (Modal), then shows "Skipped Thu 29 Oct. The week after is on." with PUT THIS WEEK BACK. Before the week is prefilled: "On the board from {date}." With no Ritual, owners and admins see the server's Make This a Ritual suggestion (one tap, `create_ritual` with the suggested sport, day, time and place, capacity = crew size up to 12). |
+| Memories | Two tiles, as designed; the caption is built from the recap ("Lights win 5–4 · 6 Oct", "Draw 3–3", or "Football · 10 played · 1 Oct" with no score). People who didn't play get the empty frame with "No photo from this game". The section hides when there are no recaps. |
+| Crew chat read mark | CrewChat calls `mark_crew_chat_read` on open, on each newer message while open and on leaving, so "OPEN CREW CHAT · 4 NEW" clears. The chat's ··· now says OPEN CREW HOME. `/crew` rows open Crew Home instead of the chat. |
+| Clan: START A CLUB RUN | The club-run form isn't designed (HANDOFF.md gaps), so the button shows for `can_start_run` but says, in a toast, that starting a club run from the app isn't ready yet. Question for the owner. |
+| Clan: run rows | ActivityStrip as designed, plus an I'M DOWN (or YOU'RE DOWN) line under each run a member can join; the design shows no join action but the contract has one. Finished and called-off runs drop off THIS WEEK. |
+| Clan: ··· menu | REPORT THE CLAN; for members HIDE ME FROM / SHOW ME ON THE LEADERBOARD and LEAVE THE CLAN (with a Modal; the captain is told to hand over first). People in WHO RUNS IT and the leaderboard open their profiles for block. |
+| Clan: joining | JOIN THE CLAN (open), ASK TO JOIN (request; then ASKED TO JOIN with TAKE IT BACK), or "Invite only. Ask someone in the clan for the code." Joining with a code has no designed entry yet. |
+| Clan: the Clash row | "Fall Clash vs McGill" uses the opponent's short name in its own casing (the first word of the full name when it matches, else title case). |
+| Mission | On the after ground, full bleed, with Progress as ten segments. No mission: "No mission this month." (setting one isn't designed). |
+| Clash ground | From `clash_view.situation` (live in the design; forming, confirmed, after for other stages). The score is the one display-hero on the screen. |
+| Clash: YOUR PART | The commit button; tapping YOU'RE DOWN asks before leaving the squad (Modal). Meta line: "{event title} · {place} · 9 AM · 9 of 14 squad spots taken". |
+| Clash: results | The winner's value comes first ("21–17"), organizer-verified results say so; the badge is the winner's short name in signal when it's your clan. Pending captain results read NOT FINAL. Captain result entry (`submit_clash_result`, `confirm_clash_result`) isn't designed and isn't built here. |
+| Clash: backing | CrowdSupport with your clan first; members can back only their own clan (tapping the other side says "You can back your own clan."), tapping BACKING again stops backing. The design's caption stays. |
+| Clash: report | REPORT THE CLASH as a text button at the end (the header holds share, as designed). |
+| You list | Crews (up to 3), then clans, then host programs (`my_host_programs`): the count in the display face (members; for a program, sessions in the next 7 days, spoken as such), the title, a meta line and a CREW / CLAN / HOST / CO-HOST badge. The design's availability caption under it is the profile's own line. |
+
+## Step 6 SCR-HOST-B
+
+### HostPeople, HostMembership, HostAnnounce
+
+| Decision | Why |
+|---|---|
+| Payments not connected | HostMembership opens with "Payments aren't connected yet." (alert icon, heavy rule, words). The ledger is shown as records; the line under the payout says nothing is paid out until payments are connected instead of "It lands in your bank on Friday". Past payouts read NOT SENT (never PAID) while `payments_connected` is false, whatever the stored status. |
+| Service fee | Its ledger line reads "Ojoro service fee (placeholder)"; the amount comes from `host_money_view` (server). The app never computes it. |
+| Refund decision | REFUND ALL uses `refundable_cents`; the second button uses the server's `suggested_partial_cents` (the design's REFUND $25) and ANOTHER AMOUNT opens an amount field (validated like the server: more than 0, less than all). Without a suggestion it reads REFUND PART and opens the field. After a decision the decided sentence shows with UNDO while the server allows it (10 minutes), plus "Recorded; it goes out once payments are connected." for a refund. |
+| Passes EDIT / NEW PASS | Not designed beyond the links: a Sheet with kind (new only), name, what it covers, price, and sessions + days for a pack; STOP SELLING IT archives. A price change says it applies to the next sale. |
+| People header "…" | The design's "Export or tag people" overflow isn't specified: left out (spacer). Tags are edited inside the open person (EDIT → remove × / add field), report or block is a REPORT OR BLOCK text button at the end of the open person. |
+| People MESSAGE | No direct messages exist (contract): MESSAGE opens the program's crew chat when it has one, otherwise an announcement to the next session, and says so. INVITE TO… and INVITE THEM BACK call `invite_back` for the next session that hasn't started (the prototype linked INVITE THEM BACK to HostAnnounce; the contract has a dedicated nudge, once a week per person). |
+| People defaults | Opens on Regulars as designed; `?filter=members` (from "See members in People") opens on Members. Search is debounced 250 ms and matches name or tag on the server. Header count is `played_count`; the All chip is `all_count`. |
+| Announce session | An announcement is about one session: `?session=` when given (HostRoster MESSAGE ALL), else the next session that started less than 3 hours ago or hasn't started. No session coming up is its own empty state. The first template is preselected until the host types, as designed; recipients default to the session plus its waitlist when anyone waits; notify defaults on while a push is left and is disabled (with words) when both are used. |
+| Announce "Open the session chat" | Opens the session's activity chat (`/activity/[id]/chat`), the chat the announcement is pinned in (the prototype linked CrewChat). |
