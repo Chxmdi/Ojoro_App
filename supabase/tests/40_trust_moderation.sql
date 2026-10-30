@@ -704,5 +704,21 @@ select throws_ok(format('update public.challenge_results set a_value = 1 where e
 select throws_ok($$delete from public.profiles where id = private.former_member()$$, 'P0001', 'invalid_argument',
                  'the placeholder stays');
 
+-- Two deleted accounts that each had a drop-in for the same session: both stay in the ledger.
+select tests.keep('dprog2', tests.host_program(5));
+select tests.keep('dsess2', tests.host_session(tests.id('dprog2'), '2 days', 6, false));
+insert into public.host_charges (program_id, user_id, session_id, kind, amount_cents, currency, status, method, paid_at)
+values (tests.id('dprog2'), tests.u(7), tests.id('dsess2'), 'drop_in', 800, 'CAD', 'paid', 'app', now()),
+       (tests.id('dprog2'), tests.u(8), tests.id('dsess2'), 'drop_in', 800, 'CAD', 'paid', 'app', now());
+select is(tests.err($$delete from auth.users where id = tests.u(7)$$), 'ok', 'a drop-in buyer can be deleted');
+select is(tests.err($$delete from auth.users where id = tests.u(8)$$), 'ok', 'and a second one for the same session');
+select is((select count(*)::integer from public.host_charges where session_id = tests.id('dsess2') and user_id = private.former_member()), 2,
+          'both drop-ins stay in the host''s ledger');
+insert into public.host_charges (program_id, user_id, session_id, kind, amount_cents, currency, status, method, paid_at)
+values (tests.id('dprog2'), tests.u(9), tests.id('dsess2'), 'drop_in', 800, 'CAD', 'paid', 'app', now());
+select throws_ok(format($$insert into public.host_charges (program_id, user_id, session_id, kind, amount_cents, currency, status, method, paid_at)
+                         values (%L, %L, %L, 'drop_in', 800, 'CAD', 'paid', 'app', now())$$, tests.id('dprog2'), tests.u(9), tests.id('dsess2')),
+                 '23505', null, 'everyone else still has one drop-in per session');
+
 select * from finish();
 rollback;
