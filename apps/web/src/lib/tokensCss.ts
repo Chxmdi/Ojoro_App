@@ -3,7 +3,14 @@
  * design-handoff/design-system/tokens.json), so the web tool and the app share one source of truth.
  * Situations are [data-theme] scopes, as in the design system's web reference; calm is the default.
  */
-import { borderWidth, radius, situationIds, situations, spacing, textStyles } from '@ojoro/design-tokens';
+import {
+  borderWidth,
+  radius,
+  situationIds,
+  situations,
+  spacing,
+  textStyles,
+} from '@ojoro/design-tokens';
 
 function block(selector: string, vars: Record<string, string | number>): string {
   const body = Object.entries(vars)

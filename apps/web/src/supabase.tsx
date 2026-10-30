@@ -5,7 +5,8 @@ import { getAdminConfig } from './lib/env';
 
 export const config = getAdminConfig({
   VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL as string | undefined,
-  VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined,
+  VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
+    string | undefined,
 });
 
 /**
@@ -14,6 +15,11 @@ export const config = getAdminConfig({
  */
 export const supabase: SupabaseClient<Database> | null = config.ok
   ? createClient<Database>(config.config.url, config.config.publishableKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storageKey: 'ojoro-staff-auth' },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        storageKey: 'ojoro-staff-auth',
+      },
     })
   : null;

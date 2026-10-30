@@ -17,6 +17,7 @@ import {
   validateNote,
   validatePauseEnd,
   validateReason,
+  validateSearch,
   type CaseFacts,
 } from './moderation';
 
@@ -33,10 +34,22 @@ const base: CaseFacts = {
 
 describe('queueFilters', () => {
   it('defaults to the working set', () => {
-    expect(queueFilters({})).toEqual({ p_status: ['open', 'reviewing'], p_severity: null, p_kinds: null, p_assigned: null });
+    expect(queueFilters({})).toEqual({
+      p_status: ['open', 'reviewing'],
+      p_severity: null,
+      p_kinds: null,
+      p_assigned: null,
+    });
   });
   it('keeps only known values', () => {
-    expect(queueFilters({ status: 'actioned,bogus', severity: 'high,low', kind: 'message,nope', assigned: 'me' })).toEqual({
+    expect(
+      queueFilters({
+        status: 'actioned,bogus',
+        severity: 'high,low',
+        kind: 'message,nope',
+        assigned: 'me',
+      }),
+    ).toEqual({
       p_status: ['actioned'],
       p_severity: ['high', 'low'],
       p_kinds: ['message'],
@@ -50,18 +63,17 @@ describe('queueFilters', () => {
 describe('words', () => {
   it('severity', () => {
     expect(['high', 'medium', 'low', null].map(severityRank)).toEqual([3, 2, 1, 0]);
-    expect(['high', 'medium', 'low', 'x'].map(severityWord)).toEqual(['High', 'Medium', 'Low', 'Unknown']);
-  });
-  it('status, kind and reason', () => {
-    expect(['open', 'reviewing', 'actioned', 'dismissed', 'upheld', 'denied', null].map(statusWord)).toEqual([
-      'Open',
-      'Reviewing',
-      'Actioned',
-      'Dismissed',
-      'Upheld',
-      'Denied',
+    expect(['high', 'medium', 'low', 'x'].map(severityWord)).toEqual([
+      'High',
+      'Medium',
+      'Low',
       'Unknown',
     ]);
+  });
+  it('status, kind and reason', () => {
+    expect(
+      ['open', 'reviewing', 'actioned', 'dismissed', 'upheld', 'denied', null].map(statusWord),
+    ).toEqual(['Open', 'Reviewing', 'Actioned', 'Dismissed', 'Upheld', 'Denied', 'Unknown']);
     expect(kindWord('activity')).toBe('Game');
     expect(kindWord('new_kind')).toBe('New kind');
     expect(kindWord(null)).toBe('Unknown');
@@ -80,44 +92,89 @@ describe('words', () => {
 
 describe('caseActions', () => {
   it('offers the full set on an open message case', () => {
-    expect(caseActions(base)).toEqual(['assign_me', 'hide', 'pause', 'resolve_actioned', 'resolve_dismissed']);
-  });
-  it('offers unassign and restore when assigned to me, hidden and paused', () => {
-    expect(
-      caseActions({ ...base, status: 'reviewing', assigned: true, assigned_to_me: true, content_hidden: true, hide_id: 'h', owner: { id: 'u', paused: true } }),
-    ).toEqual(['unassign', 'restore_content', 'restore_account', 'resolve_actioned', 'resolve_dismissed']);
-  });
-  it('never hides kinds that cannot be hidden, and never pauses staff', () => {
-    expect(caseActions({ ...base, subject_kind: 'profile', owner: { id: 'u', paused: false, is_staff: true } })).toEqual([
+    expect(caseActions(base)).toEqual([
       'assign_me',
+      'hide',
+      'pause',
       'resolve_actioned',
       'resolve_dismissed',
     ]);
   });
-  it('keeps only restores on a closed case', () => {
-    expect(caseActions({ ...base, status: 'actioned', content_hidden: true, hide_id: 'h', owner: { id: 'u', paused: true } })).toEqual([
+  it('offers unassign and restore when assigned to me, hidden and paused', () => {
+    expect(
+      caseActions({
+        ...base,
+        status: 'reviewing',
+        assigned: true,
+        assigned_to_me: true,
+        content_hidden: true,
+        hide_id: 'h',
+        owner: { id: 'u', paused: true },
+      }),
+    ).toEqual([
+      'unassign',
       'restore_content',
       'restore_account',
+      'resolve_actioned',
+      'resolve_dismissed',
     ]);
+  });
+  it('never hides kinds that cannot be hidden, and never pauses staff', () => {
+    expect(
+      caseActions({
+        ...base,
+        subject_kind: 'profile',
+        owner: { id: 'u', paused: false, is_staff: true },
+      }),
+    ).toEqual(['assign_me', 'resolve_actioned', 'resolve_dismissed']);
+  });
+  it('keeps only restores on a closed case', () => {
+    expect(
+      caseActions({
+        ...base,
+        status: 'actioned',
+        content_hidden: true,
+        hide_id: 'h',
+        owner: { id: 'u', paused: true },
+      }),
+    ).toEqual(['restore_content', 'restore_account']);
     expect(caseActions({ ...base, status: 'dismissed', owner: null })).toEqual([]);
   });
 });
 
 describe('undo', () => {
   it('maps reversible actions', () => {
-    expect(undoFor('hide', { changed: true, hide_id: 'h' })).toEqual({ kind: 'restore_content', hide_id: 'h' });
+    expect(undoFor('hide', { changed: true, hide_id: 'h' })).toEqual({
+      kind: 'restore_content',
+      hide_id: 'h',
+    });
     expect(undoFor('hide', { changed: true })).toBeNull();
-    expect(undoFor('restore_content', { changed: true, subject_kind: 'message', subject_id: 's', case_id: 'c' })).toEqual({
+    expect(
+      undoFor('restore_content', {
+        changed: true,
+        subject_kind: 'message',
+        subject_id: 's',
+        case_id: 'c',
+      }),
+    ).toEqual({
       kind: 'hide',
       subject_kind: 'message',
       subject_id: 's',
       case_id: 'c',
     });
-    expect(undoFor('restore_content', { changed: true, subject_kind: 'message', subject_id: 's' })).toMatchObject({ case_id: null });
+    expect(
+      undoFor('restore_content', { changed: true, subject_kind: 'message', subject_id: 's' }),
+    ).toMatchObject({ case_id: null });
     expect(undoFor('restore_content', { changed: true })).toBeNull();
-    expect(undoFor('pause', { changed: true, user_id: 'u' })).toEqual({ kind: 'restore_account', user_id: 'u' });
+    expect(undoFor('pause', { changed: true, user_id: 'u' })).toEqual({
+      kind: 'restore_account',
+      user_id: 'u',
+    });
     expect(undoFor('pause', { changed: true })).toBeNull();
-    expect(undoFor('assign_me', { changed: true, case_id: 'c' })).toEqual({ kind: 'unassign', case_id: 'c' });
+    expect(undoFor('assign_me', { changed: true, case_id: 'c' })).toEqual({
+      kind: 'unassign',
+      case_id: 'c',
+    });
     expect(undoFor('assign_me', { changed: true })).toBeNull();
     expect(undoFor('place_sensitive', { changed: true, place_id: 'p', sensitive: true })).toEqual({
       kind: 'place_sensitive',
@@ -166,5 +223,14 @@ describe('cursor stack', () => {
     expect(s).toEqual([null]);
     expect(prevStack(s)).toEqual([null]);
     expect(currentCursor([])).toBeNull();
+  });
+});
+
+describe('validateSearch', () => {
+  it('needs 2 characters and no phone numbers', () => {
+    expect(validateSearch(' a ')).toMatch(/2 characters/);
+    expect(validateSearch('@a')).toMatch(/2 characters/);
+    expect(validateSearch('+1 555 0100')).toMatch(/Phone numbers/);
+    expect(validateSearch('ade')).toBeNull();
   });
 });

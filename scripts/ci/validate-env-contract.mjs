@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 
 // Every key the code reads must be declared (with a placeholder, never a real value) in the
-// matching .env.example. Server-only secrets live in the root file; the mobile file holds only
-// EXPO_PUBLIC_ values, which are bundled into the app.
+// matching .env.example. Server-only secrets live in the root file; the mobile and web files hold only
+// their public prefix (EXPO_PUBLIC_ / VITE_), whose values are bundled into the client.
 const contracts = [
   {
     file: '.env.example',
@@ -12,6 +12,14 @@ const contracts = [
     file: 'apps/mobile/.env.example',
     required: ['EXPO_PUBLIC_SUPABASE_URL', 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY'],
     publicOnly: true,
+    prefix: 'EXPO_PUBLIC_',
+  },
+  {
+    // Staff admin tool: values are bundled into the browser build.
+    file: 'apps/web/.env.example',
+    required: ['VITE_SUPABASE_URL', 'VITE_SUPABASE_PUBLISHABLE_KEY'],
+    publicOnly: true,
+    prefix: 'VITE_',
   },
 ];
 
@@ -31,7 +39,7 @@ function readEnv(file) {
 }
 
 const errors = [];
-for (const { file, required, publicOnly } of contracts) {
+for (const { file, required, publicOnly, prefix } of contracts) {
   let entries;
   try {
     entries = readEnv(file);
@@ -44,10 +52,8 @@ for (const { file, required, publicOnly } of contracts) {
   if (missing.length) errors.push(`${file}: missing required keys: ${missing.join(', ')}`);
 
   for (const [key, value] of entries) {
-    if (publicOnly && !key.startsWith('EXPO_PUBLIC_')) {
-      errors.push(
-        `${file}: ${key} is not EXPO_PUBLIC_; server-side keys belong in the root .env.example`,
-      );
+    if (publicOnly && !key.startsWith(prefix)) {
+      errors.push(`${file}: ${key} is not ${prefix}; server-side keys belong in the root .env.example`);
     }
     if (publicOnly && secretLike.test(key)) errors.push(`${file}: ${key} looks like a secret`);
     // Real Supabase keys (JWT-shaped or the sb_secret_/sb_publishable_ formats) must not be committed.

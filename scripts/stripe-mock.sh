@@ -76,7 +76,7 @@ case "${1:-}" in
       docker run -d --name "$name" -p 12111-12112:12111-12112 "$image" >/dev/null
     fi
     for _ in $(seq 1 30); do
-      curl -fsS -u sk_test_local_stripe_mock: http://127.0.0.1:12111/v1/accounts/acct_1 >/dev/null 2>&1 && break
+      curl -fsS -u sk_test_ojoroLocalStripeMock: http://127.0.0.1:12111/v1/accounts/acct_1 >/dev/null 2>&1 && break
       sleep 1
     done
     echo "stripe-mock is running on :12111 / :12112 (STRIPE_API_BASE=http://host.docker.internal:12111 for the functions)"

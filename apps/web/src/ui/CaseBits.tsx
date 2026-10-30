@@ -15,7 +15,14 @@ export function SeverityTag({ severity }: { severity: string }) {
 
 export function StatusTag({ status }: { status: string }) {
   const tone = status === 'open' ? 'strong' : status === 'reviewing' ? 'plain' : 'quiet';
-  const icon = status === 'actioned' || status === 'upheld' ? 'check' : status === 'dismissed' || status === 'denied' ? 'close' : status === 'reviewing' ? 'person' : 'clock';
+  const icon =
+    status === 'actioned' || status === 'upheld'
+      ? 'check'
+      : status === 'dismissed' || status === 'denied'
+        ? 'close'
+        : status === 'reviewing'
+          ? 'person'
+          : 'clock';
   return (
     <Tag tone={tone} icon={icon}>
       {statusWord(status)}

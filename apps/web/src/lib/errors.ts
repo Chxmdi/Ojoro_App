@@ -11,7 +11,8 @@ const WORDS: Record<string, string> = {
   staff_last_admin: "That's the last admin. Make someone else admin first.",
   case_not_found: "We can't find that case.",
   case_closed: 'That case is already closed. A new report opens a new case.',
-  cannot_hide_kind: "That kind of thing can't be hidden. Pause its owner instead, or mark the place sensitive.",
+  cannot_hide_kind:
+    "That kind of thing can't be hidden. Pause its owner instead, or mark the place sensitive.",
   hide_not_found: "That isn't hidden any more.",
   cannot_pause_staff: "Staff accounts can't be paused. Revoke the staff role first.",
   pause_end_invalid: 'Pick an end date in the future, at most 365 days away.',
@@ -31,14 +32,16 @@ const WORDS: Record<string, string> = {
 };
 
 export function errorOf(thrown: unknown): OjoroError {
-  if (thrown && typeof thrown === 'object' && 'ojoro' in thrown) return (thrown as { ojoro: OjoroError }).ojoro;
+  if (thrown && typeof thrown === 'object' && 'ojoro' in thrown)
+    return (thrown as { ojoro: OjoroError }).ojoro;
   return toOjoroError(thrown);
 }
 
 /** Words for anything a staff call threw. Server codes the contract adds later still read sensibly. */
 export function errorWords(thrown: unknown): string {
   const e = errorOf(thrown);
-  if (e.code === 'invalid_argument' && e.detail) return `Check ${e.detail.replace(/^p_/, '').replace(/_/g, ' ')} and try again.`;
+  if (e.code === 'invalid_argument' && e.detail)
+    return `Check ${e.detail.replace(/^p_/, '').replace(/_/g, ' ')} and try again.`;
   return WORDS[e.code] ?? WORDS.unknown!;
 }
 

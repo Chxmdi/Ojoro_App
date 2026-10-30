@@ -33,12 +33,23 @@ export function SubjectView({ subject, heading }: { subject: StaffSubject; headi
         ) : (
           'No author'
         )}
-        {subject.context?.label && subject.context.label !== subject.title ? ` · ${subject.context.label}` : ''}
+        {subject.context?.label && subject.context.label !== subject.title
+          ? ` · ${subject.context.label}`
+          : ''}
         {subject.created_at ? ` · ${dateTime(subject.created_at)}` : ''}
       </p>
       {subject.text ? <blockquote className="body-sm">{subject.text}</blockquote> : null}
-      {subject.media?.map((m) => <BlurredPhoto key={`${m.bucket}/${m.path}`} bucket={m.bucket} path={m.path} alt={m.alt_text} />)}
-      {!subject.text && !subject.media?.length ? <p className="body-sm muted">No text or photo.</p> : null}
+      {subject.media?.map((m) => (
+        <BlurredPhoto
+          key={`${m.bucket}/${m.path}`}
+          bucket={m.bucket}
+          path={m.path}
+          alt={m.alt_text}
+        />
+      ))}
+      {!subject.text && !subject.media?.length ? (
+        <p className="body-sm muted">No text or photo.</p>
+      ) : null}
     </section>
   );
 }
@@ -58,7 +69,14 @@ function BlurredPhoto({ bucket, path, alt }: { bucket: string; path: string; alt
   }, [bucket, path]);
   return (
     <figure style={{ margin: 'var(--space-4) 0 0' }}>
-      <div style={{ position: 'relative', maxWidth: 360, background: 'var(--surface-sunk)', minHeight: 120 }}>
+      <div
+        style={{
+          position: 'relative',
+          maxWidth: 360,
+          background: 'var(--surface-sunk)',
+          minHeight: 120,
+        }}
+      >
         {url ? (
           <img
             src={url}
@@ -74,7 +92,12 @@ function BlurredPhoto({ bucket, path, alt }: { bucket: string; path: string; alt
       </div>
       <figcaption className="row" style={{ marginTop: 'var(--space-2)' }}>
         {url ? (
-          <button type="button" className="btn btn-small" aria-pressed={shown} onClick={() => setShown((s) => !s)}>
+          <button
+            type="button"
+            className="btn btn-small"
+            aria-pressed={shown}
+            onClick={() => setShown((s) => !s)}
+          >
             {shown ? 'Blur photo' : 'Show photo'}
           </button>
         ) : null}

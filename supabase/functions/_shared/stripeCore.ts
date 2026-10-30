@@ -180,7 +180,11 @@ export function restDb(env: Pick<PaymentsEnv, 'supabaseUrl' | 'anonKey' | 'servi
 
 export function dbErrorAnswer(e: DbError): HttpAnswer {
   const status =
-    e.code === 'not_authenticated' ? 401 : e.code === 'permission_denied' || e.code === 'owner_required' ? 403 : 400;
+    e.code === 'not_authenticated'
+      ? 401
+      : e.code === 'permission_denied' || e.code === 'owner_required' || e.code === 'not_program_host'
+        ? 403
+        : 400;
   return errorAnswer(e.code, e.detail, e.code === 'unknown' ? 500 : status);
 }
 

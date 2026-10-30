@@ -63,7 +63,10 @@ export function detailText(detail: unknown): string {
   if (typeof detail !== 'object') return String(detail);
   return Object.entries(detail as Record<string, unknown>)
     .filter(([, v]) => v !== null && v !== undefined && v !== '')
-    .map(([k, v]) => `${k.replace(/_/g, ' ')}: ${Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v)}`)
+    .map(
+      ([k, v]) =>
+        `${k.replace(/_/g, ' ')}: ${Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v)}`,
+    )
     .join(' · ');
 }
 

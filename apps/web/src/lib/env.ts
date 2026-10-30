@@ -58,15 +58,21 @@ export function getAdminConfig(input: AdminEnvInput): AdminEnvResult {
 
   if (!key) errors.push('VITE_SUPABASE_PUBLISHABLE_KEY is missing.');
   else if (/^sb_secret_/.test(key) || /service_role/i.test(key)) {
-    errors.push('VITE_SUPABASE_PUBLISHABLE_KEY is a secret key. Use the publishable key; never ship the secret.');
+    errors.push(
+      'VITE_SUPABASE_PUBLISHABLE_KEY is a secret key. Use the publishable key; never ship the secret.',
+    );
   } else if (key.startsWith('eyJ')) {
     const role = jwtRole(key);
     if (role !== 'anon') {
-      errors.push('VITE_SUPABASE_PUBLISHABLE_KEY must be the publishable (or anon) key, not a service key.');
+      errors.push(
+        'VITE_SUPABASE_PUBLISHABLE_KEY must be the publishable (or anon) key, not a service key.',
+      );
     }
   } else if (!/^sb_publishable_/.test(key)) {
     errors.push('VITE_SUPABASE_PUBLISHABLE_KEY does not look like a Supabase publishable key.');
   }
 
-  return errors.length > 0 ? { ok: false, errors } : { ok: true, config: { url, publishableKey: key } };
+  return errors.length > 0
+    ? { ok: false, errors }
+    : { ok: true, config: { url, publishableKey: key } };
 }

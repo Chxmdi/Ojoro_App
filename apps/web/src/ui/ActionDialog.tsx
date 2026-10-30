@@ -2,11 +2,25 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 
 import { errorWords } from '../lib/errors';
 import { fromLocalInput, localInputValue } from '../lib/format';
-import { NOTE_MAX, REASON_MAX, REPORT_REASONS, reasonWord, validateNote, validatePauseEnd, validateReason } from '../lib/moderation';
+import {
+  NOTE_MAX,
+  REASON_MAX,
+  REPORT_REASONS,
+  reasonWord,
+  validateNote,
+  validatePauseEnd,
+  validateReason,
+} from '../lib/moderation';
 import { FieldError } from '../screens/SignIn';
 import { Modal } from './kit';
 
-export type ActionValues = { reason: string; note: string | null; endsAt: string | null; reasonCode: string; effect: string | null };
+export type ActionValues = {
+  reason: string;
+  note: string | null;
+  endsAt: string | null;
+  reasonCode: string;
+  effect: string | null;
+};
 
 export type ActionSpec = {
   title: string;
@@ -25,7 +39,15 @@ export type ActionSpec = {
  * written down (it goes in the audit log). The caller keeps one idempotency key per opened dialog,
  * so a retry after a dropped connection is the same intention.
  */
-export function ActionDialog({ spec, onClose, online }: { spec: ActionSpec | null; onClose: () => void; online: boolean }) {
+export function ActionDialog({
+  spec,
+  onClose,
+  online,
+}: {
+  spec: ActionSpec | null;
+  onClose: () => void;
+  online: boolean;
+}) {
   return (
     <Modal open={spec !== null} title={spec?.title ?? ''} onClose={onClose}>
       {spec ? <ActionForm key={spec.title} spec={spec} onClose={onClose} online={online} /> : null}
@@ -35,14 +57,27 @@ export function ActionDialog({ spec, onClose, online }: { spec: ActionSpec | nul
 
 const DAY = 86_400_000;
 
-function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () => void; online: boolean }) {
+function ActionForm({
+  spec,
+  onClose,
+  online,
+}: {
+  spec: ActionSpec;
+  onClose: () => void;
+  online: boolean;
+}) {
   const [reason, setReason] = useState('');
   const [note, setNote] = useState('');
   const [reasonCode, setReasonCode] = useState(spec.pause?.defaultReasonCode ?? 'other');
   const [until, setUntil] = useState<'restored' | 'date'>('date');
   const [endsLocal, setEndsLocal] = useState(() => localInputValue(new Date(Date.now() + 7 * DAY)));
   const [effect, setEffect] = useState(spec.effect?.options[0]?.value ?? '');
-  const [errors, setErrors] = useState<{ reason?: string; note?: string; ends?: string; submit?: string }>({});
+  const [errors, setErrors] = useState<{
+    reason?: string;
+    note?: string;
+    ends?: string;
+    submit?: string;
+  }>({});
   const [busy, setBusy] = useState(false);
 
   async function submit(e: FormEvent) {
@@ -51,13 +86,23 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
     const next = {
       ...(validateReason(reason) ? { reason: validateReason(reason)! } : {}),
       ...(spec.note && validateNote(note) ? { note: validateNote(note)! } : {}),
-      ...(spec.pause && until === 'date' ? (validatePauseEnd(endsAt ?? 'invalid') ? { ends: validatePauseEnd(endsAt ?? 'invalid')! } : {}) : {}),
+      ...(spec.pause && until === 'date'
+        ? validatePauseEnd(endsAt ?? 'invalid')
+          ? { ends: validatePauseEnd(endsAt ?? 'invalid')! }
+          : {}
+        : {}),
     };
     setErrors(next);
     if (Object.keys(next).length > 0) return;
     setBusy(true);
     try {
-      await spec.run({ reason: reason.trim(), note: note.trim() || null, endsAt, reasonCode, effect: spec.effect ? effect : null });
+      await spec.run({
+        reason: reason.trim(),
+        note: note.trim() || null,
+        endsAt,
+        reasonCode,
+        effect: spec.effect ? effect : null,
+      });
       onClose();
     } catch (thrown) {
       setErrors({ submit: errorWords(thrown) });
@@ -78,7 +123,12 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
             <label className="label-sm" htmlFor="a-code">
               Reason category
             </label>
-            <select id="a-code" className="select" value={reasonCode} onChange={(e) => setReasonCode(e.target.value)}>
+            <select
+              id="a-code"
+              className="select"
+              value={reasonCode}
+              onChange={(e) => setReasonCode(e.target.value)}
+            >
               {REPORT_REASONS.map((r) => (
                 <option key={r} value={r}>
                   {reasonWord(r)}
@@ -89,7 +139,13 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
           <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
             <legend className="label-sm">How long</legend>
             <label className="row body-sm">
-              <input type="radio" name="until" checked={until === 'date'} onChange={() => setUntil('date')} /> Until a date
+              <input
+                type="radio"
+                name="until"
+                checked={until === 'date'}
+                onChange={() => setUntil('date')}
+              />{' '}
+              Until a date
             </label>
             {until === 'date' ? (
               <>
@@ -104,7 +160,12 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
                 />
                 <div className="row">
                   {[1, 7, 30].map((d) => (
-                    <button key={d} type="button" className="btn btn-small" onClick={() => quick(d)}>
+                    <button
+                      key={d}
+                      type="button"
+                      className="btn btn-small"
+                      onClick={() => quick(d)}
+                    >
                       {d === 1 ? '1 day' : `${d} days`}
                     </button>
                   ))}
@@ -113,7 +174,13 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
               </>
             ) : null}
             <label className="row body-sm">
-              <input type="radio" name="until" checked={until === 'restored'} onChange={() => setUntil('restored')} /> Until staff restore it
+              <input
+                type="radio"
+                name="until"
+                checked={until === 'restored'}
+                onChange={() => setUntil('restored')}
+              />{' '}
+              Until staff restore it
             </label>
           </fieldset>
         </>
@@ -124,7 +191,12 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
           <label className="label-sm" htmlFor="a-effect">
             {spec.effect.label}
           </label>
-          <select id="a-effect" className="select" value={effect} onChange={(e) => setEffect(e.target.value)}>
+          <select
+            id="a-effect"
+            className="select"
+            value={effect}
+            onChange={(e) => setEffect(e.target.value)}
+          >
             {spec.effect.options.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
@@ -177,7 +249,11 @@ function ActionForm({ spec, onClose, online }: { spec: ActionSpec; onClose: () =
       {!online ? <FieldError id="a-offline" text="You're offline. Connect to do this." /> : null}
 
       <div className="actions">
-        {spec.final ? <span className="caption muted" style={{ marginRight: 'auto', alignSelf: 'center' }}>This can't be undone.</span> : null}
+        {spec.final ? (
+          <span className="caption muted" style={{ marginRight: 'auto', alignSelf: 'center' }}>
+            This can't be undone.
+          </span>
+        ) : null}
         <button type="button" className="btn" data-autofocus onClick={onClose}>
           Cancel
         </button>

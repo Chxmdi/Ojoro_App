@@ -4,7 +4,15 @@ import type { Staff } from '../App';
 import { api, newKey } from '../api';
 import { errorOf, errorWords } from '../lib/errors';
 import { ago, count, dateTime } from '../lib/format';
-import { caseActions, kindWord, reasonWord, undoFor, undoReason, type CaseAction, type Undo } from '../lib/moderation';
+import {
+  caseActions,
+  kindWord,
+  reasonWord,
+  undoFor,
+  undoReason,
+  type CaseAction,
+  type Undo,
+} from '../lib/moderation';
 import { formatRoute } from '../lib/route';
 import type { StaffCaseDetail } from '../lib/types';
 import { ActionDialog, type ActionSpec } from '../ui/ActionDialog';
@@ -13,6 +21,7 @@ import { AgeCell, HiddenTag, SeverityTag, StatusTag } from '../ui/CaseBits';
 import { useResource } from '../ui/hooks';
 import { Empty, Notice, Skeleton, StaleNote, Tag, Toast } from '../ui/kit';
 import { SubjectView } from '../ui/Subject';
+import { pauseSpec, restoreSpec } from '../ui/accountSpecs';
 
 const ACTION_LABEL: Record<CaseAction, string> = {
   assign_me: 'Take this case',
@@ -41,7 +50,13 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
           <BackLink />
           <Notice
             kind={notFound ? 'info' : online ? 'error' : 'offline'}
-            title={notFound ? "We can't find that case." : online ? "Couldn't load this case." : "You're offline."}
+            title={
+              notFound
+                ? "We can't find that case."
+                : online
+                  ? "Couldn't load this case."
+                  : "You're offline."
+            }
             action={
               notFound ? undefined : (
                 <button className="btn btn-small" type="button" onClick={res.reload}>
@@ -80,7 +95,13 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
   const topReason = c.reasons[0] ?? 'other';
   const ownerName = c.owner?.display_name ?? 'this person';
 
-  const done = (message: string, action: CaseAction, result: { changed: boolean } & Record<string, unknown>, reason: string, extra: Parameters<typeof undoFor>[1] = { changed: false }) => {
+  const done = (
+    message: string,
+    action: CaseAction,
+    result: { changed: boolean } & Record<string, unknown>,
+    reason: string,
+    extra: Parameters<typeof undoFor>[1] = { changed: false },
+  ) => {
     setToast({
       message: result.changed ? message : 'Already done. Nothing changed.',
       undo: undoFor(action, { ...extra, changed: result.changed }),
@@ -93,8 +114,15 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
     setInlineError(null);
     try {
       const key = newKey();
-      const r = action === 'assign_me' ? await api.assign(c.id, key) : await api.unassign(c.id, key);
-      done(action === 'assign_me' ? 'Case assigned to you.' : 'Case back in the queue.', action, r, '', { changed: r.changed, case_id: c.id });
+      const r =
+        action === 'assign_me' ? await api.assign(c.id, key) : await api.unassign(c.id, key);
+      done(
+        action === 'assign_me' ? 'Case assigned to you.' : 'Case back in the queue.',
+        action,
+        r,
+        '',
+        { changed: r.changed, case_id: c.id },
+      );
     } catch (thrown) {
       setInlineError(errorWords(thrown));
     }
@@ -114,7 +142,10 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
           confirmLabel: 'Hide',
           run: async (v) => {
             const r = await api.hide(c.subject_kind, c.subject_id, v.reason, c.id, key);
-            done('Hidden.', 'hide', r, v.reason, { changed: r.changed, hide_id: (r.hide_id as string | undefined) ?? null });
+            done('Hidden.', 'hide', r, v.reason, {
+              changed: r.changed,
+              hide_id: (r.hide_id as string | undefined) ?? null,
+            });
           },
         });
       case 'restore_content':
@@ -124,39 +155,33 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
           confirmLabel: 'Restore',
           run: async (v) => {
             const r = await api.restoreContent(d.hide!.id, v.reason, key);
-            done('Restored.', 'restore_content', r, v.reason, { changed: r.changed, subject_kind: c.subject_kind, subject_id: c.subject_id, case_id: c.id });
+            done('Restored.', 'restore_content', r, v.reason, {
+              changed: r.changed,
+              subject_kind: c.subject_kind,
+              subject_id: c.subject_id,
+              case_id: c.id,
+            });
           },
         });
       case 'pause':
-        return setSpec({
-          title: `Pause ${ownerName}'s account?`,
-          body: (
-            <>
-              They can't use Ojoro while it's paused, and they disappear for everyone else. Nothing is deleted; restoring brings everything back. They can
-              appeal. Pausing doesn't close this case.
-            </>
-          ),
-          confirmLabel: 'Pause account',
-          pause: { defaultReasonCode: topReason },
-          note: { label: 'Note to them (optional)', hint: 'They see this on the paused screen.' },
-          run: async (v) => {
-            const r = await api.pause(
-              { userId: c.owner!.id, reasonCode: v.reasonCode, reason: v.reason, noteToUser: v.note, endsAt: v.endsAt, caseId: c.id },
-              key,
-            );
-            done(v.endsAt ? `Paused until ${dateTime(v.endsAt)}.` : 'Paused until restored.', 'pause', r, v.reason, { changed: r.changed, user_id: c.owner!.id });
-          },
-        });
+        return setSpec(
+          pauseSpec({
+            name: ownerName,
+            userId: c.owner!.id,
+            caseId: c.id,
+            defaultReasonCode: topReason,
+            onDone: (m, r, reason) =>
+              done(m, 'pause', r, reason, { changed: r.changed, user_id: c.owner!.id }),
+          }),
+        );
       case 'restore_account':
-        return setSpec({
-          title: `Restore ${ownerName}'s account?`,
-          body: 'The pause ends now and everything they had comes back.',
-          confirmLabel: 'Restore account',
-          run: async (v) => {
-            const r = await api.restoreAccount(c.owner!.id, v.reason, key);
-            done('Account restored.', 'restore_account', r, v.reason);
-          },
-        });
+        return setSpec(
+          restoreSpec({
+            name: ownerName,
+            userId: c.owner!.id,
+            onDone: (m, r, reason) => done(m, 'restore_account', r, reason),
+          }),
+        );
       case 'resolve_actioned':
       case 'resolve_dismissed': {
         const outcome = action === 'resolve_actioned' ? 'actioned' : 'dismissed';
@@ -170,7 +195,12 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
           final: true,
           run: async (v) => {
             const r = await api.resolve(c.id, outcome, v.reason, key);
-            done(outcome === 'actioned' ? 'Case resolved.' : 'Case dismissed.', action, r, v.reason);
+            done(
+              outcome === 'actioned' ? 'Case resolved.' : 'Case dismissed.',
+              action,
+              r,
+              v.reason,
+            );
           },
         });
       }
@@ -194,7 +224,12 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
   }
 
   const showSnapshot =
-    d.snapshot && subject && (d.snapshot.text !== subject.text || d.snapshot.title !== subject.title || !subject.exists || subject.deleted);
+    d.snapshot &&
+    subject &&
+    (d.snapshot.text !== subject.text ||
+      d.snapshot.title !== subject.title ||
+      !subject.exists ||
+      subject.deleted);
 
   return (
     <>
@@ -209,17 +244,27 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
           </div>
           <h1 className="display display-sm">{kindWord(c.subject_kind)} case</h1>
           <p className="body-sm muted num">
-            {count(c.report_count, 'report')} from {count(c.reporter_count, 'person', 'people')} · {c.reasons.map(reasonWord).join(', ')} · opened{' '}
-            {dateTime(c.opened_at)}
+            {count(c.report_count, 'report')} from {count(c.reporter_count, 'person', 'people')} ·{' '}
+            {c.reasons.map(reasonWord).join(', ')} · opened {dateTime(c.opened_at)}
           </p>
         </div>
       </div>
-      {stale ? <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error)} /> : null}
-      {inlineError ? <Notice kind="error" title="That didn't go through.">{inlineError}</Notice> : null}
+      {stale ? (
+        <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error)} />
+      ) : null}
+      {inlineError ? (
+        <Notice kind="error" title="That didn't go through.">
+          {inlineError}
+        </Notice>
+      ) : null}
 
       <div className="grid-2">
         <div>
-          {subject ? <SubjectView subject={subject} heading="Now" /> : <Empty title="The reported thing can't be read now." />}
+          {subject ? (
+            <SubjectView subject={subject} heading="Now" />
+          ) : (
+            <Empty title="The reported thing can't be read now." />
+          )}
           {showSnapshot && d.snapshot ? (
             <div style={{ marginTop: 'var(--space-4)' }}>
               <SubjectView subject={d.snapshot} heading="When it was reported" />
@@ -246,10 +291,15 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
                     <tr key={r.id}>
                       <td className="body-sm">
                         {r.reporter?.display_name ?? 'Unknown'}
-                        {r.reporter?.handle ? <div className="caption muted">@{r.reporter.handle}</div> : null}
+                        {r.reporter?.handle ? (
+                          <div className="caption muted">@{r.reporter.handle}</div>
+                        ) : null}
                       </td>
                       <td className="body-sm">{reasonWord(r.reason)}</td>
-                      <td className="body-sm" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxWidth: 320 }}>
+                      <td
+                        className="body-sm"
+                        style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxWidth: 320 }}
+                      >
                         {r.note ?? <span className="muted">No note</span>}
                       </td>
                       <td className="body-sm num">{ago(r.created_at)}</td>
@@ -268,7 +318,9 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
               <p className="body-sm muted">No other cases on this or against its owner.</p>
             ) : (
               <table className="data">
-                <caption className="sr-only">Other cases on the same thing or against the same owner</caption>
+                <caption className="sr-only">
+                  Other cases on the same thing or against the same owner
+                </caption>
                 <thead>
                   <tr className="label-sm">
                     <th scope="col">Case</th>
@@ -284,7 +336,9 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
                         <a className="row-link" href={formatRoute({ name: 'report', id: r.id })}>
                           {kindWord(r.subject_kind)}
                         </a>
-                        <div className="body-sm muted">{r.preview ?? r.reasons.map(reasonWord).join(', ')}</div>
+                        <div className="body-sm muted">
+                          {r.preview ?? r.reasons.map(reasonWord).join(', ')}
+                        </div>
                       </td>
                       <td>
                         <SeverityTag severity={r.severity} />
@@ -304,7 +358,11 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
             <h2 id="h-history" className="label">
               History
             </h2>
-            {d.actions.length === 0 ? <p className="body-sm muted">Nothing done on this case yet.</p> : <AuditRows entries={d.actions} compact />}
+            {d.actions.length === 0 ? (
+              <p className="body-sm muted">Nothing done on this case yet.</p>
+            ) : (
+              <AuditRows entries={d.actions} compact />
+            )}
           </section>
         </div>
 
@@ -316,11 +374,15 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
             {c.status === 'actioned' || c.status === 'dismissed' ? (
               <p className="body-sm">
                 {c.status === 'actioned' ? 'Resolved as actioned' : 'Dismissed'}
-                {c.resolved_by ? ` by ${c.resolved_by.display_name ?? 'staff'}` : ''} {c.resolved_at ? ago(c.resolved_at) : ''}.
+                {c.resolved_by ? ` by ${c.resolved_by.display_name ?? 'staff'}` : ''}{' '}
+                {c.resolved_at ? ago(c.resolved_at) : ''}.
                 {c.resolution_note ? <span className="muted"> “{c.resolution_note}”</span> : null}
               </p>
             ) : c.assigned_to ? (
-              <p className="body-sm">Assigned to {c.assigned_to.id === staff.id ? 'you' : (c.assigned_to.display_name ?? 'staff')}.</p>
+              <p className="body-sm">
+                Assigned to{' '}
+                {c.assigned_to.id === staff.id ? 'you' : (c.assigned_to.display_name ?? 'staff')}.
+              </p>
             ) : (
               <p className="body-sm">Nobody is on this case.</p>
             )}
@@ -342,7 +404,9 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
                   {ACTION_LABEL[a]}
                 </button>
               ))}
-              {actions.length === 0 ? <p className="body-sm muted">No actions left on this case.</p> : null}
+              {actions.length === 0 ? (
+                <p className="body-sm muted">No actions left on this case.</p>
+              ) : null}
             </div>
           </section>
 
@@ -353,7 +417,10 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
             {c.owner ? (
               <>
                 <p className="title-sm">
-                  {c.owner.display_name ?? 'No name'} {c.owner.paused ? <Tag tone="strong">Paused</Tag> : null}
+                  <a className="row-link" href={formatRoute({ name: 'person', id: c.owner.id })}>
+                    {c.owner.display_name ?? 'No name'}
+                  </a>{' '}
+                  {c.owner.paused ? <Tag tone="strong">Paused</Tag> : null}
                 </p>
                 {c.owner.handle ? <p className="caption muted">@{c.owner.handle}</p> : null}
                 {d.owner_history ? <OwnerHistory h={d.owner_history} /> : null}
@@ -369,7 +436,14 @@ export function ReportDetail({ id, staff, online }: { id: string; staff: Staff; 
       {toast ? (
         <Toast
           message={toast.message}
-          {...(toast.undo ? { action: { label: 'Undo', onPress: () => void runUndo(toast.undo!, toast.originalReason) } } : {})}
+          {...(toast.undo
+            ? {
+                action: {
+                  label: 'Undo',
+                  onPress: () => void runUndo(toast.undo!, toast.originalReason),
+                },
+              }
+            : {})}
           onDismiss={() => setToast(null)}
         />
       ) : null}
@@ -383,16 +457,20 @@ function OwnerHistory({ h }: { h: NonNullable<StaffCaseDetail['owner_history']> 
     <dl className="facts body-sm num" style={{ marginTop: 'var(--space-4)' }}>
       <dt>Cases against</dt>
       <dd>
-        {h.cases_against.total} ({h.cases_against.actioned} actioned, {h.cases_against.dismissed} dismissed, {h.cases_against.open} open)
+        {h.cases_against.total} ({h.cases_against.actioned} actioned, {h.cases_against.dismissed}{' '}
+        dismissed, {h.cases_against.open} open)
       </dd>
       <dt>Reports made</dt>
       <dd>
-        {h.reports_made.total} ({h.reports_made.last_30_days} in 30 days, {h.reports_made.dismissed} dismissed)
+        {h.reports_made.total} ({h.reports_made.last_30_days} in 30 days, {h.reports_made.dismissed}{' '}
+        dismissed)
       </dd>
       <dt>Pauses</dt>
       <dd>
         {h.pauses.length}
-        {active ? ` (paused now${active.ends_at ? `, until ${dateTime(active.ends_at)}` : ', until restored'})` : ''}
+        {active
+          ? ` (paused now${active.ends_at ? `, until ${dateTime(active.ends_at)}` : ', until restored'})`
+          : ''}
       </dd>
       <dt>Hidden content</dt>
       <dd>{h.hides.length}</dd>

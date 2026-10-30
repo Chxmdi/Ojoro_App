@@ -5,8 +5,12 @@ import { supabase } from '../supabase';
 import { Icon } from '../ui/Icon';
 import { Notice } from '../ui/kit';
 
-function authWords(error: { code?: string | undefined; status?: number | undefined; name?: string | undefined }, step: 'send' | 'verify'): string {
-  if (error.name === 'AuthRetryableFetchError' || error.status === 0) return "You're offline. Connect and try again.";
+function authWords(
+  error: { code?: string | undefined; status?: number | undefined; name?: string | undefined },
+  step: 'send' | 'verify',
+): string {
+  if (error.name === 'AuthRetryableFetchError' || error.status === 0)
+    return "You're offline. Connect and try again.";
   switch (error.code) {
     case 'otp_expired':
     case 'invalid_credentials':
@@ -18,12 +22,20 @@ function authWords(error: { code?: string | undefined; status?: number | undefin
     case 'otp_disabled':
       return 'Only existing Ojoro staff accounts can sign in here.';
     default:
-      return step === 'send' ? "We couldn't send a code. Try again in a minute." : "We couldn't check that code. Try again.";
+      return step === 'send'
+        ? "We couldn't send a code. Try again in a minute."
+        : "We couldn't check that code. Try again.";
   }
 }
 
 /** Phone and code, then the server decides if this account is staff (App checks my_staff_role). */
-export function SignIn({ refusal, onClearRefusal }: { refusal: string | null; onClearRefusal: () => void }) {
+export function SignIn({
+  refusal,
+  onClearRefusal,
+}: {
+  refusal: string | null;
+  onClearRefusal: () => void;
+}) {
   const [phone, setPhone] = useState('');
   const [e164, setE164] = useState<string | null>(null);
   const [code, setCode] = useState('');
@@ -39,7 +51,10 @@ export function SignIn({ refusal, onClearRefusal }: { refusal: string | null; on
     setBusy(true);
     setError(null);
     // shouldCreateUser: false — the admin tool never creates accounts.
-    const { error: failed } = await supabase.auth.signInWithOtp({ phone: n.e164, options: { shouldCreateUser: false } });
+    const { error: failed } = await supabase.auth.signInWithOtp({
+      phone: n.e164,
+      options: { shouldCreateUser: false },
+    });
     setBusy(false);
     if (failed) return setError(authWords(failed, 'send'));
     setE164(n.e164);
@@ -51,7 +66,11 @@ export function SignIn({ refusal, onClearRefusal }: { refusal: string | null; on
     if (code.length !== 6) return setError('Enter the 6-digit code.');
     setBusy(true);
     setError(null);
-    const { error: failed } = await supabase.auth.verifyOtp({ phone: e164, token: code, type: 'sms' });
+    const { error: failed } = await supabase.auth.verifyOtp({
+      phone: e164,
+      token: code,
+      type: 'sms',
+    });
     setBusy(false);
     if (failed) setError(authWords(failed, 'verify'));
   }
@@ -60,7 +79,9 @@ export function SignIn({ refusal, onClearRefusal }: { refusal: string | null; on
     <main className="signin" id="main">
       <p className="label muted">Ojoro staff</p>
       <h1 className="display display-sm">Sign in</h1>
-      <p className="body-sm muted">For Ojoro staff only. Every action you take here is recorded in the audit log.</p>
+      <p className="body-sm muted">
+        For Ojoro staff only. Every action you take here is recorded in the audit log.
+      </p>
       {refusal ? (
         <div style={{ marginTop: 'var(--space-6)' }}>
           <Notice kind="error" title={refusal}>

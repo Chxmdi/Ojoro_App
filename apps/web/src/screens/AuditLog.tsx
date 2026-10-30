@@ -10,7 +10,15 @@ import { useCursorPaging } from '../ui/useCursorPaging';
 
 const UUID = /^[0-9a-f-]{36}$/i;
 
-export function AuditLog({ route, go, online }: { route: Extract<Route, { name: 'audit' }>; go: (r: Route) => void; online: boolean }) {
+export function AuditLog({
+  route,
+  go,
+  online,
+}: {
+  route: Extract<Route, { name: 'audit' }>;
+  go: (r: Route) => void;
+  online: boolean;
+}) {
   const f = {
     p_actions: auditActionsFilter(route.params.action ?? 'writes'),
     p_case_id: route.params.case && UUID.test(route.params.case) ? route.params.case : null,
@@ -44,12 +52,20 @@ export function AuditLog({ route, go, online }: { route: Extract<Route, { name: 
           ]}
         />
         {f.p_case_id || f.p_target_user ? (
-          <button type="button" className="btn btn-small" onClick={() => go(withParams(route, { case: undefined, user: undefined }))}>
+          <button
+            type="button"
+            className="btn btn-small"
+            onClick={() => go(withParams(route, { case: undefined, user: undefined }))}
+          >
             Clear case and person filter
           </button>
         ) : null}
       </div>
-      <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error) && Boolean(res.data)} />
+      <StaleNote
+        online={online}
+        loadedAt={res.loadedAt}
+        failed={Boolean(res.error) && Boolean(res.data)}
+      />
       {res.data === undefined ? (
         res.error ? (
           <Notice
@@ -75,7 +91,9 @@ export function AuditLog({ route, go, online }: { route: Extract<Route, { name: 
             label="Audit log"
             page={paging.page}
             hasNext={Boolean(res.data.next_cursor)}
-            onPage={(p) => (p > paging.page ? paging.next(res.data?.next_cursor ?? null) : paging.prev())}
+            onPage={(p) =>
+              p > paging.page ? paging.next(res.data?.next_cursor ?? null) : paging.prev()
+            }
           />
         </>
       )}

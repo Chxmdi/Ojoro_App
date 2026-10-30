@@ -16,17 +16,33 @@ export const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
-export function Icon({ name, size = 20, label }: { name: IconName; size?: number; label?: string }) {
+export function Icon({
+  name,
+  size = 20,
+  label,
+}: {
+  name: IconName;
+  size?: number;
+  label?: string;
+}) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true, focusable: false })}
+      {...(label
+        ? { role: 'img', 'aria-label': label }
+        : { 'aria-hidden': true, focusable: false })}
       style={{ flex: 'none' }}
     >
-      <path d={ICONS[name]} stroke="currentColor" strokeWidth={2} strokeLinecap="square" strokeLinejoin="miter" />
+      <path
+        d={ICONS[name]}
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="square"
+        strokeLinejoin="miter"
+      />
     </svg>
   );
 }

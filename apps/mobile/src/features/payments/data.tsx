@@ -57,7 +57,13 @@ export async function invokePayments<T>(name: string, body: object): Promise<T> 
         // Not JSON: fall through to the generic error.
       }
     }
-    throw new OjoroCallError(toOjoroError(parsed ?? error));
+    if (parsed) throw new OjoroCallError(toOjoroError(parsed));
+    // A function that didn't boot or answer (5xx without our error body): say payments are unavailable.
+    const status = ctx && typeof (ctx as Response).status === 'number' ? (ctx as Response).status : 0;
+    if (status >= 500) {
+      throw new OjoroCallError({ kind: 'ojoro', code: 'payments_unavailable', detail: 'provider_error' });
+    }
+    throw new OjoroCallError(toOjoroError(error));
   }
   const inBody = paymentsFunctionError(data);
   if (inBody) throw new OjoroCallError(toOjoroError(inBody));

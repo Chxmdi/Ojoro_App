@@ -301,10 +301,9 @@ revoke all on table private.concierge_ai_calls from public, anon, authenticated;
 revoke all on function private.concierge_parse(text), private.concierge_ai_limits(),
   private.require_service_role() from public, anon, authenticated;
 
-revoke all on function public.concierge_suggest(text, text, integer, integer),
-  public.concierge_candidates(text, integer) from public, anon;
-grant execute on function public.concierge_suggest(text, text, integer, integer),
-  public.concierge_candidates(text, integer) to authenticated, service_role;
+-- concierge_suggest keeps its grants (create or replace leaves them as they are).
+revoke all on function public.concierge_candidates(text, integer) from public, anon;
+grant execute on function public.concierge_candidates(text, integer) to authenticated, service_role;
 
 revoke all on function public.concierge_ai_gate(uuid), public.concierge_ai_record(uuid, jsonb)
   from public, anon, authenticated;

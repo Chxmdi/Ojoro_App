@@ -4,7 +4,13 @@ import { kindWord } from '../lib/moderation';
 import { formatRoute } from '../lib/route';
 import type { AuditEntry } from '../lib/types';
 
-export function AuditRows({ entries, compact = false }: { entries: AuditEntry[]; compact?: boolean }) {
+export function AuditRows({
+  entries,
+  compact = false,
+}: {
+  entries: AuditEntry[];
+  compact?: boolean;
+}) {
   return (
     <div className="table-wrap">
       <table className="data">
@@ -24,10 +30,18 @@ export function AuditRows({ entries, compact = false }: { entries: AuditEntry[];
               <td className="body-sm num" style={{ whiteSpace: 'nowrap' }}>
                 {dateTime(e.at)}
               </td>
-              <td className="body-sm">{e.actor ? (e.actor.display_name ?? 'Staff') : <span className="muted">System</span>}</td>
+              <td className="body-sm">
+                {e.actor ? (
+                  (e.actor.display_name ?? 'Staff')
+                ) : (
+                  <span className="muted">System</span>
+                )}
+              </td>
               <td className="body-sm">
                 <span className="title-sm">{auditWord(e.action)}</span>
-                {detailText(e.detail) ? <div className="caption muted">{detailText(e.detail)}</div> : null}
+                {detailText(e.detail) ? (
+                  <div className="caption muted">{detailText(e.detail)}</div>
+                ) : null}
               </td>
               {compact ? null : (
                 <td className="body-sm">
@@ -40,7 +54,13 @@ export function AuditRows({ entries, compact = false }: { entries: AuditEntry[];
                   ) : (
                     <span className="muted">–</span>
                   )}
-                  {e.target_user ? <div className="caption muted">{e.target_user.display_name ?? 'Person'}</div> : null}
+                  {e.target_user ? (
+                    <div className="caption">
+                      <a href={formatRoute({ name: 'person', id: e.target_user.id })}>
+                        {e.target_user.display_name ?? 'Person'}
+                      </a>
+                    </div>
+                  ) : null}
                 </td>
               )}
               <td className="body-sm" style={{ overflowWrap: 'anywhere', maxWidth: 320 }}>

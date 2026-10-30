@@ -4,7 +4,15 @@ import { ago } from '../lib/format';
 import { Icon, type IconName } from './Icon';
 import { useDelayed } from './hooks';
 
-export function Tag({ children, icon, tone = 'plain' }: { children: ReactNode; icon?: IconName; tone?: 'plain' | 'strong' | 'signal' | 'quiet' }) {
+export function Tag({
+  children,
+  icon,
+  tone = 'plain',
+}: {
+  children: ReactNode;
+  icon?: IconName;
+  tone?: 'plain' | 'strong' | 'signal' | 'quiet';
+}) {
   return (
     <span className={`tag${tone === 'plain' ? '' : ` tag-${tone}`}`}>
       {icon ? <Icon name={icon} size={14} /> : null}
@@ -37,7 +45,10 @@ export function Notice({
 }) {
   const icon: IconName = kind === 'error' ? 'alert' : kind === 'offline' ? 'offline' : 'clock';
   return (
-    <div className={`notice${kind === 'error' ? ' notice-error' : ''}`} role={kind === 'error' ? 'alert' : 'status'}>
+    <div
+      className={`notice${kind === 'error' ? ' notice-error' : ''}`}
+      role={kind === 'error' ? 'alert' : 'status'}
+    >
       <Icon name={icon} size={24} />
       <div className="notice-body">
         <p className="title-sm">{title}</p>
@@ -55,7 +66,9 @@ export function Skeleton({ rows = 6, label = 'Loading' }: { rows?: number; label
     <div role="status" aria-live="polite" aria-busy="true">
       <span className="sr-only">{label}</span>
       {shown
-        ? Array.from({ length: rows }, (_, i) => <span key={i} className="skeleton" style={{ width: `${92 - (i % 3) * 14}%` }} />)
+        ? Array.from({ length: rows }, (_, i) => (
+            <span key={i} className="skeleton" style={{ width: `${92 - (i % 3) * 14}%` }} />
+          ))
         : null}
     </div>
   );
@@ -71,10 +84,21 @@ export function Empty({ title, children }: { title: string; children?: ReactNode
 }
 
 /** Says the page is showing last-known data, and how old it is. */
-export function StaleNote({ online, loadedAt, failed }: { online: boolean; loadedAt: string | null; failed: boolean }) {
+export function StaleNote({
+  online,
+  loadedAt,
+  failed,
+}: {
+  online: boolean;
+  loadedAt: string | null;
+  failed: boolean;
+}) {
   if (online && !failed) return null;
   return (
-    <Notice kind={online ? 'error' : 'offline'} title={online ? "Couldn't refresh." : "You're offline."}>
+    <Notice
+      kind={online ? 'error' : 'offline'}
+      title={online ? "Couldn't refresh." : "You're offline."}
+    >
       Showing what loaded {ago(loadedAt)}. Actions are off until this refreshes.
     </Notice>
   );
@@ -93,13 +117,23 @@ export function Pager({
 }) {
   return (
     <nav className="pager" aria-label={`${label} pages`}>
-      <button type="button" className="btn btn-small" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+      <button
+        type="button"
+        className="btn btn-small"
+        disabled={page <= 1}
+        onClick={() => onPage(page - 1)}
+      >
         <Icon name="back" size={16} /> Previous
       </button>
       <span className="label num" aria-live="polite">
         Page {page}
       </span>
-      <button type="button" className="btn btn-small" disabled={!hasNext} onClick={() => onPage(page + 1)}>
+      <button
+        type="button"
+        className="btn btn-small"
+        disabled={!hasNext}
+        onClick={() => onPage(page + 1)}
+      >
         Next <Icon name="forward" size={16} />
       </button>
     </nav>
@@ -151,7 +185,15 @@ export function Modal({
   );
 }
 
-export function Toast({ message, action, onDismiss }: { message: string; action?: { label: string; onPress: () => void }; onDismiss: () => void }) {
+export function Toast({
+  message,
+  action,
+  onDismiss,
+}: {
+  message: string;
+  action?: { label: string; onPress: () => void };
+  onDismiss: () => void;
+}) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 10_000);
     return () => clearTimeout(t);
@@ -164,7 +206,12 @@ export function Toast({ message, action, onDismiss }: { message: string; action?
           {action.label}
         </button>
       ) : null}
-      <button type="button" className="btn btn-ghost btn-small" onClick={onDismiss} aria-label="Close message">
+      <button
+        type="button"
+        className="btn btn-ghost btn-small"
+        onClick={onDismiss}
+        aria-label="Close message"
+      >
         <Icon name="close" size={16} />
       </button>
     </div>

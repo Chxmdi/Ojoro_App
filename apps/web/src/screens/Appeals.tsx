@@ -17,17 +17,48 @@ import { useCursorPaging } from '../ui/useCursorPaging';
 
 type AppealsRoute = Extract<Route, { name: 'appeals' }>;
 
-export function Appeals({ route, go, online }: { route: AppealsRoute; go: (r: Route) => void; online: boolean }) {
-  if (route.params.id) return <AppealDetail id={route.params.id} back={withParams(route, { id: undefined })} online={online} />;
+export function Appeals({
+  route,
+  go,
+  online,
+}: {
+  route: AppealsRoute;
+  go: (r: Route) => void;
+  online: boolean;
+}) {
+  if (route.params.id)
+    return (
+      <AppealDetail
+        id={route.params.id}
+        back={withParams(route, { id: undefined })}
+        online={online}
+      />
+    );
   return <AppealList route={route} go={go} online={online} />;
 }
 
-function AppealList({ route, go, online }: { route: AppealsRoute; go: (r: Route) => void; online: boolean }) {
-  const status = route.params.status && ['open', 'upheld', 'denied'].includes(route.params.status) ? [route.params.status] : ['open'];
-  const kinds = route.params.kind && (APPEAL_KINDS as readonly string[]).includes(route.params.kind) ? [route.params.kind] : null;
+function AppealList({
+  route,
+  go,
+  online,
+}: {
+  route: AppealsRoute;
+  go: (r: Route) => void;
+  online: boolean;
+}) {
+  const status =
+    route.params.status && ['open', 'upheld', 'denied'].includes(route.params.status)
+      ? [route.params.status]
+      : ['open'];
+  const kinds =
+    route.params.kind && (APPEAL_KINDS as readonly string[]).includes(route.params.kind)
+      ? [route.params.kind]
+      : null;
   const key = JSON.stringify([status, kinds]);
   const paging = useCursorPaging(key);
-  const res = useResource(`${key}|${paging.cursor ?? ''}`, () => api.appeals(status, kinds, paging.cursor));
+  const res = useResource(`${key}|${paging.cursor ?? ''}`, () =>
+    api.appeals(status, kinds, paging.cursor),
+  );
 
   return (
     <>
@@ -55,10 +86,17 @@ function AppealList({ route, go, online }: { route: AppealsRoute; go: (r: Route)
           label="About"
           value={kinds?.[0] ?? ''}
           onChange={(v) => go(withParams(route, { kind: v }))}
-          options={[{ value: '', label: 'Anything' }, ...APPEAL_KINDS.map((k) => ({ value: k, label: kindWord(k) }))]}
+          options={[
+            { value: '', label: 'Anything' },
+            ...APPEAL_KINDS.map((k) => ({ value: k, label: kindWord(k) })),
+          ]}
         />
       </div>
-      <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error) && Boolean(res.data)} />
+      <StaleNote
+        online={online}
+        loadedAt={res.loadedAt}
+        failed={Boolean(res.error) && Boolean(res.data)}
+      />
       {res.data === undefined ? (
         res.error ? (
           <Notice
@@ -76,11 +114,15 @@ function AppealList({ route, go, online }: { route: AppealsRoute; go: (r: Route)
           <Skeleton label="Loading appeals" />
         )
       ) : res.data.items.length === 0 ? (
-        <Empty title={status[0] === 'open' ? 'No open appeals.' : 'No appeals here.'}>People appeal pauses, hidden content and missed games from the app.</Empty>
+        <Empty title={status[0] === 'open' ? 'No open appeals.' : 'No appeals here.'}>
+          People appeal pauses, hidden content and missed games from the app.
+        </Empty>
       ) : (
         <div className="table-wrap">
           <table className="data">
-            <caption className="sr-only">Appeals{status[0] === 'open' ? ', oldest first' : ', newest decided first'}</caption>
+            <caption className="sr-only">
+              Appeals{status[0] === 'open' ? ', oldest first' : ', newest decided first'}
+            </caption>
             <thead>
               <tr className="label-sm">
                 <th scope="col">About</th>
@@ -117,7 +159,9 @@ function AppealList({ route, go, online }: { route: AppealsRoute; go: (r: Route)
             label="Appeals"
             page={paging.page}
             hasNext={Boolean(res.data.next_cursor)}
-            onPage={(p) => (p > paging.page ? paging.next(res.data?.next_cursor ?? null) : paging.prev())}
+            onPage={(p) =>
+              p > paging.page ? paging.next(res.data?.next_cursor ?? null) : paging.prev()
+            }
           />
         </div>
       )}
@@ -128,7 +172,8 @@ function AppealList({ route, go, online }: { route: AppealsRoute; go: (r: Route)
 type Subject = StaffAppealDetail['subject'];
 
 function AppealSubject({ kind, subject }: { kind: string; subject: Subject }) {
-  if (!subject) return <p className="body-sm muted">The thing this appeal is about can't be read now.</p>;
+  if (!subject)
+    return <p className="body-sm muted">The thing this appeal is about can't be read now.</p>;
   if (kind === 'account_pause' && 'pause' in subject) {
     const p = subject.pause;
     if (!p) return <p className="body-sm muted">That pause can't be read now.</p>;
@@ -163,7 +208,9 @@ function AppealSubject({ kind, subject }: { kind: string; subject: Subject }) {
           <dt>Why</dt>
           <dd>{subject.hide.reason}</dd>
           <dt>Now</dt>
-          <dd>{subject.hide.restored_at ? `Restored ${ago(subject.hide.restored_at)}` : 'Hidden'}</dd>
+          <dd>
+            {subject.hide.restored_at ? `Restored ${ago(subject.hide.restored_at)}` : 'Hidden'}
+          </dd>
           {caseId ? (
             <>
               <dt>Case</dt>
@@ -220,7 +267,9 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
         {backLink}
         {res.error ? (
           <Notice
-            kind={errorOf(res.error).code === 'appeal_not_found' ? 'info' : online ? 'error' : 'offline'}
+            kind={
+              errorOf(res.error).code === 'appeal_not_found' ? 'info' : online ? 'error' : 'offline'
+            }
             title={online ? "Couldn't load this appeal." : "You're offline."}
             action={
               <button className="btn btn-small" type="button" onClick={res.reload}>
@@ -248,7 +297,10 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
           : 'Their show-up record is corrected.';
     setSpec({
       title: decision === 'upheld' ? 'Uphold this appeal?' : 'Deny this appeal?',
-      body: decision === 'upheld' ? `${fix} They see your note.` : 'Nothing changes. They see your note.',
+      body:
+        decision === 'upheld'
+          ? `${fix} They see your note.`
+          : 'Nothing changes. They see your note.',
       confirmLabel: decision === 'upheld' ? 'Uphold' : 'Deny',
       final: true,
       note: { label: 'Note to them (optional)', hint: 'Shown with the decision in the app.' },
@@ -264,8 +316,17 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
           }
         : {}),
       run: async (v) => {
-        const r = await api.decideAppeal({ appealId: appeal.id, decision, reason: v.reason, noteToUser: v.note, effect: v.effect }, key);
-        setToast(r.changed ? (decision === 'upheld' ? 'Appeal upheld.' : 'Appeal denied.') : 'Already decided. Nothing changed.');
+        const r = await api.decideAppeal(
+          { appealId: appeal.id, decision, reason: v.reason, noteToUser: v.note, effect: v.effect },
+          key,
+        );
+        setToast(
+          r.changed
+            ? decision === 'upheld'
+              ? 'Appeal upheld.'
+              : 'Appeal denied.'
+            : 'Already decided. Nothing changed.',
+        );
         res.reload();
       },
     });
@@ -288,7 +349,9 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
           </p>
         </div>
       </div>
-      {stale ? <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error)} /> : null}
+      {stale ? (
+        <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error)} />
+      ) : null}
       <div className="grid-2">
         <div>
           <section className="subject" aria-labelledby="h-msg">
@@ -307,7 +370,11 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
             <h2 id="h-ahistory" className="label">
               History
             </h2>
-            {actions.length ? <AuditRows entries={actions} compact /> : <p className="body-sm muted">Nothing done yet.</p>}
+            {actions.length ? (
+              <AuditRows entries={actions} compact />
+            ) : (
+              <p className="body-sm muted">Nothing done yet.</p>
+            )}
           </section>
         </div>
         <aside className="raised" aria-labelledby="h-decide" style={{ alignSelf: 'start' }}>
@@ -316,18 +383,33 @@ function AppealDetail({ id, back, online }: { id: string; back: Route; online: b
           </h2>
           {appeal.status === 'open' ? (
             <div className="action-list">
-              <button type="button" className="btn btn-primary" disabled={stale} onClick={() => decide('upheld')}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={stale}
+                onClick={() => decide('upheld')}
+              >
                 Uphold
               </button>
-              <button type="button" className="btn" disabled={stale} onClick={() => decide('denied')}>
+              <button
+                type="button"
+                className="btn"
+                disabled={stale}
+                onClick={() => decide('denied')}
+              >
                 Deny
               </button>
             </div>
           ) : (
             <p className="body-sm">
-              {appeal.status === 'upheld' ? 'Upheld' : 'Denied'} {appeal.decided_at ? ago(appeal.decided_at) : ''}.
-              {appeal.decision_note ? <span className="muted"> Note to them: “{appeal.decision_note}”</span> : null}
-              {appeal.correction_effect ? <span className="muted"> Correction: {appeal.correction_effect}.</span> : null}
+              {appeal.status === 'upheld' ? 'Upheld' : 'Denied'}{' '}
+              {appeal.decided_at ? ago(appeal.decided_at) : ''}.
+              {appeal.decision_note ? (
+                <span className="muted"> Note to them: “{appeal.decision_note}”</span>
+              ) : null}
+              {appeal.correction_effect ? (
+                <span className="muted"> Correction: {appeal.correction_effect}.</span>
+              ) : null}
             </p>
           )}
         </aside>

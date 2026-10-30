@@ -18,7 +18,14 @@ export default [
     // Playwright end-to-end script: Node, plus browser globals inside page.evaluate callbacks.
     files: ['e2e/**/*.mjs'],
     languageOptions: {
-      globals: { setTimeout: 'readonly', window: 'readonly', document: 'readonly', localStorage: 'readonly', navigator: 'readonly', Event: 'readonly' },
+      globals: {
+        setTimeout: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        localStorage: 'readonly',
+        navigator: 'readonly',
+        Event: 'readonly',
+      },
     },
   },
 ];

@@ -7,7 +7,8 @@ describe('buildTokensCss', () => {
   const css = buildTokensCss();
   it('scopes every situation and defaults to calm', () => {
     expect(css).toContain(':root,[data-theme="calm"]{');
-    for (const id of ['forming', 'confirmed', 'live', 'after']) expect(css).toContain(`[data-theme="${id}"]{`);
+    for (const id of ['forming', 'confirmed', 'live', 'after'])
+      expect(css).toContain(`[data-theme="${id}"]{`);
     expect(css).toContain(`--surface:${situations.calm.surface};`);
   });
   it('carries spacing, radius and type as px', () => {

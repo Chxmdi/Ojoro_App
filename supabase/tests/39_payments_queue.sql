@@ -386,9 +386,10 @@ declare
   v jsonb;
 begin
   perform tests.as_service();
-  v := public.payments_claim_outbox(20);
+  v := public.payments_claim_outbox(100);
   perform tests.logout();
-  return v;
+  -- Only this test's program (other local data may have jobs too).
+  return coalesce((select jsonb_agg(j) from jsonb_array_elements(v) j where j ->> 'program_id' = tests.id('prog')::text), '[]'::jsonb);
 end;
 $$;
 create function tests.done(p_job uuid, p_ref text, p_status text default null) returns void language plpgsql as $$
@@ -450,7 +451,7 @@ select is((select status::text || ' ' || provider_ref from public.host_refunds w
           'Stripe has it (pending until the webhook)');
 select tests.done(tests.id('j6'), 're_auto', 'succeeded');
 select is((select status::text from public.host_refunds where id = tests.id('r6')), 'pending', 'completing twice changes nothing');
-select is((select count(*) from private.analytics_events where name = 'payments_refund_sent'), 1::bigint, 'sent is measured');
+select is((select count(*) from private.analytics_events where name = 'payments_refund_sent' and payload ->> 'program_id' = tests.id('prog')::text), 1::bigint, 'sent is measured');
 
 -- A host's REFUND waits out UNDO ---------------------------------------------------------------------------
 select tests.keep('c9', tests.checkout(9, tests.id('pack')));
@@ -474,7 +475,7 @@ select is((select string_agg(status::text, ',') from private.payment_outbox
 select tests.login(1);
 select public.decide_host_refund(tests.id('q9'), 'partial', gen_random_uuid(), 3000);
 select tests.logout();
-update private.payment_outbox set not_before = now() - interval '1 second' where status = 'queued';
+update private.payment_outbox set not_before = now() - interval '1 second' where status = 'queued' and program_id = tests.id('prog');
 select tests.keep('j9', ((tests.claim() -> 0) ->> 'job_id')::uuid);
 select is((select amount_cents from public.host_refunds r join private.payment_outbox o on o.refund_id = r.id where o.id = tests.id('j9')),
           3000, 'the new decision is sent');
@@ -503,7 +504,7 @@ update private.payment_outbox set not_before = now() - interval '1 second' where
 select tests.claim();
 select is(tests.fail(tests.id('j10'), false), 'failed', 'a refusal fails it');
 select is((select status::text from public.host_refunds where user_id = tests.u(10)), 'failed', 'and the refund');
-select is((select count(*) from public.host_ops_audit where action = 'refund_failed'), 1::bigint, 'audited');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action = 'refund_failed'), 1::bigint, 'audited');
 select is(tests.fail(tests.id('j10'), true), 'failed', 'a closed job stays closed');
 
 -- Refunds of money taken outside the app stay outside Stripe.

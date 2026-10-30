@@ -3,7 +3,13 @@
  * allows, what can be undone, and form validation. Server rules live in docs/TRUST_CONTRACT.md; the
  * server re-checks everything, so these only decide what to offer.
  */
-import { HIDEABLE_KINDS, NOTE_TO_USER_MAX, PAUSE_MAX_DAYS, REASON_MAX, isHideable } from '@ojoro/contracts';
+import {
+  HIDEABLE_KINDS,
+  NOTE_TO_USER_MAX,
+  PAUSE_MAX_DAYS,
+  REASON_MAX,
+  isHideable,
+} from '@ojoro/contracts';
 
 export { HIDEABLE_KINDS, PAUSE_MAX_DAYS, REASON_MAX };
 
@@ -11,7 +17,14 @@ export const CASE_STATUSES = ['open', 'reviewing', 'actioned', 'dismissed'] as c
 export type CaseStatus = (typeof CASE_STATUSES)[number];
 export const SEVERITIES = ['high', 'medium', 'low'] as const;
 export type Severity = (typeof SEVERITIES)[number];
-export const REPORT_REASONS = ['spam', 'harassment', 'unsafe', 'impersonation', 'inappropriate', 'other'] as const;
+export const REPORT_REASONS = [
+  'spam',
+  'harassment',
+  'unsafe',
+  'impersonation',
+  'inappropriate',
+  'other',
+] as const;
 export type ReportReason = (typeof REPORT_REASONS)[number];
 export const SUBJECT_KINDS = [
   'profile',
@@ -54,7 +67,8 @@ export function queueFilters(params: Record<string, string>): QueueFilters {
   const status = pick(params.status, CASE_STATUSES);
   const severity = pick(params.severity, SEVERITIES);
   const kinds = pick(params.kind, SUBJECT_KINDS);
-  const assigned = params.assigned === 'me' || params.assigned === 'unassigned' ? params.assigned : null;
+  const assigned =
+    params.assigned === 'me' || params.assigned === 'unassigned' ? params.assigned : null;
   return {
     p_status: status.length ? status : ['open', 'reviewing'],
     p_severity: severity.length ? severity : null,
@@ -133,7 +147,11 @@ export function reasonWord(reason: string | null | undefined): string {
 /** Open cases waiting longer than this get a heavier "waiting" tag. */
 export const WAITING_LONG_MS = 24 * 3_600_000;
 
-export function isWaitingLong(openedAt: string | null | undefined, status: string, now = Date.now()): boolean {
+export function isWaitingLong(
+  openedAt: string | null | undefined,
+  status: string,
+  now = Date.now(),
+): boolean {
   if (!openedAt || (status !== 'open' && status !== 'reviewing')) return false;
   return now - Date.parse(openedAt) > WAITING_LONG_MS;
 }
@@ -191,7 +209,16 @@ export type Undo =
  */
 export function undoFor(
   action: CaseAction | 'place_sensitive',
-  ctx: { changed: boolean; hide_id?: string | null; subject_kind?: string; subject_id?: string; case_id?: string | null; user_id?: string; place_id?: string; sensitive?: boolean },
+  ctx: {
+    changed: boolean;
+    hide_id?: string | null;
+    subject_kind?: string;
+    subject_id?: string;
+    case_id?: string | null;
+    user_id?: string;
+    place_id?: string;
+    sensitive?: boolean;
+  },
 ): Undo | null {
   if (!ctx.changed) return null;
   switch (action) {
@@ -199,7 +226,12 @@ export function undoFor(
       return ctx.hide_id ? { kind: 'restore_content', hide_id: ctx.hide_id } : null;
     case 'restore_content':
       return ctx.subject_kind && ctx.subject_id
-        ? { kind: 'hide', subject_kind: ctx.subject_kind, subject_id: ctx.subject_id, case_id: ctx.case_id ?? null }
+        ? {
+            kind: 'hide',
+            subject_kind: ctx.subject_kind,
+            subject_id: ctx.subject_id,
+            case_id: ctx.case_id ?? null,
+          }
         : null;
     case 'pause':
       return ctx.user_id ? { kind: 'restore_account', user_id: ctx.user_id } : null;
@@ -222,12 +254,15 @@ export function undoReason(original: string): string {
 export function validateReason(reason: string): string | null {
   const r = reason.trim();
   if (!r) return 'Write a reason. It goes in the audit log.';
-  if (r.length > REASON_MAX) return `Keep the reason to ${REASON_MAX} characters (now ${r.length}).`;
+  if (r.length > REASON_MAX)
+    return `Keep the reason to ${REASON_MAX} characters (now ${r.length}).`;
   return null;
 }
 
 export function validateNote(note: string): string | null {
-  return note.trim().length > NOTE_MAX ? `Keep the note to ${NOTE_MAX} characters (now ${note.trim().length}).` : null;
+  return note.trim().length > NOTE_MAX
+    ? `Keep the note to ${NOTE_MAX} characters (now ${note.trim().length}).`
+    : null;
 }
 
 /** null end = until restored. Otherwise in the future and at most 365 days away. */
@@ -236,7 +271,8 @@ export function validatePauseEnd(endsAtIso: string | null, now = Date.now()): st
   const t = Date.parse(endsAtIso);
   if (Number.isNaN(t)) return 'Pick a valid end date, or choose until restored.';
   if (t <= now) return 'Pick an end date in the future.';
-  if (t - now > PAUSE_MAX_DAYS * 86_400_000) return `Pick an end date at most ${PAUSE_MAX_DAYS} days away.`;
+  if (t - now > PAUSE_MAX_DAYS * 86_400_000)
+    return `Pick an end date at most ${PAUSE_MAX_DAYS} days away.`;
   return null;
 }
 
@@ -253,4 +289,12 @@ export function prevStack(stack: CursorStack): CursorStack {
 
 export function currentCursor(stack: CursorStack): string | null {
   return stack[stack.length - 1] ?? null;
+}
+
+/** staff_find_users needs at least 2 characters of a name or handle. */
+export function validateSearch(q: string): string | null {
+  const t = q.trim().replace(/^@/, '');
+  if (t.length < 2) return 'Type at least 2 characters of a name or handle.';
+  if (/^[+\d\s()-]+$/.test(t)) return "Search by name or handle. Phone numbers can't be searched.";
+  return null;
 }
