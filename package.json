@@ -8,8 +8,8 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "format": "prettier --write package.json apps/mobile/package.json apps/mobile/eas.json apps/mobile/app.config.ts apps/mobile/tsconfig.json tsconfig.base.json tsconfig.ci.json eslint.config.mjs vitest.config.ts turbo.json .github/workflows/ci.yml",
-    "format:check": "prettier --check package.json apps/mobile/package.json apps/mobile/eas.json apps/mobile/app.config.ts apps/mobile/tsconfig.json tsconfig.base.json tsconfig.ci.json eslint.config.mjs vitest.config.ts turbo.json .github/workflows/ci.yml",
+    "format": "prettier --write package.json apps/mobile/package.json apps/mobile/eas.json apps/mobile/app.config.ts apps/mobile/tsconfig.json tsconfig.base.json tsconfig.ci.json eslint.config.mjs vitest.config.ts turbo.json .github/workflows/ci.yml apps/web/package.json apps/web/tsconfig.json apps/web/vite.config.ts apps/web/eslint.config.mjs apps/web/index.html \"apps/web/src/**/*.{ts,tsx,css}\" \"apps/web/e2e/**/*.mjs\"",
+    "format:check": "prettier --check package.json apps/mobile/package.json apps/mobile/eas.json apps/mobile/app.config.ts apps/mobile/tsconfig.json tsconfig.base.json tsconfig.ci.json eslint.config.mjs vitest.config.ts turbo.json .github/workflows/ci.yml apps/web/package.json apps/web/tsconfig.json apps/web/vite.config.ts apps/web/eslint.config.mjs apps/web/index.html \"apps/web/src/**/*.{ts,tsx,css}\" \"apps/web/e2e/**/*.mjs\"",
     "lint": "eslint apps packages scripts --max-warnings=0",
     "typecheck": "turbo run typecheck",
     "test": "vitest run --coverage",

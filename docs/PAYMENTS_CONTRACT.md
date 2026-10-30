@@ -312,7 +312,7 @@ npx -y supabase@2.122.0 functions serve --env-file supabase/functions/.env   # s
 `supabase/functions/.env` for local runs (git-ignored; test values only):
 
 ```bash
-STRIPE_SECRET_KEY=sk_test_local_stripe_mock
+STRIPE_SECRET_KEY=sk_test_ojoroLocalStripeMock
 STRIPE_WEBHOOK_SECRET=whsec_ojoro_local_test_only
 STRIPE_MODE=test
 STRIPE_API_BASE=http://host.docker.internal:12111

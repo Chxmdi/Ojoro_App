@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { auditActionsFilter, auditWord, detailText, isRead, READ_ACTIONS, WRITE_ACTIONS } from './audit';
+import {
+  auditActionsFilter,
+  auditWord,
+  detailText,
+  isRead,
+  READ_ACTIONS,
+  WRITE_ACTIONS,
+} from './audit';
 
 describe('audit words', () => {
   it('names actions', () => {
@@ -15,9 +22,15 @@ describe('audit words', () => {
   it('flattens detail as text', () => {
     expect(detailText(null)).toBe('');
     expect(detailText('x')).toBe('x');
-    expect(detailText({ ends_at: '2026', changed: true, empty: '', nested: { a: 1 }, list: ['open', 'reviewing'] })).toBe(
-      'ends at: 2026 · changed: true · nested: {"a":1} · list: open, reviewing',
-    );
+    expect(
+      detailText({
+        ends_at: '2026',
+        changed: true,
+        empty: '',
+        nested: { a: 1 },
+        list: ['open', 'reviewing'],
+      }),
+    ).toBe('ends at: 2026 · changed: true · nested: {"a":1} · list: open, reviewing');
   });
   it('filters', () => {
     expect(auditActionsFilter(undefined)).toBeNull();

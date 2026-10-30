@@ -18,7 +18,13 @@ export function Filter({
       <label className="label-sm" htmlFor={id}>
         {label}
       </label>
-      <select id={id} className="select" value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled}>
+      <select
+        id={id}
+        className="select"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+      >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}

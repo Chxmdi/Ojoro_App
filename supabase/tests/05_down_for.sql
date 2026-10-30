@@ -140,6 +140,12 @@ select throws_ok(format($$insert into public.intent_signals (user_id, sport_id, 
   values (%L, 'running', now() + interval '4 hours', now() + interval '7 hours', now() + interval '7 hours', 5)$$, tests.u(1)),
   '23P01', null, 'the table refuses an overlapping active signal');
 
+-- Local seed data (seed_places.sql's runs tonight, other samples) has real forming plans nearby that a
+-- signal could rightly join. These assertions are about the test's own plan, so other people's forming
+-- plans are taken out of matching for this transaction only (rolled back with everything else).
+update public.plans set audience = 'invite_only'
+ where status = 'forming' and host_id not in (select tests.u(n) from generate_series(1, 12) n);
+
 -- Matching: a compatible signal forms a plan with both people in it.
 select tests.login(2);
 select tests.keep('m', (public.create_down_for(gen_random_uuid(), 'running', now() + interval '1 hour',

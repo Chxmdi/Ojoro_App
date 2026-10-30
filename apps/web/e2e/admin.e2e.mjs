@@ -32,9 +32,18 @@ const repo = path.resolve(here, '../../..');
 const require = createRequire(import.meta.url);
 
 function load(name) {
-  for (const from of [here, path.join(repo, 'apps/web'), path.join(repo, 'apps/mobile'), process.cwd()]) {
+  for (const from of [
+    here,
+    path.join(repo, 'apps/web'),
+    path.join(repo, 'apps/mobile'),
+    process.cwd(),
+  ]) {
     try {
-      return require(require.resolve(name, { paths: [from, ...(process.env.NODE_PATH ?? '').split(':').filter(Boolean)] }));
+      return require(
+        require.resolve(name, {
+          paths: [from, ...(process.env.NODE_PATH ?? '').split(':').filter(Boolean)],
+        }),
+      );
     } catch {
       // try the next place
     }
@@ -55,7 +64,10 @@ const T = 20_000;
 const STAMP = Date.now().toString(36);
 
 function status() {
-  const out = execSync('npx -y supabase@2.122.0 status -o env', { cwd: repo, stdio: ['ignore', 'pipe', 'ignore'] });
+  const out = execSync('npx -y supabase@2.122.0 status -o env', {
+    cwd: repo,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  });
   return Object.fromEntries(
     out
       .toString()
@@ -67,13 +79,20 @@ function status() {
 
 const env = status();
 const PUBLISHABLE = env.PUBLISHABLE_KEY ?? env.ANON_KEY;
-const admin = createClient(SUPABASE_URL, env.SECRET_KEY ?? env.SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+const admin = createClient(SUPABASE_URL, env.SECRET_KEY ?? env.SERVICE_ROLE_KEY, {
+  auth: { persistSession: false },
+});
 
 async function person(phone, name) {
   const client = createClient(SUPABASE_URL, PUBLISHABLE, { auth: { persistSession: false } });
   let res = await client.auth.signInWithPassword({ phone, password: PASSWORD });
   if (res.error) {
-    const made = await admin.auth.admin.createUser({ phone, password: PASSWORD, phone_confirm: true, user_metadata: { display_name: name } });
+    const made = await admin.auth.admin.createUser({
+      phone,
+      password: PASSWORD,
+      phone_confirm: true,
+      user_metadata: { display_name: name },
+    });
     if (made.error) throw new Error(`create ${name}: ${made.error.message}`);
     res = await client.auth.signInWithPassword({ phone, password: PASSWORD });
     if (res.error) throw new Error(`sign in ${name}: ${res.error.message}`);
@@ -121,7 +140,10 @@ async function step(name, fn) {
   } catch (error) {
     results.push({ name, ok: false });
     console.log(`  FAIL ${name}\n       ${error.message.split('\n')[0]}`);
-    if (SHOTS && current) await current.screenshot({ path: path.join(SHOTS, `fail-${results.length}.png`), fullPage: true }).catch(() => {});
+    if (SHOTS && current)
+      await current
+        .screenshot({ path: path.join(SHOTS, `fail-${results.length}.png`), fullPage: true })
+        .catch(() => {});
   }
 }
 
@@ -150,15 +172,40 @@ async function main() {
     global: { headers: { Authorization: `Bearer ${staff.session.access_token}` } },
   });
   // A failed earlier run may have left the author paused.
-  await staffClient.rpc('staff_restore_account', { p_user_id: author.id, p_reason: 'e2e reset', p_idempotency_key: randomUUID() });
+  await staffClient.rpc('staff_restore_account', {
+    p_user_id: author.id,
+    p_reason: 'e2e reset',
+    p_idempotency_key: randomUUID(),
+  });
 
-  const { data: crews } = await admin.from('crews').select('id').eq('created_by', author.id).eq('name', 'Admin e2e crew').limit(1);
-  const crewId = crews?.[0]?.id ?? (await author.call('create_crew', { p_idempotency_key: randomUUID(), p_name: 'Admin e2e crew' })).id;
+  const { data: crews } = await admin
+    .from('crews')
+    .select('id')
+    .eq('created_by', author.id)
+    .eq('name', 'Admin e2e crew')
+    .limit(1);
+  const crewId =
+    crews?.[0]?.id ??
+    (
+      await author.call('create_crew', {
+        p_idempotency_key: randomUUID(),
+        p_name: 'Admin e2e crew',
+      })
+    ).id;
   const code = await author.call('crew_invite_code', { p_crew_id: crewId });
   await reporter.call('join_crew', { p_code: code }).catch(() => {});
   const body = `Admin e2e message ${STAMP}`;
-  const message = await author.call('send_message', { p_idempotency_key: randomUUID(), p_body: body, p_crew_id: crewId });
-  await reporter.call('report', { p_subject_kind: 'message', p_subject_id: message.id, p_reason: 'harassment', p_note: `e2e note ${STAMP}` });
+  const message = await author.call('send_message', {
+    p_idempotency_key: randomUUID(),
+    p_body: body,
+    p_crew_id: crewId,
+  });
+  await reporter.call('report', {
+    p_subject_kind: 'message',
+    p_subject_id: message.id,
+    p_reason: 'harassment',
+    p_note: `e2e note ${STAMP}`,
+  });
 
   const browser = await chromium.launch({ headless: !process.env.HEADED });
 
@@ -187,21 +234,27 @@ async function main() {
   page.on('pageerror', (e) => console.log('  [pageerror]', e.message));
 
   // 2. Staff sign-in. -------------------------------------------------------------------------------------
-  await step(`staff signs in (${staff.viaCode ? 'phone code' : 'local password fallback'})`, async () => {
-    if (staff.viaCode) {
-      await page.goto(ADMIN, { waitUntil: 'load' });
-      await page.getByLabel('Phone number').fill('555 555 0190');
-      await page.getByRole('button', { name: 'Send code' }).click();
-      await page.getByLabel('6-digit code').fill('123456');
-      await page.getByRole('button', { name: 'Sign in' }).click();
-    } else {
-      await page.goto(ADMIN, { waitUntil: 'load' });
-      await page.evaluate((s) => localStorage.setItem('ojoro-staff-auth', s), JSON.stringify(staff.session));
-      await page.reload({ waitUntil: 'load' });
-    }
-    await page.getByRole('heading', { name: 'Queue' }).waitFor({ timeout: T });
-    await page.getByRole('navigation', { name: 'Sections' }).waitFor();
-  });
+  await step(
+    `staff signs in (${staff.viaCode ? 'phone code' : 'local password fallback'})`,
+    async () => {
+      if (staff.viaCode) {
+        await page.goto(ADMIN, { waitUntil: 'load' });
+        await page.getByLabel('Phone number').fill('555 555 0190');
+        await page.getByRole('button', { name: 'Send code' }).click();
+        await page.getByLabel('6-digit code').fill('123456');
+        await page.getByRole('button', { name: 'Sign in' }).click();
+      } else {
+        await page.goto(ADMIN, { waitUntil: 'load' });
+        await page.evaluate(
+          (s) => localStorage.setItem('ojoro-staff-auth', s),
+          JSON.stringify(staff.session),
+        );
+        await page.reload({ waitUntil: 'load' });
+      }
+      await page.getByRole('heading', { name: 'Queue' }).waitFor({ timeout: T });
+      await page.getByRole('navigation', { name: 'Sections' }).waitFor();
+    },
+  );
 
   // 3. The queue: filters and the new case. -----------------------------------------------------------------
   await step('the queue filters to messages and lists the new case', async () => {
@@ -211,14 +264,18 @@ async function main() {
     await page.waitForURL(/kind=message/);
     await page.getByRole('row').filter({ hasText: body }).waitFor({ timeout: T });
     const row = page.getByRole('row').filter({ hasText: body });
-    for (const word of ['Harassment', 'Ade Author E2E', 'Open']) await row.getByText(word).first().waitFor();
+    for (const word of ['Harassment', 'Ade Author E2E', 'Open'])
+      await row.getByText(word).first().waitFor();
   });
 
   await step('keyboard: the skip link comes first, and a case opens from its link', async () => {
     await page.keyboard.press('Tab');
     const first = await page.evaluate(() => document.activeElement?.textContent);
     if (first !== 'Skip to content') throw new Error(`first tab stop was ${first}`);
-    const link = page.getByRole('row').filter({ hasText: body }).getByRole('link', { name: 'Message' });
+    const link = page
+      .getByRole('row')
+      .filter({ hasText: body })
+      .getByRole('link', { name: 'Message' });
     await link.focus();
     await page.keyboard.press('Enter');
     await page.getByRole('heading', { name: /Message case/i }).waitFor({ timeout: T });
@@ -226,6 +283,8 @@ async function main() {
     await expectText(page, `e2e note ${STAMP}`);
     await shot(page, '05-report-detail');
   });
+
+  const caseUrl = page.url();
 
   // 4. Hide, with confirmation, then undo. ----------------------------------------------------------------
   await step('hide asks to confirm, needs a reason, and can be undone', async () => {
@@ -242,12 +301,20 @@ async function main() {
     await page.getByRole('status').filter({ hasText: 'Hidden.' }).waitFor({ timeout: T });
     await page.getByRole('button', { name: 'Restore content' }).waitFor({ timeout: T });
     await shot(page, '07-hidden-toast-undo');
-    const { data: hidden } = await admin.from('messages').select('body').eq('id', message.id).single();
+    const { data: hidden } = await admin
+      .from('messages')
+      .select('body')
+      .eq('id', message.id)
+      .single();
     if (hidden.body !== null) throw new Error('message still readable after hide');
     await page.getByRole('button', { name: 'Undo' }).click();
     await page.getByRole('status').filter({ hasText: 'Undone.' }).waitFor({ timeout: T });
     await page.getByRole('button', { name: 'Hide content' }).waitFor({ timeout: T });
-    const { data: back } = await admin.from('messages').select('body').eq('id', message.id).single();
+    const { data: back } = await admin
+      .from('messages')
+      .select('body')
+      .eq('id', message.id)
+      .single();
     if (back.body !== body) throw new Error('undo did not restore the message');
   });
 
@@ -258,7 +325,9 @@ async function main() {
     await dialog.getByRole('heading', { name: /Pause Ade Author E2E/ }).waitFor();
     await dialog.getByRole('button', { name: '1 day' }).click();
     await dialog.getByLabel(/Reason \(staff only/).fill(`e2e pause ${STAMP}`);
-    await dialog.getByLabel('Note to them (optional)').fill('Take a day. Messages like this break the crew rules.');
+    await dialog
+      .getByLabel('Note to them (optional)')
+      .fill('Take a day. Messages like this break the crew rules.');
     await shot(page, '08-confirm-pause');
     await dialog.getByRole('button', { name: 'Pause account' }).click();
     await page.getByRole('status').filter({ hasText: 'Paused until' }).waitFor({ timeout: T });
@@ -276,7 +345,10 @@ async function main() {
   // 6. Hide again, then resolve (final, no undo). --------------------------------------------------------
   await step('resolve says it cannot be undone and closes the case', async () => {
     await page.getByRole('button', { name: 'Hide content' }).click();
-    await page.getByRole('dialog').getByLabel(/Reason \(staff only/).fill(`e2e hide again ${STAMP}`);
+    await page
+      .getByRole('dialog')
+      .getByLabel(/Reason \(staff only/)
+      .fill(`e2e hide again ${STAMP}`);
     await page.getByRole('dialog').getByRole('button', { name: 'Hide', exact: true }).click();
     await page.getByRole('button', { name: 'Restore content' }).waitFor({ timeout: T });
     await page.getByRole('button', { name: 'Resolve: actioned' }).click();
@@ -287,8 +359,10 @@ async function main() {
     await dialog.getByRole('button', { name: 'Resolve', exact: true }).click();
     await page.getByRole('status').filter({ hasText: 'Case resolved.' }).waitFor({ timeout: T });
     await page.getByText('Resolved as actioned').waitFor({ timeout: T });
-    if (await page.getByRole('button', { name: 'Undo' }).count()) throw new Error('resolve offered an undo');
-    if (await page.getByRole('button', { name: 'Dismiss' }).count()) throw new Error('closed case still offers dismiss');
+    if (await page.getByRole('button', { name: 'Undo' }).count())
+      throw new Error('resolve offered an undo');
+    if (await page.getByRole('button', { name: 'Dismiss' }).count())
+      throw new Error('closed case still offers dismiss');
     await expectText(page, `e2e hide again ${STAMP}`);
     await shot(page, '11-resolved-history');
   });
@@ -320,8 +394,15 @@ async function main() {
     await dialog.getByLabel('Note to them (optional)').fill('We looked again. It is back.');
     await dialog.getByRole('button', { name: 'Uphold' }).click();
     await page.getByRole('status').filter({ hasText: 'Appeal upheld.' }).waitFor({ timeout: T });
-    await page.getByText(/^Upheld/).first().waitFor({ timeout: T });
-    const { data: back } = await admin.from('messages').select('body').eq('id', message.id).single();
+    await page
+      .getByText(/^Upheld/)
+      .first()
+      .waitFor({ timeout: T });
+    const { data: back } = await admin
+      .from('messages')
+      .select('body')
+      .eq('id', message.id)
+      .single();
     if (back.body !== body) throw new Error('upheld appeal did not restore the message');
   });
 
@@ -329,13 +410,94 @@ async function main() {
   await step('the audit log lists every action with its reason', async () => {
     await page.getByRole('link', { name: 'Audit log' }).click();
     await page.getByRole('heading', { name: 'Audit log' }).waitFor({ timeout: T });
-    for (const reason of [`e2e upheld ${STAMP}`, `e2e resolved ${STAMP}`, `e2e pause ${STAMP}`, `e2e hide ${STAMP}`]) {
+    for (const reason of [
+      `e2e upheld ${STAMP}`,
+      `e2e resolved ${STAMP}`,
+      `e2e pause ${STAMP}`,
+      `e2e hide ${STAMP}`,
+    ]) {
       await page.getByRole('cell', { name: reason, exact: true }).first().waitFor({ timeout: T });
     }
-    await page.getByRole('cell', { name: /Undo right after: e2e pause/ }).first().waitFor();
+    await page
+      .getByRole('cell', { name: /Undo right after: e2e pause/ })
+      .first()
+      .waitFor();
     await shot(page, '14-audit-log');
     await page.getByLabel('Show').selectOption('reads');
-    await page.getByRole('cell', { name: /Viewed case/ }).first().waitFor({ timeout: T });
+    await page
+      .getByRole('cell', { name: /Viewed case/ })
+      .first()
+      .waitFor({ timeout: T });
+  });
+
+  // 8b. People: search, the person screen, pause and undo, and the links into it. -------------------------------
+  await step('people search refuses phone numbers and finds by name', async () => {
+    await page.getByRole('link', { name: 'People' }).click();
+    await page.getByRole('heading', { name: 'People' }).waitFor({ timeout: T });
+    await page.getByLabel('Name or handle').fill('+1 555 555 9861');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await page.getByText("Phone numbers can't be searched.").waitFor({ timeout: T });
+    await page.getByLabel('Name or handle').fill('Ade Author E2E');
+    await page.getByRole('button', { name: 'Search' }).click();
+    await page.waitForURL(/people\?q=/);
+    await page.getByRole('link', { name: 'Ade Author E2E' }).first().waitFor({ timeout: T });
+    await shot(page, '22-people-search');
+  });
+
+  await step(
+    'the person screen shows their record and pauses with confirmation and undo',
+    async () => {
+      await page.getByRole('link', { name: 'Ade Author E2E' }).first().click();
+      await page.getByRole('heading', { name: 'Ade Author E2E' }).waitFor({ timeout: T });
+      for (const h of [
+        /Cases against them/,
+        /^Pauses/,
+        /^Hidden content/,
+        /^Appeals/,
+        /^History/,
+      ]) {
+        await page.getByRole('heading', { name: h }).first().waitFor({ timeout: T });
+      }
+      await page
+        .getByRole('cell', { name: `e2e upheld ${STAMP}` })
+        .first()
+        .waitFor({ timeout: T });
+      await shot(page, '23-person');
+      await page.getByRole('button', { name: 'Pause account' }).click();
+      const dialog = page.getByRole('dialog');
+      await dialog.getByRole('heading', { name: /Pause Ade Author E2E/ }).waitFor();
+      await dialog.getByRole('radio', { name: 'Until staff restore it' }).check();
+      await dialog.getByLabel(/Reason \(staff only/).fill(`e2e person pause ${STAMP}`);
+      await dialog.getByRole('button', { name: 'Pause account' }).click();
+      await page
+        .getByRole('status')
+        .filter({ hasText: 'Paused until restored.' })
+        .waitFor({ timeout: T });
+      await page.getByRole('button', { name: 'Restore account' }).waitFor({ timeout: T });
+      await shot(page, '24-person-paused');
+      const st = await author.client.rpc('my_account_status');
+      if (!st.data?.paused) throw new Error('author is not paused');
+      await page.getByRole('button', { name: 'Undo' }).click();
+      await page.getByRole('status').filter({ hasText: 'Undone.' }).waitFor({ timeout: T });
+      await page.getByRole('button', { name: 'Pause account' }).waitFor({ timeout: T });
+    },
+  );
+
+  await step('the case owner and the audit log link to the person', async () => {
+    await page.goto(`${ADMIN}/#/audit`, { waitUntil: 'load' });
+    await page
+      .getByRole('cell', { name: `e2e person pause ${STAMP}`, exact: true })
+      .first()
+      .waitFor({ timeout: T });
+    const row = page
+      .getByRole('row')
+      .filter({ hasText: `e2e person pause ${STAMP}` })
+      .first();
+    await row.getByRole('link', { name: 'Ade Author E2E' }).click();
+    await page.getByRole('heading', { name: 'Ade Author E2E' }).waitFor({ timeout: T });
+    await page.goto(caseUrl, { waitUntil: 'load' });
+    await page.getByRole('complementary').getByRole('link', { name: 'Ade Author E2E' }).click();
+    await page.getByRole('heading', { name: 'Ade Author E2E' }).waitFor({ timeout: T });
   });
 
   // 9. Place sensitivity, with undo. -----------------------------------------------------------------------------
@@ -352,11 +514,17 @@ async function main() {
     await dialog.getByLabel(/Reason \(staff only/).fill(`e2e place ${STAMP}`);
     await dialog.getByRole('button', { name: 'Mark sensitive' }).click();
     await page.getByRole('status').filter({ hasText: 'is sensitive now.' }).waitFor({ timeout: T });
-    await page.getByRole('button', { name: `Mark not sensitive: ${name}` }).first().waitFor({ timeout: T });
+    await page
+      .getByRole('button', { name: `Mark not sensitive: ${name}` })
+      .first()
+      .waitFor({ timeout: T });
     await shot(page, '16-place-sensitive-toast');
     await page.getByRole('button', { name: 'Undo' }).click();
     await page.getByRole('status').filter({ hasText: 'Undone.' }).waitFor({ timeout: T });
-    await page.getByRole('button', { name: `Mark sensitive: ${name}` }).first().waitFor({ timeout: T });
+    await page
+      .getByRole('button', { name: `Mark sensitive: ${name}` })
+      .first()
+      .waitFor({ timeout: T });
   });
 
   // 10. States: loading, empty, error, not found, offline. ----------------------------------------------------------
@@ -374,7 +542,15 @@ async function main() {
 
   await step('empty queue says so', async () => {
     await page.route('**/rest/v1/rpc/staff_queue', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ items: [], next_cursor: null, counts: { open: 0, reviewing: 0, high_open: 0 } }) }),
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          items: [],
+          next_cursor: null,
+          counts: { open: 0, reviewing: 0, high_open: 0 },
+        }),
+      }),
     );
     await page.goto(`${ADMIN}/#/queue?severity=medium`, { waitUntil: 'load' });
     await expectText(page, 'Nothing in the queue.');

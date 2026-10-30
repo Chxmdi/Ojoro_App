@@ -72,7 +72,9 @@ export interface HostPaymentAccount {
 }
 
 /** The sentence under PAYMENTS on HostMembership. Never colour-only. */
-export function paymentAccountSentence(account: Pick<HostPaymentAccount, 'status' | 'requirements_due'>): string {
+export function paymentAccountSentence(
+  account: Pick<HostPaymentAccount, 'status' | 'requirements_due'>,
+): string {
   switch (account.status) {
     case 'not_connected':
       return 'Payments in the app are off. Connect Stripe to take drop-ins, packs and memberships.';
@@ -166,7 +168,8 @@ export function purchaseReasonSentence(reason: PurchaseReason): string {
 }
 
 export type PaymentCheckoutKind = 'drop_in' | 'pack' | 'monthly';
-export type PaymentCheckoutStatus = 'creating' | 'open' | 'completed' | 'expired' | 'failed' | 'refunded';
+export type PaymentCheckoutStatus =
+  'creating' | 'open' | 'completed' | 'expired' | 'failed' | 'refunded';
 
 /** One checkout as its buyer sees it (`payment_checkout`). */
 export interface PaymentCheckoutState {
@@ -286,7 +289,10 @@ function base(app: string): string {
 }
 
 /** The app link `payments-return` redirects to (built server-side; here for tests and the router). */
-export function paymentsReturnUrl(target: PaymentsReturn, app: string = PAYMENTS_APP_SCHEME): string {
+export function paymentsReturnUrl(
+  target: PaymentsReturn,
+  app: string = PAYMENTS_APP_SCHEME,
+): string {
   const root = base(app);
   if (target.kind === 'checkout') {
     return `${root}pay/return?checkout_id=${encodeURIComponent(target.checkoutId)}&result=${target.result}`;
@@ -331,7 +337,9 @@ export function parsePaymentsReturn(url: string): PaymentsReturn | null {
 export function paymentCheckoutSubscription(userId: string): RealtimeSubscription {
   return {
     channel: `payment-checkouts:${userId}`,
-    changes: [{ event: '*', schema: 'public', table: 'payment_checkouts', filter: `user_id=eq.${userId}` }],
+    changes: [
+      { event: '*', schema: 'public', table: 'payment_checkouts', filter: `user_id=eq.${userId}` },
+    ],
   };
 }
 
@@ -340,7 +348,12 @@ export function hostPaymentAccountSubscription(programId: string): RealtimeSubsc
   return {
     channel: `host-payment-account:${programId}`,
     changes: [
-      { event: '*', schema: 'public', table: 'host_payment_accounts', filter: `program_id=eq.${programId}` },
+      {
+        event: '*',
+        schema: 'public',
+        table: 'host_payment_accounts',
+        filter: `program_id=eq.${programId}`,
+      },
     ],
   };
 }
@@ -371,7 +384,11 @@ export async function stripeTestSignatureHeader(
     false,
     ['sign'],
   );
-  const sig = await globalThis.crypto.subtle.sign('HMAC', key, enc.encode(`${timestamp}.${payload}`));
+  const sig = await globalThis.crypto.subtle.sign(
+    'HMAC',
+    key,
+    enc.encode(`${timestamp}.${payload}`),
+  );
   return `t=${timestamp},v1=${hex(sig)}`;
 }
 
@@ -395,7 +412,8 @@ export function buildTestStripeEvent(
   options: { id?: string; account?: string; created?: number } = {},
 ): TestStripeEvent {
   const created = options.created ?? Math.floor(Date.now() / 1000);
-  const id = options.id ?? `evt_test_${created.toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+  const id =
+    options.id ?? `evt_test_${created.toString(36)}${Math.random().toString(36).slice(2, 10)}`;
   return {
     id,
     object: 'event',

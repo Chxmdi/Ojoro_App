@@ -435,8 +435,8 @@ select is(public.payments_update_account('{"id":"acct_test1","charges_enabled":t
   "details_submitted":true,"requirements":{"currently_due":[]}}') ->> 'status', 'ready', 'ready');
 select tests.logout();
 select isnt((select ready_at from public.host_payment_accounts where program_id = tests.id('prog')), null, 'ready_at is set');
-select is((select count(*) from public.host_ops_audit where action = 'payments_connected'), 1::bigint, 'audited once');
-select is((select count(*) from private.analytics_events where name = 'payments_account_ready'), 1::bigint, 'and measured');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action = 'payments_connected'), 1::bigint, 'audited once');
+select is((select count(*) from private.analytics_events where name = 'payments_account_ready' and payload ->> 'program_id' = tests.id('prog')::text), 1::bigint, 'and measured');
 select tests.login(1);
 select is(public.host_money_view(tests.id('prog')) ->> 'payments_connected', 'true', 'HostMembership: connected');
 select is(public.host_money_view(tests.id('prog')) ->> 'provider', 'stripe', 'through Stripe');
@@ -494,9 +494,9 @@ select is(public.host_purchase_options(tests.id('prog')) #>> '{open_checkout,che
 select tests.login(6);
 select throws_ok(format('select public.payment_checkout(%L)', tests.id('c1')), 'P0001', 'checkout_not_found',
                  'nobody else reads my checkout');
-select is((select count(*) from public.payment_checkouts), 0::bigint, 'or sees its row');
+select is((select count(*) from public.payment_checkouts where program_id = tests.id('prog')), 0::bigint, 'or sees its row');
 select tests.login(1);
-select is((select count(*) from public.payment_checkouts), 1::bigint, 'hosts see their program''s checkouts');
+select is((select count(*) from public.payment_checkouts where program_id = tests.id('prog')), 1::bigint, 'hosts see their program''s checkouts');
 
 -- An expired page is not offered back.
 select tests.logout();
@@ -568,7 +568,7 @@ select throws_ok(format('select public.begin_host_checkout(gen_random_uuid(), %L
 select tests.logout();
 select throws_ok('select public.host_purchase_options(gen_random_uuid())', 'P0001', 'not_authenticated', 'signed in only');
 
-select is((select count(*) from private.analytics_events where name = 'payments_checkout_started'), 4::bigint,
+select is((select count(*) from private.analytics_events where name = 'payments_checkout_started' and payload ->> 'program_id' = tests.id('prog')::text), 4::bigint,
           'checkouts started are measured');
 
 select * from finish();

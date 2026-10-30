@@ -12,17 +12,26 @@ describe('getAdminConfig', () => {
         VITE_SUPABASE_URL: 'http://127.0.0.1:54321/',
         VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_abc',
       }),
-    ).toEqual({ ok: true, config: { url: 'http://127.0.0.1:54321', publishableKey: 'sb_publishable_abc' } });
+    ).toEqual({
+      ok: true,
+      config: { url: 'http://127.0.0.1:54321', publishableKey: 'sb_publishable_abc' },
+    });
   });
 
   it('accepts a legacy anon JWT', () => {
-    const r = getAdminConfig({ VITE_SUPABASE_URL: 'https://x.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: jwt({ role: 'anon' }) });
+    const r = getAdminConfig({
+      VITE_SUPABASE_URL: 'https://x.supabase.co',
+      VITE_SUPABASE_PUBLISHABLE_KEY: jwt({ role: 'anon' }),
+    });
     expect(r.ok).toBe(true);
   });
 
   it('refuses secret and service-role keys', () => {
     for (const key of ['sb_secret_abc', jwt({ role: 'service_role' }), 'eyJnot-a-jwt']) {
-      const r = getAdminConfig({ VITE_SUPABASE_URL: 'https://x.supabase.co', VITE_SUPABASE_PUBLISHABLE_KEY: key });
+      const r = getAdminConfig({
+        VITE_SUPABASE_URL: 'https://x.supabase.co',
+        VITE_SUPABASE_PUBLISHABLE_KEY: key,
+      });
       expect(r.ok).toBe(false);
     }
   });
@@ -32,9 +41,15 @@ describe('getAdminConfig', () => {
       ok: false,
       errors: ['VITE_SUPABASE_URL is missing.', 'VITE_SUPABASE_PUBLISHABLE_KEY is missing.'],
     });
-    const r = getAdminConfig({ VITE_SUPABASE_URL: 'https://x.supabase.co/rest', VITE_SUPABASE_PUBLISHABLE_KEY: 'abc' });
+    const r = getAdminConfig({
+      VITE_SUPABASE_URL: 'https://x.supabase.co/rest',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'abc',
+    });
     expect(r.ok ? [] : r.errors).toHaveLength(2);
-    const http = getAdminConfig({ VITE_SUPABASE_URL: 'http://example.com', VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_a' });
+    const http = getAdminConfig({
+      VITE_SUPABASE_URL: 'http://example.com',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_a',
+    });
     expect(http.ok).toBe(false);
   });
 });

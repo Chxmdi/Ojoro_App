@@ -8,7 +8,9 @@ export type Route =
   | { name: 'report'; id: string }
   | { name: 'appeals'; params: Record<string, string> }
   | { name: 'audit'; params: Record<string, string> }
-  | { name: 'places'; params: Record<string, string> };
+  | { name: 'places'; params: Record<string, string> }
+  | { name: 'people'; params: Record<string, string> }
+  | { name: 'person'; id: string };
 
 export const DEFAULT_ROUTE: Route = { name: 'queue', params: {} };
 
@@ -29,13 +31,21 @@ export function parseRoute(hash: string): Route {
     case 'queue':
       return { name: 'queue', params };
     case 'reports':
-      return segments[1] && UUID.test(segments[1]) ? { name: 'report', id: segments[1].toLowerCase() } : DEFAULT_ROUTE;
+      return segments[1] && UUID.test(segments[1])
+        ? { name: 'report', id: segments[1].toLowerCase() }
+        : DEFAULT_ROUTE;
     case 'appeals':
       return { name: 'appeals', params };
     case 'audit':
       return { name: 'audit', params };
     case 'places':
       return { name: 'places', params };
+    case 'people':
+      if (segments[1])
+        return UUID.test(segments[1])
+          ? { name: 'person', id: segments[1].toLowerCase() }
+          : DEFAULT_ROUTE;
+      return { name: 'people', params };
     default:
       return DEFAULT_ROUTE;
   }
@@ -43,6 +53,7 @@ export function parseRoute(hash: string): Route {
 
 export function formatRoute(route: Route): string {
   if (route.name === 'report') return `#/reports/${route.id}`;
+  if (route.name === 'person') return `#/people/${route.id}`;
   const query = new URLSearchParams(
     Object.entries(route.params)
       .filter(([, v]) => v !== '')
@@ -53,7 +64,7 @@ export function formatRoute(route: Route): string {
 
 /** The same route with some params changed; '' or undefined drops a param. Changing a filter resets paging. */
 export function withParams(
-  route: Exclude<Route, { name: 'report' }>,
+  route: Exclude<Route, { name: 'report' } | { name: 'person' }>,
   changes: Record<string, string | undefined>,
 ): Route {
   const params: Record<string, string> = { ...route.params };

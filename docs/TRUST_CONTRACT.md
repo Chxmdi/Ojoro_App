@@ -11,7 +11,8 @@ Judgment calls: `docs/DESIGN_DECISIONS.md` ("Step 8 TRUST").
 - Schema and RPCs: `supabase/migrations/20261031040000_trust_schema.sql` (staff, cases, hides, pauses,
   appeals, corrections, audit), `…040100_trust_enforcement.sql` (paused accounts, hidden content, report
   de-duplication, rate limits), `…040200_trust_staff.sql` (staff reads and writes),
-  `…040300_trust_user.sql` (account status, appeals, reputation corrections on the reads).
+  `…040300_trust_user.sql` (account status, appeals, reputation corrections on the reads),
+  `…040400_trust_surfaces.sql` (chat pages hide a paused account's messages).
 - Client helpers: `packages/contracts/src/trust.ts` (exported from `@ojoro/contracts`): `trustRpcs`
   (app), `staffRpcs` (admin web), `trustIdempotentRpcs`, `trustErrorCodes` (also in `ojoroErrorCodes`),
   the jsonb shapes below as types, constants and word helpers.
@@ -77,6 +78,11 @@ enforcement](#block-enforcement) · [App surfaces](#app-surfaces) · [Analytics]
 | Ojoro Moderator | `15555550191` | `a0000000-0000-4000-8000-000000000091` | `moderator` |
 
 Moderators and admins can do everything below except `staff_set_role` (admin only).
+
+The two test numbers are read by the Auth container when it starts: after pulling this change, restart
+the local stack once (`npx supabase stop && npx supabase start`, no reset) before signing in by phone.
+Until then, local scripts can mint a session for the staff id with the local JWT secret (HS256,
+`sub` = the id, `role` = `authenticated`), as `apps/web` e2e or a Playwright storageState would.
 
 ## Errors
 

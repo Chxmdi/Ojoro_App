@@ -3,7 +3,16 @@ import { useState } from 'react';
 import { api } from '../api';
 import { errorWords } from '../lib/errors';
 import { count } from '../lib/format';
-import { currentCursor, kindWord, nextStack, prevStack, queueFilters, reasonWord, SUBJECT_KINDS, type CursorStack } from '../lib/moderation';
+import {
+  currentCursor,
+  kindWord,
+  nextStack,
+  prevStack,
+  queueFilters,
+  reasonWord,
+  SUBJECT_KINDS,
+  type CursorStack,
+} from '../lib/moderation';
 import { formatRoute, withParams, type Route } from '../lib/route';
 import { AgeCell, HiddenTag, SeverityTag, StatusTag } from '../ui/CaseBits';
 import { Filter } from '../ui/Filter';
@@ -12,10 +21,21 @@ import { Empty, Notice, Pager, Skeleton, StaleNote, Tag } from '../ui/kit';
 
 type ListRoute = Extract<Route, { name: 'queue' }>;
 
-export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) => void; online: boolean }) {
+export function Queue({
+  route,
+  go,
+  online,
+}: {
+  route: ListRoute;
+  go: (r: Route) => void;
+  online: boolean;
+}) {
   const filters = queueFilters(route.params);
   const filterKey = JSON.stringify(filters);
-  const [paging, setPaging] = useState<{ key: string; stack: CursorStack }>({ key: filterKey, stack: [null] });
+  const [paging, setPaging] = useState<{ key: string; stack: CursorStack }>({
+    key: filterKey,
+    stack: [null],
+  });
   const stack = paging.key === filterKey ? paging.stack : [null];
   const cursor = currentCursor(stack);
   const res = useResource(`${filterKey}|${cursor ?? ''}`, () => api.queue(filters, cursor));
@@ -31,7 +51,8 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
         </div>
         {counts ? (
           <p className="body-sm num" aria-label="Queue totals">
-            {count(counts.open, 'open case')} · {counts.reviewing} reviewing · {counts.high_open} high severity open
+            {count(counts.open, 'open case')} · {counts.reviewing} reviewing · {counts.high_open}{' '}
+            high severity open
           </p>
         ) : null}
       </div>
@@ -68,7 +89,10 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
           label="What"
           value={route.params.kind ?? ''}
           onChange={(v) => set('kind', v)}
-          options={[{ value: '', label: 'Anything' }, ...SUBJECT_KINDS.map((k) => ({ value: k, label: kindWord(k) }))]}
+          options={[
+            { value: '', label: 'Anything' },
+            ...SUBJECT_KINDS.map((k) => ({ value: k, label: kindWord(k) })),
+          ]}
         />
         <Filter
           id="f-assigned"
@@ -83,7 +107,11 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
         />
       </div>
 
-      <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error) && Boolean(res.data)} />
+      <StaleNote
+        online={online}
+        loadedAt={res.loadedAt}
+        failed={Boolean(res.error) && Boolean(res.data)}
+      />
 
       {res.data === undefined ? (
         res.error ? (
@@ -103,13 +131,16 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
         )
       ) : res.data.items.length === 0 ? (
         <Empty title={stack.length > 1 ? 'No more cases.' : 'Nothing in the queue.'}>
-          {stack.length > 1 ? 'Go back a page.' : 'No cases match these filters. New reports land here.'}
+          {stack.length > 1
+            ? 'Go back a page.'
+            : 'No cases match these filters. New reports land here.'}
         </Empty>
       ) : (
         <div className="table-wrap" aria-busy={res.loading}>
           <table className="data">
             <caption className="sr-only">
-              Cases, highest severity first, then oldest first. {count(res.data.items.length, 'case')} on this page.
+              Cases, highest severity first, then oldest first.{' '}
+              {count(res.data.items.length, 'case')} on this page.
             </caption>
             <thead>
               <tr className="label-sm">
@@ -142,13 +173,17 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
                   <td className="body-sm">{c.reasons.map(reasonWord).join(', ')}</td>
                   <td className="num">
                     {c.report_count}
-                    <div className="caption muted">{count(c.reporter_count, 'person', 'people')}</div>
+                    <div className="caption muted">
+                      {count(c.reporter_count, 'person', 'people')}
+                    </div>
                   </td>
                   <td className="body-sm">
                     {c.owner ? (
                       <>
                         {c.owner.display_name ?? 'No name'}
-                        {c.owner.handle ? <div className="caption muted">@{c.owner.handle}</div> : null}
+                        {c.owner.handle ? (
+                          <div className="caption muted">@{c.owner.handle}</div>
+                        ) : null}
                         {c.owner.paused ? <Tag tone="quiet">Paused</Tag> : null}
                       </>
                     ) : (
@@ -160,7 +195,9 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
                   </td>
                   <td>
                     <StatusTag status={c.status} />
-                    {c.assigned_to ? <div className="caption muted">{c.assigned_to.display_name ?? 'Staff'}</div> : null}
+                    {c.assigned_to ? (
+                      <div className="caption muted">{c.assigned_to.display_name ?? 'Staff'}</div>
+                    ) : null}
                   </td>
                 </tr>
               ))}
@@ -171,7 +208,13 @@ export function Queue({ route, go, online }: { route: ListRoute; go: (r: Route) 
             page={stack.length}
             hasNext={Boolean(res.data.next_cursor)}
             onPage={(p) =>
-              setPaging({ key: filterKey, stack: p > stack.length ? nextStack(stack, res.data?.next_cursor ?? null) : prevStack(stack) })
+              setPaging({
+                key: filterKey,
+                stack:
+                  p > stack.length
+                    ? nextStack(stack, res.data?.next_cursor ?? null)
+                    : prevStack(stack),
+              })
             }
           />
         </div>

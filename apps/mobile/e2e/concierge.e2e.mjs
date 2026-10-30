@@ -283,8 +283,11 @@ await step('a prompt injection never reaches the model and shows no money or exc
   await S.page.locator('[data-testid="best-match"], [data-testid="concierge-empty"]').first().waitFor({ timeout: T });
   const shown = await S.page.locator('[data-testid="best-match"], [data-testid="concierge-empty"]').first().innerText();
   assert(!/money|\$|odds|bet/i.test(shown) && !shown.includes('!'), `shown: ${shown}`);
-  await S.page.waitForTimeout(1000);
-  const row = sql(`select payload from private.analytics_events where name = 'concierge_ai_decided' and user_id = '${seeker.id}' and id > ${before} order by id desc limit 1`);
+  let row = '';
+  for (let i = 0; i < 20 && !row; i++) {
+    await S.page.waitForTimeout(500);
+    row = sql(`select payload from private.analytics_events where name = 'concierge_ai_decided' and user_id = '${seeker.id}' and id > ${before} order by id desc limit 1`);
+  }
   assert(row, 'no decision logged');
   const p = JSON.parse(row);
   assert(p.source === 'rules', `source ${p.source}`);

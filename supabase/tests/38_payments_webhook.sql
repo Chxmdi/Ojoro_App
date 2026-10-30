@@ -410,8 +410,8 @@ select is((select count(*) from public.host_charges where user_id = tests.u(5)),
 select is(tests.deliver(tests.evt('checkout.session.completed', tests.completed(tests.id('c1')))) ->> 'already', 'true',
           'another event for the same checkout grants nothing more');
 select is((select count(*) from public.host_memberships where user_id = tests.u(5)), 1::bigint, 'one pack');
-select is((select count(*) from public.host_ops_audit where action = 'charge_paid'), 1::bigint, 'audited');
-select is((select count(*) from private.stripe_events), 2::bigint, 'each event id recorded once');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action = 'charge_paid'), 1::bigint, 'audited');
+select is((select count(*) from private.stripe_events where received_at = now()), 2::bigint, 'each event id recorded once');
 select tests.login(5);
 select is(public.payment_checkout(tests.id('c1')) ->> 'status', 'completed', 'the buyer sees it completed');
 select is(public.host_purchase_options(tests.id('prog')) #>> '{holding,pass_name}', '10-pack', 'and holds the pack');
@@ -425,7 +425,7 @@ select is(tests.deliver(tests.evt('checkout.session.completed', tests.completed(
 select is(tests.deliver(tests.evt('checkout.session.async_payment_succeeded', tests.completed(tests.id('c2')) || '{"amount_total":100}'))
           ->> 'result', 'amount_mismatch', 'an amount that doesn''t match is refused');
 select is((select status::text from public.payment_checkouts where id = tests.id('c2')), 'open', 'nothing granted');
-select is((select count(*) from public.host_ops_audit where action = 'payment_mismatch'), 1::bigint, 'and it is flagged');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action = 'payment_mismatch'), 1::bigint, 'and it is flagged');
 select is(tests.deliver(tests.evt('checkout.session.async_payment_failed', tests.completed(tests.id('c2')))) ->> 'result',
           'processed', 'a failed async payment');
 select is((select status::text from public.payment_checkouts where id = tests.id('c2')), 'failed', 'closes the checkout');
@@ -538,7 +538,7 @@ select is((select status::text || ' ' || provider_ref from public.host_refunds w
           'succeeded, with Stripe''s id');
 select is(tests.deliver(tests.evt('refund.failed', '{"id":"re_1","status":"failed","failure_reason":"expired_or_canceled_card"}'))
           ->> 'status', 'failed', 'and by id');
-select is((select count(*) from public.host_ops_audit where action = 'refund_failed'), 1::bigint, 'a failed refund is audited');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action = 'refund_failed'), 1::bigint, 'a failed refund is audited');
 -- Made in Stripe's dashboard.
 select is(tests.deliver(tests.evt('charge.refunded', jsonb_build_object('id', 'ch_1',
             'payment_intent', tests.completed(tests.id('c1')) ->> 'payment_intent',
@@ -566,7 +566,7 @@ select is(tests.deliver(tests.evt('charge.dispute.closed', jsonb_build_object('i
 select is((select reason::text || ' ' || amount_cents || ' ' || status from public.host_refunds
            where id = (select refund_id from public.host_disputes where provider_ref = 'dp_1')), 'dispute_lost 800 succeeded',
           'a lost dispute comes off the payout');
-select is((select count(*) from public.host_ops_audit where action in ('dispute_opened', 'dispute_lost')), 2::bigint, 'audited');
+select is((select count(*) from public.host_ops_audit where program_id = tests.id('prog') and action in ('dispute_opened', 'dispute_lost')), 2::bigint, 'audited');
 select tests.login(1);
 select is(jsonb_array_length(public.host_money_view(tests.id('prog')) -> 'disputes'), 0, 'no open disputes left');
 
@@ -598,8 +598,8 @@ select is(tests.deliver(tests.evt('checkout.session.completed', tests.completed(
           'refused_livemode', 'a live event is refused');
 select is((select status::text from public.payment_checkouts where id = tests.id('c3')), 'expired', 'and changes nothing');
 select is(tests.deliver(tests.evt('customer.created', '{"id":"cus_1"}')) ->> 'result', 'ignored', 'other events are ignored');
-select is((select result from private.stripe_events where type = 'customer.created'), 'ignored', 'but recorded');
-select is((select count(*) from private.analytics_events where name = 'payments_checkout_completed'), 3::bigint,
+select is((select result from private.stripe_events where type = 'customer.created' and received_at = now()), 'ignored', 'but recorded');
+select is((select count(*) from private.analytics_events where name = 'payments_checkout_completed' and payload ->> 'program_id' = tests.id('prog')::text), 3::bigint,
           'completions are measured');
 
 select * from finish();

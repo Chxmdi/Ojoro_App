@@ -589,6 +589,7 @@ describe('restDb and answers', () => {
   it('answers with CORS and the PostgREST error shape', async () => {
     expect(dbErrorAnswer(new DbError(400, 'not_authenticated', null)).status).toBe(401);
     expect(dbErrorAnswer(new DbError(400, 'permission_denied', null)).status).toBe(403);
+    expect(dbErrorAnswer(new DbError(400, 'not_program_host', null)).status).toBe(403);
     expect(dbErrorAnswer(new DbError(500, 'unknown', null)).status).toBe(500);
     const r = toResponse({ status: 400, body: { error: { message: 'x' } } });
     expect(r.headers.get('Access-Control-Allow-Origin')).toBe('*');

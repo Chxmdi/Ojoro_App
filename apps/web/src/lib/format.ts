@@ -63,10 +63,13 @@ export function humanize(value: string | null | undefined): string {
 }
 
 /** Phone input to E.164. North American numbers may skip +1; others need + or 00. */
-export function normalizePhone(raw: string): { ok: true; e164: string } | { ok: false; error: string } {
+export function normalizePhone(
+  raw: string,
+): { ok: true; e164: string } | { ok: false; error: string } {
   const trimmed = raw.trim();
   if (!trimmed) return { ok: false, error: 'Enter your phone number.' };
-  if (/[^\d\s()+.-]/.test(trimmed)) return { ok: false, error: 'Use digits only, with + before the country code.' };
+  if (/[^\d\s()+.-]/.test(trimmed))
+    return { ok: false, error: 'Use digits only, with + before the country code.' };
   const plus = trimmed.startsWith('+');
   let digits = trimmed.replace(/\D/g, '');
   if (!plus && digits.startsWith('00')) digits = digits.slice(2);

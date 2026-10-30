@@ -14,13 +14,26 @@ import { Empty, Notice, Skeleton, StaleNote, Tag, Toast } from '../ui/kit';
 
 type PlacesRoute = Extract<Route, { name: 'places' }>;
 
-export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Route) => void; online: boolean }) {
+export function Places({
+  route,
+  go,
+  online,
+}: {
+  route: PlacesRoute;
+  go: (r: Route) => void;
+  online: boolean;
+}) {
   const q = route.params.q ?? '';
-  const sensitive = route.params.sensitive === 'yes' ? true : route.params.sensitive === 'no' ? false : null;
-  const res = useResource(`places:${q}:${String(sensitive)}`, () => api.places(q || null, sensitive));
+  const sensitive =
+    route.params.sensitive === 'yes' ? true : route.params.sensitive === 'no' ? false : null;
+  const res = useResource(`places:${q}:${String(sensitive)}`, () =>
+    api.places(q || null, sensitive),
+  );
   const [draft, setDraft] = useState(q);
   const [spec, setSpec] = useState<ActionSpec | null>(null);
-  const [toast, setToast] = useState<{ message: string; undo: Undo | null; reason: string } | null>(null);
+  const [toast, setToast] = useState<{ message: string; undo: Undo | null; reason: string } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const stale = !online || (Boolean(res.error) && Boolean(res.data));
 
@@ -41,7 +54,11 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
       run: async (v) => {
         const r = await api.setPlaceSensitive(p.id, next, v.reason, key);
         setToast({
-          message: r.changed ? (next ? `${p.name} is sensitive now.` : `${p.name} isn't sensitive now.`) : 'Already so. Nothing changed.',
+          message: r.changed
+            ? next
+              ? `${p.name} is sensitive now.`
+              : `${p.name} isn't sensitive now.`
+            : 'Already so. Nothing changed.',
           undo: undoFor('place_sensitive', { changed: r.changed, place_id: p.id, sensitive: next }),
           reason: v.reason,
         });
@@ -70,7 +87,8 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
           <h1 className="display display-sm">Place sensitivity</h1>
         </div>
         <p className="body-sm muted" style={{ maxWidth: 420 }}>
-          Sensitive places (clinics, shelters, places of worship, schools) never get their own Pulse marker.
+          Sensitive places (clinics, shelters, places of worship, schools) never get their own Pulse
+          marker.
         </p>
       </div>
       <div className="filters">
@@ -79,7 +97,13 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
             <label className="label-sm" htmlFor="place-q">
               Name or area
             </label>
-            <input id="place-q" className="input" type="search" value={draft} onChange={(e) => setDraft(e.target.value)} />
+            <input
+              id="place-q"
+              className="input"
+              type="search"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
           </div>
           <button type="submit" className="btn">
             <Icon name="search" size={16} /> Search
@@ -97,8 +121,16 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
           ]}
         />
       </div>
-      <StaleNote online={online} loadedAt={res.loadedAt} failed={Boolean(res.error) && Boolean(res.data)} />
-      {error ? <Notice kind="error" title="That didn't go through.">{error}</Notice> : null}
+      <StaleNote
+        online={online}
+        loadedAt={res.loadedAt}
+        failed={Boolean(res.error) && Boolean(res.data)}
+      />
+      {error ? (
+        <Notice kind="error" title="That didn't go through.">
+          {error}
+        </Notice>
+      ) : null}
       {res.data === undefined ? (
         res.error ? (
           <Notice
@@ -116,7 +148,9 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
           <Skeleton label="Loading places" />
         )
       ) : res.data.items.length === 0 ? (
-        <Empty title="No places found.">{q ? `Nothing matches “${q}”.` : 'Try another filter.'}</Empty>
+        <Empty title="No places found.">
+          {q ? `Nothing matches “${q}”.` : 'Try another filter.'}
+        </Empty>
       ) : (
         <div className="table-wrap">
           <table className="data">
@@ -148,7 +182,13 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
                     )}
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <button type="button" className="btn btn-small" disabled={stale} onClick={() => toggle(p)} aria-label={`${p.sensitive ? 'Mark not sensitive' : 'Mark sensitive'}: ${p.name}`}>
+                    <button
+                      type="button"
+                      className="btn btn-small"
+                      disabled={stale}
+                      onClick={() => toggle(p)}
+                      aria-label={`${p.sensitive ? 'Mark not sensitive' : 'Mark sensitive'}: ${p.name}`}
+                    >
                       {p.sensitive ? 'Mark not sensitive' : 'Mark sensitive'}
                     </button>
                   </td>
@@ -162,7 +202,9 @@ export function Places({ route, go, online }: { route: PlacesRoute; go: (r: Rout
       {toast ? (
         <Toast
           message={toast.message}
-          {...(toast.undo ? { action: { label: 'Undo', onPress: () => void undo(toast.undo!, toast.reason) } } : {})}
+          {...(toast.undo
+            ? { action: { label: 'Undo', onPress: () => void undo(toast.undo!, toast.reason) } }
+            : {})}
           onDismiss={() => setToast(null)}
         />
       ) : null}

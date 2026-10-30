@@ -1,6 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
-import { ago, cleanCode, count, dateTime, fromLocalInput, humanize, localInputValue, longAge, normalizePhone, shortAge } from './format';
+import {
+  ago,
+  cleanCode,
+  count,
+  dateTime,
+  fromLocalInput,
+  humanize,
+  localInputValue,
+  longAge,
+  normalizePhone,
+  shortAge,
+} from './format';
 
 const NOW = Date.parse('2026-10-30T12:00:00Z');
 const before = (ms: number) => new Date(NOW - ms).toISOString();

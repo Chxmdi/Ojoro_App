@@ -6,6 +6,7 @@ import { errorOf, errorWords } from './lib/errors';
 import { formatRoute, parseRoute, type Route } from './lib/route';
 import { Appeals } from './screens/Appeals';
 import { AuditLog } from './screens/AuditLog';
+import { People, Person } from './screens/People';
 import { Places } from './screens/Places';
 import { Queue } from './screens/Queue';
 import { ReportDetail } from './screens/ReportDetail';
@@ -39,6 +40,7 @@ function useRoute(): [Route, (r: Route) => void] {
 const NAV: { name: Route['name']; label: string }[] = [
   { name: 'queue', label: 'Queue' },
   { name: 'appeals', label: 'Appeals' },
+  { name: 'people', label: 'People' },
   { name: 'audit', label: 'Audit log' },
   { name: 'places', label: 'Places' },
 ];
@@ -51,7 +53,9 @@ export function App() {
   const check = useCallback(async (session: Session | null) => {
     if (!supabase) return;
     if (!session) {
-      setGate((g) => (g.state === 'signed_out' ? g : { state: 'signed_out', refusal: null, round: 0 }));
+      setGate((g) =>
+        g.state === 'signed_out' ? g : { state: 'signed_out', refusal: null, round: 0 },
+      );
       return;
     }
     try {
@@ -61,7 +65,11 @@ export function App() {
       } else {
         // Not staff: end the session here so nothing else in the tool is reachable.
         await supabase.auth.signOut({ scope: 'local' });
-        setGate({ state: 'signed_out', refusal: "This account isn't staff. The admin tool is for Ojoro staff only.", round: Date.now() });
+        setGate({
+          state: 'signed_out',
+          refusal: "This account isn't staff. The admin tool is for Ojoro staff only.",
+          round: Date.now(),
+        });
       }
     } catch (thrown) {
       const e = errorOf(thrown);
@@ -116,7 +124,13 @@ export function App() {
           kind={online ? 'error' : 'offline'}
           title={online ? "We couldn't check your account." : "You're offline."}
           action={
-            <button className="btn btn-small" type="button" onClick={() => void supabase?.auth.getSession().then(({ data }) => check(data.session))}>
+            <button
+              className="btn btn-small"
+              type="button"
+              onClick={() =>
+                void supabase?.auth.getSession().then(({ data }) => check(data.session))
+              }
+            >
               Try again
             </button>
           }
@@ -132,13 +146,16 @@ export function App() {
       <SignIn
         key={gate.round}
         refusal={gate.refusal}
-        onClearRefusal={() => setGate((g) => (g.state === 'signed_out' ? { ...g, refusal: null } : g))}
+        onClearRefusal={() =>
+          setGate((g) => (g.state === 'signed_out' ? { ...g, refusal: null } : g))
+        }
       />
     );
   }
 
   const staff: Staff = { id: gate.session.user.id, role: gate.role };
-  const section = route.name === 'report' ? 'queue' : route.name;
+  const section =
+    route.name === 'report' ? 'queue' : route.name === 'person' ? 'people' : route.name;
 
   return (
     <>
@@ -157,25 +174,40 @@ export function App() {
         </a>
         <nav className="nav label" aria-label="Sections">
           {NAV.map((n) => (
-            <a key={n.name} href={`#/${n.name}`} aria-current={section === n.name ? 'page' : undefined}>
+            <a
+              key={n.name}
+              href={`#/${n.name}`}
+              aria-current={section === n.name ? 'page' : undefined}
+            >
               {n.label}
             </a>
           ))}
         </nav>
         <div className="who">
           <span className="body-sm">
-            Signed in as <span className="tag">{staff.role === 'admin' ? 'Admin' : 'Moderator'}</span>
+            Signed in as{' '}
+            <span className="tag">{staff.role === 'admin' ? 'Admin' : 'Moderator'}</span>
           </span>
-          <button className="btn btn-small" type="button" onClick={() => void supabase?.auth.signOut({ scope: 'local' })}>
+          <button
+            className="btn btn-small"
+            type="button"
+            onClick={() => void supabase?.auth.signOut({ scope: 'local' })}
+          >
             Sign out
           </button>
         </div>
       </header>
       <main id="main" tabIndex={-1}>
         {route.name === 'queue' ? <Queue route={route} go={go} online={online} /> : null}
-        {route.name === 'report' ? <ReportDetail id={route.id} staff={staff} online={online} /> : null}
+        {route.name === 'report' ? (
+          <ReportDetail id={route.id} staff={staff} online={online} />
+        ) : null}
         {route.name === 'appeals' ? <Appeals route={route} go={go} online={online} /> : null}
         {route.name === 'audit' ? <AuditLog route={route} go={go} online={online} /> : null}
+        {route.name === 'people' ? <People route={route} go={go} online={online} /> : null}
+        {route.name === 'person' ? (
+          <Person key={route.id} id={route.id} staff={staff} online={online} />
+        ) : null}
         {route.name === 'places' ? <Places route={route} go={go} online={online} /> : null}
       </main>
     </>
