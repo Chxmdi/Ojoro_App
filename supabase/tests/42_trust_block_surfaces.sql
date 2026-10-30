@@ -371,6 +371,22 @@ begin
 end;
 $$;
 
+-- tests.u(n) checked in to a finished session of this program p_ago ago.
+create function tests.host_played(p_program uuid, p_users integer[], p_ago interval default '7 days')
+returns uuid language plpgsql security definer as $$
+declare
+  v_sess uuid;
+  v_act uuid;
+begin
+  v_sess := tests.host_session(p_program, -p_ago, 20);
+  v_act := tests.activity_of(v_sess);
+  insert into public.attendance (activity_id, user_id, status, confirmed_at, checked_in_at, check_in_method)
+  select v_act, tests.u(n), 'checked_in', now() - p_ago - interval '1 day', now() - p_ago, 'host' from unnest(p_users) n;
+  update public.activities set confirmed_count = cardinality(p_users), checked_in_count = cardinality(p_users) where id = v_act;
+  return v_sess;
+end;
+$$;
+
 -- Step 8 TRUST: block is enforced on every person-to-person surface from Steps 1–7, both ways, and a
 -- paused account is hidden from (and refused on) the same surfaces. B = tests.u(2) blocked A = tests.u(1);
 -- C = tests.u(3) is in between; P = tests.u(4) gets paused.

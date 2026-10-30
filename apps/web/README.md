@@ -1,8 +1,8 @@
 # Ojoro staff admin (`@ojoro/web`)
 
 The staff moderation tool: sign in (phone code, staff only), the moderation queue, case detail
-(hide / restore content, pause / restore an account, take, resolve, dismiss), appeals, the audit log
-and place sensitivity. React + Vite + TypeScript, styled with Ojoro's tokens (`@ojoro/design-tokens`).
+(hide / restore content, pause / restore an account, take, resolve, dismiss), people (search by name or
+handle, a person's record, pause / restore), appeals, the audit log and place sensitivity. React + Vite + TypeScript, styled with Ojoro's tokens (`@ojoro/design-tokens`).
 
 It talks only to Supabase, with the publishable key and the signed-in staff member's own session.
 Every read and write is a `staff_*` RPC from [`docs/TRUST_CONTRACT.md`](../../docs/TRUST_CONTRACT.md);
@@ -41,7 +41,8 @@ ADMIN_URL=http://localhost:5174 E2E_SHOTS=/tmp/admin-shots node apps/web/e2e/adm
 The e2e (Playwright, Chromium) needs the local stack and the dev server. It refuses a non-staff
 account through the phone-code UI, signs the staff admin in, makes its own case (two e2e people, a crew
 message and a report), hides and undoes, pauses and undoes, resolves, upholds an appeal, checks the
-audit log, toggles a place's sensitivity and back, and checks the loading, empty, error, not-found and
+audit log, searches people and pauses / restores from a person's screen, toggles a place's sensitivity
+and back, and checks the loading, empty, error, not-found and
 offline states.
 
 ## Layout
@@ -50,7 +51,7 @@ offline states.
 src/main.tsx            entry: tokens + fonts into a <style>, then <App>
 src/App.tsx             session gate (my_staff_role), header, hash routes
 src/api.tsx             every staff RPC call
-src/screens/            SignIn, Queue, ReportDetail, Appeals, AuditLog, Places
+src/screens/            SignIn, Queue, ReportDetail, People (+ Person), Appeals, AuditLog, Places
 src/ui/                 Icon, kit (Tag, Notice, Skeleton, Empty, Pager, Modal, Toast), ActionDialog, …
 src/lib/                pure, tested: env, route, format, moderation, audit, errors, tokensCss
 e2e/admin.e2e.mjs       Playwright end-to-end run

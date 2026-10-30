@@ -209,6 +209,9 @@ describe('checkWhy', () => {
     ['a sensitive trait', 'mostly young women play here'],
     ['a candidate id', 'c1 fits best'],
     ['a link', 'see https://example.com'],
+    ['an address', 'it is next to Rue Rachel'],
+    ['a postal code', 'it is near H2X 1Y4'],
+    ['a number only the person typed', 'it is 12 minutes from 4410 Saint-Denis'],
     ['too short', 'fits'],
     ['too long', 'it fits '.repeat(30)],
   ])('drops %s', (_, why) => {

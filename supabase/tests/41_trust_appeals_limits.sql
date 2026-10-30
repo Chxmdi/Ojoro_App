@@ -371,6 +371,22 @@ begin
 end;
 $$;
 
+-- tests.u(n) checked in to a finished session of this program p_ago ago.
+create function tests.host_played(p_program uuid, p_users integer[], p_ago interval default '7 days')
+returns uuid language plpgsql security definer as $$
+declare
+  v_sess uuid;
+  v_act uuid;
+begin
+  v_sess := tests.host_session(p_program, -p_ago, 20);
+  v_act := tests.activity_of(v_sess);
+  insert into public.attendance (activity_id, user_id, status, confirmed_at, checked_in_at, check_in_method)
+  select v_act, tests.u(n), 'checked_in', now() - p_ago - interval '1 day', now() - p_ago, 'host' from unnest(p_users) n;
+  update public.activities set confirmed_count = cardinality(p_users), checked_in_count = cardinality(p_users) where id = v_act;
+  return v_sess;
+end;
+$$;
+
 -- Step 8 TRUST: appeals (account pause, hidden content, show-up), reputation corrections that never rewrite
 -- attendance or signals, and the rate limits on abuse-prone writes.
 select no_plan();
@@ -530,6 +546,46 @@ select throws_ok(format('select public.send_announcement(%L, %L, %L, null, false
                  'P0001', 'announcement_rate_limited', 'ten announcements an hour');
 select tests.login(3);
 select throws_ok($$select public.crew_messages(gen_random_uuid(), null, 1)$$, 'P0001', null, 'reads still answer');
+
+-- Notifications: pause, restore, appeal decided --------------------------------------------------------------------
+select tests.logout();
+insert into public.push_tokens (user_id, token, platform) values (tests.u(9), 'ExponentPushToken[trust-test]', 'ios');
+select tests.login(11);
+select tests.keep('p9', ((public.staff_pause_account(tests.u(9), 'harassment', 'x', null, now() + interval '10 days', null,
+                                                     gen_random_uuid())) ->> 'pause_id')::uuid);
+select tests.logout();
+select is((select title from private.notification_feed(tests.u(9)) where type = 'account_paused'), 'Your account is paused.',
+          'pausing tells them');
+select ok((select body from private.notification_feed(tests.u(9)) where type = 'account_paused') like 'Until % You can appeal in the app.',
+          'with the end and the appeal');
+select is(private.generic_copy('account_paused'), 'Your Ojoro account is paused.', 'lock-screen words');
+select tests.login(9);
+select is(public.unregister_push_token('ExponentPushToken[trust-test]'), true, 'a paused account can still sign out its device');
+select tests.logout();
+select is((select count(*)::integer from public.push_tokens where user_id = tests.u(9)), 0, 'the token is gone');
+select tests.login(9);
+select tests.keep('a9', ((public.submit_appeal('account_pause', tests.id('p9'), 'I was defending a teammate.',
+                                               gen_random_uuid())) ->> 'id')::uuid);
+select tests.login(11);
+select public.staff_decide_appeal(tests.id('a9'), 'upheld', 'Context', null, null, gen_random_uuid());
+select tests.logout();
+select is((select title from private.notification_feed(tests.u(9)) where type = 'appeal_decided'), 'We agreed with your appeal.',
+          'the decision is sent');
+select is((select body from private.notification_feed(tests.u(9)) where type = 'appeal_decided'), 'Your account is back.',
+          'in words for its kind');
+select is((select title from private.notification_feed(tests.u(9)) where type = 'account_restored'), 'Your account is back.',
+          'and the restore');
+select is((select href from private.notification_feed(tests.u(9)) where type = 'account_restored'), '/you', 'opening You');
+select tests.login(11);
+select public.staff_pause_account(tests.u(10), 'spam', 'x', null, null, null, gen_random_uuid());
+select public.staff_pause_account(tests.u(10), 'spam', 'longer', null, null, null, gen_random_uuid());
+select tests.logout();
+select is((select count(*)::integer from public.notifications where recipient_id = tests.u(10) and type = 'account_restored'), 0,
+          'a pause replaced by another is not a restore');
+select is((select count(*)::integer from public.notifications where recipient_id = tests.u(3) and type in ('account_paused', 'account_restored', 'appeal_decided')), 0,
+          'nobody else is told');
+select is((select count(*)::integer from public.notifications n where n.recipient_id = tests.u(5) and n.type = 'appeal_decided'), 2,
+          'content appeals are answered too');
 
 select * from finish();
 rollback;
