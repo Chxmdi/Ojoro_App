@@ -77,6 +77,9 @@ import {
 } from './homeLogic';
 import { inviteText, isCrewAdmin, leaveBody, roleLabel } from './logic';
 
+/** Members listed before ALL n MEMBERS. */
+const MEMBERS_SHOWN = 5;
+
 const chatHref = (id: string) => `/crew/${id}/chat` as Href;
 
 export function CrewScreen({ id }: { id: string }) {
@@ -507,7 +510,7 @@ function Memories({ id, timeZone }: { id: string; timeZone: string }) {
         </View>
       ) : (
         <View className="flex-row flex-wrap gap-space-2">
-          {rows.slice(0, 4).map((m) => {
+          {rows.slice(0, 2).map((m) => {
             const caption = memoryCaption(m, timeZone);
             return (
               <Pressable
@@ -548,6 +551,7 @@ function CrewAdmin({
   const rotate = useRotateCode(id);
   const leave = useLeaveCrew(id);
   const [confirm, setConfirm] = useState<'leave' | 'rotate' | null>(null);
+  const [allMembers, setAllMembers] = useState(false);
 
   const share = async (value: string) => {
     track('crew_code_shared', { crew_id: id });
@@ -570,7 +574,7 @@ function CrewAdmin({
           <InlineError message={errorMessage(ojoroErrorOf(roster.error))} action="RETRY" onAction={() => void roster.refetch()} />
         ) : (
           <ParticipantList>
-            {(roster.data ?? []).map((m) => {
+            {(roster.data ?? []).slice(0, allMembers ? undefined : MEMBERS_SHOWN).map((m) => {
               const role = roleLabel(m.role);
               const games = m.games_with_me ? `${m.games_with_me} ${m.games_with_me === 1 ? 'game' : 'games'} with you` : null;
               return (
@@ -591,6 +595,11 @@ function CrewAdmin({
             })}
           </ParticipantList>
         )}
+        {!allMembers && (roster.data?.length ?? 0) > MEMBERS_SHOWN ? (
+          <TextButton onPress={() => setAllMembers(true)} className="self-start" testID="crew-members-all">
+            {`ALL ${roster.data?.length ?? 0} MEMBERS`}
+          </TextButton>
+        ) : null}
         {(roster.data?.length ?? 0) < crew.member_count && roster.data ? (
           <PrivacyNote>Some members aren't shown to you.</PrivacyNote>
         ) : null}

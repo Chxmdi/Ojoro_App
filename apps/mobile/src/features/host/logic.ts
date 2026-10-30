@@ -689,13 +689,31 @@ export function requestArea(r: Pick<JoinRequestRow, 'area' | 'distance_km'>): st
 }
 
 /** NEW TO OJORO · 14 OJORO GAMES · SHOWED UP 14 OF 14. No ID badge: there is no ID check yet. */
-export function requestFacts(r: Pick<JoinRequestRow, 'new_to_ojoro' | 'ojoro_games' | 'showed_up' | 'show_up_of' | 'id_verified'>): string[] {
+export function requestFacts(
+  r: Pick<JoinRequestRow, 'new_to_ojoro' | 'ojoro_games' | 'showed_up' | 'show_up_of' | 'id_verified'> & {
+    stated_level?: string | null | undefined;
+  },
+): string[] {
   const facts: string[] = [];
   if (r.id_verified) facts.push('ID VERIFIED');
   if (r.new_to_ojoro) facts.push('NEW TO OJORO');
   if (r.ojoro_games > 0) facts.push(r.ojoro_games === 1 ? '1 OJORO GAME' : `${r.ojoro_games} OJORO GAMES`);
   if (r.show_up_of > 0) facts.push(`SHOWED UP ${r.showed_up} OF ${r.show_up_of}`);
+  const level = statedLevelWord(r.stated_level);
+  if (level) facts.push(`SAYS: ${level.toUpperCase()}`);
   return facts;
+}
+
+const LEVEL_WORDS: Record<string, string> = {
+  learning: 'beginner',
+  casual: 'casual',
+  intermediate: 'intermediate',
+  advanced: 'advanced',
+};
+
+/** The level they declared themselves (host-only here): learning → "beginner". Null when unset. */
+export function statedLevelWord(level: string | null | undefined): string | null {
+  return level ? (LEVEL_WORDS[level] ?? level) : null;
 }
 
 /** "You both play with Chimdi O." / "Joined Ojoro this week, so there is no history yet. Nobody you know." */

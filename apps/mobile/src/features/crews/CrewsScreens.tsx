@@ -272,7 +272,7 @@ export function JoinCrewScreen() {
 /**
  * You → "CREWS, CLANS & HOSTING" (You.png): your crews (each opens Crew Home), your clans and the
  * host programs you run or co-host (HostHome), with the count in the display face and a badge for
- * what it is. Availability is mentioned as overlap only.
+ * what it is. The availability line under it is the profile's (overlap only).
  */
 export function YourCrews() {
   const crews = useMyCrews();
@@ -316,11 +316,6 @@ export function YourCrews() {
       )}
       {failed ? (
         <InlineError message={errorMessage(ojoroErrorOf(failed.error))} action="RETRY" onAction={() => void failed.refetch()} />
-      ) : null}
-      {crewRows.length > 0 ? (
-        <Text variant="caption" muted>
-          Your usual free times are shared with your crews as overlap only.
-        </Text>
       ) : null}
       <View className="flex-row flex-wrap gap-space-4">
         <TextButton onPress={() => router.push('/crew' as Href)} testID="your-crews-all">
