@@ -74,8 +74,9 @@ export function markerPoints(markers: readonly PulseMarker[]): AreaMapPoint[] {
       if (!m.people_count || !m.sport_name) continue;
       out.push({
         id: m.marker_id,
+        // The name is the area already; no second area in the list row.
         name: shortArea(m.label) ?? m.area,
-        area: shortArea(m.area),
+        area: undefined,
         lat: m.lat,
         lng: m.lng,
         wanting: { count: m.people_count, sport: m.sport_name },
