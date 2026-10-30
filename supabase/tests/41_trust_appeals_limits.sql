@@ -590,5 +590,62 @@ select is((select count(*)::integer from public.notifications where recipient_id
 select is((select count(*)::integer from public.notifications n where n.recipient_id = tests.u(5) and n.type = 'appeal_decided'), 2,
           'content appeals are answered too');
 
+-- A pause that reaches its end date ends by itself -------------------------------------------------------------------
+select tests.logout();
+insert into private.account_pauses (id, user_id, reason, staff_note, starts_at, ends_at)
+values ('50000000-0000-4000-8000-000000000001', tests.u(6), 'spam', 'Short', now() - interval '2 days', now() + interval '1 day');
+select is(private.trust_tick(), 0, 'nothing ends before its date');
+update private.account_pauses set ends_at = now() - interval '1 minute' where id = '50000000-0000-4000-8000-000000000001';
+select is(private.trust_tick(), 1, 'the tick ends a pause past its date');
+select is(private.trust_tick(), 0, 'once');
+select is((select title from private.notification_feed(tests.u(6)) where type = 'account_restored'), 'Your account is back.',
+          'and tells them');
+select ok(exists (select 1 from private.trust_audit where action = 'restore_account' and actor_id is null
+                  and detail ->> 'pause_id' = '50000000-0000-4000-8000-000000000001'), 'audited as automatic');
+
+-- Payments notices for a program's hosts ---------------------------------------------------------------------------------
+select tests.keep('mprog', tests.host_program(1, 'Money Pickup'));
+insert into public.host_program_hosts (program_id, user_id, role, added_by) values (tests.id('mprog'), tests.u(2), 'co_host', tests.u(1));
+update public.profiles set display_name = 'Lena R' where id = tests.u(3);
+insert into public.host_charges (id, program_id, user_id, kind, amount_cents, currency, status, method, paid_at)
+values ('40000000-0000-4000-8000-000000000009', tests.id('mprog'), tests.u(3), 'pack', 2000, 'CAD', 'paid', 'app', now() - interval '3 days');
+insert into public.host_refunds (id, program_id, charge_id, user_id, amount_cents, currency, reason, status, provider)
+values ('40000000-0000-4000-8000-000000000010', tests.id('mprog'), '40000000-0000-4000-8000-000000000009', tests.u(3), 2000, 'CAD',
+        'host_decision', 'pending', 'stripe');
+update public.host_refunds set status = 'failed' where id = '40000000-0000-4000-8000-000000000010';
+select is((select title from private.notification_feed(tests.u(1)) where type = 'host_refund_failed'),
+          'A refund to Lena R didn''t go through.', 'a failed refund tells the owner');
+select is((select body from private.notification_feed(tests.u(1)) where type = 'host_refund_failed'),
+          '$20.00. Stripe couldn''t send it and Ojoro has stopped trying. Sort it out with them, then record it in your ledger.',
+          'with the amount and what to do');
+select is((select href from private.notification_feed(tests.u(2)) where type = 'host_refund_failed'),
+          '/host/' || tests.id('mprog') || '/payments', 'and the co-host, linking to payments');
+select is((select count(*)::integer from public.notifications where recipient_id = tests.u(3) and type = 'host_refund_failed'), 0,
+          'never the player');
+insert into public.host_disputes (id, program_id, charge_id, user_id, provider, provider_ref, amount_cents, currency, status)
+values ('40000000-0000-4000-8000-000000000011', tests.id('mprog'), '40000000-0000-4000-8000-000000000009', tests.u(3),
+        'stripe', 'dp_test', 2000, 'CAD', 'open');
+select is((select title from private.notification_feed(tests.u(1)) where type = 'host_dispute'), 'Lena R disputed a payment.',
+          'a dispute opened');
+update public.host_disputes set status = 'lost', closed_at = now() where id = '40000000-0000-4000-8000-000000000011';
+select is((select body from private.notification_feed(tests.u(1)) where type = 'host_dispute' and data ->> 'status' = 'lost'),
+          '$20.00 comes off your next payout.', 'and its outcome');
+select tests.block(1, 3);
+select is((select title from private.notification_feed(tests.u(1)) where type = 'host_dispute' and data ->> 'status' = 'lost'),
+          'The dispute with a player went their way.', 'no name across a block');
+insert into public.host_payment_accounts (program_id, provider, account_id, charges_enabled, payouts_enabled, details_submitted)
+values (tests.id('mprog'), 'stripe', 'acct_test', true, true, true);
+update public.host_payment_accounts set payouts_enabled = false, requirements_due = '{individual.verification.document}'
+ where program_id = tests.id('mprog');
+select is((select title from private.notification_feed(tests.u(2)) where type = 'host_payouts_paused'),
+          'Payouts are paused for Money Pickup.', 'payouts paused');
+select is((select body from private.notification_feed(tests.u(2)) where type = 'host_payouts_paused'),
+          'Stripe needs more information. Open payments to finish it.', 'with what to do');
+update public.host_payment_accounts set details_submitted = true where program_id = tests.id('mprog');
+select is((select count(*)::integer from public.notifications where recipient_id = tests.u(2) and type = 'host_payouts_paused'), 1,
+          'once, not on every account update');
+select ok('host_dispute' = any (private.push_throttled_types()), 'push-throttled');
+select is(private.generic_copy('host_refund_failed'), 'A refund didn''t go through.', 'lock-screen words');
+
 select * from finish();
 rollback;
