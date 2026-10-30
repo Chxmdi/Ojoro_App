@@ -299,8 +299,6 @@ function ProfileBody({
         )}
       </View>
 
-      {self ? <YourCrews /> : null}
-
       <ReputationSection self={self} rows={reputation.data ?? []} />
 
       {self || profile.history_visible ? (
@@ -313,6 +311,9 @@ function ProfileBody({
           self={self}
         />
       ) : null}
+
+      {/* You.png: Crews, clans & hosting after the Passport, with the availability line under it. */}
+      {self ? <YourCrews /> : null}
 
       <AvailabilityLine self={self} profile={profile} rows={availability.data} />
 

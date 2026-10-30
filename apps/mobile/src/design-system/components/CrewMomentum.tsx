@@ -19,6 +19,8 @@ export type CrewMomentumProps = {
   /** Sessions per week, oldest first. */
   weeks: number[];
   streak?: number | undefined;
+  /** Not in `index.d.ts`. Words in place of the streak count ("COMEBACK WEEK", "FIRST WEEK"); see MomentumMeter. */
+  streakText?: string | undefined;
   /** The next thing on, in words ("Football · Thu 7:30 · Jeanne-Mance"). No row without it. */
   next?: string | undefined;
   /** Not in `index.d.ts`. I'M DOWN joins the next plan directly. Without it the row has no button. */
@@ -42,6 +44,7 @@ export function CrewMomentum({
   members = [],
   weeks,
   streak,
+  streakText,
   next,
   onDown,
   joined,
@@ -73,7 +76,7 @@ export function CrewMomentum({
           <AvatarCluster people={members} total={memberCount} max={CREW_CLUSTER_MAX} size="md" />
         </View>
       </View>
-      <MomentumMeter weeks={weeks} streak={streak} label={model.rhythmLabel} />
+      <MomentumMeter weeks={weeks} streak={streak} streakText={streakText} label={model.rhythmLabel} />
       {next ? (
         <View className="flex-row items-center gap-space-3 border-t border-line pt-space-3">
           <Text variant="label" muted>

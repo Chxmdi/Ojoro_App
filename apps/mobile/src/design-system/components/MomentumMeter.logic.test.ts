@@ -10,8 +10,17 @@ describe('momentumModel', () => {
 
   it('states the streak as a count in words', () => {
     expect(momentumModel([1], 6).streakText).toBe('6 WEEK STREAK');
-    expect(momentumModel([1]).streakText).toBe('0 WEEK STREAK');
-    expect(momentumModel([1], -2.5).streakText).toBe('0 WEEK STREAK');
+    expect(momentumModel([1]).streakText).toBe('');
+    expect(momentumModel([1], -2.5).streakText).toBe('');
+    expect(momentumModel([1], Number.NaN).streakText).toBe('');
+  });
+
+  it("takes the owner's words instead of a zero streak", () => {
+    expect(momentumModel([1], 0, 'RHYTHM', 'COMEBACK WEEK').streakText).toBe('COMEBACK WEEK');
+    expect(momentumModel([1], 4, 'RHYTHM', '  ').streakText).toBe('4 WEEK STREAK');
+    expect(momentumModel([1], 0, 'RHYTHM', 'FIRST WEEK').accessibilityLabel).toBe(
+      'Rhythm: 1 session this week, 1 week history. First week.',
+    );
   });
 
   it('reads as one sentence, in sentence case', () => {
@@ -19,14 +28,14 @@ describe('momentumModel', () => {
       'Rhythm · 8 weeks: 3 sessions this week, 3 week history. 6 week streak.',
     );
     expect(momentumModel([2, 1]).accessibilityLabel).toBe(
-      'Momentum: 1 session this week, 2 week history. 0 week streak.',
+      'Momentum: 1 session this week, 2 week history.',
     );
   });
 
   it('handles no history and bad numbers', () => {
     const m = momentumModel([]);
     expect(m.bars).toEqual([]);
-    expect(m.accessibilityLabel).toBe('Momentum: no sessions yet. 0 week streak.');
+    expect(m.accessibilityLabel).toBe('Momentum: no sessions yet.');
     expect(momentumModel([Number.NaN, -1, 0]).bars).toEqual([6, 6, 6]);
   });
 });

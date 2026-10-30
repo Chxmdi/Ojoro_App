@@ -1,8 +1,8 @@
 /**
  * `/clan/[id]`: Clan (design-handoff/screens/Clan.png, calm with the mission on the after ground;
  * PRD §9.13; docs/COMMUNITIES_CONTRACT.md, Clans). Header CLAN · YOU'RE A CONNECTOR with ···
- * (report, leaderboard, leave); the name, tagline and three numbers; START A CLUB RUN and INVITE for
- * the roles that can (JOIN / ASK TO JOIN for people outside); THIS WEEK's club runs; the month's
+ * (report, leaderboard, leave); the name, tagline and three numbers; INVITE for the roles that can
+ * (START A CLUB RUN waits for a designed form; JOIN / ASK TO JOIN for people outside); THIS WEEK's club runs; the month's
  * MISSION; OJORO CLASH; WHO RUNS IT; MOST RUNS · {MONTH} · CLAN ONLY (members only).
  */
 import type { ClanRun, ClanView } from '@ojoro/contracts';
@@ -36,7 +36,13 @@ import { useReportBlock } from '@/features/safety';
 
 import { useOnline } from '../activities/data';
 import { speakName } from '../clash/logic';
-import { InlineError, LoadingState, OfflineNote, PrivacyNote, ScreenHeader } from '../activities/ui';
+import {
+  InlineError,
+  LoadingState,
+  OfflineNote,
+  PrivacyNote,
+  ScreenHeader,
+} from '../activities/ui';
 import { useNow } from '../plans/data';
 import {
   useClanClashes,
@@ -96,7 +102,12 @@ export function ClanScreen({ id }: { id: string }) {
         fallback={'/you' as Href}
         right={
           clan ? (
-            <IconButton icon="more" label="Clan settings, report" onPress={() => setMenu(true)} testID="header-more" />
+            <IconButton
+              icon="more"
+              label="Clan settings, report"
+              onPress={() => setMenu(true)}
+              testID="header-more"
+            />
           ) : undefined
         }
       />
@@ -143,19 +154,37 @@ function ClanUnavailable({ error, onRetry }: { error: unknown; onRetry: () => vo
           </View>
         </>
       ) : (
-        <InlineError message={errorMessage(e)} action="RETRY" onAction={onRetry} testID="screen-error" />
+        <InlineError
+          message={errorMessage(e)}
+          action="RETRY"
+          onAction={onRetry}
+          testID="screen-error"
+        />
       )}
     </View>
   );
 }
 
-function ClanBody({ id, clan, online, dataUpdatedAt }: { id: string; clan: ClanView; online: boolean; dataUpdatedAt: number }) {
+function ClanBody({
+  id,
+  clan,
+  online,
+  dataUpdatedAt,
+}: {
+  id: string;
+  clan: ClanView;
+  online: boolean;
+  dataUpdatedAt: number;
+}) {
   const now = useNow([]);
   return (
     <View testID="clan-screen">
       <View className="gap-space-10 px-space-5 pb-space-10 pt-space-4">
         {!online ? (
-          <OfflineNote dataUpdatedAt={dataUpdatedAt} extra="I'M DOWN and joining wait until you're back." />
+          <OfflineNote
+            dataUpdatedAt={dataUpdatedAt}
+            extra="I'M DOWN and joining wait until you're back."
+          />
         ) : null}
         <Identity id={id} clan={clan} online={online} />
         <ThisWeek id={id} clan={clan} now={now} online={online} />
@@ -184,7 +213,10 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
         try {
           await Share.share({ message: clanInviteText(clan.name, code) });
         } catch {
-          toast.show({ kind: 'neutral', message: `Sharing isn't available here. The code is ${code}.` });
+          toast.show({
+            kind: 'neutral',
+            message: `Sharing isn't available here. The code is ${code}.`,
+          });
         }
       },
     });
@@ -197,7 +229,12 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
       {clan.tagline ? <Text variant="body">{clan.tagline}</Text> : null}
       <View className="flex-row gap-space-3 border-t border-line pt-space-4" testID="clan-stats">
         {clanStats(clan).map((s) => (
-          <View key={s.label} className="flex-1" accessible accessibilityLabel={`${s.value} ${s.label.toLowerCase()}`}>
+          <View
+            key={s.label}
+            className="flex-1"
+            accessible
+            accessibilityLabel={`${s.value} ${s.label.toLowerCase()}`}
+          >
             <DisplayText size="sm" style={tabular}>
               {grouped(s.value)}
             </DisplayText>
@@ -208,27 +245,25 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
         ))}
       </View>
       <View className="flex-row flex-wrap items-center gap-space-2">
-        {state.kind === 'member' && clan.can_start_run ? (
-          <Button
-            disabled={!online}
-            onPress={() => {
-              // The club-run form isn't designed yet (HANDOFF.md gaps; docs/DESIGN_DECISIONS.md, Step 6
-              // SCR-COMMUNITIES): say so instead of opening a form that can't make one.
-              track('clan_run_started_tapped', { clan_id: id });
-              toast.show({ kind: 'neutral', message: "Starting a club run from the app isn't ready yet. Runs set up as weekly Rituals appear here on their own." });
-            }}
-            testID="clan-start-run"
-          >
-            START A CLUB RUN
-          </Button>
-        ) : null}
+        {/* START A CLUB RUN waits for a designed form (docs/DESIGN_DECISIONS.md, Step 6 SCR-COMMUNITIES). */}
         {state.kind === 'member' && clan.can_invite ? (
-          <Button variant="secondary" loading={invite.isPending} disabled={!online} onPress={shareInvite} testID="clan-invite">
+          <Button
+            variant="secondary"
+            loading={invite.isPending}
+            disabled={!online}
+            onPress={shareInvite}
+            testID="clan-invite"
+          >
             INVITE
           </Button>
         ) : null}
         {state.kind === 'join' ? (
-          <Button loading={join.isPending} disabled={!online} onPress={() => join.mutate()} testID="clan-join">
+          <Button
+            loading={join.isPending}
+            disabled={!online}
+            onPress={() => join.mutate()}
+            testID="clan-join"
+          >
             {state.label}
           </Button>
         ) : null}
@@ -237,7 +272,13 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
             <View testID="clan-requested">
               <Badge>ASKED TO JOIN</Badge>
             </View>
-            <Button variant="ghost" loading={withdraw.isPending} disabled={!online} onPress={() => withdraw.mutate()} testID="clan-withdraw">
+            <Button
+              variant="ghost"
+              loading={withdraw.isPending}
+              disabled={!online}
+              onPress={() => withdraw.mutate()}
+              testID="clan-withdraw"
+            >
               TAKE IT BACK
             </Button>
           </>
@@ -251,7 +292,9 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
       {state.kind === 'invite' ? (
         <PrivacyNote>Invite only. Ask someone in the clan for the code.</PrivacyNote>
       ) : null}
-      {join.isError ? <InlineError message={errorMessage(ojoroErrorOf(join.error))} testID="clan-join-error" /> : null}
+      {join.isError ? (
+        <InlineError message={errorMessage(ojoroErrorOf(join.error))} testID="clan-join-error" />
+      ) : null}
       {invite.isError ? <InlineError message={errorMessage(ojoroErrorOf(invite.error))} /> : null}
       {clan.can_admit && (clan.pending_requests ?? 0) > 0 ? (
         <Text variant="body-sm" testID="clan-pending">
@@ -262,7 +305,17 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
   );
 }
 
-function ThisWeek({ id, clan, now, online }: { id: string; clan: ClanView; now: Date; online: boolean }) {
+function ThisWeek({
+  id,
+  clan,
+  now,
+  online,
+}: {
+  id: string;
+  clan: ClanView;
+  now: Date;
+  online: boolean;
+}) {
   const week = useClanWeek(id, true);
   const join = useJoinClanRun(id);
   const rows = upcomingRuns(week.data ?? []);
@@ -275,13 +328,19 @@ function ThisWeek({ id, clan, now, online }: { id: string; clan: ClanView; now: 
           <Skeleton kind="strip" />
         </View>
       ) : week.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(week.error))} action="RETRY" onAction={() => void week.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(week.error))}
+          action="RETRY"
+          onAction={() => void week.refetch()}
+        />
       ) : rows.length === 0 ? (
         <Text variant="body-sm" muted className="pt-space-2" testID="clan-week-empty">
-          {clan.can_start_run ? 'No club runs in the next 7 days. Start one.' : 'No club runs in the next 7 days.'}
+          No club runs in the next 7 days.
         </Text>
       ) : (
-        rows.map((r) => <RunRow key={r.run_id} run={r} clan={clan} now={now} online={online} join={join} />)
+        rows.map((r) => (
+          <RunRow key={r.run_id} run={r} clan={clan} now={now} online={online} join={join} />
+        ))
       )}
       {join.isError ? <InlineError message={errorMessage(ojoroErrorOf(join.error))} /> : null}
     </View>
@@ -344,7 +403,11 @@ function Mission({ id, clan }: { id: string; clan: ClanView }) {
   if (mission.isError && !m) {
     return (
       <View className="px-space-5">
-        <InlineError message={errorMessage(ojoroErrorOf(mission.error))} action="RETRY" onAction={() => void mission.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(mission.error))}
+          action="RETRY"
+          onAction={() => void mission.refetch()}
+        />
       </View>
     );
   }
@@ -362,7 +425,13 @@ function Mission({ id, clan }: { id: string; clan: ClanView }) {
   }
   const bar = missionBar(m);
   return (
-    <Situation id="after" className="gap-space-3 px-space-5 py-space-7" role="region" aria-label={missionOverline(m.starts_on)} testID="clan-mission">
+    <Situation
+      id="after"
+      className="gap-space-3 px-space-5 py-space-7"
+      role="region"
+      aria-label={missionOverline(m.starts_on)}
+      testID="clan-mission"
+    >
       <Text variant="overline">{missionOverline(m.starts_on)}</Text>
       <DisplayText size="md">{missionHeadline(m.title)}</DisplayText>
       <Progress value={bar.value} max={bar.max} label={bar.label} />
@@ -375,14 +444,19 @@ function Mission({ id, clan }: { id: string; clan: ClanView }) {
 
 function ClanClashes({ id, timeZone }: { id: string; timeZone: string }) {
   const clashes = useClanClashes(id, true);
-  const rows = (clashes.data ?? []).filter((c) => c.stage !== 'declined' && c.stage !== 'cancelled');
+  const rows = (clashes.data ?? []).filter(
+    (c) => c.stage !== 'declined' && c.stage !== 'cancelled',
+  );
   if (clashes.isPending || rows.length === 0) return null;
   return (
     <View className="gap-space-1" role="region" aria-label="Ojoro Clash" testID="clan-clashes">
       <Divider kind="mark" label="OJORO CLASH" />
       {rows.map((c) => {
         // "Fall Clash vs McGill": the short name, in the clan's own casing.
-        const opponent = c.opponent_name && c.opponent_short_name ? speakName(c.opponent_short_name, c.opponent_name) : c.opponent_name;
+        const opponent =
+          c.opponent_name && c.opponent_short_name
+            ? speakName(c.opponent_short_name, c.opponent_name)
+            : c.opponent_name;
         const row = clashRow({ ...c, opponent_name: opponent }, timeZone);
         return (
           <Strip
@@ -412,7 +486,11 @@ function WhoRunsIt({ id }: { id: string }) {
           <Skeleton kind="strip" />
         </View>
       ) : roles.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(roles.error))} action="RETRY" onAction={() => void roles.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(roles.error))}
+          action="RETRY"
+          onAction={() => void roles.refetch()}
+        />
       ) : (
         <View role="list">
           {rows.map((p) => {
@@ -431,9 +509,15 @@ function WhoRunsIt({ id }: { id: string }) {
                 <Badge tone={p.role === 'captain' ? 'signal' : 'neutral'}>{roleWord(p.role)}</Badge>
               </>
             );
-            const cls = 'min-h-[64px] flex-row items-center gap-space-3 border-b border-line py-space-2';
+            const cls =
+              'min-h-[64px] flex-row items-center gap-space-3 border-b border-line py-space-2';
             return p.is_me ? (
-              <View key={p.user_id} role="listitem" className={cls} testID={`clan-role-${p.user_id}`}>
+              <View
+                key={p.user_id}
+                role="listitem"
+                className={cls}
+                testID={`clan-role-${p.user_id}`}
+              >
                 {content}
               </View>
             ) : (
@@ -460,14 +544,23 @@ function Leaderboard({ id, clan, now }: { id: string; clan: ClanView; now: Date 
   const board = useClanLeaderboard(id, clan.is_member);
   const rows = board.data ?? [];
   return (
-    <View className="gap-space-1" role="region" aria-label="Most runs this month" testID="clan-leaderboard">
+    <View
+      className="gap-space-1"
+      role="region"
+      aria-label="Most runs this month"
+      testID="clan-leaderboard"
+    >
       <Divider label={leaderboardLabel(now, clan.time_zone)} />
       {board.isPending ? (
         <View {...loadingProps('Loading the leaderboard')}>
           <Skeleton kind="strip" />
         </View>
       ) : board.isError && rows.length === 0 ? (
-        <InlineError message={errorMessage(ojoroErrorOf(board.error))} action="RETRY" onAction={() => void board.refetch()} />
+        <InlineError
+          message={errorMessage(ojoroErrorOf(board.error))}
+          action="RETRY"
+          onAction={() => void board.refetch()}
+        />
       ) : rows.length === 0 ? (
         <Text variant="body-sm" muted className="pt-space-2">
           No club runs checked in this month yet.
@@ -494,7 +587,9 @@ function Leaderboard({ id, clan, now }: { id: string; clan: ClanView; now: Date 
         })
       )}
       {clan.on_leaderboard === false ? (
-        <PrivacyNote>You're hidden from this list. Others don't see your runs here; you still see your own.</PrivacyNote>
+        <PrivacyNote>
+          You're hidden from this list. Others don't see your runs here; you still see your own.
+        </PrivacyNote>
       ) : null}
     </View>
   );
@@ -535,7 +630,12 @@ function ClanMenu({
                 board.mutate(!onBoard, {
                   onSuccess: () => {
                     onClose();
-                    toast.show({ kind: 'neutral', message: onBoard ? "You're off the clan leaderboard." : "You're back on the clan leaderboard." });
+                    toast.show({
+                      kind: 'neutral',
+                      message: onBoard
+                        ? "You're off the clan leaderboard."
+                        : "You're back on the clan leaderboard.",
+                    });
                   },
                 })
               }

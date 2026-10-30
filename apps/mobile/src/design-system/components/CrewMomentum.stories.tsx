@@ -53,7 +53,12 @@ export const ViewOnly: Story = {
 
 /** A brand-new crew of two: few faces, no history. */
 export const NewCrew: Story = {
-  args: { crew: 'Sunday Swim', memberCount: 2, members: members.slice(0, 2), weeks: [], streak: 0 },
+  args: { crew: 'Sunday Swim', memberCount: 2, members: members.slice(0, 2), weeks: [], streak: 0, streakText: 'FIRST WEEK' },
+};
+
+/** A missed week reads as a comeback, never as a zero streak. */
+export const Comeback: Story = {
+  args: { weeks: [3, 4, 2, 3, 0, 1, 0, 1], streak: 0, streakText: 'COMEBACK WEEK' },
 };
 
 /** A long name wraps; it never truncates. */
