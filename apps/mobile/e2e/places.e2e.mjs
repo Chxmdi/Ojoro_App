@@ -256,7 +256,7 @@ try {
     await page.waitForURL(/\/create\/plan/, { timeout: 30_000 });
     const chip = page.getByTestId(`place-${JM}`);
     await chip.waitFor({ timeout: 60_000 });
-    const checked = (await chip.getAttribute('aria-checked')) ?? (await chip.getAttribute('aria-selected'));
+    const checked = await chip.getAttribute('aria-pressed');
     assert(checked === 'true', `place chip not picked (${checked})`);
   });
 
