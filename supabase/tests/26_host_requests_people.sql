@@ -292,6 +292,13 @@ select is((select ojoro_games from public.session_requests(tests.id('s'))), 1, '
 select is((select show_up_of from public.session_requests(tests.id('s'))), 1, 'show-up record');
 select is((select shared_names from public.session_requests(tests.id('s'))), array['Tester 2'], 'You both play with Tester 2.');
 select is((select id_verified from public.session_requests(tests.id('s'))), false, 'no ID verification yet');
+select is((select stated_level::text from public.session_requests(tests.id('s'))), null, 'no level set: null');
+select tests.logout();
+insert into public.user_sports (user_id, sport_id, level) values (tests.u(3), 'football', 'learning')
+on conflict (user_id, sport_id) do update set level = excluded.level;
+select tests.login(1);
+select is((select stated_level::text from public.session_requests(tests.id('s'))), 'learning',
+          'the host deciding sees their self-declared level for this sport');
 select tests.keep('r3', (select request_id from public.session_requests(tests.id('s'))));
 select tests.login(4);
 select throws_ok($$select * from public.session_requests(tests.id('s'))$$, 'P0001', 'not_program_host', 'hosts only');

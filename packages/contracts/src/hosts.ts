@@ -192,7 +192,14 @@ export type RosterRow = WithNull<
 export type RosterSection = 'in' | 'waitlist' | 'dropped';
 export type JoinRequestRow = WithNull<
   Row<'session_requests'>,
-  'avatar_path' | 'area' | 'distance_km' | 'note' | 'approved_via' | 'decided_at' | 'undo_until'
+  | 'avatar_path'
+  | 'area'
+  | 'distance_km'
+  | 'stated_level'
+  | 'note'
+  | 'approved_via'
+  | 'decided_at'
+  | 'undo_until'
 >;
 export type HostPersonRow = WithNull<
   Row<'host_people'>,

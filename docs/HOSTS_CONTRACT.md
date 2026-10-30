@@ -16,7 +16,8 @@ and the others: write only through RPCs, map errors by code, idempotency keys pe
   `…200200_host_core_roster_people.sql` (HostHome, roster, requests, People, announcements, tick),
   `…200300_host_core_notifications.sql` (notification words for the new types),
   `…200400_host_core_fixes.sql` (roster order, drifting definition), `…200500_host_core_report.sql`
-  (report a program), `…200600_host_core_ops_notification_words.sql` (ops `host_update` words).
+  (report a program), `…200600_host_core_ops_notification_words.sql` (ops `host_update` words),
+  `…200700_host_core_request_level.sql` (`session_requests.stated_level`).
 - Client helpers in `@ojoro/contracts` (`hosts.ts`): `hostRpcs`, `hostIdempotentRpcs` (also in
   `idempotentRpcs`), `hostErrorCodes` (also in `ojoroErrorCodes`), row types (`MyHostProgram`,
   `HostHome`, `HostNeedsYouItem`, `HostWeekItem`, `SeriesView`, `SeriesSession`, `SessionView`,
@@ -276,7 +277,8 @@ rules from `session_view.rule_*` + `update_host_rules`.
 `request_id`, `user_id`, `display_name`, `avatar_path`, `area`, `distance_km` ("Verdun · about 3 km
 away"), `id_verified` (false: no ID verification exists yet; don't show the badge), `new_to_ojoro`
 (joined in the last 14 days: NEW TO OJORO), `ojoro_games` (14 OJORO GAMES), `showed_up`/`show_up_of`
-(SHOWED UP 14 OF 14), `note`, `shared_names` (up to 3) / `shared_count` ("You both play with
+(SHOWED UP 14 OF 14), `stated_level` (their self-declared `skill_level` for the session's sport,
+null if none; show in words, e.g. "Says: beginner"; shown to the host deciding only, nowhere else), `note`, `shared_names` (up to 3) / `shared_count` ("You both play with
 Chimdi O." / "Nobody you know."), `status`, `approved_via`, `decided_at`, `undo_until`.
 
 | RPC | Notes |
