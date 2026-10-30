@@ -1733,6 +1733,815 @@ export type Database = {
           },
         ];
       };
+      clan_join_requests: {
+        Row: {
+          clan_id: string;
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          id: string;
+          message: string | null;
+          status: Database['public']['Enums']['clan_request_status'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clan_id: string;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          message?: string | null;
+          status?: Database['public']['Enums']['clan_request_status'];
+          user_id: string;
+        };
+        Update: {
+          clan_id?: string;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          message?: string | null;
+          status?: Database['public']['Enums']['clan_request_status'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clan_join_requests_clan_id_fkey';
+            columns: ['clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_join_requests_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_join_requests_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clan_members: {
+        Row: {
+          clan_id: string;
+          joined_at: string;
+          on_leaderboard: boolean;
+          role: Database['public']['Enums']['clan_role'];
+          role_note: string | null;
+          user_id: string;
+          via: Database['public']['Enums']['clan_join_via'];
+        };
+        ComputedFields: never;
+        Insert: {
+          clan_id: string;
+          joined_at?: string;
+          on_leaderboard?: boolean;
+          role?: Database['public']['Enums']['clan_role'];
+          role_note?: string | null;
+          user_id: string;
+          via: Database['public']['Enums']['clan_join_via'];
+        };
+        Update: {
+          clan_id?: string;
+          joined_at?: string;
+          on_leaderboard?: boolean;
+          role?: Database['public']['Enums']['clan_role'];
+          role_note?: string | null;
+          user_id?: string;
+          via?: Database['public']['Enums']['clan_join_via'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clan_members_clan_id_fkey';
+            columns: ['clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clan_missions: {
+        Row: {
+          clan_id: string;
+          created_at: string;
+          created_by: string;
+          ends_on: string;
+          id: string;
+          metric: Database['public']['Enums']['mission_metric'];
+          starts_on: string;
+          target: number;
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clan_id: string;
+          created_at?: string;
+          created_by: string;
+          ends_on: string;
+          id?: string;
+          metric: Database['public']['Enums']['mission_metric'];
+          starts_on: string;
+          target: number;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          clan_id?: string;
+          created_at?: string;
+          created_by?: string;
+          ends_on?: string;
+          id?: string;
+          metric?: Database['public']['Enums']['mission_metric'];
+          starts_on?: string;
+          target?: number;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clan_missions_clan_id_fkey';
+            columns: ['clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_missions_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clan_run_members: {
+        Row: {
+          check_in_method: string | null;
+          checked_in_at: string | null;
+          joined_at: string;
+          run_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          check_in_method?: string | null;
+          checked_in_at?: string | null;
+          joined_at?: string;
+          run_id: string;
+          user_id: string;
+        };
+        Update: {
+          check_in_method?: string | null;
+          checked_in_at?: string | null;
+          joined_at?: string;
+          run_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clan_run_members_run_id_fkey';
+            columns: ['run_id'];
+            isOneToOne: false;
+            referencedRelation: 'clan_runs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_run_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clan_runs: {
+        Row: {
+          cancelled_at: string | null;
+          capacity: number;
+          checked_in_count: number;
+          clan_id: string;
+          created_at: string;
+          created_by: string;
+          distance_km: number | null;
+          down_count: number;
+          duration_minutes: number;
+          game_on_at: string | null;
+          host_id: string;
+          id: string;
+          min_to_go: number;
+          place_id: string | null;
+          ritual_id: string | null;
+          sport_id: string;
+          starts_at: string;
+          status: Database['public']['Enums']['clan_run_status'];
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cancelled_at?: string | null;
+          capacity: number;
+          checked_in_count?: number;
+          clan_id: string;
+          created_at?: string;
+          created_by: string;
+          distance_km?: number | null;
+          down_count?: number;
+          duration_minutes: number;
+          game_on_at?: string | null;
+          host_id: string;
+          id?: string;
+          min_to_go: number;
+          place_id?: string | null;
+          ritual_id?: string | null;
+          sport_id: string;
+          starts_at: string;
+          status?: Database['public']['Enums']['clan_run_status'];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          cancelled_at?: string | null;
+          capacity?: number;
+          checked_in_count?: number;
+          clan_id?: string;
+          created_at?: string;
+          created_by?: string;
+          distance_km?: number | null;
+          down_count?: number;
+          duration_minutes?: number;
+          game_on_at?: string | null;
+          host_id?: string;
+          id?: string;
+          min_to_go?: number;
+          place_id?: string | null;
+          ritual_id?: string | null;
+          sport_id?: string;
+          starts_at?: string;
+          status?: Database['public']['Enums']['clan_run_status'];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clan_runs_clan_id_fkey';
+            columns: ['clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_runs_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_runs_host_id_fkey';
+            columns: ['host_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_runs_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_runs_ritual_id_fkey';
+            columns: ['ritual_id'];
+            isOneToOne: false;
+            referencedRelation: 'rituals';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clan_runs_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clans: {
+        Row: {
+          archived_at: string | null;
+          area: string | null;
+          city: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          join_policy: Database['public']['Enums']['clan_join_policy'];
+          member_count: number;
+          name: string;
+          short_name: string | null;
+          sport_id: string | null;
+          tagline: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          area?: string | null;
+          city?: string | null;
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          join_policy?: Database['public']['Enums']['clan_join_policy'];
+          member_count?: number;
+          name: string;
+          short_name?: string | null;
+          sport_id?: string | null;
+          tagline?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          area?: string | null;
+          city?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          join_policy?: Database['public']['Enums']['clan_join_policy'];
+          member_count?: number;
+          name?: string;
+          short_name?: string | null;
+          sport_id?: string | null;
+          tagline?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clans_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clans_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_backings: {
+        Row: {
+          clash_id: string;
+          created_at: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clash_id: string;
+          created_at?: string;
+          side: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          clash_id?: string;
+          created_at?: string;
+          side?: Database['public']['Enums']['team_side'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_backings_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_backings_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_event_results: {
+        Row: {
+          a_value: number;
+          b_value: number;
+          clash_event_id: string;
+          clash_id: string;
+          confirmed_by: string | null;
+          recorded_by: string;
+          source: Database['public']['Enums']['clash_result_source'];
+          verified_at: string;
+          winner_side: Database['public']['Enums']['team_side'] | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          a_value: number;
+          b_value: number;
+          clash_event_id: string;
+          clash_id: string;
+          confirmed_by?: string | null;
+          recorded_by: string;
+          source: Database['public']['Enums']['clash_result_source'];
+          verified_at?: string;
+          winner_side?: Database['public']['Enums']['team_side'] | null;
+        };
+        Update: {
+          a_value?: number;
+          b_value?: number;
+          clash_event_id?: string;
+          clash_id?: string;
+          confirmed_by?: string | null;
+          recorded_by?: string;
+          source?: Database['public']['Enums']['clash_result_source'];
+          verified_at?: string;
+          winner_side?: Database['public']['Enums']['team_side'] | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_event_results_clash_event_id_fkey';
+            columns: ['clash_event_id'];
+            isOneToOne: true;
+            referencedRelation: 'clash_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_event_results_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_event_results_confirmed_by_fkey';
+            columns: ['confirmed_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_event_results_recorded_by_fkey';
+            columns: ['recorded_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_events: {
+        Row: {
+          clash_id: string;
+          id: string;
+          place_id: string | null;
+          position: number;
+          scoring: Database['public']['Enums']['clash_scoring'];
+          sport_id: string;
+          squad_size: number | null;
+          starts_at: string;
+          title: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clash_id: string;
+          id?: string;
+          place_id?: string | null;
+          position: number;
+          scoring: Database['public']['Enums']['clash_scoring'];
+          sport_id: string;
+          squad_size?: number | null;
+          starts_at: string;
+          title: string;
+        };
+        Update: {
+          clash_id?: string;
+          id?: string;
+          place_id?: string | null;
+          position?: number;
+          scoring?: Database['public']['Enums']['clash_scoring'];
+          sport_id?: string;
+          squad_size?: number | null;
+          starts_at?: string;
+          title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_events_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_events_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_events_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_organizers: {
+        Row: {
+          approved_at: string | null;
+          clash_id: string;
+          created_at: string;
+          proposed_by_a: boolean;
+          proposed_by_b: boolean;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          approved_at?: string | null;
+          clash_id: string;
+          created_at?: string;
+          proposed_by_a?: boolean;
+          proposed_by_b?: boolean;
+          user_id: string;
+        };
+        Update: {
+          approved_at?: string | null;
+          clash_id?: string;
+          created_at?: string;
+          proposed_by_a?: boolean;
+          proposed_by_b?: boolean;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_organizers_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_organizers_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_result_submissions: {
+        Row: {
+          a_value: number;
+          b_value: number;
+          clash_event_id: string;
+          clash_id: string;
+          created_at: string;
+          id: string;
+          status: string;
+          submitted_by: string;
+          submitted_side: Database['public']['Enums']['team_side'];
+        };
+        ComputedFields: never;
+        Insert: {
+          a_value: number;
+          b_value: number;
+          clash_event_id: string;
+          clash_id: string;
+          created_at?: string;
+          id?: string;
+          status?: string;
+          submitted_by: string;
+          submitted_side: Database['public']['Enums']['team_side'];
+        };
+        Update: {
+          a_value?: number;
+          b_value?: number;
+          clash_event_id?: string;
+          clash_id?: string;
+          created_at?: string;
+          id?: string;
+          status?: string;
+          submitted_by?: string;
+          submitted_side?: Database['public']['Enums']['team_side'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_result_submissions_clash_event_id_fkey';
+            columns: ['clash_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'clash_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_result_submissions_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_result_submissions_submitted_by_fkey';
+            columns: ['submitted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clash_squad_members: {
+        Row: {
+          clash_event_id: string;
+          clash_id: string;
+          joined_at: string;
+          side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clash_event_id: string;
+          clash_id: string;
+          joined_at?: string;
+          side: Database['public']['Enums']['team_side'];
+          user_id: string;
+        };
+        Update: {
+          clash_event_id?: string;
+          clash_id?: string;
+          joined_at?: string;
+          side?: Database['public']['Enums']['team_side'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clash_squad_members_clash_event_id_fkey';
+            columns: ['clash_event_id'];
+            isOneToOne: false;
+            referencedRelation: 'clash_events';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_squad_members_clash_id_fkey';
+            columns: ['clash_id'];
+            isOneToOne: false;
+            referencedRelation: 'clashes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clash_squad_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clashes: {
+        Row: {
+          a_clan_id: string;
+          accepted_at: string | null;
+          accepted_by: string | null;
+          b_clan_id: string;
+          backing_a: number;
+          backing_b: number;
+          cancelled_at: string | null;
+          created_at: string;
+          declined_at: string | null;
+          id: string;
+          proposed_by: string;
+          season_label: string | null;
+          status: Database['public']['Enums']['clash_status'];
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          a_clan_id: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          b_clan_id: string;
+          backing_a?: number;
+          backing_b?: number;
+          cancelled_at?: string | null;
+          created_at?: string;
+          declined_at?: string | null;
+          id?: string;
+          proposed_by: string;
+          season_label?: string | null;
+          status?: Database['public']['Enums']['clash_status'];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          a_clan_id?: string;
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          b_clan_id?: string;
+          backing_a?: number;
+          backing_b?: number;
+          cancelled_at?: string | null;
+          created_at?: string;
+          declined_at?: string | null;
+          id?: string;
+          proposed_by?: string;
+          season_label?: string | null;
+          status?: Database['public']['Enums']['clash_status'];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'clashes_a_clan_id_fkey';
+            columns: ['a_clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clashes_accepted_by_fkey';
+            columns: ['accepted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clashes_b_clan_id_fkey';
+            columns: ['b_clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'clashes_proposed_by_fkey';
+            columns: ['proposed_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      crew_chat_reads: {
+        Row: {
+          crew_id: string;
+          last_read_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          crew_id: string;
+          last_read_at?: string;
+          user_id: string;
+        };
+        Update: {
+          crew_id?: string;
+          last_read_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'crew_chat_reads_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'crew_chat_reads_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       crew_members: {
         Row: {
           crew_id: string;
@@ -1792,6 +2601,7 @@ export type Database = {
           is_private: boolean;
           member_count: number;
           name: string;
+          rhythm_per_week: number;
           sport_id: string | null;
           time_zone: string;
           updated_at: string;
@@ -1805,6 +2615,7 @@ export type Database = {
           is_private?: boolean;
           member_count?: number;
           name: string;
+          rhythm_per_week?: number;
           sport_id?: string | null;
           time_zone?: string;
           updated_at?: string;
@@ -1817,6 +2628,7 @@ export type Database = {
           is_private?: boolean;
           member_count?: number;
           name?: string;
+          rhythm_per_week?: number;
           sport_id?: string | null;
           time_zone?: string;
           updated_at?: string;
@@ -1834,6 +2646,1921 @@ export type Database = {
             columns: ['sport_id'];
             isOneToOne: false;
             referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_announcement_recipients: {
+        Row: {
+          announcement_id: string;
+          read_at: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          announcement_id: string;
+          read_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          announcement_id?: string;
+          read_at?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_announcement_recipients_announcement_id_fkey';
+            columns: ['announcement_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_announcements';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_announcement_recipients_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_announcements: {
+        Row: {
+          audiences: Database['public']['Enums']['host_audience'][];
+          author_id: string;
+          body: string;
+          created_at: string;
+          id: string;
+          message_id: string | null;
+          notify: boolean;
+          pinned: boolean;
+          pinned_until: string | null;
+          program_id: string;
+          read_count: number;
+          recipient_count: number;
+          session_id: string | null;
+          template: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          audiences: Database['public']['Enums']['host_audience'][];
+          author_id: string;
+          body: string;
+          created_at?: string;
+          id?: string;
+          message_id?: string | null;
+          notify?: boolean;
+          pinned?: boolean;
+          pinned_until?: string | null;
+          program_id: string;
+          read_count?: number;
+          recipient_count?: number;
+          session_id?: string | null;
+          template?: string | null;
+        };
+        Update: {
+          audiences?: Database['public']['Enums']['host_audience'][];
+          author_id?: string;
+          body?: string;
+          created_at?: string;
+          id?: string;
+          message_id?: string | null;
+          notify?: boolean;
+          pinned?: boolean;
+          pinned_until?: string | null;
+          program_id?: string;
+          read_count?: number;
+          recipient_count?: number;
+          session_id?: string | null;
+          template?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_announcements_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_announcements_message_id_fkey';
+            columns: ['message_id'];
+            isOneToOne: false;
+            referencedRelation: 'messages';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_announcements_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_announcements_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_charges: {
+        Row: {
+          amount_cents: number;
+          created_at: string;
+          currency: string;
+          id: string;
+          kind: Database['public']['Enums']['host_charge_kind'];
+          membership_id: string | null;
+          method: Database['public']['Enums']['host_charge_method'];
+          paid_at: string | null;
+          pass_id: string | null;
+          program_id: string;
+          provider: string;
+          provider_ref: string | null;
+          recorded_by: string | null;
+          session_id: string | null;
+          status: Database['public']['Enums']['host_charge_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          created_at?: string;
+          currency: string;
+          id?: string;
+          kind: Database['public']['Enums']['host_charge_kind'];
+          membership_id?: string | null;
+          method: Database['public']['Enums']['host_charge_method'];
+          paid_at?: string | null;
+          pass_id?: string | null;
+          program_id: string;
+          provider?: string;
+          provider_ref?: string | null;
+          recorded_by?: string | null;
+          session_id?: string | null;
+          status?: Database['public']['Enums']['host_charge_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount_cents?: number;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          kind?: Database['public']['Enums']['host_charge_kind'];
+          membership_id?: string | null;
+          method?: Database['public']['Enums']['host_charge_method'];
+          paid_at?: string | null;
+          pass_id?: string | null;
+          program_id?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          recorded_by?: string | null;
+          session_id?: string | null;
+          status?: Database['public']['Enums']['host_charge_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_charges_membership_id_fkey';
+            columns: ['membership_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_memberships';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_charges_pass_id_fkey';
+            columns: ['pass_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_passes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_charges_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_charges_recorded_by_fkey';
+            columns: ['recorded_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_charges_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_charges_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_join_requests: {
+        Row: {
+          approved_via: Database['public']['Enums']['host_approved_via'] | null;
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          id: string;
+          note: string | null;
+          session_id: string;
+          status: Database['public']['Enums']['host_request_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          approved_via?: Database['public']['Enums']['host_approved_via'] | null;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          note?: string | null;
+          session_id: string;
+          status?: Database['public']['Enums']['host_request_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          approved_via?: Database['public']['Enums']['host_approved_via'] | null;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          id?: string;
+          note?: string | null;
+          session_id?: string;
+          status?: Database['public']['Enums']['host_request_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_join_requests_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_join_requests_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_join_requests_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_disputes: {
+        Row: {
+          created_at: string;
+          fixture_id: string;
+          id: string;
+          note: string | null;
+          raised_by: string;
+          resolved_at: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          fixture_id: string;
+          id?: string;
+          note?: string | null;
+          raised_by: string;
+          resolved_at?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          fixture_id?: string;
+          id?: string;
+          note?: string | null;
+          raised_by?: string;
+          resolved_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_disputes_fixture_id_fkey';
+            columns: ['fixture_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_fixtures';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_disputes_raised_by_fkey';
+            columns: ['raised_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_fixture_players: {
+        Row: {
+          checked_in_at: string | null;
+          fixture_id: string;
+          in_at: string;
+          team_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          checked_in_at?: string | null;
+          fixture_id: string;
+          in_at?: string;
+          team_id: string;
+          user_id: string;
+        };
+        Update: {
+          checked_in_at?: string | null;
+          fixture_id?: string;
+          in_at?: string;
+          team_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_fixture_players_fixture_id_fkey';
+            columns: ['fixture_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_fixtures';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixture_players_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixture_players_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_fixtures: {
+        Row: {
+          away_team_id: string;
+          home_team_id: string;
+          id: string;
+          kicks_off_at: string;
+          league_id: string;
+          pitch: string | null;
+          referee_asked_at: string | null;
+          referee_id: string | null;
+          referee_status: Database['public']['Enums']['host_referee_status'] | null;
+          rescheduled_from: string | null;
+          round_id: string;
+          status: Database['public']['Enums']['host_fixture_status'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          away_team_id: string;
+          home_team_id: string;
+          id?: string;
+          kicks_off_at: string;
+          league_id: string;
+          pitch?: string | null;
+          referee_asked_at?: string | null;
+          referee_id?: string | null;
+          referee_status?: Database['public']['Enums']['host_referee_status'] | null;
+          rescheduled_from?: string | null;
+          round_id: string;
+          status?: Database['public']['Enums']['host_fixture_status'];
+          updated_at?: string;
+        };
+        Update: {
+          away_team_id?: string;
+          home_team_id?: string;
+          id?: string;
+          kicks_off_at?: string;
+          league_id?: string;
+          pitch?: string | null;
+          referee_asked_at?: string | null;
+          referee_id?: string | null;
+          referee_status?: Database['public']['Enums']['host_referee_status'] | null;
+          rescheduled_from?: string | null;
+          round_id?: string;
+          status?: Database['public']['Enums']['host_fixture_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_fixtures_away_team_id_fkey';
+            columns: ['away_team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixtures_home_team_id_fkey';
+            columns: ['home_team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixtures_league_id_fkey';
+            columns: ['league_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_leagues';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixtures_referee_id_fkey';
+            columns: ['referee_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_fixtures_round_id_fkey';
+            columns: ['round_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_rounds';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_members: {
+        Row: {
+          can_referee: boolean;
+          created_at: string;
+          league_id: string;
+          team_id: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          can_referee?: boolean;
+          created_at?: string;
+          league_id: string;
+          team_id?: string | null;
+          user_id: string;
+        };
+        Update: {
+          can_referee?: boolean;
+          created_at?: string;
+          league_id?: string;
+          team_id?: string | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_members_league_id_fkey';
+            columns: ['league_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_leagues';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_members_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_result_submissions: {
+        Row: {
+          away_goals: number;
+          created_at: string;
+          fixture_id: string;
+          home_goals: number;
+          id: string;
+          submitted_by: string;
+          superseded_at: string | null;
+          team_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          away_goals: number;
+          created_at?: string;
+          fixture_id: string;
+          home_goals: number;
+          id?: string;
+          submitted_by: string;
+          superseded_at?: string | null;
+          team_id: string;
+        };
+        Update: {
+          away_goals?: number;
+          created_at?: string;
+          fixture_id?: string;
+          home_goals?: number;
+          id?: string;
+          submitted_by?: string;
+          superseded_at?: string | null;
+          team_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_result_submissions_fixture_id_fkey';
+            columns: ['fixture_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_fixtures';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_result_submissions_submitted_by_fkey';
+            columns: ['submitted_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_result_submissions_team_id_fkey';
+            columns: ['team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_results: {
+        Row: {
+          away_goals: number;
+          away_team_id: string;
+          confirmed_at: string;
+          confirmed_by: string | null;
+          fixture_id: string;
+          home_goals: number;
+          home_team_id: string;
+          league_id: string;
+          source: Database['public']['Enums']['host_league_result_source'];
+        };
+        ComputedFields: never;
+        Insert: {
+          away_goals: number;
+          away_team_id: string;
+          confirmed_at?: string;
+          confirmed_by?: string | null;
+          fixture_id: string;
+          home_goals: number;
+          home_team_id: string;
+          league_id: string;
+          source: Database['public']['Enums']['host_league_result_source'];
+        };
+        Update: {
+          away_goals?: number;
+          away_team_id?: string;
+          confirmed_at?: string;
+          confirmed_by?: string | null;
+          fixture_id?: string;
+          home_goals?: number;
+          home_team_id?: string;
+          league_id?: string;
+          source?: Database['public']['Enums']['host_league_result_source'];
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_results_away_team_id_fkey';
+            columns: ['away_team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_results_confirmed_by_fkey';
+            columns: ['confirmed_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_results_fixture_id_fkey';
+            columns: ['fixture_id'];
+            isOneToOne: true;
+            referencedRelation: 'host_league_fixtures';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_results_home_team_id_fkey';
+            columns: ['home_team_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_league_teams';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_results_league_id_fkey';
+            columns: ['league_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_leagues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_rounds: {
+        Row: {
+          id: string;
+          league_id: string;
+          number: number;
+          plays_on: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: string;
+          league_id: string;
+          number: number;
+          plays_on: string;
+        };
+        Update: {
+          id?: string;
+          league_id?: string;
+          number?: number;
+          plays_on?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_rounds_league_id_fkey';
+            columns: ['league_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_leagues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_league_teams: {
+        Row: {
+          captain_id: string | null;
+          created_at: string;
+          crew_id: string | null;
+          id: string;
+          league_id: string;
+          name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          captain_id?: string | null;
+          created_at?: string;
+          crew_id?: string | null;
+          id?: string;
+          league_id: string;
+          name: string;
+        };
+        Update: {
+          captain_id?: string | null;
+          created_at?: string;
+          crew_id?: string | null;
+          id?: string;
+          league_id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_league_teams_captain_id_fkey';
+            columns: ['captain_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_teams_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_league_teams_league_id_fkey';
+            columns: ['league_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_leagues';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_leagues: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          id: string;
+          meetings: number;
+          min_players: number;
+          name: string;
+          place_id: string | null;
+          points_draw: number;
+          points_win: number;
+          program_id: string;
+          rounds_total: number;
+          sport_id: string;
+          starts_on: string;
+          status: Database['public']['Enums']['host_league_status'];
+          updated_at: string;
+          venue_label: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          meetings?: number;
+          min_players?: number;
+          name: string;
+          place_id?: string | null;
+          points_draw?: number;
+          points_win?: number;
+          program_id: string;
+          rounds_total: number;
+          sport_id: string;
+          starts_on: string;
+          status?: Database['public']['Enums']['host_league_status'];
+          updated_at?: string;
+          venue_label?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          meetings?: number;
+          min_players?: number;
+          name?: string;
+          place_id?: string | null;
+          points_draw?: number;
+          points_win?: number;
+          program_id?: string;
+          rounds_total?: number;
+          sport_id?: string;
+          starts_on?: string;
+          status?: Database['public']['Enums']['host_league_status'];
+          updated_at?: string;
+          venue_label?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_leagues_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_leagues_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_leagues_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_leagues_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_memberships: {
+        Row: {
+          cancelled_at: string | null;
+          created_at: string;
+          ended_at: string | null;
+          id: string;
+          kind: Database['public']['Enums']['host_pass_kind'];
+          pass_id: string;
+          period_ends_at: string | null;
+          program_id: string;
+          renews: boolean;
+          sessions_total: number | null;
+          started_at: string;
+          status: Database['public']['Enums']['host_membership_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cancelled_at?: string | null;
+          created_at?: string;
+          ended_at?: string | null;
+          id?: string;
+          kind: Database['public']['Enums']['host_pass_kind'];
+          pass_id: string;
+          period_ends_at?: string | null;
+          program_id: string;
+          renews?: boolean;
+          sessions_total?: number | null;
+          started_at?: string;
+          status?: Database['public']['Enums']['host_membership_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          cancelled_at?: string | null;
+          created_at?: string;
+          ended_at?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['host_pass_kind'];
+          pass_id?: string;
+          period_ends_at?: string | null;
+          program_id?: string;
+          renews?: boolean;
+          sessions_total?: number | null;
+          started_at?: string;
+          status?: Database['public']['Enums']['host_membership_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_memberships_pass_id_fkey';
+            columns: ['pass_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_passes';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_memberships_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_memberships_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_ops_audit: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          amount_cents: number | null;
+          created_at: string;
+          detail: NonNullable<Json>;
+          id: number;
+          program_id: string;
+          subject_id: string | null;
+          subject_type: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          amount_cents?: number | null;
+          created_at?: string;
+          detail?: NonNullable<Json>;
+          id?: never;
+          program_id: string;
+          subject_id?: string | null;
+          subject_type: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          amount_cents?: number | null;
+          created_at?: string;
+          detail?: NonNullable<Json>;
+          id?: never;
+          program_id?: string;
+          subject_id?: string | null;
+          subject_type?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_ops_audit_actor_id_fkey';
+            columns: ['actor_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_ops_audit_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_pass_uses: {
+        Row: {
+          membership_id: string;
+          session_id: string;
+          used_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          membership_id: string;
+          session_id: string;
+          used_at?: string;
+          user_id: string;
+        };
+        Update: {
+          membership_id?: string;
+          session_id?: string;
+          used_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_pass_uses_membership_id_fkey';
+            columns: ['membership_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_memberships';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_pass_uses_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_pass_uses_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_passes: {
+        Row: {
+          archived_at: string | null;
+          created_at: string;
+          created_by: string;
+          currency: string;
+          description: string | null;
+          id: string;
+          kind: Database['public']['Enums']['host_pass_kind'];
+          name: string;
+          price_cents: number;
+          program_id: string;
+          series_id: string | null;
+          sessions_included: number | null;
+          sort_order: number;
+          updated_at: string;
+          valid_days: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by: string;
+          currency?: string;
+          description?: string | null;
+          id?: string;
+          kind: Database['public']['Enums']['host_pass_kind'];
+          name: string;
+          price_cents: number;
+          program_id: string;
+          series_id?: string | null;
+          sessions_included?: number | null;
+          sort_order?: number;
+          updated_at?: string;
+          valid_days?: number | null;
+        };
+        Update: {
+          archived_at?: string | null;
+          created_at?: string;
+          created_by?: string;
+          currency?: string;
+          description?: string | null;
+          id?: string;
+          kind?: Database['public']['Enums']['host_pass_kind'];
+          name?: string;
+          price_cents?: number;
+          program_id?: string;
+          series_id?: string | null;
+          sessions_included?: number | null;
+          sort_order?: number;
+          updated_at?: string;
+          valid_days?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_passes_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_passes_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_passes_series_id_fkey';
+            columns: ['series_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_series';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_payouts: {
+        Row: {
+          created_at: string;
+          currency: string;
+          fee_cents: number;
+          gross_cents: number;
+          id: string;
+          lines: NonNullable<Json>;
+          net_cents: number;
+          note: string | null;
+          paid_at: string | null;
+          pass_count: number;
+          pays_on: string;
+          period_end: string;
+          period_start: string;
+          program_id: string;
+          provider: string;
+          provider_ref: string | null;
+          refund_count: number;
+          refunds_cents: number;
+          session_count: number;
+          status: Database['public']['Enums']['host_payout_status'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          currency: string;
+          fee_cents: number;
+          gross_cents: number;
+          id?: string;
+          lines?: NonNullable<Json>;
+          net_cents: number;
+          note?: string | null;
+          paid_at?: string | null;
+          pass_count?: number;
+          pays_on: string;
+          period_end: string;
+          period_start: string;
+          program_id: string;
+          provider?: string;
+          provider_ref?: string | null;
+          refund_count?: number;
+          refunds_cents: number;
+          session_count?: number;
+          status?: Database['public']['Enums']['host_payout_status'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          currency?: string;
+          fee_cents?: number;
+          gross_cents?: number;
+          id?: string;
+          lines?: NonNullable<Json>;
+          net_cents?: number;
+          note?: string | null;
+          paid_at?: string | null;
+          pass_count?: number;
+          pays_on?: string;
+          period_end?: string;
+          period_start?: string;
+          program_id?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          refund_count?: number;
+          refunds_cents?: number;
+          session_count?: number;
+          status?: Database['public']['Enums']['host_payout_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_payouts_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_people: {
+        Row: {
+          first_seen_at: string;
+          invited_back_at: string | null;
+          program_id: string;
+          tags: string[];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          first_seen_at?: string;
+          invited_back_at?: string | null;
+          program_id: string;
+          tags?: string[];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          first_seen_at?: string;
+          invited_back_at?: string | null;
+          program_id?: string;
+          tags?: string[];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_people_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_people_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_person_notes: {
+        Row: {
+          author_id: string;
+          body: string;
+          program_id: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          body: string;
+          program_id: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          author_id?: string;
+          body?: string;
+          program_id?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_person_notes_author_id_fkey';
+            columns: ['author_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_person_notes_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_person_notes_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_program_hosts: {
+        Row: {
+          added_by: string | null;
+          created_at: string;
+          program_id: string;
+          role: Database['public']['Enums']['host_role'];
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          added_by?: string | null;
+          created_at?: string;
+          program_id: string;
+          role?: Database['public']['Enums']['host_role'];
+          user_id: string;
+        };
+        Update: {
+          added_by?: string | null;
+          created_at?: string;
+          program_id?: string;
+          role?: Database['public']['Enums']['host_role'];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_program_hosts_added_by_fkey';
+            columns: ['added_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_program_hosts_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_program_hosts_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_program_members: {
+        Row: {
+          created_at: string;
+          ends_at: string | null;
+          program_id: string;
+          source: string;
+          started_at: string;
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          ends_at?: string | null;
+          program_id: string;
+          source?: string;
+          started_at?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          ends_at?: string | null;
+          program_id?: string;
+          source?: string;
+          started_at?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_program_members_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_program_members_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_programs: {
+        Row: {
+          archived_at: string | null;
+          area: string | null;
+          auto_approve_crews: boolean;
+          auto_approve_experienced: boolean;
+          auto_approve_played_with: boolean;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          id: string;
+          name: string;
+          sport_id: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          archived_at?: string | null;
+          area?: string | null;
+          auto_approve_crews?: boolean;
+          auto_approve_experienced?: boolean;
+          auto_approve_played_with?: boolean;
+          created_at?: string;
+          created_by: string;
+          crew_id?: string | null;
+          id?: string;
+          name: string;
+          sport_id?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          area?: string | null;
+          auto_approve_crews?: boolean;
+          auto_approve_experienced?: boolean;
+          auto_approve_played_with?: boolean;
+          created_at?: string;
+          created_by?: string;
+          crew_id?: string | null;
+          id?: string;
+          name?: string;
+          sport_id?: string | null;
+          time_zone?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_programs_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_programs_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_programs_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_refund_requests: {
+        Row: {
+          charge_id: string;
+          created_at: string;
+          decided_at: string | null;
+          decided_by: string | null;
+          decision: Database['public']['Enums']['host_refund_decision'] | null;
+          id: string;
+          note: string | null;
+          program_id: string;
+          status: Database['public']['Enums']['host_refund_request_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          charge_id: string;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision?: Database['public']['Enums']['host_refund_decision'] | null;
+          id?: string;
+          note?: string | null;
+          program_id: string;
+          status?: Database['public']['Enums']['host_refund_request_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          charge_id?: string;
+          created_at?: string;
+          decided_at?: string | null;
+          decided_by?: string | null;
+          decision?: Database['public']['Enums']['host_refund_decision'] | null;
+          id?: string;
+          note?: string | null;
+          program_id?: string;
+          status?: Database['public']['Enums']['host_refund_request_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_refund_requests_charge_id_fkey';
+            columns: ['charge_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_charges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refund_requests_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refund_requests_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refund_requests_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_refunds: {
+        Row: {
+          amount_cents: number;
+          charge_id: string;
+          created_at: string;
+          currency: string;
+          decided_by: string | null;
+          id: string;
+          program_id: string;
+          provider: string;
+          provider_ref: string | null;
+          reason: Database['public']['Enums']['host_refund_reason'];
+          related_user_id: string | null;
+          request_id: string | null;
+          status: Database['public']['Enums']['host_refund_status'];
+          updated_at: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          charge_id: string;
+          created_at?: string;
+          currency: string;
+          decided_by?: string | null;
+          id?: string;
+          program_id: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reason: Database['public']['Enums']['host_refund_reason'];
+          related_user_id?: string | null;
+          request_id?: string | null;
+          status?: Database['public']['Enums']['host_refund_status'];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount_cents?: number;
+          charge_id?: string;
+          created_at?: string;
+          currency?: string;
+          decided_by?: string | null;
+          id?: string;
+          program_id?: string;
+          provider?: string;
+          provider_ref?: string | null;
+          reason?: Database['public']['Enums']['host_refund_reason'];
+          related_user_id?: string | null;
+          request_id?: string | null;
+          status?: Database['public']['Enums']['host_refund_status'];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_refunds_charge_id_fkey';
+            columns: ['charge_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_charges';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refunds_decided_by_fkey';
+            columns: ['decided_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refunds_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refunds_related_user_id_fkey';
+            columns: ['related_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refunds_request_id_fkey';
+            columns: ['request_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_refund_requests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_refunds_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_series: {
+        Row: {
+          approval_required: boolean;
+          auto_fill_cutoff_minutes: number;
+          capacity: number;
+          created_at: string;
+          created_by: string;
+          currency: string;
+          duration_minutes: number;
+          ended_at: string | null;
+          id: string;
+          join_opens_days: number;
+          kit_note: string | null;
+          level: Database['public']['Enums']['host_level'];
+          member_price_cents: number;
+          members_early_hours: number;
+          members_first: boolean;
+          name: string;
+          place_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          repeat_days: number[];
+          sport_id: string;
+          start_time: string;
+          starts_on: string;
+          teams_note: string | null;
+          until_on: string | null;
+          updated_at: string;
+          version: number;
+          waitlist_auto_fill: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          approval_required?: boolean;
+          auto_fill_cutoff_minutes?: number;
+          capacity: number;
+          created_at?: string;
+          created_by: string;
+          currency?: string;
+          duration_minutes: number;
+          ended_at?: string | null;
+          id?: string;
+          join_opens_days?: number;
+          kit_note?: string | null;
+          level?: Database['public']['Enums']['host_level'];
+          member_price_cents?: number;
+          members_early_hours?: number;
+          members_first?: boolean;
+          name: string;
+          place_id: string;
+          price_cents?: number;
+          program_id: string;
+          refund_window?: Database['public']['Enums']['host_refund_window'];
+          repeat_days: number[];
+          sport_id: string;
+          start_time: string;
+          starts_on: string;
+          teams_note?: string | null;
+          until_on?: string | null;
+          updated_at?: string;
+          version?: number;
+          waitlist_auto_fill?: boolean;
+        };
+        Update: {
+          approval_required?: boolean;
+          auto_fill_cutoff_minutes?: number;
+          capacity?: number;
+          created_at?: string;
+          created_by?: string;
+          currency?: string;
+          duration_minutes?: number;
+          ended_at?: string | null;
+          id?: string;
+          join_opens_days?: number;
+          kit_note?: string | null;
+          level?: Database['public']['Enums']['host_level'];
+          member_price_cents?: number;
+          members_early_hours?: number;
+          members_first?: boolean;
+          name?: string;
+          place_id?: string;
+          price_cents?: number;
+          program_id?: string;
+          refund_window?: Database['public']['Enums']['host_refund_window'];
+          repeat_days?: number[];
+          sport_id?: string;
+          start_time?: string;
+          starts_on?: string;
+          teams_note?: string | null;
+          until_on?: string | null;
+          updated_at?: string;
+          version?: number;
+          waitlist_auto_fill?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_series_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_series_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_series_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_series_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_series_templates: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          program_id: string;
+          settings: NonNullable<Json>;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          name: string;
+          program_id: string;
+          settings: NonNullable<Json>;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          name?: string;
+          program_id?: string;
+          settings?: NonNullable<Json>;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_series_templates_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_series_templates_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_session_log: {
+        Row: {
+          actor_id: string | null;
+          created_at: string;
+          data: NonNullable<Json>;
+          id: number;
+          kind: Database['public']['Enums']['host_log_kind'];
+          related_user_id: string | null;
+          session_id: string;
+          user_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          actor_id?: string | null;
+          created_at?: string;
+          data?: NonNullable<Json>;
+          id?: never;
+          kind: Database['public']['Enums']['host_log_kind'];
+          related_user_id?: string | null;
+          session_id: string;
+          user_id?: string | null;
+        };
+        Update: {
+          actor_id?: string | null;
+          created_at?: string;
+          data?: NonNullable<Json>;
+          id?: never;
+          kind?: Database['public']['Enums']['host_log_kind'];
+          related_user_id?: string | null;
+          session_id?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_session_log_actor_id_fkey';
+            columns: ['actor_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_session_log_related_user_id_fkey';
+            columns: ['related_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_session_log_session_id_fkey';
+            columns: ['session_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_sessions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_session_log_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      host_sessions: {
+        Row: {
+          activity_id: string;
+          approval_required: boolean;
+          auto_fill_cutoff_at: string;
+          created_at: string;
+          currency: string;
+          id: string;
+          member_price_cents: number;
+          members_first: boolean;
+          members_open_at: string;
+          occurs_on: string;
+          opens_at: string;
+          plan_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          series_id: string | null;
+          series_version: number;
+          skip_reason: string | null;
+          skipped_at: string | null;
+          skipped_by: string | null;
+          starts_at: string;
+          status: Database['public']['Enums']['host_session_status'];
+          updated_at: string;
+          waitlist_auto_fill: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          activity_id: string;
+          approval_required: boolean;
+          auto_fill_cutoff_at: string;
+          created_at?: string;
+          currency: string;
+          id?: string;
+          member_price_cents: number;
+          members_first: boolean;
+          members_open_at: string;
+          occurs_on: string;
+          opens_at: string;
+          plan_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          series_id?: string | null;
+          series_version?: number;
+          skip_reason?: string | null;
+          skipped_at?: string | null;
+          skipped_by?: string | null;
+          starts_at: string;
+          status?: Database['public']['Enums']['host_session_status'];
+          updated_at?: string;
+          waitlist_auto_fill: boolean;
+        };
+        Update: {
+          activity_id?: string;
+          approval_required?: boolean;
+          auto_fill_cutoff_at?: string;
+          created_at?: string;
+          currency?: string;
+          id?: string;
+          member_price_cents?: number;
+          members_first?: boolean;
+          members_open_at?: string;
+          occurs_on?: string;
+          opens_at?: string;
+          plan_id?: string;
+          price_cents?: number;
+          program_id?: string;
+          refund_window?: Database['public']['Enums']['host_refund_window'];
+          series_id?: string | null;
+          series_version?: number;
+          skip_reason?: string | null;
+          skipped_at?: string | null;
+          skipped_by?: string | null;
+          starts_at?: string;
+          status?: Database['public']['Enums']['host_session_status'];
+          updated_at?: string;
+          waitlist_auto_fill?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'host_sessions_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: true;
+            referencedRelation: 'activities';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_activity_id_fkey';
+            columns: ['activity_id'];
+            isOneToOne: true;
+            referencedRelation: 'activity_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: true;
+            referencedRelation: 'plan_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: true;
+            referencedRelation: 'plans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_program_id_fkey';
+            columns: ['program_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_programs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_series_id_fkey';
+            columns: ['series_id'];
+            isOneToOne: false;
+            referencedRelation: 'host_series';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'host_sessions_skipped_by_fkey';
+            columns: ['skipped_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -3335,6 +6062,192 @@ export type Database = {
           },
         ];
       };
+      ritual_occurrences: {
+        Row: {
+          clan_run_id: string | null;
+          created_at: string;
+          occurs_on: string;
+          plan_id: string | null;
+          ritual_id: string;
+          skipped_at: string | null;
+          skipped_by: string | null;
+          starts_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          clan_run_id?: string | null;
+          created_at?: string;
+          occurs_on: string;
+          plan_id?: string | null;
+          ritual_id: string;
+          skipped_at?: string | null;
+          skipped_by?: string | null;
+          starts_at: string;
+        };
+        Update: {
+          clan_run_id?: string | null;
+          created_at?: string;
+          occurs_on?: string;
+          plan_id?: string | null;
+          ritual_id?: string;
+          skipped_at?: string | null;
+          skipped_by?: string | null;
+          starts_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ritual_occurrences_clan_run_id_fkey';
+            columns: ['clan_run_id'];
+            isOneToOne: false;
+            referencedRelation: 'clan_runs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ritual_occurrences_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'plan_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ritual_occurrences_plan_id_fkey';
+            columns: ['plan_id'];
+            isOneToOne: false;
+            referencedRelation: 'plans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ritual_occurrences_ritual_id_fkey';
+            columns: ['ritual_id'];
+            isOneToOne: false;
+            referencedRelation: 'rituals';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ritual_occurrences_skipped_by_fkey';
+            columns: ['skipped_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      rituals: {
+        Row: {
+          capacity: number;
+          clan_id: string | null;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          day_of_week: number;
+          distance_km: number | null;
+          duration_minutes: number;
+          ended_at: string | null;
+          host_id: string;
+          id: string;
+          lead_days: number;
+          local_time: string;
+          min_to_go: number | null;
+          paused_at: string | null;
+          place_id: string | null;
+          sport_id: string;
+          status: Database['public']['Enums']['ritual_status'];
+          time_zone: string;
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          capacity: number;
+          clan_id?: string | null;
+          created_at?: string;
+          created_by: string;
+          crew_id?: string | null;
+          day_of_week: number;
+          distance_km?: number | null;
+          duration_minutes: number;
+          ended_at?: string | null;
+          host_id: string;
+          id?: string;
+          lead_days?: number;
+          local_time: string;
+          min_to_go?: number | null;
+          paused_at?: string | null;
+          place_id?: string | null;
+          sport_id: string;
+          status?: Database['public']['Enums']['ritual_status'];
+          time_zone: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          capacity?: number;
+          clan_id?: string | null;
+          created_at?: string;
+          created_by?: string;
+          crew_id?: string | null;
+          day_of_week?: number;
+          distance_km?: number | null;
+          duration_minutes?: number;
+          ended_at?: string | null;
+          host_id?: string;
+          id?: string;
+          lead_days?: number;
+          local_time?: string;
+          min_to_go?: number | null;
+          paused_at?: string | null;
+          place_id?: string | null;
+          sport_id?: string;
+          status?: Database['public']['Enums']['ritual_status'];
+          time_zone?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'rituals_clan_id_fkey';
+            columns: ['clan_id'];
+            isOneToOne: false;
+            referencedRelation: 'clans';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rituals_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rituals_crew_id_fkey';
+            columns: ['crew_id'];
+            isOneToOne: false;
+            referencedRelation: 'crews';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rituals_host_id_fkey';
+            columns: ['host_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rituals_place_id_fkey';
+            columns: ['place_id'];
+            isOneToOne: false;
+            referencedRelation: 'places';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'rituals_sport_id_fkey';
+            columns: ['sport_id'];
+            isOneToOne: false;
+            referencedRelation: 'sports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       rivalries: {
         Row: {
           created_at: string;
@@ -3627,6 +6540,16 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      accept_clash: {
+        Args: { p_clash_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       act_on_notification: {
         Args: { p_id: string };
         Returns: {
@@ -3743,6 +6666,7 @@ export type Database = {
           team_b_score: number;
         }[];
       };
+      add_co_host: { Args: { p_program_id: string; p_user_id: string }; Returns: boolean };
       add_crew_members: { Args: { p_crew_id: string; p_user_ids: string[] }; Returns: number };
       add_moment: {
         Args: {
@@ -3754,6 +6678,49 @@ export type Database = {
         };
         Returns: string;
       };
+      add_session_spot: {
+        Args: { p_idempotency_key: string; p_session_id: string };
+        Returns: Database['public']['CompositeTypes']['attendance_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'attendance_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      announce_context: {
+        Args: { p_session_id: string };
+        Returns: {
+          activity_id: string;
+          author_name: string;
+          chat_new_today: number;
+          everyone_count: number;
+          max_length: number;
+          members_count: number;
+          program_id: string;
+          pushes_left: number;
+          pushes_used: number;
+          session_count: number;
+          session_id: string;
+          session_name: string;
+          starts_at: string;
+          time_zone: string;
+          waitlist_count: number;
+        }[];
+      };
+      announce_recipient_count: {
+        Args: { p_audiences: Database['public']['Enums']['host_audience'][]; p_session_id: string };
+        Returns: number;
+      };
+      announce_templates: {
+        Args: { p_session_id: string };
+        Returns: {
+          body: string;
+          key: string;
+          label: string;
+        }[];
+      };
+      archive_host_pass: { Args: { p_pass_id: string }; Returns: undefined };
       areas_list: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -3764,6 +6731,20 @@ export type Database = {
           lng: number;
           place_count: number;
         }[];
+      };
+      ask_league_referee: {
+        Args: { p_fixture_id: string; p_idempotency_key: string; p_user_id: string };
+        Returns: Json;
+      };
+      ask_to_join: {
+        Args: { p_idempotency_key: string; p_note: string; p_session_id: string };
+        Returns: Database['public']['CompositeTypes']['host_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       assign_team: {
         Args: {
@@ -3786,6 +6767,16 @@ export type Database = {
         SetofOptions: {
           from: '*';
           to: 'challenge_crowd_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      back_clash: {
+        Args: { p_clash_id: string; p_side?: Database['public']['Enums']['team_side'] };
+        Returns: Database['public']['CompositeTypes']['clash_backing_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_backing_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -3857,6 +6848,30 @@ export type Database = {
       cancel_challenge_event: {
         Args: { p_event_id: string };
         Returns: Database['public']['Enums']['challenge_stage'];
+      };
+      cancel_clan_run: {
+        Args: { p_run_id: string };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      cancel_clash: {
+        Args: { p_clash_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      cancel_host_membership: {
+        Args: { p_idempotency_key: string; p_membership_id: string; p_refund_note?: string };
+        Returns: Json;
       };
       cancel_plan: {
         Args: { p_plan_id: string };
@@ -4114,6 +7129,287 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      check_in_clan_run: {
+        Args: { p_lat: number; p_lng: number; p_run_id: string };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      check_in_league_fixture: {
+        Args: { p_fixture_id: string; p_user_id?: string };
+        Returns: undefined;
+      };
+      clan_clashes: {
+        Args: { p_clan_id: string };
+        Returns: {
+          clash_id: string;
+          decided_count: number;
+          draws: number;
+          event_count: number;
+          next_event_id: string;
+          next_position: number;
+          next_sport_id: string;
+          next_starts_at: string;
+          next_title: string;
+          opponent_clan_id: string;
+          opponent_name: string;
+          opponent_short_name: string;
+          our_side: Database['public']['Enums']['team_side'];
+          our_wins: number;
+          season_label: string;
+          stage: Database['public']['Enums']['clash_stage'];
+          standing: string;
+          their_wins: number;
+          title: string;
+        }[];
+      };
+      clan_invite_code: { Args: { p_clan_id: string; p_rotate?: boolean }; Returns: string };
+      clan_leaderboard: {
+        Args: { p_clan_id: string; p_limit?: number; p_month?: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          is_me: boolean;
+          rank: number;
+          runs: number;
+          user_id: string;
+        }[];
+      };
+      clan_mission: {
+        Args: { p_clan_id: string; p_on?: string };
+        Returns: {
+          can_edit: boolean;
+          contributors: number;
+          ends_on: string;
+          is_done: boolean;
+          metric: Database['public']['Enums']['mission_metric'];
+          mission_id: string;
+          my_share: number;
+          progress: number;
+          starts_on: string;
+          target: number;
+          title: string;
+        }[];
+      };
+      clan_requests: {
+        Args: { p_clan_id: string };
+        Returns: {
+          avatar_path: string;
+          created_at: string;
+          display_name: string;
+          games_with_you: number;
+          message: string;
+          request_id: string;
+          user_id: string;
+        }[];
+      };
+      clan_roles: {
+        Args: { p_clan_id: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          is_me: boolean;
+          role: Database['public']['Enums']['clan_role'];
+          role_note: string;
+          user_id: string;
+        }[];
+      };
+      clan_roster: {
+        Args: { p_clan_id: string; p_limit?: number; p_offset?: number };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          is_me: boolean;
+          joined_at: string;
+          role: Database['public']['Enums']['clan_role'];
+          user_id: string;
+        }[];
+      };
+      clan_run_view: {
+        Args: { p_run_id: string };
+        Returns: {
+          can_cancel: boolean;
+          capacity: number;
+          checked_in_count: number;
+          clan_id: string;
+          distance_km: number;
+          down_count: number;
+          duration_minutes: number;
+          host_id: string;
+          host_name: string;
+          i_am_down: boolean;
+          i_checked_in: boolean;
+          min_to_go: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          ritual_id: string;
+          run_id: string;
+          sport_id: string;
+          stage: Database['public']['Enums']['clan_run_stage'];
+          starts_at: string;
+          status: Database['public']['Enums']['clan_run_status'];
+          title: string;
+        }[];
+      };
+      clan_view: {
+        Args: { p_clan_id: string };
+        Returns: {
+          area: string;
+          can_admit: boolean;
+          can_invite: boolean;
+          can_manage: boolean;
+          can_set_mission: boolean;
+          can_set_roles: boolean;
+          can_start_run: boolean;
+          city: string;
+          clan_id: string;
+          coach_count: number;
+          created_at: string;
+          is_member: boolean;
+          join_policy: Database['public']['Enums']['clan_join_policy'];
+          member_count: number;
+          my_role: Database['public']['Enums']['clan_role'];
+          my_role_note: string;
+          name: string;
+          on_leaderboard: boolean;
+          pending_requests: number;
+          request_status: Database['public']['Enums']['clan_request_status'];
+          runs_per_week: number;
+          runs_this_week: number;
+          server_now: string;
+          short_name: string;
+          sport_id: string;
+          tagline: string;
+          time_zone: string;
+        }[];
+      };
+      clan_week: {
+        Args: { p_clan_id: string; p_days?: number; p_from?: string };
+        Returns: {
+          can_cancel: boolean;
+          capacity: number;
+          checked_in_count: number;
+          clan_id: string;
+          distance_km: number;
+          down_count: number;
+          duration_minutes: number;
+          host_id: string;
+          host_name: string;
+          i_am_down: boolean;
+          i_checked_in: boolean;
+          min_to_go: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          ritual_id: string;
+          run_id: string;
+          sport_id: string;
+          stage: Database['public']['Enums']['clan_run_stage'];
+          starts_at: string;
+          status: Database['public']['Enums']['clan_run_status'];
+          title: string;
+        }[];
+      };
+      clash_events_list: {
+        Args: { p_clash_id: string };
+        Returns: {
+          a_squad: number;
+          a_value: number;
+          b_squad: number;
+          b_value: number;
+          can_confirm: boolean;
+          can_submit: boolean;
+          clash_event_id: string;
+          i_am_in_squad: boolean;
+          is_final: boolean;
+          pending_a_value: number;
+          pending_b_value: number;
+          pending_side: Database['public']['Enums']['team_side'];
+          pending_submission_id: string;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          position: number;
+          result_source: Database['public']['Enums']['clash_result_source'];
+          scoring: Database['public']['Enums']['clash_scoring'];
+          sport_id: string;
+          squad_size: number;
+          starts_at: string;
+          state: Database['public']['Enums']['clash_event_state'];
+          title: string;
+          winner_side: Database['public']['Enums']['team_side'];
+        }[];
+      };
+      clash_my_part: {
+        Args: { p_clash_id: string };
+        Returns: {
+          clash_event_id: string;
+          i_am_in: boolean;
+          place_area: string;
+          place_name: string;
+          position: number;
+          sport_id: string;
+          squad_size: number;
+          squad_taken: number;
+          starts_at: string;
+          state: Database['public']['Enums']['clash_event_state'];
+          title: string;
+        }[];
+      };
+      clash_season_standings: {
+        Args: { p_season_label: string };
+        Returns: {
+          clan_id: string;
+          clashes: number;
+          drawn: number;
+          events_lost: number;
+          events_won: number;
+          lost: number;
+          name: string;
+          won: number;
+        }[];
+      };
+      clash_view: {
+        Args: { p_clash_id: string };
+        Returns: {
+          a_clan_id: string;
+          a_name: string;
+          a_short_name: string;
+          a_wins: number;
+          b_clan_id: string;
+          b_name: string;
+          b_short_name: string;
+          b_wins: number;
+          backing_a: number;
+          backing_b: number;
+          clash_id: string;
+          decided_count: number;
+          draws: number;
+          event_count: number;
+          first_starts_at: string;
+          i_am_organizer: boolean;
+          last_starts_at: string;
+          leader: Database['public']['Enums']['team_side'];
+          my_backing: Database['public']['Enums']['team_side'];
+          my_captain_side: Database['public']['Enums']['team_side'];
+          my_side: Database['public']['Enums']['team_side'];
+          next_event_id: string;
+          next_position: number;
+          season_label: string;
+          server_now: string;
+          situation: string;
+          stage: Database['public']['Enums']['clash_stage'];
+          status: Database['public']['Enums']['clash_status'];
+          time_zone: string;
+          title: string;
+        }[];
+      };
+      clear_league_referee: { Args: { p_fixture_id: string }; Returns: undefined };
       comment_on_challenge: {
         Args: {
           p_body: string;
@@ -4174,6 +7470,25 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      confirm_clash_result: {
+        Args: { p_submission_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      confirm_league_result: {
+        Args: {
+          p_away_goals?: number;
+          p_fixture_id: string;
+          p_home_goals?: number;
+          p_idempotency_key: string;
+        };
+        Returns: Json;
       };
       confirm_result: {
         Args: { p_idempotency_key: string; p_proposal_id: string };
@@ -4259,6 +7574,78 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      create_clan: {
+        Args: {
+          p_area?: string;
+          p_city?: string;
+          p_idempotency_key: string;
+          p_join_policy?: Database['public']['Enums']['clan_join_policy'];
+          p_name: string;
+          p_short_name?: string;
+          p_sport_id?: string;
+          p_tagline?: string;
+        };
+        Returns: {
+          archived_at: string | null;
+          area: string | null;
+          city: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          join_policy: Database['public']['Enums']['clan_join_policy'];
+          member_count: number;
+          name: string;
+          short_name: string | null;
+          sport_id: string | null;
+          tagline: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'clans';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_clan_run: {
+        Args: {
+          p_capacity: number;
+          p_clan_id: string;
+          p_distance_km?: number;
+          p_duration_minutes?: number;
+          p_idempotency_key: string;
+          p_min_to_go?: number;
+          p_place_id?: string;
+          p_sport_id: string;
+          p_starts_at: string;
+          p_title: string;
+        };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_clash: {
+        Args: {
+          p_clan_id: string;
+          p_events: Json;
+          p_idempotency_key: string;
+          p_opponent_clan_id: string;
+          p_season_label?: string;
+          p_title: string;
+        };
+        Returns: Database['public']['CompositeTypes']['clash_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       create_crew: {
         Args: {
           p_idempotency_key: string;
@@ -4274,6 +7661,7 @@ export type Database = {
           is_private: boolean;
           member_count: number;
           name: string;
+          rhythm_per_week: number;
           sport_id: string | null;
           time_zone: string;
           updated_at: string;
@@ -4320,6 +7708,66 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      create_host_league: {
+        Args: {
+          p_idempotency_key: string;
+          p_meetings?: number;
+          p_min_players?: number;
+          p_name: string;
+          p_place_id?: string;
+          p_program_id: string;
+          p_rounds_total: number;
+          p_sport_id: string;
+          p_starts_on: string;
+          p_venue_label?: string;
+        };
+        Returns: string;
+      };
+      create_host_pass: {
+        Args: {
+          p_currency?: string;
+          p_description?: string;
+          p_idempotency_key: string;
+          p_kind: Database['public']['Enums']['host_pass_kind'];
+          p_name: string;
+          p_price_cents: number;
+          p_program_id: string;
+          p_series_id?: string;
+          p_sessions_included?: number;
+          p_valid_days?: number;
+        };
+        Returns: string;
+      };
+      create_host_program: {
+        Args: {
+          p_area?: string;
+          p_crew_id?: string;
+          p_idempotency_key?: string;
+          p_name: string;
+          p_sport_id?: string;
+        };
+        Returns: {
+          archived_at: string | null;
+          area: string | null;
+          auto_approve_crews: boolean;
+          auto_approve_experienced: boolean;
+          auto_approve_played_with: boolean;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          id: string;
+          name: string;
+          sport_id: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_programs';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       create_plan: {
         Args: {
           p_attendance_rule?: Database['public']['Enums']['attendance_rule'];
@@ -4352,7 +7800,177 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      create_ritual: {
+        Args: {
+          p_capacity: number;
+          p_clan_id?: string;
+          p_crew_id?: string;
+          p_day_of_week: number;
+          p_distance_km?: number;
+          p_duration_minutes?: number;
+          p_host_id?: string;
+          p_idempotency_key: string;
+          p_lead_days?: number;
+          p_local_time: string;
+          p_min_to_go?: number;
+          p_place_id?: string;
+          p_sport_id: string;
+          p_title: string;
+        };
+        Returns: {
+          capacity: number;
+          clan_id: string | null;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          day_of_week: number;
+          distance_km: number | null;
+          duration_minutes: number;
+          ended_at: string | null;
+          host_id: string;
+          id: string;
+          lead_days: number;
+          local_time: string;
+          min_to_go: number | null;
+          paused_at: string | null;
+          place_id: string | null;
+          sport_id: string;
+          status: Database['public']['Enums']['ritual_status'];
+          time_zone: string;
+          title: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'rituals';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      create_series: {
+        Args: { p_idempotency_key: string; p_program_id: string; p_settings: Json };
+        Returns: {
+          approval_required: boolean;
+          auto_fill_cutoff_minutes: number;
+          capacity: number;
+          created_at: string;
+          created_by: string;
+          currency: string;
+          duration_minutes: number;
+          ended_at: string | null;
+          id: string;
+          join_opens_days: number;
+          kit_note: string | null;
+          level: Database['public']['Enums']['host_level'];
+          member_price_cents: number;
+          members_early_hours: number;
+          members_first: boolean;
+          name: string;
+          place_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          repeat_days: number[];
+          sport_id: string;
+          start_time: string;
+          starts_on: string;
+          teams_note: string | null;
+          until_on: string | null;
+          updated_at: string;
+          version: number;
+          waitlist_auto_fill: boolean;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_series';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      crew_down_for: {
+        Args: { p_crew_id: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          down_count: number;
+          expires_at: string;
+          i_am_down: boolean;
+          is_mine: boolean;
+          matched_plan_id: string;
+          signal_id: string;
+          sport_id: string;
+          sport_name: string;
+          user_id: string;
+          window_end: string;
+          window_start: string;
+        }[];
+      };
+      crew_free_tonight: {
+        Args: { p_crew_id: string };
+        Returns: {
+          avatar_path: string;
+          display_name: string;
+          user_id: string;
+        }[];
+      };
+      crew_home: {
+        Args: { p_crew_id: string };
+        Returns: {
+          can_manage: boolean;
+          crew_id: string;
+          free_tonight: number;
+          last_message_at: string;
+          member_count: number;
+          momentum: string;
+          my_role: Database['public']['Enums']['crew_role'];
+          name: string;
+          next_capacity: number;
+          next_i_am_in: boolean;
+          next_member_count: number;
+          next_place_name: string;
+          next_plan_id: string;
+          next_ritual_id: string;
+          next_sport_id: string;
+          next_starts_at: string;
+          next_status: Database['public']['Enums']['plan_status'];
+          next_title: string;
+          rhythm_per_week: number;
+          server_now: string;
+          sport_id: string;
+          streak_weeks: number;
+          suggest_day_of_week: number;
+          suggest_local_time: string;
+          suggest_place_id: string;
+          suggest_place_name: string;
+          suggest_sport_id: string;
+          suggest_weeks: number;
+          this_week: number;
+          time_zone: string;
+          unread_count: number;
+          weeks: number[];
+        }[];
+      };
       crew_invite_code: { Args: { p_crew_id: string; p_rotate?: boolean }; Returns: string };
+      crew_memories: {
+        Args: { p_crew_id: string; p_limit?: number };
+        Returns: {
+          activity_id: string;
+          i_played: boolean;
+          moment_alt: string;
+          moment_caption: string;
+          moment_id: string;
+          moment_path: string;
+          occurred_at: string;
+          place_name: string;
+          played_count: number;
+          recap_id: string;
+          sport_id: string;
+          team_a_label: string;
+          team_a_score: number;
+          team_b_label: string;
+          team_b_score: number;
+        }[];
+      };
       crew_messages: {
         Args: { p_before?: string; p_crew_id: string; p_limit?: number };
         Returns: {
@@ -4372,6 +7990,49 @@ export type Database = {
           sender_name: string;
         }[];
       };
+      crew_rituals: {
+        Args: { p_crew_id: string };
+        Returns: {
+          can_edit: boolean;
+          capacity: number;
+          day_of_week: number;
+          duration_minutes: number;
+          host_id: string;
+          host_name: string;
+          lead_days: number;
+          local_time: string;
+          place_id: string;
+          place_name: string;
+          ritual_id: string;
+          sport_id: string;
+          status: Database['public']['Enums']['ritual_status'];
+          time_zone: string;
+          title: string;
+          week_capacity: number;
+          week_i_am_in: boolean;
+          week_member_count: number;
+          week_on: string;
+          week_plan_id: string;
+          week_skipped: boolean;
+          week_starts_at: string;
+          week_status: Database['public']['Enums']['plan_status'];
+        }[];
+      };
+      crew_rivalries: {
+        Args: { p_crew_id: string };
+        Returns: {
+          draws: number;
+          last_met_at: string;
+          losses: number;
+          meetings: number;
+          next_event_id: string;
+          next_starts_at: string;
+          opponent_crew_id: string;
+          opponent_name: string;
+          rivalry_id: string;
+          wins: number;
+        }[];
+      };
       crew_roster: {
         Args: { p_crew_id: string };
         Returns: {
@@ -4382,6 +8043,28 @@ export type Database = {
           joined_at: string;
           role: Database['public']['Enums']['crew_role'];
           user_id: string;
+        }[];
+      };
+      crew_versus: {
+        Args: { p_crew_id: string; p_limit?: number };
+        Returns: {
+          event_id: string;
+          in_count: number;
+          needed: number;
+          opponent_crew_id: string;
+          opponent_name: string;
+          our_side: Database['public']['Enums']['team_side'];
+          our_value: number;
+          outcome: string;
+          place_name: string;
+          rivalry_id: string;
+          side_size: number;
+          sport_id: string;
+          stage: Database['public']['Enums']['challenge_stage'];
+          starts_at: string;
+          their_value: number;
+          time_zone: string;
+          title: string;
         }[];
       };
       crew_view: {
@@ -4397,12 +8080,45 @@ export type Database = {
           time_zone: string;
         }[];
       };
+      decide_clan_request: {
+        Args: { p_approve: boolean; p_request_id: string };
+        Returns: Database['public']['Enums']['clan_request_status'];
+      };
+      decide_host_refund: {
+        Args: {
+          p_amount_cents?: number;
+          p_decision: Database['public']['Enums']['host_refund_decision'];
+          p_idempotency_key: string;
+          p_request_id: string;
+        };
+        Returns: Json;
+      };
+      decide_join_request: {
+        Args: { p_approve: boolean; p_idempotency_key: string; p_request_id: string };
+        Returns: Database['public']['CompositeTypes']['host_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       decline_call_out: {
         Args: { p_call_out_id: string };
         Returns: Database['public']['CompositeTypes']['call_out_state'];
         SetofOptions: {
           from: '*';
           to: 'call_out_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      decline_clash: {
+        Args: { p_clash_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_state';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -4438,6 +8154,7 @@ export type Database = {
         }[];
       };
       dismiss_suggestion: { Args: { p_suggestion_id: string }; Returns: boolean };
+      dispute_league_result: { Args: { p_fixture_id: string; p_note?: string }; Returns: Json };
       down_for_nearby: {
         Args: { p_limit?: number; p_sport_id?: string };
         Returns: {
@@ -4478,6 +8195,10 @@ export type Database = {
         Args: { p_activity_id: string };
         Returns: Database['public']['Enums']['activity_status'];
       };
+      end_ritual: {
+        Args: { p_ritual_id: string };
+        Returns: Database['public']['Enums']['ritual_status'];
+      };
       follow_activity: { Args: { p_activity_id: string }; Returns: boolean };
       follow_challenge_event: {
         Args: { p_comments_muted?: boolean; p_event_id: string; p_quiet?: boolean };
@@ -4516,6 +8237,16 @@ export type Database = {
           title: string;
         }[];
       };
+      generate_host_league_fixtures: {
+        Args: {
+          p_first_kickoff: string;
+          p_idempotency_key: string;
+          p_league_id: string;
+          p_pitch?: string;
+          p_slot_minutes: number;
+        };
+        Returns: number;
+      };
       give_reputation: {
         Args: {
           p_activity_id: string;
@@ -4523,6 +8254,10 @@ export type Database = {
           p_subject_id: string;
         };
         Returns: boolean;
+      };
+      grant_host_pass: {
+        Args: { p_idempotency_key: string; p_paid: boolean; p_pass_id: string; p_user_id: string };
+        Returns: string;
       };
       home_density: {
         Args: Record<PropertyKey, never>;
@@ -4565,6 +8300,26 @@ export type Database = {
           title: string;
         }[];
       };
+      host_announcement_history: {
+        Args: { p_limit?: number; p_program_id: string };
+        Returns: {
+          activity_id: string;
+          announcement_id: string;
+          audiences: Database['public']['Enums']['host_audience'][];
+          body: string;
+          created_at: string;
+          notify: boolean;
+          pinned: boolean;
+          pinned_until: string;
+          read_count: number;
+          recipient_count: number;
+          session_id: string;
+          session_name: string;
+          session_starts_at: string;
+          template: string;
+          time_zone: string;
+        }[];
+      };
       host_check_in: {
         Args: { p_activity_id: string; p_user_id: string };
         Returns: Database['public']['CompositeTypes']['attendance_state'];
@@ -4573,6 +8328,183 @@ export type Database = {
           to: 'attendance_state';
           isOneToOne: true;
           isSetofReturn: false;
+        };
+      };
+      host_home: {
+        Args: { p_program_id: string };
+        Returns: {
+          area: string;
+          last30_ojoro_hours: number;
+          last30_sessions: number;
+          last30_showed_up_pct: number;
+          name: string;
+          needs_you_count: number;
+          ops_items_this_week: number;
+          program_id: string;
+          role: Database['public']['Enums']['host_role'];
+          sessions_this_week: number;
+          spots_taken: number;
+          spots_total: number;
+          time_zone: string;
+          waiting: number;
+          week_from: string;
+          week_to: string;
+        }[];
+      };
+      host_insights: { Args: { p_days?: number; p_program_id: string }; Returns: Json };
+      host_insights_csv: { Args: { p_days?: number; p_program_id: string }; Returns: string };
+      host_league_standings: {
+        Args: { p_league_id: string };
+        Returns: {
+          drawn: number;
+          goal_difference: number;
+          goals_against: number;
+          goals_for: number;
+          lost: number;
+          pending_count: number;
+          played: number;
+          points: number;
+          position: number;
+          team_id: string;
+          team_name: string;
+          won: number;
+        }[];
+      };
+      host_league_view: { Args: { p_league_id: string }; Returns: Json };
+      host_money_view: { Args: { p_program_id: string }; Returns: Json };
+      host_needs_you: {
+        Args: { p_program_id: string };
+        Returns: Database['public']['CompositeTypes']['host_needs_you_item'][];
+        SetofOptions: {
+          from: '*';
+          to: 'host_needs_you_item';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      host_people: {
+        Args: { p_filter?: string; p_program_id: string; p_query?: string };
+        Returns: {
+          avatar_path: string;
+          days: number[];
+          display_name: string;
+          first_came_at: string;
+          invited_back_at: string;
+          is_drifting: boolean;
+          is_member: boolean;
+          is_new: boolean;
+          is_regular: boolean;
+          last_came_at: string;
+          last12_count: number;
+          last12_total: number;
+          pass_kind: string;
+          pass_label: string;
+          sessions_total: number;
+          tags: string[];
+          user_id: string;
+        }[];
+      };
+      host_people_counts: {
+        Args: { p_program_id: string };
+        Returns: {
+          all_count: number;
+          drifting: number;
+          members: number;
+          new_count: number;
+          played_count: number;
+          regulars: number;
+        }[];
+      };
+      host_people_passes: {
+        Args: { p_program_id: string };
+        Returns: {
+          kind: Database['public']['Enums']['host_pass_kind'];
+          membership_id: string;
+          pass_name: string;
+          period_ends_at: string;
+          renews: boolean;
+          sessions_left: number;
+          status: Database['public']['Enums']['host_membership_status'];
+          user_id: string;
+        }[];
+      };
+      host_person: {
+        Args: { p_program_id: string; p_user_id: string };
+        Returns: {
+          area: string;
+          avatar_path: string;
+          days: number[];
+          display_name: string;
+          first_came_at: string;
+          is_drifting: boolean;
+          is_member: boolean;
+          is_new: boolean;
+          is_regular: boolean;
+          last_came_at: string;
+          last12: boolean[];
+          member_since: string;
+          member_until: string;
+          my_note: string;
+          no_shows: number;
+          pass_kind: string;
+          pass_label: string;
+          pass_renews_on: string;
+          pass_sessions_left: number;
+          sessions_total: number;
+          tags: string[];
+          user_id: string;
+        }[];
+      };
+      host_program_leagues: {
+        Args: { p_program_id: string };
+        Returns: {
+          current_round: number;
+          current_round_plays_on: string;
+          league_id: string;
+          name: string;
+          rounds_total: number;
+          status: Database['public']['Enums']['host_league_status'];
+          team_count: number;
+          to_confirm_count: number;
+        }[];
+      };
+      host_service_fee_policy: { Args: Record<PropertyKey, never>; Returns: Json };
+      host_session_check_in: {
+        Args: { p_session_id: string; p_user_id: string };
+        Returns: Database['public']['CompositeTypes']['attendance_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'attendance_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      host_session_payments: {
+        Args: { p_session_id: string };
+        Returns: {
+          amount_cents: number;
+          attendance_status: Database['public']['Enums']['attendance_status'];
+          charge_id: string;
+          currency: string;
+          method: Database['public']['Enums']['host_charge_method'];
+          paid_at: string;
+          pass_name: string;
+          refund_cents: number;
+          session_id: string;
+          sessions_left: number;
+          settled: boolean;
+          state: Database['public']['Enums']['host_payment_state'];
+          user_id: string;
+        }[];
+      };
+      host_week: {
+        Args: { p_program_id: string };
+        Returns: Database['public']['CompositeTypes']['host_week_item'][];
+        SetofOptions: {
+          from: '*';
+          to: 'host_week_item';
+          isOneToOne: false;
+          isSetofReturn: true;
         };
       };
       im_down: {
@@ -4585,8 +8517,65 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      invite_back: {
+        Args: { p_program_id: string; p_session_id: string; p_user_ids?: string[] };
+        Returns: {
+          sent: number;
+          skipped: number;
+        }[];
+      };
       join_challenge_lineup: { Args: { p_event_id: string }; Returns: number };
+      join_clan: {
+        Args: { p_clan_id: string; p_message?: string };
+        Returns: Database['public']['CompositeTypes']['clan_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      join_clan_run: {
+        Args: { p_run_id: string };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      join_clan_with_code: {
+        Args: { p_code: string };
+        Returns: Database['public']['CompositeTypes']['clan_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      join_clash_squad: {
+        Args: { p_clash_event_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_squad_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_squad_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       join_crew: { Args: { p_code: string }; Returns: string };
+      join_down_for: {
+        Args: { p_idempotency_key: string; p_signal_id: string };
+        Returns: Database['public']['CompositeTypes']['down_for_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'down_for_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       join_waitlist: {
         Args: { p_activity_id: string; p_idempotency_key: string };
         Returns: Database['public']['CompositeTypes']['attendance_state'];
@@ -4611,6 +8600,27 @@ export type Database = {
         }[];
       };
       leave_challenge_lineup: { Args: { p_event_id: string }; Returns: boolean };
+      leave_clan: { Args: { p_clan_id: string }; Returns: boolean };
+      leave_clan_run: {
+        Args: { p_run_id: string };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      leave_clash_squad: {
+        Args: { p_clash_event_id: string };
+        Returns: Database['public']['CompositeTypes']['clash_squad_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_squad_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       leave_crew: { Args: { p_crew_id: string }; Returns: boolean };
       leave_plan: {
         Args: { p_idempotency_key: string; p_plan_id: string };
@@ -4669,7 +8679,23 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      mark_announcement_read: { Args: { p_announcement_id: string }; Returns: boolean };
+      mark_clan_run_attendance: {
+        Args: { p_present: boolean; p_run_id: string; p_user_id: string };
+        Returns: Database['public']['CompositeTypes']['clan_run_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clan_run_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      mark_crew_chat_read: { Args: { p_at?: string; p_crew_id: string }; Returns: string };
       mark_notifications_read: { Args: { p_before?: string; p_ids?: string[] }; Returns: number };
+      mark_paid_at_field: {
+        Args: { p_idempotency_key: string; p_session_id: string; p_user_id: string };
+        Returns: Json;
+      };
       mute_object: {
         Args: {
           p_object_id: string;
@@ -4735,6 +8761,17 @@ export type Database = {
           winner_side: Database['public']['Enums']['team_side'];
         }[];
       };
+      my_clans: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          clan_id: string;
+          joined_at: string;
+          member_count: number;
+          name: string;
+          role: Database['public']['Enums']['clan_role'];
+          sport_id: string;
+        }[];
+      };
       my_crews: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -4745,6 +8782,19 @@ export type Database = {
           name: string;
           role: Database['public']['Enums']['crew_role'];
           sport_id: string;
+        }[];
+      };
+      my_host_programs: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          area: string;
+          id: string;
+          name: string;
+          next_session_at: string;
+          pending_requests: number;
+          role: Database['public']['Enums']['host_role'];
+          sport_id: string;
+          upcoming_sessions: number;
         }[];
       };
       my_notifications: {
@@ -5004,8 +9054,22 @@ export type Database = {
           user_id: string;
         }[];
       };
+      promote_from_waitlist: {
+        Args: { p_idempotency_key: string; p_session_id: string; p_user_id: string };
+        Returns: Database['public']['CompositeTypes']['attendance_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'attendance_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       propose_challenge_organizer: {
         Args: { p_event_id: string; p_user_id: string };
+        Returns: boolean;
+      };
+      propose_clash_organizer: {
+        Args: { p_clash_id: string; p_remove?: boolean; p_user_id: string };
         Returns: boolean;
       };
       propose_result: {
@@ -5127,8 +9191,11 @@ export type Database = {
         Args: { p_event_id: string; p_user_id: string };
         Returns: boolean;
       };
+      remove_clan_member: { Args: { p_clan_id: string; p_user_id: string }; Returns: boolean };
+      remove_co_host: { Args: { p_program_id: string; p_user_id: string }; Returns: boolean };
       remove_crew_member: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       remove_moment: { Args: { p_moment_id: string }; Returns: boolean };
+      reorder_waitlist: { Args: { p_session_id: string; p_user_ids: string[] }; Returns: number };
       report: {
         Args: {
           p_note?: string;
@@ -5148,12 +9215,56 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      request_host_refund: {
+        Args: { p_charge_id: string; p_idempotency_key: string; p_note: string };
+        Returns: string;
+      };
+      reschedule_host_league_fixture: {
+        Args: { p_fixture_id: string; p_kicks_off_at: string };
+        Returns: undefined;
+      };
       respect_challenge_comment: {
         Args: { p_comment_id: string };
         Returns: Database['public']['CompositeTypes']['comment_respect_state'];
         SetofOptions: {
           from: '*';
           to: 'comment_respect_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      respond_league_referee: { Args: { p_accept: boolean; p_fixture_id: string }; Returns: Json };
+      restore_session: {
+        Args: { p_session_id: string };
+        Returns: {
+          activity_id: string;
+          approval_required: boolean;
+          auto_fill_cutoff_at: string;
+          created_at: string;
+          currency: string;
+          id: string;
+          member_price_cents: number;
+          members_first: boolean;
+          members_open_at: string;
+          occurs_on: string;
+          opens_at: string;
+          plan_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          series_id: string | null;
+          series_version: number;
+          skip_reason: string | null;
+          skipped_at: string | null;
+          skipped_by: string | null;
+          starts_at: string;
+          status: Database['public']['Enums']['host_session_status'];
+          updated_at: string;
+          waitlist_auto_fill: boolean;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_sessions';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -5270,6 +9381,53 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      save_series_template: {
+        Args: { p_name: string; p_series_id: string };
+        Returns: {
+          created_at: string;
+          created_by: string;
+          id: string;
+          name: string;
+          program_id: string;
+          settings: NonNullable<Json>;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_series_templates';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      schedule_host_league_fixture: {
+        Args: {
+          p_away_team_id: string;
+          p_home_team_id: string;
+          p_idempotency_key: string;
+          p_kicks_off_at: string;
+          p_league_id: string;
+          p_pitch?: string;
+          p_round_number: number;
+        };
+        Returns: string;
+      };
+      send_announcement: {
+        Args: {
+          p_audiences: Database['public']['Enums']['host_audience'][];
+          p_body: string;
+          p_idempotency_key?: string;
+          p_notify?: boolean;
+          p_pin?: boolean;
+          p_session_id: string;
+          p_template?: string;
+        };
+        Returns: Database['public']['CompositeTypes']['host_announcement_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_announcement_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       send_message: {
         Args: {
           p_activity_id?: string;
@@ -5300,6 +9458,183 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      series_sessions: {
+        Args: { p_limit?: number; p_series_id: string };
+        Returns: {
+          activity_id: string;
+          asking_count: number;
+          capacity: number;
+          in_count: number;
+          members_first: boolean;
+          members_open_at: string;
+          occurs_on: string;
+          open_count: number;
+          opens_at: string;
+          session_id: string;
+          skip_reason: string;
+          starts_at: string;
+          status: Database['public']['Enums']['host_session_status'];
+          waitlist_count: number;
+        }[];
+      };
+      series_view: {
+        Args: { p_series_id: string };
+        Returns: {
+          applies_from: string;
+          approval_required: boolean;
+          auto_fill_cutoff_minutes: number;
+          capacity: number;
+          currency: string;
+          duration_minutes: number;
+          first_session_on: string;
+          host_verified: boolean;
+          id: string;
+          join_opens_days: number;
+          kit_note: string;
+          level: Database['public']['Enums']['host_level'];
+          member_price_cents: number;
+          members_early_hours: number;
+          members_first: boolean;
+          name: string;
+          people_in_upcoming: number;
+          place_area: string;
+          place_id: string;
+          place_name: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          repeat_days: number[];
+          sessions_run: number;
+          skipped_upcoming: string[];
+          sport_id: string;
+          start_time: string;
+          starts_on: string;
+          teams_note: string;
+          time_zone: string;
+          until_on: string;
+          version: number;
+          waitlist_auto_fill: boolean;
+        }[];
+      };
+      session_pinned_announcement: {
+        Args: { p_activity_id: string };
+        Returns: {
+          announcement_id: string;
+          author_id: string;
+          author_name: string;
+          body: string;
+          created_at: string;
+          message_id: string;
+          pinned_until: string;
+          session_name: string;
+          starts_at: string;
+          time_zone: string;
+        }[];
+      };
+      session_requests: {
+        Args: { p_include_decided?: boolean; p_session_id: string };
+        Returns: {
+          approved_via: Database['public']['Enums']['host_approved_via'];
+          area: string;
+          avatar_path: string;
+          created_at: string;
+          decided_at: string;
+          display_name: string;
+          distance_km: number;
+          id_verified: boolean;
+          new_to_ojoro: boolean;
+          note: string;
+          ojoro_games: number;
+          request_id: string;
+          shared_count: number;
+          shared_names: string[];
+          show_up_of: number;
+          showed_up: number;
+          status: Database['public']['Enums']['host_request_status'];
+          undo_until: string;
+          user_id: string;
+        }[];
+      };
+      session_roster: {
+        Args: { p_session_id: string };
+        Returns: {
+          approved_at: string;
+          approved_via: Database['public']['Enums']['host_approved_via'];
+          attendance_status: Database['public']['Enums']['attendance_status'];
+          avatar_path: string;
+          check_in_method: Database['public']['Enums']['check_in_method'];
+          checked_in_at: string;
+          display_name: string;
+          dropped_at: string;
+          first_time: boolean;
+          is_host: boolean;
+          is_member: boolean;
+          joined_at: string;
+          last12_count: number;
+          last12_total: number;
+          payment_amount_cents: number;
+          payment_detail: string;
+          payment_label: string;
+          payment_status: string;
+          plays_most_dow: number;
+          promoted_at: string;
+          replaced_at: string;
+          replaced_by: string;
+          replaced_by_name: string;
+          section: string;
+          team: Database['public']['Enums']['team_side'];
+          user_id: string;
+          waitlist_position: number;
+          waitlisted_at: string;
+        }[];
+      };
+      session_view: {
+        Args: { p_session_id: string };
+        Returns: {
+          activity_id: string;
+          approval_required: boolean;
+          asking_count: number;
+          auto_fill_active: boolean;
+          auto_fill_cutoff_at: string;
+          capacity: number;
+          chat_new_today: number;
+          check_in_opens_at: string;
+          checked_in_count: number;
+          crew_names: string[];
+          currency: string;
+          effective_status: Database['public']['Enums']['activity_status'];
+          ends_at: string;
+          in_count: number;
+          member_price_cents: number;
+          members_first: boolean;
+          members_open_at: string;
+          name: string;
+          opens_at: string;
+          place_area: string;
+          place_name: string;
+          plan_id: string;
+          price_cents: number;
+          program_id: string;
+          program_name: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          rule_crews: boolean;
+          rule_experienced: boolean;
+          rule_played_with: boolean;
+          series_id: string;
+          session_id: string;
+          settle_note: string;
+          settle_note_user_id: string;
+          settle_total: number;
+          settled: number;
+          skip_reason: string;
+          sport_id: string;
+          starts_at: string;
+          status: Database['public']['Enums']['host_session_status'];
+          time_zone: string;
+          waitlist_auto_fill: boolean;
+          waitlist_count: number;
+        }[];
+      };
       set_area: {
         Args: { p_area: string; p_discovery_radius_km?: number };
         Returns: Database['public']['CompositeTypes']['area_state'];
@@ -5310,6 +9645,45 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      set_clan_leaderboard: { Args: { p_clan_id: string; p_on: boolean }; Returns: boolean };
+      set_clan_mission: {
+        Args: {
+          p_clan_id: string;
+          p_ends_on?: string;
+          p_metric: Database['public']['Enums']['mission_metric'];
+          p_starts_on?: string;
+          p_target: number;
+          p_title: string;
+        };
+        Returns: {
+          clan_id: string;
+          created_at: string;
+          created_by: string;
+          ends_on: string;
+          id: string;
+          metric: Database['public']['Enums']['mission_metric'];
+          starts_on: string;
+          target: number;
+          title: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'clan_missions';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      set_clan_role: {
+        Args: {
+          p_clan_id: string;
+          p_note?: string;
+          p_role: Database['public']['Enums']['clan_role'];
+          p_user_id: string;
+        };
+        Returns: Database['public']['Enums']['clan_role'];
+      };
+      set_crew_rhythm: { Args: { p_crew_id: string; p_per_week: number }; Returns: number };
       set_crew_role: {
         Args: {
           p_crew_id: string;
@@ -5318,6 +9692,16 @@ export type Database = {
         };
         Returns: Database['public']['Enums']['crew_role'];
       };
+      set_host_league_member: {
+        Args: {
+          p_can_referee?: boolean;
+          p_league_id: string;
+          p_team_id?: string;
+          p_user_id: string;
+        };
+        Returns: undefined;
+      };
+      set_league_fixture_in: { Args: { p_fixture_id: string; p_in: boolean }; Returns: undefined };
       set_notification_preferences: {
         Args: {
           p_quiet_end?: string;
@@ -5343,6 +9727,18 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      set_person_note: {
+        Args: { p_body: string; p_program_id: string; p_user_id: string };
+        Returns: string;
+      };
+      set_person_tags: {
+        Args: { p_program_id: string; p_tags: string[]; p_user_id: string };
+        Returns: string[];
+      };
+      set_program_member: {
+        Args: { p_ends_at?: string; p_member: boolean; p_program_id: string; p_user_id: string };
+        Returns: boolean;
+      };
       set_pull_me_in: {
         Args: {
           p_enabled: boolean;
@@ -5351,12 +9747,61 @@ export type Database = {
         };
         Returns: boolean;
       };
+      set_ritual_paused: {
+        Args: { p_paused: boolean; p_ritual_id: string };
+        Returns: Database['public']['Enums']['ritual_status'];
+      };
       share_location: {
         Args: { p_activity_id: string; p_lat?: number; p_lng?: number; p_until?: string };
         Returns: Database['public']['CompositeTypes']['location_share_state'];
         SetofOptions: {
           from: '*';
           to: 'location_share_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      skip_ritual_week: {
+        Args: { p_occurs_on?: string; p_ritual_id: string; p_skip?: boolean };
+        Returns: Database['public']['CompositeTypes']['ritual_week_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'ritual_week_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      skip_session: {
+        Args: { p_reason?: string; p_session_id: string };
+        Returns: {
+          activity_id: string;
+          approval_required: boolean;
+          auto_fill_cutoff_at: string;
+          created_at: string;
+          currency: string;
+          id: string;
+          member_price_cents: number;
+          members_first: boolean;
+          members_open_at: string;
+          occurs_on: string;
+          opens_at: string;
+          plan_id: string;
+          price_cents: number;
+          program_id: string;
+          refund_window: Database['public']['Enums']['host_refund_window'];
+          series_id: string | null;
+          series_version: number;
+          skip_reason: string | null;
+          skipped_at: string | null;
+          skipped_by: string | null;
+          starts_at: string;
+          status: Database['public']['Enums']['host_session_status'];
+          updated_at: string;
+          waitlist_auto_fill: boolean;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_sessions';
           isOneToOne: true;
           isSetofReturn: false;
         };
@@ -5420,6 +9865,30 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      submit_clash_result: {
+        Args: {
+          p_a_value: number;
+          p_b_value: number;
+          p_clash_event_id: string;
+          p_idempotency_key: string;
+        };
+        Returns: Database['public']['CompositeTypes']['clash_result_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'clash_result_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      submit_league_result: {
+        Args: {
+          p_away_goals: number;
+          p_fixture_id: string;
+          p_home_goals: number;
+          p_idempotency_key: string;
+        };
+        Returns: Json;
+      };
       surprise_me: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -5444,8 +9913,20 @@ export type Database = {
           window_start: string;
         }[];
       };
+      transfer_clan_captaincy: { Args: { p_clan_id: string; p_user_id: string }; Returns: boolean };
       transfer_crew_ownership: { Args: { p_crew_id: string; p_user_id: string }; Returns: boolean };
       unblock_user: { Args: { p_user_id: string }; Returns: boolean };
+      undo_host_refund_decision: { Args: { p_request_id: string }; Returns: Json };
+      undo_join_decision: {
+        Args: { p_request_id: string };
+        Returns: Database['public']['CompositeTypes']['host_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       unfollow_activity: { Args: { p_activity_id: string }; Returns: boolean };
       unfollow_challenge_event: {
         Args: { p_event_id: string };
@@ -5464,9 +9945,106 @@ export type Database = {
         };
         Returns: boolean;
       };
+      unpin_announcement: { Args: { p_announcement_id: string }; Returns: boolean };
       unread_count: { Args: Record<PropertyKey, never>; Returns: number };
       unregister_push_token: { Args: { p_token: string }; Returns: boolean };
       untag_me: { Args: { p_moment_id: string }; Returns: boolean };
+      update_clan: {
+        Args: {
+          p_area?: string;
+          p_city?: string;
+          p_clan_id: string;
+          p_join_policy?: Database['public']['Enums']['clan_join_policy'];
+          p_name?: string;
+          p_short_name?: string;
+          p_sport_id?: string;
+          p_tagline?: string;
+        };
+        Returns: {
+          archived_at: string | null;
+          area: string | null;
+          city: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          join_policy: Database['public']['Enums']['clan_join_policy'];
+          member_count: number;
+          name: string;
+          short_name: string | null;
+          sport_id: string | null;
+          tagline: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'clans';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      update_host_pass: {
+        Args: {
+          p_description?: string;
+          p_name: string;
+          p_pass_id: string;
+          p_price_cents: number;
+          p_sessions_included?: number;
+          p_valid_days?: number;
+        };
+        Returns: {
+          archived_at: string | null;
+          created_at: string;
+          created_by: string;
+          currency: string;
+          description: string | null;
+          id: string;
+          kind: Database['public']['Enums']['host_pass_kind'];
+          name: string;
+          price_cents: number;
+          program_id: string;
+          series_id: string | null;
+          sessions_included: number | null;
+          sort_order: number;
+          updated_at: string;
+          valid_days: number | null;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_passes';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      update_host_rules: {
+        Args: {
+          p_crews?: boolean;
+          p_experienced?: boolean;
+          p_played_with?: boolean;
+          p_program_id: string;
+        };
+        Returns: {
+          archived_at: string | null;
+          area: string | null;
+          auto_approve_crews: boolean;
+          auto_approve_experienced: boolean;
+          auto_approve_played_with: boolean;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          id: string;
+          name: string;
+          sport_id: string | null;
+          time_zone: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'host_programs';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       update_profile: {
         Args: {
           p_area?: string;
@@ -5493,6 +10071,64 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      update_ritual: {
+        Args: {
+          p_capacity?: number;
+          p_day_of_week?: number;
+          p_distance_km?: number;
+          p_duration_minutes?: number;
+          p_host_id?: string;
+          p_lead_days?: number;
+          p_local_time?: string;
+          p_min_to_go?: number;
+          p_place_id?: string;
+          p_ritual_id: string;
+          p_title?: string;
+        };
+        Returns: {
+          capacity: number;
+          clan_id: string | null;
+          created_at: string;
+          created_by: string;
+          crew_id: string | null;
+          day_of_week: number;
+          distance_km: number | null;
+          duration_minutes: number;
+          ended_at: string | null;
+          host_id: string;
+          id: string;
+          lead_days: number;
+          local_time: string;
+          min_to_go: number | null;
+          paused_at: string | null;
+          place_id: string | null;
+          sport_id: string;
+          status: Database['public']['Enums']['ritual_status'];
+          time_zone: string;
+          title: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'rituals';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      update_series: {
+        Args: { p_changes: Json; p_expected_version?: number; p_series_id: string };
+        Returns: Database['public']['CompositeTypes']['host_series_update'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_series_update';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      upsert_host_league_team: {
+        Args: { p_captain_id?: string; p_crew_id?: string; p_league_id: string; p_name: string };
+        Returns: string;
       };
       vote_challenge_poll: {
         Args: { p_option: number; p_poll_id: string };
@@ -5533,9 +10169,20 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      withdraw_clan_request: { Args: { p_clan_id: string }; Returns: boolean };
       withdraw_down_for: {
         Args: { p_signal_id: string };
         Returns: Database['public']['Enums']['signal_status'];
+      };
+      withdraw_join_request: {
+        Args: { p_session_id: string };
+        Returns: Database['public']['CompositeTypes']['host_join_state'];
+        SetofOptions: {
+          from: '*';
+          to: 'host_join_state';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
     };
     Enums: {
@@ -5565,13 +10212,61 @@ export type Database = {
       challenge_submission_status: 'pending' | 'confirmed' | 'superseded';
       challenge_verification_method: 'participant_confirmation' | 'device';
       check_in_method: 'location' | 'host';
+      clan_join_policy: 'open' | 'request' | 'invite';
+      clan_join_via: 'created' | 'open' | 'approved' | 'code';
+      clan_request_status: 'pending' | 'approved' | 'declined' | 'withdrawn';
+      clan_role:
+        'captain' | 'organizer' | 'coach' | 'moderator' | 'mentor' | 'connector' | 'member';
+      clan_run_stage: 'forming' | 'game_on' | 'live' | 'done' | 'cancelled';
+      clan_run_status: 'forming' | 'game_on' | 'cancelled';
+      clash_event_state: 'upcoming' | 'this_week' | 'live' | 'verifying' | 'decided';
+      clash_result_source: 'organizer_verified' | 'captains_confirmed';
+      clash_scoring: 'time' | 'distance' | 'score' | 'count';
+      clash_stage: 'proposed' | 'upcoming' | 'live' | 'complete' | 'declined' | 'cancelled';
+      clash_status: 'proposed' | 'scheduled' | 'declined' | 'cancelled';
       crew_join_via: 'created' | 'added' | 'code';
       crew_role: 'owner' | 'admin' | 'member';
       day_part: 'morning' | 'midday' | 'evening';
+      host_approved_via: 'host' | 'played_with' | 'experienced' | 'crews' | 'member';
+      host_audience: 'session' | 'waitlist' | 'members' | 'everyone';
+      host_charge_kind: 'drop_in' | 'pack' | 'monthly' | 'monthly_renewal';
+      host_charge_method: 'app' | 'at_field' | 'host_recorded';
+      host_charge_status: 'due' | 'paid' | 'failed' | 'void';
+      host_fixture_status: 'scheduled' | 'postponed' | 'played' | 'cancelled';
+      host_league_result_source: 'captains_agree' | 'host_entered';
+      host_league_status: 'draft' | 'active' | 'complete';
+      host_level: 'beginners' | 'mixed' | 'competitive';
+      host_log_kind:
+        | 'joined'
+        | 'waitlisted'
+        | 'promoted'
+        | 'dropped'
+        | 'left_waitlist'
+        | 'approved'
+        | 'declined'
+        | 'checked_in'
+        | 'spot_added'
+        | 'reordered'
+        | 'moved_in';
+      host_membership_status: 'active' | 'cancelled' | 'ended';
+      host_pass_kind: 'drop_in' | 'pack' | 'monthly' | 'free';
+      host_payment_state: 'host' | 'member' | 'pack' | 'paid' | 'free' | 'due' | 'refunded';
+      host_payout_status: 'scheduled' | 'paid' | 'failed';
+      host_referee_status: 'asked' | 'accepted' | 'declined';
+      host_refund_decision: 'full' | 'partial' | 'keep';
+      host_refund_reason: 'spot_filled' | 'host_decision' | 'session_cancelled';
+      host_refund_request_status:
+        'open' | 'refunded_full' | 'refunded_partial' | 'kept' | 'withdrawn';
+      host_refund_status: 'pending' | 'succeeded' | 'failed' | 'cancelled';
+      host_refund_window: 'any_time' | 'hours_12' | 'hours_24' | 'never';
+      host_request_status: 'pending' | 'approved' | 'declined' | 'withdrawn';
+      host_role: 'owner' | 'co_host';
+      host_session_status: 'scheduled' | 'skipped';
       invite_kind: 'pull_in' | 'run_it_back';
       invite_status: 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired';
       member_via: 'host' | 'im_down' | 'down_for' | 'invite';
       message_kind: 'text' | 'system';
+      mission_metric: 'distance_km' | 'runs' | 'hours';
       notification_object: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event';
       notification_type:
         | 'need_one_more'
@@ -5593,8 +10288,11 @@ export type Database = {
         | 'call_out'
         | 'challenge_posts'
         | 'challenge_milestone'
-        | 'challenge_to_confirm';
-      plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat';
+        | 'challenge_to_confirm'
+        | 'host_announcement'
+        | 'host_update'
+        | 'host_request';
+      plan_source: 'down_for' | 'quick' | 'run_it_back' | 'chat' | 'host_session' | 'ritual';
       plan_status: 'forming' | 'game_on' | 'expired' | 'cancelled';
       proposal_status: 'proposed' | 'verified' | 'superseded';
       pull_scope: 'connections' | 'nearby';
@@ -5613,8 +10311,14 @@ export type Database = {
         | 'challenge_event'
         | 'challenge_post'
         | 'challenge_comment'
-        | 'rivalry';
+        | 'rivalry'
+        | 'host_program'
+        | 'crew'
+        | 'clan'
+        | 'clan_run'
+        | 'clash';
       reputation_kind: 'shows_up' | 'respectful' | 'welcomes_beginners' | 'great_host';
+      ritual_status: 'active' | 'paused' | 'ended';
       rivalry_kind: 'people' | 'crews';
       signal_status: 'active' | 'matched' | 'withdrawn' | 'expired';
       skill_level: 'learning' | 'casual' | 'intermediate' | 'advanced';
@@ -5724,6 +10428,54 @@ export type Database = {
         verified: boolean | null;
         winner_side: Database['public']['Enums']['team_side'] | null;
       };
+      clan_join_state: {
+        clan_id: string | null;
+        status: string | null;
+        role: Database['public']['Enums']['clan_role'] | null;
+        request_id: string | null;
+        changed: boolean | null;
+      };
+      clan_run_state: {
+        run_id: string | null;
+        status: Database['public']['Enums']['clan_run_status'] | null;
+        stage: Database['public']['Enums']['clan_run_stage'] | null;
+        down_count: number | null;
+        checked_in_count: number | null;
+        capacity: number | null;
+        min_to_go: number | null;
+        i_am_down: boolean | null;
+        i_checked_in: boolean | null;
+        changed: boolean | null;
+      };
+      clash_backing_state: {
+        clash_id: string | null;
+        my_backing: Database['public']['Enums']['team_side'] | null;
+        backing_a: number | null;
+        backing_b: number | null;
+      };
+      clash_result_state: {
+        clash_event_id: string | null;
+        status: string | null;
+        submission_id: string | null;
+        a_value: number | null;
+        b_value: number | null;
+        winner_side: Database['public']['Enums']['team_side'] | null;
+        source: Database['public']['Enums']['clash_result_source'] | null;
+      };
+      clash_squad_state: {
+        clash_event_id: string | null;
+        side: Database['public']['Enums']['team_side'] | null;
+        squad_count: number | null;
+        squad_size: number | null;
+        i_am_in: boolean | null;
+        changed: boolean | null;
+      };
+      clash_state: {
+        clash_id: string | null;
+        status: Database['public']['Enums']['clash_status'] | null;
+        stage: Database['public']['Enums']['clash_stage'] | null;
+        created: boolean | null;
+      };
       comment_respect_state: {
         comment_id: string | null;
         respect_count: number | null;
@@ -5736,6 +10488,81 @@ export type Database = {
         expires_at: string | null;
         matched_plan_id: string | null;
         plan_created: boolean | null;
+      };
+      host_announcement_state: {
+        announcement_id: string | null;
+        recipient_count: number | null;
+        pinned: boolean | null;
+        notified: boolean | null;
+        pushes_left: number | null;
+        message_id: string | null;
+      };
+      host_join_state: {
+        session_id: string | null;
+        activity_id: string | null;
+        request_id: string | null;
+        request_status: Database['public']['Enums']['host_request_status'] | null;
+        attendance_status: Database['public']['Enums']['attendance_status'] | null;
+        waitlist_position: number | null;
+        changed: boolean | null;
+      };
+      host_needs_you_item: {
+        kind: string | null;
+        session_id: string | null;
+        object_id: string | null;
+        name: string | null;
+        starts_at: string | null;
+        count: number | null;
+        user_names: string[] | null;
+        detail: Json | null;
+        sort_at: string | null;
+      };
+      host_pass_summary: {
+        kind: string | null;
+        label: string | null;
+        renews_on: string | null;
+        sessions_left: number | null;
+      };
+      host_payment: {
+        status: string | null;
+        label: string | null;
+        amount_cents: number | null;
+        currency: string | null;
+        detail: string | null;
+      };
+      host_series_update: {
+        series_id: string | null;
+        version: number | null;
+        applies_from: string | null;
+        sessions_updated: number | null;
+        sessions_added: number | null;
+        people_notified: number | null;
+      };
+      host_settlement: {
+        settled: number | null;
+        total: number | null;
+        note_user_id: string | null;
+        note: string | null;
+      };
+      host_week_item: {
+        kind: string | null;
+        session_id: string | null;
+        series_id: string | null;
+        object_id: string | null;
+        name: string | null;
+        starts_at: string | null;
+        time_zone: string | null;
+        status: string | null;
+        capacity: number | null;
+        in_count: number | null;
+        waitlist_count: number | null;
+        asking_count: number | null;
+        price_cents: number | null;
+        member_price_cents: number | null;
+        currency: string | null;
+        approval_required: boolean | null;
+        members_first: boolean | null;
+        detail: Json | null;
       };
       location_share_state: {
         activity_id: string | null;
@@ -5796,6 +10623,14 @@ export type Database = {
         threshold: number | null;
         verification_level: Database['public']['Enums']['verification_level'] | null;
         recap_id: string | null;
+      };
+      ritual_week_state: {
+        ritual_id: string | null;
+        occurs_on: string | null;
+        starts_at: string | null;
+        skipped: boolean | null;
+        plan_id: string | null;
+        clan_run_id: string | null;
       };
       run_it_back_state: {
         plan_id: string | null;
@@ -5942,13 +10777,66 @@ export const Constants = {
       challenge_submission_status: ['pending', 'confirmed', 'superseded'],
       challenge_verification_method: ['participant_confirmation', 'device'],
       check_in_method: ['location', 'host'],
+      clan_join_policy: ['open', 'request', 'invite'],
+      clan_join_via: ['created', 'open', 'approved', 'code'],
+      clan_request_status: ['pending', 'approved', 'declined', 'withdrawn'],
+      clan_role: ['captain', 'organizer', 'coach', 'moderator', 'mentor', 'connector', 'member'],
+      clan_run_stage: ['forming', 'game_on', 'live', 'done', 'cancelled'],
+      clan_run_status: ['forming', 'game_on', 'cancelled'],
+      clash_event_state: ['upcoming', 'this_week', 'live', 'verifying', 'decided'],
+      clash_result_source: ['organizer_verified', 'captains_confirmed'],
+      clash_scoring: ['time', 'distance', 'score', 'count'],
+      clash_stage: ['proposed', 'upcoming', 'live', 'complete', 'declined', 'cancelled'],
+      clash_status: ['proposed', 'scheduled', 'declined', 'cancelled'],
       crew_join_via: ['created', 'added', 'code'],
       crew_role: ['owner', 'admin', 'member'],
       day_part: ['morning', 'midday', 'evening'],
+      host_approved_via: ['host', 'played_with', 'experienced', 'crews', 'member'],
+      host_audience: ['session', 'waitlist', 'members', 'everyone'],
+      host_charge_kind: ['drop_in', 'pack', 'monthly', 'monthly_renewal'],
+      host_charge_method: ['app', 'at_field', 'host_recorded'],
+      host_charge_status: ['due', 'paid', 'failed', 'void'],
+      host_fixture_status: ['scheduled', 'postponed', 'played', 'cancelled'],
+      host_league_result_source: ['captains_agree', 'host_entered'],
+      host_league_status: ['draft', 'active', 'complete'],
+      host_level: ['beginners', 'mixed', 'competitive'],
+      host_log_kind: [
+        'joined',
+        'waitlisted',
+        'promoted',
+        'dropped',
+        'left_waitlist',
+        'approved',
+        'declined',
+        'checked_in',
+        'spot_added',
+        'reordered',
+        'moved_in',
+      ],
+      host_membership_status: ['active', 'cancelled', 'ended'],
+      host_pass_kind: ['drop_in', 'pack', 'monthly', 'free'],
+      host_payment_state: ['host', 'member', 'pack', 'paid', 'free', 'due', 'refunded'],
+      host_payout_status: ['scheduled', 'paid', 'failed'],
+      host_referee_status: ['asked', 'accepted', 'declined'],
+      host_refund_decision: ['full', 'partial', 'keep'],
+      host_refund_reason: ['spot_filled', 'host_decision', 'session_cancelled'],
+      host_refund_request_status: [
+        'open',
+        'refunded_full',
+        'refunded_partial',
+        'kept',
+        'withdrawn',
+      ],
+      host_refund_status: ['pending', 'succeeded', 'failed', 'cancelled'],
+      host_refund_window: ['any_time', 'hours_12', 'hours_24', 'never'],
+      host_request_status: ['pending', 'approved', 'declined', 'withdrawn'],
+      host_role: ['owner', 'co_host'],
+      host_session_status: ['scheduled', 'skipped'],
       invite_kind: ['pull_in', 'run_it_back'],
       invite_status: ['pending', 'accepted', 'declined', 'revoked', 'expired'],
       member_via: ['host', 'im_down', 'down_for', 'invite'],
       message_kind: ['text', 'system'],
+      mission_metric: ['distance_km', 'runs', 'hours'],
       notification_object: ['plan', 'activity', 'crew', 'challenge', 'challenge_event'],
       notification_type: [
         'need_one_more',
@@ -5971,8 +10859,11 @@ export const Constants = {
         'challenge_posts',
         'challenge_milestone',
         'challenge_to_confirm',
+        'host_announcement',
+        'host_update',
+        'host_request',
       ],
-      plan_source: ['down_for', 'quick', 'run_it_back', 'chat'],
+      plan_source: ['down_for', 'quick', 'run_it_back', 'chat', 'host_session', 'ritual'],
       plan_status: ['forming', 'game_on', 'expired', 'cancelled'],
       proposal_status: ['proposed', 'verified', 'superseded'],
       pull_scope: ['connections', 'nearby'],
@@ -5992,8 +10883,14 @@ export const Constants = {
         'challenge_post',
         'challenge_comment',
         'rivalry',
+        'host_program',
+        'crew',
+        'clan',
+        'clan_run',
+        'clash',
       ],
       reputation_kind: ['shows_up', 'respectful', 'welcomes_beginners', 'great_host'],
+      ritual_status: ['active', 'paused', 'ended'],
       rivalry_kind: ['people', 'crews'],
       signal_status: ['active', 'matched', 'withdrawn', 'expired'],
       skill_level: ['learning', 'casual', 'intermediate', 'advanced'],

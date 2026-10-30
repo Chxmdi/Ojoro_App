@@ -71,7 +71,10 @@ enabled = true
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 # seed_liquidity.sql (Step 3), seed_messaging.sql (Step 4) and seed_competition.sql (Step 5) are also safe to re-run on a running
 # stack to refresh their times.
-sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql"]
+# seed_communities.sql (Step 6, CrewHome / Clan / Clash) is safe to re-run too (needs seed_competition.sql's crowd).
+# seed_hosts.sql (Step 6, Host OS core) rebuilds Plateau Pickup; run seed_hosts_ops.sql after it.
+# seed_hosts_ops.sql (Step 6, passes, ledger, Winter League) is safe to re-run; it needs seed_hosts.sql.
+sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql", "./seed_communities.sql", "./seed_hosts.sql", "./seed_hosts_ops.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.

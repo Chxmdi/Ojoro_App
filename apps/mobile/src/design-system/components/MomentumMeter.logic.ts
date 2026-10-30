@@ -1,0 +1,44 @@
+import { sentenceCase } from './word';
+
+/** Bars sit in a 56pt row; an empty week still shows a 6pt stub so the week is countable. */
+export const MOMENTUM_BAR_MAX = 56;
+export const MOMENTUM_BAR_MIN = 6;
+export const MOMENTUM_DEFAULT_LABEL = 'MOMENTUM';
+
+export type MomentumModel = {
+  label: string;
+  /** "6 WEEK STREAK": the streak is a count in words, never a glow. */
+  streakText: string;
+  /** Bar heights in pt, oldest first; the last is this week. */
+  bars: number[];
+  accessibilityLabel: string;
+};
+
+function sessions(n: number): string {
+  return `${n} session${n === 1 ? '' : 's'}`;
+}
+
+/**
+ * Port of `function MomentumMeter` (bundle.js): heights scale to the busiest
+ * week (`max(6, n / max × 56)`), and the whole meter reads as one sentence:
+ * "Rhythm · 8 weeks: 3 sessions this week, 8 week history. 6 week streak."
+ */
+export function momentumModel(
+  weeks: readonly number[],
+  streak = 0,
+  label: string = MOMENTUM_DEFAULT_LABEL,
+): MomentumModel {
+  const clean = weeks.map((n) => (Number.isFinite(n) && n > 0 ? n : 0));
+  const max = Math.max(1, ...clean);
+  const now = clean.length ? clean[clean.length - 1]! : 0;
+  const streakText = `${Math.max(0, Math.floor(streak))} WEEK STREAK`;
+  const history = clean.length
+    ? `${sessions(now)} this week, ${clean.length} week history`
+    : 'no sessions yet';
+  return {
+    label,
+    streakText,
+    bars: clean.map((n) => Math.max(MOMENTUM_BAR_MIN, (n / max) * MOMENTUM_BAR_MAX)),
+    accessibilityLabel: `${sentenceCase(label)}: ${history}. ${sentenceCase(streakText)}.`,
+  };
+}

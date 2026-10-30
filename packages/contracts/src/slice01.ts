@@ -8,6 +8,9 @@ import type { Database } from './database.types';
 import { liquidityErrorCodes } from './liquidity';
 import { messagingErrorCodes } from './messaging';
 import { competitionErrorCodes } from './competition';
+import { hostErrorCodes } from './hosts';
+import { communitiesErrorCodes } from './communities';
+import { hostOpsErrorCodes } from './hostsOps';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -106,6 +109,34 @@ export const idempotentRpcs = [
   'submit_challenge_result',
   'confirm_challenge_result',
   'run_it_back_challenge',
+  // Step 6: Host OS core (hosts.ts)
+  'create_host_program',
+  'create_series',
+  'promote_from_waitlist',
+  'add_session_spot',
+  'ask_to_join',
+  'decide_join_request',
+  'send_announcement',
+  // Step 6: Communities (communities.ts)
+  'join_down_for',
+  'create_ritual',
+  'create_clan',
+  'create_clan_run',
+  'create_clash',
+  'submit_clash_result',
+  // Step 6: Host OS operations (hostsOps.ts)
+  'create_host_pass',
+  'grant_host_pass',
+  'mark_paid_at_field',
+  'decide_host_refund',
+  'request_host_refund',
+  'cancel_host_membership',
+  'create_host_league',
+  'generate_host_league_fixtures',
+  'schedule_host_league_fixture',
+  'submit_league_result',
+  'confirm_league_result',
+  'ask_league_referee',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -169,6 +200,12 @@ export const ojoroErrorCodes = [
   ...messagingErrorCodes,
   // Step 5: Competition (competition.ts, docs/COMPETITION_CONTRACT.md)
   ...competitionErrorCodes,
+  // Step 6: Host OS core (hosts.ts, docs/HOSTS_CONTRACT.md)
+  ...hostErrorCodes,
+  // Step 6: Communities (communities.ts, docs/COMMUNITIES_CONTRACT.md)
+  ...communitiesErrorCodes,
+  // Step 6: Host OS operations (hostsOps.ts, docs/HOSTS_OPS_CONTRACT.md)
+  ...hostOpsErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

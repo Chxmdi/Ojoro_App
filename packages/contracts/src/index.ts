@@ -14,3 +14,10 @@ export * from './liquidity';
 export * from './messaging';
 // Step 5 (Competition) client contract helpers (docs/COMPETITION_CONTRACT.md).
 export * from './competition';
+// Step 6 (Host OS core) client contract helpers (docs/HOSTS_CONTRACT.md).
+export * from './hosts';
+// Step 6 (Communities: Crew Home, Clans, Ojoro Clash) client contract helpers (docs/COMMUNITIES_CONTRACT.md).
+export * from './communities';
+// Step 6 (Host OS operations: passes, ledger, refunds, leagues, insights) client contract helpers
+// (docs/HOSTS_OPS_CONTRACT.md).
+export * from './hostsOps';

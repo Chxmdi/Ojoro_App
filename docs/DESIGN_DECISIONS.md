@@ -503,3 +503,64 @@ Competition (PRD M6). Contract: `docs/COMPETITION_CONTRACT.md`.
 | Stage changes in time | The router refetches the view at the next time boundary (24 h after acceptance, 3 h and 30 min before the start, the start), at least hourly for the local-day change; the server decides the stage. |
 | Cancelled (undesigned) | A calm page: CALLED OFF, "Chimdi O vs Marcus T isn't happening.", the reason in words (`cancel_reason`) and "Nothing was at stake." |
 | Poster | Rendered on screen at 4:5 from the artboard's proportions (names fit one line each). SHARE POSTER shares text and the `link_path` deep link through the OS sheet; saving the poster as an image needs a view-capture library, which isn't added (ask first). Only public events link to it; the server refuses the rest and the screen says why. |
+
+## Step 6 DS
+
+### CrewMomentum, MomentumMeter, StatTile, Ledger, Meter, DataTable, ColumnChart
+
+| Decision | What we did |
+|---|---|
+| CrewMomentum join | `index.d.ts` has no handler for the I'M DOWN in the NEXT row (the web reference draws a dead button). Added `onDown`, `joined` (YOU'RE DOWN, `aria-pressed`/selected) and `joining` (spinner). Without `onDown` the row shows no button (someone else's crew). Analytics (`crew_viewed`, `crew_next_joined`) stay with the screen, like other design-system objects. |
+| Rhythm label | The web hard-codes RHYTHM · 8 WEEKS; we write the real week count, and just RHYTHM with no history. An empty MomentumMeter says "No sessions yet. The first one starts the count." instead of drawing nothing. The streak stays a count: 0 WEEK STREAK. |
+| ColumnChart bar colour | HostInsights.dc.html paints past weeks `#8f8977`, which isn't a calm token. We use `tint` (stone on calm/forming) for past columns and `text` for the last, which is also labelled LAST WEEK · 58 in words, so the highlight never rests on colour. |
+| ColumnChart hit areas | Twelve columns at 390pt are about 27pt wide, under 44pt. Kept as designed (coordinator decision); the readout, SHOW AS TABLE (44pt) and the table view are the accessible route, and each column is still a labelled button for screen readers and keyboards. |
+| ColumnChart / Meter corners | Deviation from the prototype, which rounds column tops (4pt) and the meter (`radius-xs`): both are square, per CLAUDE.md's corner rule (only people and the O, pressables and sheets are round). Owner/coordinator decision. |
+| DataTable semantics | On the web it carries table / row / columnheader / rowheader / cell roles (abbreviated headers like GD carry spoken names). iOS and Android have no table role in RN, so each row is one element read "Mile End Strikers. Position 1, Played 2 … Points 6.", with the header row hidden from them. |
+| DataTable highlighted rows | HostSeason shades rows that moved (`surface-raised`). Shade alone is colour-only status, so a highlighted row also gets a 2pt `line-strong` rule on its left (bleeding into the gutter so columns stay aligned) and reads "Moved" (`highlightLabel`). |
+| DataTable at 390pt | Fixed columns plus a 140pt minimum for the flexible one; standings (#, team, six numbers) fit 350pt. When a table can't fit, it scrolls sideways instead of squeezing numbers. |
+| Ledger money | Amounts are signed integer cents + an ISO currency, formatted with `Intl.NumberFormat` (whole amounts drop cents, money out uses a true minus sign "−$32"); unit prices in labels ("Drop-ins · 22 × $8") come from `count` + `unitCents`. Rows read "Refunds: minus $8". A `note` adds status in words ("pending", "not connected", "placeholder rate"). The total defaults to the sum of the lines. |
+| StatTile variants | HostInsights' ruled 2-up tiles and HostHome's unruled 3-up summary (caption label, no delta) are one component: `StatTile compact` inside `StatTiles columns ruled`. |
+
+## Step 6 BE-HOST-CORE
+
+Host OS core backend (PRD §13): programs, series → sessions, roster and waitlist, join requests,
+People CRM, announcements. Contract: `docs/HOSTS_CONTRACT.md`.
+
+| Decision | What we did |
+|---|---|
+| A session is a Slice 01 plan + activity | Each generated session creates a plan (`source = 'host_session'`, public, locked GAME ON at creation) and its activity, so attendance, the waitlist, check-in, chat, live, recap and Passport are reused, not duplicated. `host_sessions` links them and snapshots the series rules. |
+| Capacity above 12 | Host sessions hold 2–100 (the 7-a-side is 14). The `plans` / `activities` table checks widened to 2–100; Slice 01 RPCs keep their own 2–12 (`capacity_invalid`). |
+| Edits apply from the next session | `update_series` rewrites only sessions that haven't started; past sessions keep their price, time and rules. Dates that leave the schedule are skipped (reason "Not in the series anymore"), never deleted. Stale edits fail with `series_version_conflict`. |
+| "People already in get one message" | One `host_update` notification per person (bundled per series). Time/place changes already notify through the activity's own "moved" notification, so for those no second message is sent. |
+| Skip keeps people's places | SKIP cancels the plan and activity (people get the usual "called off") but keeps attendance, so RESTORE brings everyone back and tells them. |
+| Waitlist that fills itself | Promotion happens in the same transaction as the drop (not "a minute later"), until `auto_fill_cutoff_at` (2 h before, per session); after that the spot stays open and HostHome shows `waitlist_choice`. Slice 01 `join_waitlist` and `cancel_attendance` were redefined (same signatures) to route host sessions through this rule; ordinary activities behave exactly as before. New joiners never jump the queue. |
+| "Approve first-timers" | `approval_required` on the series. Who skips approval is the program's LET THESE STRAIGHT IN rules (played with you, 3+ checked-in games anywhere, shares a crew with a host) plus members and hosts. `join_waitlist` says `approval_required`; the app then calls `ask_to_join` with the note. |
+| Quiet decline | The person gets `host_update` (`request_declined`): "The host couldn't take you this time." with no reason and no name. A declined request stays declined. Approve/decline can be undone for 10 minutes; undoing an approval takes the spot back (refilled by the waitlist rule). |
+| Request history shown to the host | Games checked in anywhere and the show-up record (checked in ÷ confirmed at games that ended), area label and a whole-km distance from their coarse 0.01° area. Never coordinates. The skill level in the PNG ("BEGINNER") isn't shown: Slice 01 keeps level for matching only. ID VERIFIED / HOST VERIFIED: no verification exists; reads return false. |
+| People definitions | This program's sessions only. Played = checked in once; regular = 2+ check-ins in 30 days; new = first came in 30 days; drifting = was a regular (2+ visits in the 30 days up to their last) and none for 21 days; last 12 = the last 12 ended sessions of the series they come to. Hosts are not listed. |
+| Private notes | One note per host per person, readable by its author only (RLS), never by the person or other hosts. Analytics record that a note was saved, never the words. |
+| Drifting invite-back | A `host_update` (`invite_back`) nudge to one upcoming session, at most once a week per person; no streak or guilt copy. |
+| Announcements are about a session | Always attached to one session (pinned as a chat message with `payload.host_announcement`, until it ends; one pinned at a time). Audiences (tonight's, waitlist, members, everyone) widen who receives it. Program-wide announcements without a session aren't built. The author counts as a recipient when they're in the group (so "SEND TO 17" includes Ade in tonight's 14). |
+| 2 pushes per session | Only `notify = true` sends count; the third fails with `announce_push_limit` and the app offers chat-only. |
+| Money through seams | The roster's payment column, People's pass, "13 of 14 settled", ops needs-you items and league week rows come from five `private.host_*` functions that return null/nothing in the core and are replaced by the ops ledger (BE-HOST-OPS). The core never reads ledger tables. |
+| New notification types | `host_request`, `host_update`, `host_announcement`, with words in a redefined `private.notification_feed` / `generic_copy` (the Step 5 versions plus these cases). |
+| Seed numbers are approximate | `seed_hosts.sql` generates the season deterministically from per-person habits; HostHome matches the PNG (31 of 36, 3 waiting, 2 asking) but People counts are close to, not exactly, 86 / 23 / 18 / 9 / 6. |
+
+## Step 6 BE-HOST-OPS
+
+### HostMembership, payment status, HostSeason, HostInsights (backend)
+
+| Decision | Why / detail |
+|---|---|
+| Ledger with no provider | Passes, charges, refunds and payouts are records with statuses; `provider` is `'none'` by check constraint and reads say `payments_connected: false`. Nothing moves money (owner decision pending; Step 8). Refunds are recorded `pending` and still come off the payout; closed payouts wait as `scheduled`; monthly renewals are recorded `due`. |
+| Service fee is a placeholder in one place | `public.host_service_fee_policy()`: 8% of a payout week's gross charges, rounded to the nearest whole unit (matches −$36 on $456 in HostMembership). Every fee comes from `private.host_service_fee_cents()`. The Insights PNG's −$84 on $1,660 isn't consistent with any single rate, so seeded Insights show the computed fee instead. |
+| Payout week | Friday 00:00 → next Friday 00:00 in the program's time zone, paid on that Friday (the designs' Friday payouts). The next payout is computed live; finished weeks are frozen by an hourly job. |
+| Refund decisions | Host-only, audited with the previous membership state. Full or partial ends the membership now; KEEP IT stops renewal and keeps it to the period end (prototype copy). UNDO is allowed for 10 minutes while the refund is pending (matches core's join-decision undo window). `suggested_partial_cents` is the unused part of the period; the design's $25 is sample content. |
+| Who pays what | Members are covered when the session's member price is 0; a pack is used at check-in when nothing else covers the person; otherwise a drop-in is due at the field until the host marks it paid. Hosts show HOST. |
+| Automatic refunds | Driven by core's `host_session_log` (a `promoted` row naming the dropper) and by skipping a session, so every path that frees a spot refunds the same way. |
+| League results are final | CONFIRM RESULT inserts an insert-only row (like Step 5's results); the prototype's UNDO after confirming isn't offered. A wrong score before confirmation is fixed with DISPUTE (captains resend). Rows go only when the whole program/league is deleted (trigger allows cascades). |
+| Season page is public | Standings, fixtures and confirmed results are readable by anyone signed in once a league is active ("Public standings, results and the final"); captains' raw scores, disputes and who's in are hosts (and the submitter / the player) only. |
+| RESULT TO CONFIRM lists reported games | Only fixtures past kick-off with a captain's score or an open dispute; unreported games still count as a game in hand in the standings. |
+| Referee suggestion | League people marked `can_referee`, not on either team, not playing or refereeing within 75 minutes; most past accepted games first ("has reffed twice"). |
+| Notifications anchor on a session | `host_update` needs an object the person can see; refund and league notes anchor on the person's latest session in the program (core does the same). People who never came to a session aren't notified. |
+| Seeded past payouts are frozen sample rows | The three past payouts carry the PNG totals ($386, $402, $344) as closed weeks; the charges behind the last 60 days are generated separately, so Insights' revenue is computed and doesn't sum to those rows. |

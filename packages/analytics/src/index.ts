@@ -128,6 +128,47 @@ export const analyticsEvents = {
   crowdBacked: 'crowd_backed',
   rematchRequested: 'rematch_requested',
   rematchAccepted: 'rematch_accepted',
+  // Step 6: HostHome, HostSeries, HostRoster, HostRequests, HostPeople, HostAnnounce. The server
+  // records host_program_created, host_series_created/updated, host_session_skipped/restored,
+  // host_session_joined, host_join_requested/decided, host_waitlist_promoted, host_spot_added,
+  // host_checked_in, host_rules_changed, host_tags_set, host_note_saved, host_invite_back_sent and
+  // host_announcement_sent (docs/HOSTS_CONTRACT.md §Analytics); the client sends views and taps
+  // only, never note or announcement words.
+  hostHomeViewed: 'host_home_viewed',
+  hostNeedsYouTapped: 'host_needs_you_tapped',
+  hostSeriesViewed: 'host_series_viewed',
+  hostRosterViewed: 'host_roster_viewed',
+  hostRequestsViewed: 'host_requests_viewed',
+  hostRequestUndoTapped: 'host_request_undo_tapped',
+  hostPeopleViewed: 'host_people_viewed',
+  hostPeopleFilterChanged: 'host_people_filter_changed',
+  hostPersonExpanded: 'host_person_expanded',
+  hostAnnounceViewed: 'host_announce_viewed',
+  hostAnnounceTemplatePicked: 'host_announce_template_picked',
+  askToJoinTapped: 'ask_to_join_tapped',
+  // Step 6: CrewHome, Clan, Clash. The server records ritual_*, clan_*, clan_run_*, clash_*,
+  // crew_rhythm_set and down_for_joined (docs/COMMUNITIES_CONTRACT.md §Analytics); the client
+  // sends taps and what only it sees. Backing a clan reuses crowd_backed.
+  crewViewed: 'crew_viewed',
+  crewNextJoined: 'crew_next_joined',
+  crewChatOpened: 'crew_chat_opened',
+  ritualSkipTapped: 'ritual_skip_tapped',
+  makeThisARitualTapped: 'make_this_a_ritual_tapped',
+  clanViewed: 'clan_viewed',
+  clanRunStartedTapped: 'clan_run_started_tapped',
+  clanInviteShared: 'clan_invite_shared',
+  clashViewed: 'clash_viewed',
+  clashShared: 'clash_shared',
+  // Step 6: HostMembership, HostSeason, HostInsights. The server records host_pass_created,
+  // host_pass_granted, host_paid_at_field, host_refund_requested, host_refund_decided,
+  // host_membership_cancelled, host_league_created, host_league_result_submitted,
+  // host_league_result_confirmed, host_league_result_disputed, host_league_referee_asked and
+  // host_insights_exported (docs/HOSTS_OPS_CONTRACT.md §Analytics); the client sends views and taps.
+  hostMoneyViewed: 'host_money_viewed',
+  hostRefundDecisionUndone: 'host_refund_decision_undone',
+  hostSeasonViewed: 'host_season_viewed',
+  hostInsightsViewed: 'host_insights_viewed',
+  hostInsightsTableToggled: 'host_insights_table_toggled',
 } as const;
 
 export type AnalyticsEvent =
