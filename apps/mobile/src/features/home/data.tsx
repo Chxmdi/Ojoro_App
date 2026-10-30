@@ -89,14 +89,17 @@ export function useLastRecap(userId: string | null) {
           .from('passport_entries')
           .select('activity_id, occurred_at')
           .eq('user_id', userId ?? '')
+          // Game stamps only: a Challenge stamp (Step 7) has no activity or recap.
+          .not('activity_id', 'is', null)
           .order('occurred_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
       );
-      if (!entry) return null;
+      if (!entry?.activity_id) return null;
+      const activityId = entry.activity_id;
       const [recap, activity] = await Promise.all([
-        supabase.from('recaps').select('*').eq('activity_id', entry.activity_id).maybeSingle(),
-        supabase.from('activity_cards').select('title, sport_name').eq('id', entry.activity_id).maybeSingle(),
+        supabase.from('recaps').select('*').eq('activity_id', activityId).maybeSingle(),
+        supabase.from('activity_cards').select('title, sport_name').eq('id', activityId).maybeSingle(),
       ]);
       const r = check(recap);
       if (!r) return null;

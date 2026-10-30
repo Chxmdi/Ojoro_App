@@ -203,7 +203,9 @@ export function busyBars(
 }
 
 /** The tag on a TONIGHT HERE row: "6 / 8" while forming, GAME ON, LIVE. */
-export function tonightTag(item: Pick<PlaceTonightItem, 'status' | 'member_count' | 'capacity'>): string {
+export function tonightTag(
+  item: Pick<PlaceTonightItem, 'status' | 'member_count' | 'capacity'>,
+): string {
   if (item.status === 'live') return 'LIVE';
   if (item.status === 'game_on') return 'GAME ON';
   return `${item.member_count} / ${item.capacity}`;
@@ -225,7 +227,9 @@ export function groupTag(group: Pick<PlaceGroup, 'kind' | 'access'>): string {
 }
 
 /** "Every week, 7:30 · 6 weeks running". */
-export function groupCadence(group: Pick<PlaceGroup, 'cadence' | 'weeks_running' | 'kind'>): string {
+export function groupCadence(
+  group: Pick<PlaceGroup, 'cadence' | 'weeks_running' | 'kind'>,
+): string {
   const n = group.weeks_running;
   if (n <= 1) return group.cadence;
   const unit = group.kind === 'host_series' ? 'sessions so far' : 'weeks running';
