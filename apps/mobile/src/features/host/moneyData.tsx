@@ -4,14 +4,21 @@
  * with `hostKeys.all(programId)`, so the program realtime hint held by the route layout refreshes
  * them all; the money ledger has its own hint (`hostMoneySubscription`).
  *
- * NO MONEY MOVES: there is no payments provider yet. Refund decisions are recorded and authorized on
- * the server; the service fee is a placeholder computed there, never here.
+ * Step 8: money moves through Stripe (test mode only) once the program owner connects a Stripe
+ * account (docs/PAYMENTS_CONTRACT.md). Refund decisions are still recorded and authorized on the
+ * server, which queues the Stripe refund; the service fee is a placeholder computed there, never here.
  *
  * Keyed writes (send_announcement, decide_host_refund, create_host_pass) carry one idempotency key
  * per intention (useIntentKey), reused on retry. The rest are set-to-state and safe to repeat.
  */
 import {
   hostMoneySubscription,
+  hostPaymentAccountSubscription,
+  paymentsFunctions,
+  type ConnectDashboardAnswer,
+  type ConnectOnboardAnswer,
+  type ConnectRefreshAnswer,
+  type HostPaymentAccount,
   type AnnounceContext,
   type AnnounceTemplate,
   type AnnouncementHistoryRow,
@@ -25,6 +32,7 @@ import {
   type HostPersonRow,
 } from '@ojoro/contracts';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Platform } from 'react-native';
 
 import { track } from '@/lib/analytics';
 import { useRealtimeRefetch } from '@/lib/realtime';
@@ -32,6 +40,8 @@ import { rpc } from '@/lib/rpc';
 import { supabase } from '@/lib/supabase';
 
 import { useIntentKey } from '../activities/data';
+import { invokePayments, openHosted } from '../payments/data';
+import { returnBase } from '../payments/logic';
 import { hostKeys, retryNetwork } from './data';
 
 export const peopleKeys = {
@@ -246,11 +256,59 @@ export function useSendAnnouncement(programId: string, sessionId: string) {
 
 // Money ------------------------------------------------------------------------------------------
 
+/** Step 8 fields on `host_money_view` (docs/PAYMENTS_CONTRACT.md, Reads). Optional until every server has them. */
+export type HostDispute = {
+  id: string;
+  status: 'open' | 'won' | 'lost';
+  amount_cents: number;
+  currency: string;
+  created_at: string;
+};
+export type HostProviderPayout = {
+  id: string;
+  status: 'pending' | 'in_transit' | 'paid' | 'failed' | 'canceled';
+  amount_cents: number;
+  currency: string;
+  arrival_date: string | null;
+  payout_id: string | null;
+};
+export type PaymentsMoneyView = Omit<HostMoneyView, 'provider' | 'payments_connected' | 'past_payouts' | 'recent_decisions'> & {
+  provider: 'none' | 'stripe';
+  payments_connected: boolean;
+  payment_account?: HostPaymentAccount | null;
+  disputes?: HostDispute[];
+  provider_payouts?: HostProviderPayout[];
+  past_payouts: (HostMoneyView['past_payouts'][number] & { provider?: 'none' | 'stripe' })[];
+  recent_decisions: (Omit<HostMoneyView['recent_decisions'][number], 'provider'> & { provider?: 'none' | 'stripe' })[];
+};
+
+/** The program's Stripe account when the money view doesn't carry one yet: not connected. */
+export function accountOf(view: PaymentsMoneyView): HostPaymentAccount {
+  return (
+    view.payment_account ?? {
+      program_id: view.program_id,
+      provider: 'none',
+      status: 'not_connected',
+      account_id: null,
+      charges_enabled: false,
+      payouts_enabled: false,
+      details_submitted: false,
+      requirements_due: [],
+      disabled_reason: null,
+      livemode: false,
+      ready_at: null,
+      updated_at: null,
+      can_onboard: false,
+    }
+  );
+}
+
 export function useMoneyView(programId: string) {
   useRealtimeRefetch(programId ? hostMoneySubscription(programId) : null, [moneyKeys.view(programId)]);
+  useRealtimeRefetch(programId ? hostPaymentAccountSubscription(programId) : null, [moneyKeys.view(programId)]);
   return useQuery({
     queryKey: moneyKeys.view(programId),
-    queryFn: async () => (await rpc('host_money_view', { p_program_id: programId })) as unknown as HostMoneyView,
+    queryFn: async () => (await rpc('host_money_view', { p_program_id: programId })) as unknown as PaymentsMoneyView,
     retry: retryNetwork,
     enabled: !!programId,
   });
@@ -354,5 +412,65 @@ export function useArchivePass(programId: string) {
     mutationFn: (passId: string) => rpc('archive_host_pass', { p_pass_id: passId }),
     retry: retryNetwork,
     onSettled: refresh,
+  });
+}
+
+// Stripe Connect --------------------------------------------------------------------------------------
+
+/** Whether the program takes payments in the app (HostRoster's payments note). Hosts only. */
+export function usePaymentAccount(programId: string) {
+  useRealtimeRefetch(programId ? hostPaymentAccountSubscription(programId) : null, [
+    [...hostKeys.all(programId), 'payment-account'],
+  ]);
+  return useQuery({
+    queryKey: [...hostKeys.all(programId), 'payment-account'] as const,
+    queryFn: async () =>
+      (await rpc('host_payment_account', { p_program_id: programId })) as unknown as HostPaymentAccount,
+    retry: retryNetwork,
+    enabled: !!programId,
+  });
+}
+
+/**
+ * SET UP PAYOUTS / FINISH SETUP (Stripe-hosted onboarding), OPEN STRIPE (the Express dashboard) and
+ * CHECK AGAIN (read Stripe now). Owners only, server-side. Each open is one keyed intention.
+ */
+export function useConnect(programId: string) {
+  const intent = useIntentKey();
+  const refresh = useMoneyRefresh(programId);
+  return useMutation({
+    mutationFn: async (action: 'onboard' | 'dashboard' | 'refresh') => {
+      const fn = paymentsFunctions.connect;
+      if (action === 'refresh') {
+        return { action, ...(await invokePayments<ConnectRefreshAnswer>(fn, { action, program_id: programId })) };
+      }
+      if (action === 'dashboard') {
+        const answer = await invokePayments<ConnectDashboardAnswer>(fn, {
+          action,
+          program_id: programId,
+          idempotency_key: intent.key(),
+        });
+        return { action, ...answer };
+      }
+      const back = returnBase(Platform.OS, Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.origin : null);
+      const answer = await invokePayments<ConnectOnboardAnswer>(fn, {
+        action,
+        program_id: programId,
+        idempotency_key: intent.key(),
+        ...(back ? { return_to: back } : null),
+      });
+      return { action, ...answer };
+    },
+    retry: retryNetwork,
+    onSuccess: async (answer) => {
+      if ('url' in answer && answer.url) {
+        track('host_connect_opened', { program_id: programId, action: answer.action });
+        await openHosted(answer.url);
+      }
+    },
+    onSettled: (_d, error) => {
+      intent.settle(error);
+      refresh();
+    },
   });
 }

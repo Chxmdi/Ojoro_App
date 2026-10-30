@@ -1,9 +1,11 @@
 /**
- * TELL OJORO (Create.png): the rules-based Concierge stub (`concierge_suggest`, M9 for the AI).
- * One best match with a plain-language WHY, up to two more ideas. It suggests only: nothing is
- * sent or joined until the person confirms.
+ * TELL OJORO (Create.png): the Movement Concierge. The `concierge` Edge Function asks Claude for one
+ * best match with a plain-language WHY (or which way to start something), checked against what the
+ * search found; it falls back to the rules stub (`concierge_suggest`) and so does the app when the
+ * function can't be reached (docs/CONCIERGE_CONTRACT.md). It suggests only: nothing is sent or
+ * joined until the person confirms.
  */
-import type { Suggestion } from '@ojoro/contracts';
+import { answerFromSuggestions, parseConciergeAnswer, type ConciergeAnswer, type ConciergeStart, type Suggestion } from '@ojoro/contracts';
 
 import { clock, clockWithPeriod, DEFAULT_TIME_ZONE, dayDiff, dayLabel } from '../plans/time';
 
@@ -94,4 +96,88 @@ export function conciergeErrorLine(code: string, detail: string | null | undefin
   }
   if (code === 'sport_unknown') return "Ojoro doesn't know that sport yet. Try another word for it.";
   return null;
+}
+
+/** "Why: …" for an idea in an answer: the answer's WHY for its best match, the idea's reason otherwise. */
+export function answerWhy(answer: Pick<ConciergeAnswer, 'best' | 'why'>, idea: Idea): string | null {
+  if (answer.best && idea === answer.best && answer.why?.trim()) return ideaWhy({ reason: answer.why });
+  return ideaWhy(idea);
+}
+
+/** The best match first, then the other ideas. */
+export function answerIdeas(answer: Pick<ConciergeAnswer, 'best' | 'more'>): Idea[] {
+  return [...(answer.best ? [answer.best] : []), ...answer.more] as Idea[];
+}
+
+/** A stable key for an answer, so a new one starts from its best match again. */
+export function answerKey(answer: ConciergeAnswer | undefined): string {
+  if (!answer) return '';
+  const ideas = answerIdeas(answer).map((r) => r.plan_id ?? `${r.sport_id}-${r.starts_at}`);
+  return [answer.outcome, answer.start ?? '', ...ideas].join('|');
+}
+
+/** When nothing fits, the panel: a way to start something, in the fixed Ojoro words. */
+export function nothingFitsPanel(answer: Pick<ConciergeAnswer, 'outcome' | 'start'>): {
+  overline: string;
+  body: string;
+  action: string;
+  start: ConciergeStart;
+} {
+  if (answer.outcome === 'not_movement') {
+    return {
+      overline: 'TELL OJORO WHAT YOU WANT TO DO',
+      body: 'Ojoro finds games and plans near you. Say how long you have, what you want to play or that you want to meet people.',
+      action: "SAY YOU'RE DOWN",
+      start: 'down_for',
+    };
+  }
+  switch (answer.start ?? 'down_for') {
+    case 'quick_plan':
+      return {
+        overline: 'NOTHING FITS YET',
+        body: 'Nothing near you fits that right now. Pick the sport, a time and a place, and Ojoro brings people to it.',
+        action: 'QUICK PLAN',
+        start: 'quick_plan',
+      };
+    case 'activity':
+      return {
+        overline: 'NOTHING FITS YET',
+        body: 'Nothing near you fits that right now. Set it up as an activity with capacity, teams and kit.',
+        action: 'ACTIVITY',
+        start: 'activity',
+      };
+    case 'call_out':
+      return {
+        overline: 'NOTHING FITS YET',
+        body: 'Nothing near you fits that right now. Call someone out. If they accept, it becomes an event.',
+        action: 'CALL OUT',
+        start: 'call_out',
+      };
+    default:
+      return { overline: 'NOTHING FITS YET', body: NOTHING_FITS, action: "SAY YOU'RE DOWN", start: 'down_for' };
+  }
+}
+
+/**
+ * What to do with the function's reply. `answer`: show it. `fallback`: the function isn't there or
+ * broke (no answer, 404, 5xx, a body that isn't an answer); ask `concierge_suggest` directly.
+ * `error`: the person's own error (a PostgREST-shaped 4xx); show it in words.
+ */
+export function invokeOutcome(
+  status: number | null,
+  body: unknown,
+): { kind: 'answer'; answer: ConciergeAnswer } | { kind: 'fallback' } | { kind: 'error'; body: unknown } {
+  if (status === null || status === 200) {
+    const answer = status === 200 ? parseConciergeAnswer(body) : null;
+    return answer ? { kind: 'answer', answer } : { kind: 'fallback' };
+  }
+  const b = body as { code?: unknown; message?: unknown } | null;
+  const postgrest = !!b && typeof b === 'object' && b.code === 'P0001' && typeof b.message === 'string';
+  if (status >= 400 && status < 500 && postgrest) return { kind: 'error', body };
+  return { kind: 'fallback' };
+}
+
+/** The app's own rules answer from `concierge_suggest` rows. */
+export function rulesFallback(rows: readonly Suggestion[]): ConciergeAnswer {
+  return answerFromSuggestions(rows, 'unreachable');
 }

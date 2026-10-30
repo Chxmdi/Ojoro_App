@@ -12,6 +12,8 @@ import { hostErrorCodes } from './hosts';
 import { communitiesErrorCodes } from './communities';
 import { hostOpsErrorCodes } from './hostsOps';
 import { passportErrorCodes } from './passport';
+import { trustErrorCodes } from './trust';
+import { paymentsErrorCodes } from './payments';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -140,6 +142,19 @@ export const idempotentRpcs = [
   'ask_league_referee',
   // Step 7: Passport (passport.ts)
   'set_goal',
+  // Step 8: Trust (trust.ts)
+  'submit_appeal',
+  'staff_assign_case',
+  'staff_unassign_case',
+  'staff_resolve_case',
+  'staff_hide_content',
+  'staff_restore_content',
+  'staff_pause_account',
+  'staff_restore_account',
+  'staff_decide_appeal',
+  'staff_void_reputation',
+  'staff_set_place_sensitive',
+  'staff_set_role',
 ] as const satisfies readonly RpcName[];
 
 /** Stable error codes raised by the database (SQLSTATE P0001; the code is `error.message`). */
@@ -211,6 +226,10 @@ export const ojoroErrorCodes = [
   ...hostOpsErrorCodes,
   // Step 7: Passport (passport.ts, docs/PASSPORT_CONTRACT.md)
   ...passportErrorCodes,
+  // Step 8: Trust and safety (trust.ts, docs/TRUST_CONTRACT.md)
+  ...trustErrorCodes,
+  // Step 8: Payments (payments.ts, docs/PAYMENTS_CONTRACT.md)
+  ...paymentsErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

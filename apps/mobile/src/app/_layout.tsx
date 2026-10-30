@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider, useOjoroFonts } from '@/design-system';
 import { RouteGuard } from '@/features/auth/RouteGuard';
 import { GateContext, useGateState } from '@/features/auth/useGate';
+import { PausedGate } from '@/features/safety/PausedScreen';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { usePushRegistration } from '@/lib/push';
 import { QueryProvider } from '@/lib/query';
@@ -31,7 +32,10 @@ export default function RootLayout() {
         <AuthProvider>
           <ToastProvider>
             <PushRegistration />
-            <GatedStack />
+            {/* A paused account sees only why, and how to appeal (docs/TRUST_CONTRACT.md). */}
+            <PausedGate>
+              <GatedStack />
+            </PausedGate>
           </ToastProvider>
         </AuthProvider>
       </QueryProvider>

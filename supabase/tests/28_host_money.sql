@@ -470,8 +470,8 @@ select tests.logout();
 select throws_ok($$update public.host_ops_audit set action = 'x'$$, 'P0001', 'audit_immutable', 'the audit trail is insert-only');
 select throws_ok($$delete from public.host_ops_audit$$, 'P0001', 'audit_immutable', 'and cannot be deleted');
 select throws_ok(format($$insert into public.host_charges (program_id, user_id, kind, pass_id, amount_cents, currency, method, provider)
-                          values (%L, %L, 'pack', %L, 100, 'CAD', 'app', 'stripe')$$, tests.id('prog'), tests.u(2), tests.id('pack')),
-                 '23514', null, 'no provider but none until one is chosen');
+                          values (%L, %L, 'pack', %L, 100, 'CAD', 'app', 'paypal')$$, tests.id('prog'), tests.u(2), tests.id('pack')),
+                 '23514', null, 'no provider but none or Stripe (Step 8)');
 
 -- Payouts ---------------------------------------------------------------------------------------------------
 select tests.login(1);

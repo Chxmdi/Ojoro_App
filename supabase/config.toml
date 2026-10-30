@@ -76,7 +76,8 @@ enabled = true
 # seed_hosts_ops.sql (Step 6, passes, ledger, Winter League) is safe to re-run; it needs seed_hosts.sql.
 # seed_places.sql (Step 7, Pulse / Place) is safe to re-run; run it after seed_communities.sql and seed_hosts.sql.
 # seed_passport.sql (Step 7, Chimdi's Passport, goal, reputation) is safe to re-run; it needs seed_competition.sql and seed_communities.sql.
-sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql", "./seed_communities.sql", "./seed_hosts.sql", "./seed_hosts_ops.sql", "./seed_places.sql", "./seed_passport.sql"]
+# seed_trust.sql (Step 8, staff accounts and sample moderation cases) is safe to re-run; run it after the others.
+sql_paths = ["./seed.sql", "./seed_liquidity.sql", "./seed_messaging.sql", "./seed_competition.sql", "./seed_communities.sql", "./seed_hosts.sql", "./seed_hosts_ops.sql", "./seed_places.sql", "./seed_passport.sql", "./seed_trust.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
@@ -298,6 +299,9 @@ max_frequency = "5s"
 # A brand-new user for the auth/onboarding e2e (apps/mobile/e2e/auth-onboarding.e2e.mjs). Not seeded:
 # the e2e deletes and recreates it on every run.
 15555550199 = "123456"
+# Step 8 staff (supabase/seed_trust.sql, docs/TRUST_CONTRACT.md): Ojoro Staff (admin), Ojoro Moderator.
+15555550190 = "123456"
+15555550191 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]
@@ -421,6 +425,17 @@ deno_version = 2
 
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
+
+# Step 8 payments (docs/PAYMENTS_CONTRACT.md). These three authenticate themselves: Stripe's signature,
+# the cron secret, and a redirect that reads nothing. The other payments functions need a user's JWT.
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.payments-drain]
+verify_jwt = false
+
+[functions.payments-return]
+verify_jwt = false
 
 [analytics]
 enabled = true

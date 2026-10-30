@@ -3,8 +3,9 @@
  * waitlists): who's in with how their spot is paid (in words), the waitlist in order with the
  * auto-fill cutoff, who dropped, MESSAGE ALL, CHECK-IN. Calm.
  *
- * Payment status comes from the ops ledger (docs/HOSTS_OPS_CONTRACT.md); no payments provider is
- * connected, so nothing is charged through Ojoro and the screen says so.
+ * Payment status comes from the ops ledger (docs/HOSTS_OPS_CONTRACT.md): its words ("PAID $8",
+ * "$8 AT FIELD") reflect real Stripe charges once the program takes payments in the app (Step 8,
+ * docs/PAYMENTS_CONTRACT.md). Until then nothing is charged through Ojoro and the screen says so.
  */
 import { type Href, router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -62,6 +63,8 @@ import {
   settlement,
   waitlistNote,
 } from './logic';
+import { rosterPaymentsCopy } from '../payments/logic';
+import { usePaymentAccount } from './moneyData';
 import { HostUnavailable } from './ui';
 
 const SHOWN_AT_FIRST = 8;
@@ -78,6 +81,8 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
   const reorder = useReorderWaitlist(programId, sessionId);
   const addSpot = useAddSpot(programId, sessionId);
   const markPaid = useMarkPaid(programId, sessionId);
+  const account = usePaymentAccount(programId);
+  const payCopy = rosterPaymentsCopy(account.data?.status === 'ready');
   const intents = useIntentKeys();
   const [showAll, setShowAll] = useState(false);
   const [checkInMode, setCheckInMode] = useState(false);
@@ -169,10 +174,10 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
             <View className="flex-row items-start gap-space-3 bg-surface-raised p-space-4" role="region" aria-label="Payments" testID="roster-settlement">
               <Icon name={settle.kind === 'settled' ? 'check' : settle.kind === 'open' ? 'clock' : 'offline'} size={20} />
               <View className="flex-1 gap-space-1">
-                <Text variant="title-sm">{settle.kind === 'not-connected' ? 'Payments aren’t connected' : settle.title}</Text>
+                <Text variant="title-sm">{settle.kind === 'not-connected' ? payCopy.title : settle.title}</Text>
                 <Text variant="body-sm" muted>
                   {settle.kind === 'not-connected'
-                    ? 'Nobody pays through Ojoro yet. Collect at the field and mark it here, and it shows in your payout.'
+                    ? payCopy.body
                     : (settle.note ?? (settle.kind === 'settled' ? 'Everyone in is paid for.' : 'Mark spots paid at the field as people pay.'))}
                 </Text>
                 {dueRows.length > 0 ? (

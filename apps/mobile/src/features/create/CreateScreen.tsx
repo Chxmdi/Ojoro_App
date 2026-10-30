@@ -1,9 +1,10 @@
 /**
- * Create (Create.png): TELL OJORO (the rules-based Concierge: one best match with a plain WHY and
- * one confirm action, up to two more ideas), then the ways to start: Down For (the sheet), Quick
+ * Create (Create.png): TELL OJORO (the Movement Concierge: one best match with a plain WHY and one
+ * confirm action, up to two more ideas; or, when nothing fits, the way to start something), then the ways to start: Down For (the sheet), Quick
  * Plan and Activity (`/create/plan`), and Call Out (`/challenge/new`, Step 5). Crew (M7) and Route
  * aren't built, so they aren't offered. Ojoro suggests; nothing is sent or joined until the person confirms.
  */
+import type { ConciergeAnswer, ConciergeStart } from '@ojoro/contracts';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -35,14 +36,16 @@ import { routes } from '../plans/parts';
 import { DEFAULT_TIME_ZONE } from '../plans/time';
 import { InlineError } from '../profile/states';
 import {
+  answerIdeas,
+  answerKey,
+  answerWhy,
   CONCIERGE_HINT,
   confirmLabel,
   conciergeErrorLine,
   ideaCount,
   ideaTitle,
-  ideaWhy,
   moreIdeasLabel,
-  NOTHING_FITS,
+  nothingFitsPanel,
   type Idea,
 } from './conciergeLogic';
 import { useConcierge } from './data';
@@ -88,6 +91,7 @@ export function CreateScreen() {
             concierge={concierge}
             online={online}
             onDownFor={(sportId) => setSheet({ sportId })}
+            onStart={open}
           />
         </View>
 
@@ -146,15 +150,17 @@ function Suggestions({
   concierge,
   online,
   onDownFor,
+  onStart,
 }: {
   concierge: ReturnType<typeof useConcierge>;
   online: boolean;
   onDownFor: (sportId: string | null) => void;
+  onStart: (start: 'quick_plan' | 'activity' | 'call_out') => void;
 }) {
   const [picked, setPicked] = useState(0);
   const [moreOpen, setMoreOpen] = useState(false);
-  const rows = (concierge.data ?? []) as Idea[];
-  const key = rows.map((r) => r.plan_id ?? `${r.sport_id}-${r.starts_at}`).join('|');
+  const answer = concierge.data;
+  const key = answerKey(answer);
   const [seen, setSeen] = useState(key);
   if (seen !== key) {
     // New answer: start from its best match again.
@@ -164,7 +170,7 @@ function Suggestions({
   }
 
   if (concierge.query === null) return null;
-  if (!online && rows.length === 0) {
+  if (!online && !answer) {
     return <Toast kind="offline" message="Offline. Ojoro suggests when you're back." />;
   }
   if (concierge.isPending) {
@@ -174,7 +180,7 @@ function Suggestions({
       </View>
     );
   }
-  if (concierge.isError && rows.length === 0) {
+  if (concierge.isError && !answer) {
     const err = ojoroErrorOf(concierge.error);
     return (
       <InlineError
@@ -185,39 +191,45 @@ function Suggestions({
       />
     );
   }
-  if (rows.length === 0) {
-    return (
-      <Panel
-        overline="NOTHING FITS YET"
-        body={NOTHING_FITS}
-        accessibilityLabel="Nothing fits yet"
-        testID="concierge-empty"
-        actions={
-          <Button variant="secondary" onPress={() => onDownFor(null)}>
-            SAY YOU&apos;RE DOWN
-          </Button>
-        }
-      />
-    );
-  }
+  if (!answer) return null;
 
-  const idea = rows[Math.min(picked, rows.length - 1)] as Idea;
-  const others = rows.map((r, i) => ({ r, i })).filter(({ i }) => i !== picked);
+  const ideas = answerIdeas(answer);
+  // With no best match, index 0 is the "nothing fits" panel and the ideas start at 1.
+  const offset = answer.best ? 0 : 1;
+  const current = picked - offset;
+  const idea = current >= 0 ? ideas[Math.min(current, ideas.length - 1)] : undefined;
+  const others = ideas.map((r, i) => ({ r, i: i + offset })).filter(({ i }) => i !== picked);
   const more = moreIdeasLabel(others.length, moreOpen);
+  const toggleMore = () => {
+    if (!moreOpen) track('concierge_more_ideas_tapped', { count: others.length, source: answer.source });
+    setMoreOpen((o) => !o);
+  };
 
   return (
     <View className="gap-space-3">
       {!online ? <Toast kind="offline" message="Offline. These ideas may be out of date." /> : null}
-      <IdeaPanel
-        key={idea.plan_id ?? `${idea.sport_id}-${idea.starts_at}`}
-        idea={idea}
-        overline={picked === 0 ? 'BEST MATCH' : 'ANOTHER IDEA'}
-        more={more}
-        onMore={() => {
-          if (!moreOpen) track('concierge_more_ideas_tapped', { count: others.length });
-          setMoreOpen((o) => !o);
-        }}
-      />
+      {idea ? (
+        <IdeaPanel
+          key={idea.plan_id ?? `${idea.sport_id}-${idea.starts_at}`}
+          idea={idea}
+          why={answerWhy(answer, idea)}
+          source={answer.source}
+          overline={picked === 0 && answer.best ? 'BEST MATCH' : 'ANOTHER IDEA'}
+          more={more}
+          onMore={toggleMore}
+        />
+      ) : (
+        <NothingFits
+          answer={answer}
+          more={more}
+          onMore={toggleMore}
+          onStart={(start) => {
+            track('concierge_start_tapped', { start, outcome: answer.outcome, source: answer.source });
+            if (start === 'down_for') onDownFor(answer.sport_id);
+            else onStart(start);
+          }}
+        />
+      )}
       {moreOpen ? (
         <View role="list" aria-label="More ideas" testID="more-ideas">
           {others.map(({ r, i }) => (
@@ -225,7 +237,7 @@ function Suggestions({
               key={r.plan_id ?? `${r.sport_id}-${r.starts_at}`}
               title={ideaTitle(r, new Date(), TZ)}
               titleVariant="title-sm"
-              meta={ideaWhy(r) ?? undefined}
+              meta={answerWhy(answer, r) ?? undefined}
               trailing="chevron"
               accessibilityHint="Shows this idea above. Nothing is joined."
               onPress={() => {
@@ -241,14 +253,54 @@ function Suggestions({
   );
 }
 
+/** Nothing fits (or the text wasn't about moving): the way to start something, in fixed words. */
+function NothingFits({
+  answer,
+  more,
+  onMore,
+  onStart,
+}: {
+  answer: ConciergeAnswer;
+  more: string | null;
+  onMore: () => void;
+  onStart: (start: ConciergeStart) => void;
+}) {
+  const panel = nothingFitsPanel(answer);
+  return (
+    <Panel
+      overline={panel.overline}
+      body={panel.body}
+      accessibilityLabel={answer.outcome === 'not_movement' ? 'Tell Ojoro what you want to do' : 'Nothing fits yet'}
+      testID="concierge-empty"
+      actionsAlign="end"
+      actions={
+        <>
+          {more ? (
+            <Button variant="ghost" onPress={onMore} testID="more-ideas-toggle">
+              {more}
+            </Button>
+          ) : null}
+          <Button variant="secondary" onPress={() => onStart(panel.start)} testID="concierge-start">
+            {panel.action}
+          </Button>
+        </>
+      }
+    />
+  );
+}
+
 /** One suggestion and its confirm. Keyed by the idea, so the hooks belong to it. */
 function IdeaPanel({
   idea,
+  why,
+  source,
   overline,
   more,
   onMore,
 }: {
   idea: Idea;
+  why: string | null;
+  source: 'ai' | 'rules';
   overline: string;
   more: string | null;
   onMore: () => void;
@@ -259,10 +311,9 @@ function IdeaPanel({
   const imDown = useImDown(idea.plan_id ?? 'none');
   const fromDemand = useCreateFromDemand();
   const count = ideaCount(idea);
-  const why = ideaWhy(idea);
 
   const confirm = () => {
-    track('concierge_confirmed', { kind: idea.kind, sport: idea.sport_id });
+    track('concierge_confirmed', { kind: idea.kind, sport: idea.sport_id, source });
     const onError = (e: unknown) => {
       const err = ojoroErrorOf(e);
       if (err.code === 'plan_full' && idea.plan_id) router.push(routes.plan(idea.plan_id));
