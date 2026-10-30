@@ -17,7 +17,7 @@ export default function HostLayout() {
   const program = useProgram(programId ?? '');
   useHostProgramRealtime(program.data ? (programId ?? '') : '');
 
-  if (program.error && isHostNotAllowed(program.error)) return <HostNotAllowedScreen />;
+  if (program.error && isHostNotAllowed(program.error)) return <HostNotAllowedScreen error={program.error} />;
   if (program.data) return <Stack screenOptions={{ headerShown: false }} />;
   if (program.isSuccess) return <HostNotAllowedScreen />;
   return (

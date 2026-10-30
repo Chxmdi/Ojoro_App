@@ -259,8 +259,8 @@ async function main() {
       await p2.getByText('Ojoro hours at your sessions').waitFor();
       await p2.getByText('Showed up').waitFor();
       await p2.getByText('PEOPLE PER WEEK').waitFor();
-      await p2.getByText('SHOW AS TABLE').click();
-      await p2.getByText('WEEK OF').waitFor();
+      await p2.getByText('SHOW AS TABLE', { exact: true }).click();
+      await p2.getByText('WEEK OF', { exact: true }).waitFor();
       await p2.getByText('SHOW AS CHART').waitFor();
       await p2.getByText(/Ojoro service fee/).first().waitFor();
       await p2.getByText(/placeholder/).first().waitFor();

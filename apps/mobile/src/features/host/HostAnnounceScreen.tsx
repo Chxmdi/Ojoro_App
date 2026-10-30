@@ -84,7 +84,7 @@ export function HostAnnounceScreen({ programId }: { programId: string }) {
         fallback={home}
         right={<IconButton icon="close" label="Discard" onPress={() => goBack(home)} testID="host-announce-discard" />}
       />
-      <View className="gap-space-9 px-space-5 pb-space-10 pt-space-4" testID="host-announce">
+      <View className="gap-space-8 px-space-5 pb-space-10 pt-space-4" testID="host-announce">
         {!online ? <OfflineNote dataUpdatedAt={program.dataUpdatedAt} extra="Sending waits until you're back." /> : null}
         <View className="gap-space-3" role="region" aria-label="Say it once">
           <DisplayText size="lg" accessibilityRole="header">
@@ -238,23 +238,19 @@ function Composer({
       </View>
 
       <View role="region" aria-label="Delivery">
-        <View className="border-b border-line py-space-4">
-          <Switch
+        <Switch
             value={pin}
             onValueChange={setPin}
             label="Pin to the session chat"
             description="Stays at the top until the session ends."
           />
-        </View>
-        <View className="border-b border-line py-space-4">
-          <Switch
+        <Switch
             value={notifyOn}
             onValueChange={setNotify}
             disabled={pushesLeft <= 0}
             label="Send as a notification"
             description={notifyDescription(pushesLeft, HOST_PUSHES_PER_SESSION)}
           />
-        </View>
         <View className="mt-space-6 gap-space-3">
           <Button
             variant="primary"
