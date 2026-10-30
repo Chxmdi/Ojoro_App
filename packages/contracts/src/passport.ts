@@ -63,8 +63,8 @@ export type ChallengeOutcome = 'won' | 'lost' | 'draw';
 /** What a stamp marks, by priority (at most one per stamp). */
 export type PassportMilestoneKind =
   | 'first_stamp'
-  | 'first_in_sport'
   | 'first_in_discipline'
+  | 'first_in_sport'
   | 'personal_best'
   | 'first_challenge'
   | 'first_at_place'

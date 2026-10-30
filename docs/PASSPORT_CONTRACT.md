@@ -129,8 +129,8 @@ At most one per stamp, by priority, computed from history (so it's right even fo
 | `milestone` | When | `stampHeadline` |
 |---|---|---|
 | `first_stamp` | Their first stamp ever | FIRST GAME / FIRST CHALLENGE |
-| `first_in_sport` | First in this sport | FIRST BOXING |
 | `first_in_discipline` | First result in a time / distance discipline (a first personal best) | FIRST 10K |
+| `first_in_sport` | First in this sport | FIRST BOXING |
 | `personal_best` | Beat their best in the discipline | NEW 5K PB |
 | `first_challenge` | First Challenge | FIRST CHALLENGE |
 | `first_at_place` | First stamp at this place | FIRST TIME HERE |

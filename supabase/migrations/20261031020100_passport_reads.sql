@@ -84,8 +84,8 @@ as $$
          s.pb_id is not null, s.pb_prev,
          case
            when s.n_all = 1 then 'first_stamp'
-           when s.n_sport = 1 then 'first_in_sport'
            when s.pb_id is not null and s.pb_prev is null then 'first_in_discipline'
+           when s.n_sport = 1 then 'first_in_sport'
            when s.pb_id is not null then 'personal_best'
            when s.n_challenge = 1 then 'first_challenge'
            when s.n_place = 1 then 'first_at_place'
