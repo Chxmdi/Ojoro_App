@@ -323,3 +323,46 @@ export {
   type FormCell,
 } from './components/Rivalry';
 export { Rematch, rematchModel, type RematchProps } from './components/Rematch';
+export {
+  MomentumMeter,
+  momentumModel,
+  MOMENTUM_DEFAULT_LABEL,
+  type MomentumMeterProps,
+} from './components/MomentumMeter';
+export {
+  CrewMomentum,
+  crewMomentumModel,
+  CREW_CLUSTER_MAX,
+  type CrewMomentumProps,
+} from './components/CrewMomentum';
+export {
+  StatTile,
+  StatTiles,
+  statTileLabel,
+  type StatTileProps,
+  type StatTilesProps,
+} from './components/StatTile';
+export { Meter, meterModel, type MeterProps } from './components/Meter';
+export {
+  Ledger,
+  formatMoney,
+  ledgerRows,
+  ledgerSum,
+  spokenMoney,
+  type LedgerProps,
+  type LedgerLine,
+} from './components/Ledger';
+export {
+  DataTable,
+  rowLabel,
+  type DataTableProps,
+  type DataTableColumn,
+  type DataTableRow,
+} from './components/DataTable';
+export {
+  ColumnChart,
+  chartTicks,
+  type ColumnChartProps,
+  type ColumnChartDatum,
+  type ColumnChartView,
+} from './components/ColumnChart';
