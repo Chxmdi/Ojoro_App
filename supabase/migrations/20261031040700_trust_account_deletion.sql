@@ -60,6 +60,23 @@ begin
    where coalesce(host_id, created_by) = old.id and status <> 'cancelled' and starts_at > now();
   update public.host_programs set archived_at = now() where created_by = old.id and archived_at is null;
 
+  -- History that would otherwise cascade away with them, and that other rows still point at, stays under
+  -- the placeholder: Call-Outs that became Challenge Events, result submissions behind a result, and the
+  -- hosts' ledger (charges, refund requests, refunds). A drop-in already held by the placeholder for the
+  -- same session can't be moved twice (one per session); that rare row goes with the account.
+  update public.call_outs o set challenger_id = v_former
+   where o.challenger_id = old.id and exists (select 1 from public.challenge_events e where e.call_out_id = o.id);
+  update public.call_outs o set opponent_id = v_former
+   where o.opponent_id = old.id and exists (select 1 from public.challenge_events e where e.call_out_id = o.id);
+  update public.challenge_result_submissions set submitted_by = v_former where submitted_by = old.id;
+  update public.host_charges c set user_id = v_former
+   where c.user_id = old.id
+     and not (c.kind = 'drop_in' and c.status <> 'void' and exists (
+       select 1 from public.host_charges x where x.session_id = c.session_id and x.user_id = v_former
+         and x.kind = 'drop_in' and x.status <> 'void'));
+  update public.host_refund_requests set user_id = v_former where user_id = old.id;
+  update public.host_refunds set user_id = v_former where user_id = old.id;
+
   -- Every NO ACTION reference: the placeholder where a person is required, null where it is optional.
   for f in
     select c.conrelid::regclass as tbl, a.attname as col, a.attnotnull as required
@@ -78,6 +95,24 @@ $$;
 drop trigger if exists profiles_prepare_deletion on public.profiles;
 create trigger profiles_prepare_deletion before delete on public.profiles
   for each row execute function private.prepare_account_deletion();
+
+-- The allowance ends with the deletion: this AFTER trigger sorts after the RI cascade triggers
+-- ("RI_ConstraintTrigger…"), so it runs once this profile's cascades are done.
+create or replace function private.finish_account_deletion()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  perform set_config('ojoro.account_deletion', '', true);
+  return null;
+end;
+$$;
+
+drop trigger if exists zz_profiles_finish_deletion on public.profiles;
+create trigger zz_profiles_finish_deletion after delete on public.profiles
+  for each row execute function private.finish_account_deletion();
 
 -- Insert-only tables allow the deletion's own changes (start from their latest definitions:
 -- 20261029200100_competition_schema.sql, 20261030100100_communities_schema.sql,
@@ -174,7 +209,8 @@ begin
 end;
 $$;
 
-revoke all on function private.former_member(), private.prepare_account_deletion(), private.deleting_account(),
+revoke all on function private.former_member(), private.prepare_account_deletion(), private.finish_account_deletion(),
+  private.deleting_account(),
   private.challenge_results_immutable(), private.refuse_result_change(), private.personal_bests_immutable(),
   private.host_ops_insert_only()
   from public, anon, authenticated;

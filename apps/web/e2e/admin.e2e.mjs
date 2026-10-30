@@ -15,9 +15,8 @@
  * message, the other reports it, so the case is new on every run and assertions never depend on global
  * counts. Seeded places are only toggled and put back.
  *
- * If the staff phone isn't a test number in the running auth server yet (config.toml changes need a
- * `supabase stop && supabase start`), staff sign-in falls back to a local-only password set through the
- * admin API, injected as the tool's session; the phone-code UI is still covered by the refusal step.
+ * Both sign-ins go through the real phone-code UI. Earlier runs' decided appeals by the e2e author are
+ * aged 8 days with psql on the local database, so the 5-a-week appeal limit never trips on re-runs.
  */
 import { execSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -59,7 +58,6 @@ const SUPABASE_URL = process.env.SUPABASE_URL ?? 'http://127.0.0.1:54321';
 const SHOTS = process.env.E2E_SHOTS ?? null;
 const PASSWORD = 'ojoro-e2e-password';
 const STAFF_PHONE = '+15555550190';
-const STAFF_ID = 'a0000000-0000-4000-8000-000000000090';
 const T = 20_000;
 const STAMP = Date.now().toString(36);
 
@@ -118,15 +116,23 @@ async function onboard(p) {
   });
 }
 
-/** The staff session: phone code when the test number is live, else a local-only password. */
+/** The staff session, by phone code (the staff numbers are test numbers in supabase/config.toml). */
 async function staffSession() {
   const c = createClient(SUPABASE_URL, PUBLISHABLE, { auth: { persistSession: false } });
   const otp = await c.auth.verifyOtp({ phone: STAFF_PHONE, token: '123456', type: 'sms' });
-  if (!otp.error) return { session: otp.data.session, viaCode: true };
-  await admin.auth.admin.updateUserById(STAFF_ID, { password: PASSWORD });
-  const pw = await c.auth.signInWithPassword({ phone: STAFF_PHONE, password: PASSWORD });
-  if (pw.error) throw new Error(`staff sign-in: ${pw.error.message}`);
-  return { session: pw.data.session, viaCode: false };
+  if (otp.error) {
+    throw new Error(
+      `staff code sign-in failed (${otp.error.code}); restart the stack after config.toml changes`,
+    );
+  }
+  return otp.data.session;
+}
+
+/** Moves the e2e author's decided appeals back 8 days (local database only), under the weekly limit. */
+function ageOldAppeals(userId) {
+  if (!env.DB_URL) return;
+  const sql = `update private.appeals set created_at = created_at - interval '8 days' where user_id = '${userId}' and status <> 'open' and created_at > now() - interval '8 days'`;
+  execSync(`psql "${env.DB_URL}" -q -c "${sql}"`, { stdio: ['ignore', 'ignore', 'inherit'] });
 }
 
 const results = [];
@@ -166,7 +172,8 @@ async function main() {
   const reporter = await person('+15555559862', 'Remi Reporter E2E');
   await onboard(author);
   await onboard(reporter);
-  const staff = await staffSession();
+  ageOldAppeals(author.id);
+  const staff = { session: await staffSession() };
   const staffClient = createClient(SUPABASE_URL, PUBLISHABLE, {
     auth: { persistSession: false },
     global: { headers: { Authorization: `Bearer ${staff.session.access_token}` } },
@@ -234,27 +241,15 @@ async function main() {
   page.on('pageerror', (e) => console.log('  [pageerror]', e.message));
 
   // 2. Staff sign-in. -------------------------------------------------------------------------------------
-  await step(
-    `staff signs in (${staff.viaCode ? 'phone code' : 'local password fallback'})`,
-    async () => {
-      if (staff.viaCode) {
-        await page.goto(ADMIN, { waitUntil: 'load' });
-        await page.getByLabel('Phone number').fill('555 555 0190');
-        await page.getByRole('button', { name: 'Send code' }).click();
-        await page.getByLabel('6-digit code').fill('123456');
-        await page.getByRole('button', { name: 'Sign in' }).click();
-      } else {
-        await page.goto(ADMIN, { waitUntil: 'load' });
-        await page.evaluate(
-          (s) => localStorage.setItem('ojoro-staff-auth', s),
-          JSON.stringify(staff.session),
-        );
-        await page.reload({ waitUntil: 'load' });
-      }
-      await page.getByRole('heading', { name: 'Queue' }).waitFor({ timeout: T });
-      await page.getByRole('navigation', { name: 'Sections' }).waitFor();
-    },
-  );
+  await step('staff signs in with the phone code', async () => {
+    await page.goto(ADMIN, { waitUntil: 'load' });
+    await page.getByLabel('Phone number').fill('555 555 0190');
+    await page.getByRole('button', { name: 'Send code' }).click();
+    await page.getByLabel('6-digit code').fill('123456');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.getByRole('heading', { name: 'Queue' }).waitFor({ timeout: T });
+    await page.getByRole('navigation', { name: 'Sections' }).waitFor();
+  });
 
   // 3. The queue: filters and the new case. -----------------------------------------------------------------
   await step('the queue filters to messages and lists the new case', async () => {

@@ -429,6 +429,8 @@ select tests.keep('r6', (select id from public.host_refunds where user_id = test
 select is((select reason::text || ' ' || status || ' ' || provider from public.host_refunds where id = tests.id('r6')),
           'spot_filled pending stripe', 'the automatic refund is a Stripe refund');
 select is((select status::text from private.payment_outbox where refund_id = tests.id('r6')), 'queued', 'queued to send now');
+select is((select detail ->> 'provider' from public.host_ops_audit where action = 'refund_auto' and subject_id = tests.id('r6')),
+          'stripe', 'its audit row names Stripe');
 select tests.keep('j6', ((tests.claim() -> 0) ->> 'job_id')::uuid);
 select is((select status::text || ' ' || attempts from private.payment_outbox where id = tests.id('j6')), 'sending 1', 'claimed (leased)');
 select is(jsonb_array_length(tests.claim()), 0, 'a leased job isn''t claimed twice');
