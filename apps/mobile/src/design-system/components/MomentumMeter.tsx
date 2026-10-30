@@ -18,6 +18,8 @@ export type MomentumMeterProps = {
   streak?: number | undefined;
   /** Overline. Default MOMENTUM. */
   label?: string | undefined;
+  /** Not in `index.d.ts`. Words in place of the count ("COMEBACK WEEK", "FIRST WEEK"). A zero streak is never written. */
+  streakText?: string | undefined;
   testID?: string | undefined;
 };
 
@@ -27,15 +29,17 @@ export type MomentumMeterProps = {
  * `track` for past weeks and `signal` for this one. Never a glowing XP bar;
  * the bars are decorative and the whole meter reads as one sentence.
  */
-export function MomentumMeter({ weeks, streak, label, testID }: MomentumMeterProps) {
-  const model = momentumModel(weeks, streak, label);
+export function MomentumMeter({ weeks, streak, label, streakText, testID }: MomentumMeterProps) {
+  const model = momentumModel(weeks, streak, label, streakText);
   return (
     <View testID={testID} accessible role="summary" accessibilityLabel={model.accessibilityLabel}>
       <View className="mb-space-3 flex-row flex-wrap items-baseline justify-between gap-x-space-3">
         <Text variant="overline">{model.label}</Text>
-        <Text variant="display-xs" style={{ fontVariant: ['tabular-nums'] }}>
-          {model.streakText}
-        </Text>
+        {model.streakText ? (
+          <Text variant="display-xs" style={{ fontVariant: ['tabular-nums'] }}>
+            {model.streakText}
+          </Text>
+        ) : null}
       </View>
       <View
         className="flex-row items-end gap-space-2"

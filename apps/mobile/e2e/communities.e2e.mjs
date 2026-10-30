@@ -173,23 +173,37 @@ async function main() {
       const crew = await A.call('create_crew', { p_idempotency_key: key(), p_name: `E2E Home ${tag}`, p_sport_id: 'running' });
       crewId = crew.id;
       const code = await A.call('crew_invite_code', { p_crew_id: crewId });
+      // A crew of one shows its code on the page.
+      await open(pa.page, `/crew/${crewId}`, 'crew-screen');
+      const inline = (await pa.page.getByTestId('crew-invite-card').getByTestId('crew-code').innerText()).trim();
+      assert(inline === code, `inline code ${inline} vs ${code}`);
       await B.call('join_crew', { p_code: code });
       await open(pa.page, `/crew/${crewId}`, 'crew-screen');
+      await until('the card goes once someone joins', async () => (await pa.page.getByTestId('crew-invite-card').count()) === 0, 30_000);
       await pa.page.getByTestId('crew-momentum').waitFor();
       await pa.page.getByText(/RHYTHM · 8 WEEKS/).first().waitFor();
       await pa.page.getByText("Shown as overlap only. Nobody's calendar is visible.").waitFor();
       await pa.page.getByTestId('crew-call-out').waitFor();
-      const shown = (await pa.page.getByTestId('crew-code').innerText()).trim();
+      // Members, the code, report and leave live behind the header's ···.
+      await pa.page.getByTestId('crew-header-more').click();
+      await pa.page.getByTestId('crew-menu').waitFor();
+      const shown = (await pa.page.getByTestId('crew-menu').getByTestId('crew-code').innerText()).trim();
       assert(shown === code, `code ${shown} vs ${code}`);
+      await pa.page.getByTestId(`crew-member-${B.id}`).waitFor();
+      await pa.page.getByTestId('crew-report').waitFor();
+      await pa.page.keyboard.press('Escape');
       await pa.page.getByTestId('crew-down-for').waitFor();
       await pa.page.getByTestId('crew-versus-empty').waitFor();
     });
 
-    await step('a member sees no CALL OUT and no code', async () => {
+    await step('a member sees no CALL OUT and no code, but can leave', async () => {
       await open(pb.page, `/crew/${crewId}`, 'crew-screen');
       await pb.page.getByTestId('crew-chat').waitFor();
       assert((await pb.page.getByTestId('crew-call-out').count()) === 0, 'member sees CALL OUT');
+      await pb.page.getByTestId('crew-header-more').click();
+      await pb.page.getByTestId('crew-leave').waitFor();
       assert((await pb.page.getByTestId('crew-code').count()) === 0, 'member sees the code');
+      await pb.page.keyboard.press('Escape');
     });
 
     await step('OPEN CREW CHAT counts new messages, and opening the chat clears them', async () => {
