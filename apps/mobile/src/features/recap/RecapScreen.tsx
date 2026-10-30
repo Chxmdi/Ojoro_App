@@ -5,7 +5,7 @@
  */
 import { router, type Href } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { Share, View } from 'react-native';
+import { Pressable, Share, View } from 'react-native';
 
 import {
   AvatarCluster,
@@ -20,6 +20,7 @@ import {
   useToast,
   VerificationBadge,
 } from '@/design-system';
+import { passportHrefFor } from '@/features/passport/logic';
 import { track } from '@/lib/analytics';
 import { useUserId } from '@/lib/auth';
 
@@ -218,7 +219,14 @@ function RecapBody({
         ) : null}
 
         {stamp ? (
-          <View accessibilityLabel="Passport" className="flex-row items-center gap-space-5" testID="passport-stamp">
+          <Pressable
+            accessibilityRole="link"
+            accessibilityLabel={`Added to your Passport. ${stampTitle(stamp)}. ${passportLine(stamp, now, tz)}`}
+            accessibilityHint="Opens your Passport at this stamp"
+            onPress={() => router.push(passportHrefFor({ activity: card.id }) as Href)}
+            className="flex-row items-center gap-space-5"
+            testID="passport-stamp"
+          >
             <PassportStamp
               title={stampTitle(stamp)}
               place={stamp.place_name ? shortPlace(stamp.place_name).toUpperCase() : 'OJORO'}
@@ -231,7 +239,7 @@ function RecapBody({
                 {passportLine(stamp, now, tz)}
               </Text>
             </View>
-          </View>
+          </Pressable>
         ) : null}
 
         <View accessibilityLabel="Next" className="gap-space-2">

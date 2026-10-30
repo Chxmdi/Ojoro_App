@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { PassportMilestone } from '@ojoro/contracts';
 import { router, type Href } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import {
   Avatar,
@@ -23,6 +24,9 @@ import {
   useToast,
 } from '@/design-system';
 import { useMyRivalries } from '@/features/challenges/data';
+import { usePassportRealtime, usePassportView } from '@/features/passport/data';
+import { GoalSection } from '@/features/passport/GoalSection';
+import { stampProps } from '@/features/passport/logic';
 import { rivalryLink, rivalryWith } from '@/features/challenges/logic';
 import { YourCrews } from '@/features/crews/CrewsScreens';
 import { useReportBlock } from '@/features/safety';
@@ -36,7 +40,6 @@ import {
   profileKeys,
   useAvailabilityOverlap,
   useMyBlocks,
-  usePassport,
   useProfileReputation,
   useProfileSports,
   useProfileView,
@@ -49,7 +52,6 @@ import {
   passportHeadline,
   reputationLabel,
   sportMeta,
-  stampFor,
   visibilityLine,
 } from './logic';
 import { InlineError, OfflineNote, PrivacyNote, useIsOnline } from './states';
@@ -60,7 +62,8 @@ const tabular = { fontVariant: ['tabular-nums' as const] };
  * The physical identity profile (You.png). `self` is the You tab; otherwise `profile/[id]` with
  * the friend/public/blocked views of PRD §9.1, all decided by the server (`profile_view`,
  * `profile_sports`, `profile_reputation`, `availability_overlap`, `passport_entries` RLS).
- * Goal, ID verification, Crews, Clans and hosting have no Slice 01 data and aren't shown.
+ * The GOAL block and the Passport block come from the Passport contract (Step 7); ID verification
+ * has no data yet and isn't shown.
  */
 export function ProfileScreen({ userId, self }: { userId: string; self: boolean }) {
   const online = useIsOnline();
@@ -173,7 +176,9 @@ function ProfileBody({
   const sports = useProfileSports(id, profile.sports_visible);
   const reputation = useProfileReputation(id);
   const availability = useAvailabilityOverlap(id, profile.availability_visible);
-  const passport = usePassport(id, profile.history_visible);
+  const passport = usePassportView(id, self || profile.history_visible);
+  usePassportRealtime(self ? id : null);
+  const passportData = passport.data ?? null;
   const together = gamesWithMe(profile.games_with_me);
   const meta = [profile.handle ? `@${profile.handle}` : null, profile.area].filter(Boolean).join(' · ');
   // Your rivalry with them, from your side ("RIVALRY · 5–3"): Step 5 screens: A.
@@ -299,14 +304,27 @@ function ProfileBody({
         )}
       </View>
 
+      {/* You.png: GOAL between What I do and Reputation. Someone else's only while their goals setting includes you. */}
+      {self || passportData?.goals_visible ? (
+        <GoalSection
+          userId={id}
+          self={self}
+          visible={self || Boolean(passportData?.goals_visible)}
+          goalsVisibility={passportData?.goals_visibility ?? null}
+          from="you"
+        />
+      ) : null}
+
       <ReputationSection self={self} rows={reputation.data ?? []} />
 
       {self || profile.history_visible ? (
         <PassportBlock
-          stamps={passport.data?.count ?? 0}
-          places={profile.places ?? 0}
-          people={profile.people_moved_with ?? 0}
-          recent={passport.data?.recent ?? []}
+          userId={id}
+          stamps={passportData?.totals?.stamps ?? 0}
+          places={passportData?.totals?.places ?? profile.places ?? 0}
+          people={passportData?.totals?.people_moved_with ?? profile.people_moved_with ?? 0}
+          milestones={passportData?.milestones.slice(0, 2) ?? []}
+          timeZone={passportData?.time_zone}
           loading={passport.isPending}
           self={self}
         />
@@ -371,57 +389,59 @@ function ReputationSection({
   );
 }
 
+/**
+ * You.png's Passport block on the after ground: the counts, the two latest firsts and milestones as
+ * stamps, and OPEN PASSPORT. The whole block opens the Passport detail.
+ */
 function PassportBlock({
+  userId,
   stamps,
   places,
   people,
-  recent,
+  milestones,
+  timeZone,
   loading,
   self,
 }: {
+  userId: string;
   stamps: number;
   places: number;
   people: number;
-  recent: import('./data').PassportSummary['recent'];
+  milestones: PassportMilestone[];
+  timeZone: string | undefined;
   loading: boolean;
   self: boolean;
 }) {
   const lines = passportHeadline(stamps, places, people);
+  const href = (self ? '/passport' : `/profile/${userId}/passport`) as Href;
   return (
-    <Situation
-      id="after"
-      className="-mx-space-5 px-space-5 py-space-6"
-      style={{ paddingVertical: 28, gap: 20 }}
-      accessible={!loading}
+    <Pressable
+      onPress={() => router.push(href)}
+      accessibilityRole="link"
       accessibilityLabel={`Passport: ${lines.join(' ')}`}
+      accessibilityHint="Opens the Passport"
       testID="passport-block"
+      className="-mx-space-5"
     >
-      <Text variant="overline">PASSPORT</Text>
-      <DisplayText size="md" style={tabular}>
-        {lines.join('\n')}
-      </DisplayText>
-      {recent.length > 0 ? (
-        <View className="flex-row justify-center gap-space-2">
-          {recent.map((entry, i) => {
-            const stamp = stampFor(entry, entry.place_time_zone ?? undefined);
-            return (
-              <PassportStamp
-                key={entry.id}
-                title={stamp.title}
-                place={stamp.place}
-                date={stamp.date}
-                kind={stamp.kind}
-                tilt={i === 0}
-              />
-            );
-          })}
-        </View>
-      ) : loading ? null : (
-        <Text variant="body-sm">
-          {self ? 'No stamps yet. Your first game adds one.' : 'No stamps yet.'}
+      <Situation id="after" className="px-space-5" style={{ paddingVertical: 28, gap: 20 }}>
+        <Text variant="overline">PASSPORT</Text>
+        <DisplayText size="md" style={tabular}>
+          {lines.join('\n')}
+        </DisplayText>
+        {milestones.length > 0 ? (
+          <View className="flex-row justify-center gap-space-2">
+            {milestones.map((m, i) => (
+              <PassportStamp key={m.entry_id} {...stampProps(m, timeZone)} tilt={i === 0} />
+            ))}
+          </View>
+        ) : loading ? null : (
+          <Text variant="body-sm">{self ? 'No stamps yet. Your first game adds one.' : 'No stamps yet.'}</Text>
+        )}
+        <Text variant="label" testID="open-passport">
+          OPEN PASSPORT
         </Text>
-      )}
-    </Situation>
+      </Situation>
+    </Pressable>
   );
 }
 

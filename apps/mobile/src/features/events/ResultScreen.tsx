@@ -8,12 +8,14 @@
  * linked to this event and the rivalry. The result verified haptic plays once, when the result
  * arrives while you're watching.
  */
-import { isRetryable } from '@ojoro/contracts';
+import { goalGapSentence, isRetryable } from '@ojoro/contracts';
 import { router, type Href } from 'expo-router';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, Share, View } from 'react-native';
 
 import { Badge, DisplayText, haptics, Modal, RecapPoster, Screen, Text, useToast } from '@/design-system';
+import { useChallengePassportForMe } from '@/features/passport/data';
+import { passportHrefFor } from '@/features/passport/logic';
 import { useReportBlock } from '@/features/safety';
 import { track } from '@/lib/analytics';
 import { errorMessage } from '@/lib/errorMessages';
@@ -66,6 +68,14 @@ function ResultBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: Eve
   const rivalry = rivalryRow(f);
   const captain = !!row.is_captain;
   const myValue = row.my_side ? showValue(row.my_side === 'a' ? row.result_a : row.result_b, f.scoring) : null;
+  // Your stamp for this result (Step 7): PB, added to your Passport, how far from your goal.
+  const stamp = useChallengePassportForMe(eventId, !!row.is_competitor).data ?? null;
+  const gap = stamp ? goalGapSentence(stamp) : null;
+  const passportLine = stamp
+    ? ['Added to your Passport', gap ? gap.charAt(0).toLowerCase() + gap.slice(1).replace(/\.$/, '') : null]
+        .filter(Boolean)
+        .join(' · ')
+    : 'Your record and Passport';
   const opponent = row.my_side === 'a' ? sideName(f, 'b') : row.my_side === 'b' ? sideName(f, 'a') : 'them';
 
   useEffect(() => {
@@ -174,11 +184,11 @@ function ResultBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: Eve
             ) : null}
             {row.is_competitor ? (
               <LinkRow
-                lead="YOU"
+                lead={stamp?.personal_best ? 'PB' : 'YOU'}
                 title={myValue ? `${f.title} · ${myValue}` : f.title}
-                line="Your record and Passport"
+                line={passportLine}
                 badge={<Badge>PASSPORT</Badge>}
-                href={'/you' as Href}
+                href={(stamp ? passportHrefFor({ event: eventId }) : '/passport') as Href}
                 testID="result-you"
               />
             ) : null}

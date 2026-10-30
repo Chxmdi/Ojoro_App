@@ -62,7 +62,12 @@ export function markerPoints(markers: readonly PulseMarker[]): AreaMapPoint[] {
                 sport: m.forming_sport_name ?? undefined,
               }
             : null,
-        live: m.live_count && m.live_count > 0 && m.live_title ? { word: liveWord(m.live_title) } : null,
+        // The live pill leads only when everything here is live (Hoshino's SPARRING); a busy place keeps
+        // its count disc (12 ACTIVE) and says what's live in its spoken summary.
+        live:
+          m.live_count && m.live_count > 0 && m.live_title && (m.activity_count ?? 0) <= m.live_count
+            ? { word: liveWord(m.live_title) }
+            : null,
         accessibilityLabel: m.summary,
       });
     } else if (m.kind === 'demand') {
@@ -91,10 +96,11 @@ export function markerPoints(markers: readonly PulseMarker[]): AreaMapPoint[] {
   return out;
 }
 
-/** The live pill's one word: "Sparring rounds" → "SPARRING" (the design's pill). */
+/** The live pill's words: short titles whole ("EVENING 5K"), else the first word ("SPARRING"). */
 export function liveWord(title: string): string {
-  const first = title.trim().split(/\s+/)[0] ?? '';
-  return (first || 'LIVE').toUpperCase();
+  const t = title.trim().replace(/\s+/g, ' ');
+  if (!t) return 'LIVE';
+  return (t.length <= 10 ? t : (t.split(' ')[0] ?? t)).toUpperCase();
 }
 
 /** Neighbourhood names on the ground, one per area (deduplicated). */

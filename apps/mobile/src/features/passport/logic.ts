@@ -94,7 +94,11 @@ function ordinalWord(n: number): string {
 }
 
 /** The stamp a Recap or Result link points at (`?entry=`, `?activity=` or `?event=`). */
-export type StampTarget = { entry?: string | null; activity?: string | null; event?: string | null };
+export type StampTarget = {
+  entry?: string | null | undefined;
+  activity?: string | null | undefined;
+  event?: string | null | undefined;
+};
 
 export function hasTarget(target: StampTarget): boolean {
   return Boolean(target.entry || target.activity || target.event);

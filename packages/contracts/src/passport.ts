@@ -375,7 +375,11 @@ export function formatResultValue(
 }
 
 /** A gap in words: time "49 s" / "1:12"; distance "0.4 km". Always positive. */
-export function formatGap(scoring: ChallengeScoring | null, gap: number, unit?: string | null): string {
+export function formatGap(
+  scoring: ChallengeScoring | null,
+  gap: number,
+  unit?: string | null,
+): string {
   const g = Math.abs(gap);
   if (scoring === 'time') return g < 60 ? `${Math.round(g)} s` : formatDuration(g);
   return formatResultValue(scoring, g, unit);
@@ -424,7 +428,8 @@ export function stampHeadline(stamp: {
       return `${n ?? ''} STAMPS`.trim();
     default:
       if (stamp.kind === 'challenge') {
-        const outcome = stamp.outcome === 'won' ? 'WON' : stamp.outcome === 'lost' ? 'LOST' : 'DRAW';
+        const outcome =
+          stamp.outcome === 'won' ? 'WON' : stamp.outcome === 'lost' ? 'LOST' : 'DRAW';
         return `${title} · ${outcome}`;
       }
       return stamp.sport_number ? `GAME ${stamp.sport_number}` : stamp.sport_name.toUpperCase();
@@ -449,7 +454,9 @@ export function achievementTitle(ladder: AchievementLadder, threshold: number): 
 }
 
 /** The line under a locked (next) achievement: "6 of 10". Counts, not adjectives. */
-export function achievementProgress(a: Pick<PassportAchievement, 'achieved' | 'current' | 'threshold'>) {
+export function achievementProgress(
+  a: Pick<PassportAchievement, 'achieved' | 'current' | 'threshold'>,
+) {
   return a.achieved ? null : `${Math.min(a.current, a.threshold)} of ${a.threshold}`;
 }
 
@@ -462,7 +469,9 @@ const REPUTATION_WORDS: Record<ReputationKind, string> = {
 
 /** A reputation chip: "SHOWS UP · 31" (label face, tabular count). */
 export function reputationLabel(kind: ReputationKind, confirmations?: number): string {
-  return confirmations == null ? REPUTATION_WORDS[kind] : `${REPUTATION_WORDS[kind]} · ${confirmations}`;
+  return confirmations == null
+    ? REPUTATION_WORDS[kind]
+    : `${REPUTATION_WORDS[kind]} · ${confirmations}`;
 }
 
 /** "Showed up to 46 of 48 games." */
@@ -486,7 +495,10 @@ export function goalDateLabel(targetDate: string, today = new Date()): string {
  * "10K OVER 12 KM." (distance), "10 SESSIONS BY DECEMBER.", "3 NEW PLACES.", "8 RUNNING SESSIONS."
  */
 export function goalHeadline(
-  goal: Pick<GoalView, 'kind' | 'discipline' | 'scoring' | 'target_value' | 'target_date' | 'sport_name' | 'unit'>,
+  goal: Pick<
+    GoalView,
+    'kind' | 'discipline' | 'scoring' | 'target_value' | 'target_date' | 'sport_name' | 'unit'
+  >,
   today = new Date(),
 ): string {
   const by = goal.target_date ? ` ${goalDateLabel(goal.target_date, today)}` : '';
@@ -526,7 +538,9 @@ export function goalProgressLine(
  * The Result screen's goal clause: "49 s off your goal." / "Under your goal by 12 s." / null when no
  * goal in this discipline.
  */
-export function goalGapSentence(row: Pick<ChallengePassportForMe, 'goal_gap' | 'scoring' | 'unit'>) {
+export function goalGapSentence(
+  row: Pick<ChallengePassportForMe, 'goal_gap' | 'scoring' | 'unit'>,
+) {
   if (row.goal_gap == null) return null;
   if (row.goal_gap <= 0) {
     return row.goal_gap === 0

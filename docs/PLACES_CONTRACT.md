@@ -19,7 +19,8 @@ effective status computed on read, no raw location) still applies. Judgment call
 - Client helpers in `@ojoro/contracts` (`places.ts`): `placesRpcs`, `placesLoggedReadRpcs`,
   `placesErrorCodes` (all pre-existing codes), `PULSE_WHEN`, `PULSE_WHEN_WORDS`, `PULSE_WHEN_LABEL`,
   `busyPartLabel`, `busyBars`, `tonightTag`, `groupTag`, `groupCadence`, `hostedHereWords`,
-  `placeCreatePrefill`, `pulseTextAlternative`, realtime `pulseSubscription(city)`,
+  `placeCreatePrefill`, `pulseTextAlternative`, the DS adapters `pulseMapPoints` / `pulseMapAreas`
+  (AreaMap `points` / `areas`), `busyTimesData` (BusyTimes `data` + today's index) and `liveWord`, realtime `pulseSubscription(city)`,
   `placeSubscription(placeId)`, and the limits `PULSE_DEMAND_K` (3), `PLACE_BUSY_MIN_GAMES` (6),
   `PLACE_HOST_MIN_GAMES` (5), `TRUSTED_HOST_GAMES` (20), `TRUSTED_HOST_GREAT_HOST_FROM` (5),
   `PULSE_REFETCH_MS` (60 000).
@@ -123,6 +124,9 @@ no area, `distance_km` null). One row per marker:
   FORMING n / m pill, otherwise the count disc (`activity_count`; big with ACTIVE when it's the busiest);
   `demand` → the dashed disc. Areas are the zoomed-out layer (or labels); a renderer may skip area
   markers whose places are shown.
+- Map: `pulseMapPoints(rows)` → AreaMap points (place rows: `activeCount`, `forming {count, capacity,
+  sport}`, `live {word}`; demand rows: `wanting {count, sport}` at the area centroid, named "Near Plateau");
+  `pulseMapAreas(rows)` → the neighbourhood labels.
 - Text alternative: `pulseTextAlternative(markers, { label: 'central Montréal' })` joins the
   summaries (places, then areas without a listed place, then demand) and ends with "Areas, not people."
 - Filter chips: Step 3 `sports_nearby()` (Everything = `p_sport_id` null). Header "Tonight · 3 km":
@@ -161,7 +165,7 @@ inside plans you've joined." is static copy.
 | `distance_km` | From your area; null without one. |
 | `sensitive` | See Privacy. |
 | `tonight_count`, `forming_count`, `live_count` | Until 4 AM (sensitive: only what you're in). |
-| `has_busy_history`, `busy_part`, `busy_levels int[7]` (Mon..Sun, 0–100), `busiest_day`, `today_day`, `today_rank`, `busy_summary` | WHEN IT'S BUSY · EVENINGS: `busyPartLabel(busy_part)`, `busyBars(view)`, `busy_summary` ("Busiest Thursday evenings. Tonight (Tuesday) is the second busiest."). No history → hide the block or say "Not enough games here yet to tell." |
+| `has_busy_history`, `busy_part`, `busy_levels int[7]` (Mon..Sun, 0–100), `busiest_day`, `today_day`, `today_rank`, `busy_summary` | WHEN IT'S BUSY · EVENINGS: `busyPartLabel(busy_part)`, `busyTimesData(view)` (DS BusyTimes) or `busyBars(view)`, `busy_summary` ("Busiest Thursday evenings. Tonight (Tuesday) is the second busiest."). No history → hide the block or say "Not enough games here yet to tell." |
 | `prefill_sport_id`, `prefill_starts_at`, `prefill_duration_minutes`, `prefill_capacity` | CREATE ACTIVITY HERE: your main sport if the place has it, else the place's; the busiest hour here today (7 PM without history) if at least 2 h away, else the next half hour 2–2.5 h from now; the sport's default length and size. `placeCreatePrefill(view)` maps them to `create_plan` args. |
 
 **`place_tonight(p_place_id, p_when = 'tonight') → PlaceTonightItem[]`** TONIGHT HERE, by start, at most 50.
