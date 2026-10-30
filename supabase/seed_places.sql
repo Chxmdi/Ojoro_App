@@ -60,7 +60,6 @@ do $$
 declare
   c_tz constant text := 'America/Toronto';
   c_jm constant uuid := 'b0000000-0000-4000-8000-000000000001';
-  c_hall constant uuid := 'b0000000-0000-4000-8000-000000000061';
   c_chimdi constant uuid := 'a0000000-0000-4000-8000-000000000001';
   c_ade constant uuid := 'a0000000-0000-4000-8000-000000000002';
   c_marcus constant uuid := 'a0000000-0000-4000-8000-000000000003';
@@ -156,7 +155,8 @@ begin
     values (v_plan, r.host, 'host', now() - interval '2 hours');
   end loop;
 
-  -- Hall building (Downtown): three runs tonight → the small "3".
+  -- Parc Jarry: three runs tonight → the small "3". Not at the Hall building: downtown is under 2 km from
+  -- Saint-Henri, which must stay quiet for the FirstHome sample (seed_liquidity.sql, Nneka).
   for r in
     select * from (values (21, 'Hill repeats', 30, c_maya), (22, 'Tempo 5K', 75, c_theo), (23, 'Recovery jog', 120, c_rui))
       t(n, title, offset_min, host)
@@ -165,7 +165,7 @@ begin
     v_at := v_tonight + make_interval(mins => r.offset_min);
     insert into public.plans (id, sport_id, title, starts_at, duration_minutes, place_id, capacity, audience,
                               deadline_at, status, source, created_by, host_id, member_count, created_at)
-    values (v_plan, 'running', r.title, v_at, 45, c_hall, 8, 'public', v_at - interval '30 minutes', 'forming',
+    values (v_plan, 'running', r.title, v_at, 45, 'b0000000-0000-4000-8000-000000000003', 8, 'public', v_at - interval '30 minutes', 'forming',
             'quick', r.host, r.host, 1, now() - interval '4 hours');
     insert into public.plan_members (plan_id, user_id, via, joined_at)
     values (v_plan, r.host, 'host', now() - interval '4 hours');

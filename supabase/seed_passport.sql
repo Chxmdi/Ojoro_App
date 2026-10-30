@@ -46,7 +46,8 @@ declare
   c_zoe constant uuid := 'a0000000-0000-4000-8000-000000000026';
   c_max constant uuid := 'a0000000-0000-4000-8000-000000000027';
   c_ola constant uuid := 'a0000000-0000-4000-8000-000000000028';
-  c_nneka constant uuid := 'a0000000-0000-4000-8000-000000000020';
+  -- Not Nneka: she is the FirstHome sample (day 1, no games), so she never gets a stamp.
+  c_rina constant uuid := 'c6100000-0000-4000-8000-000000000002';
   c_priya constant uuid := 'c6100000-0000-4000-8000-000000000001';
   c_femi constant uuid := 'c6100000-0000-4000-8000-000000000005';
   c_lf constant uuid := 'b0000000-0000-4000-8000-000000000002';
@@ -69,7 +70,7 @@ begin
       (150, '09:00', 'running', c_lachine, c_chimdi, 'Long run', 90, array[c_chimdi, c_joel, c_luc, c_zoe, c_max]),
       (120, '18:00', 'basketball', c_jarry, c_theo, 'Jarry 3v3', 90, array[c_chimdi, c_theo, c_dayo, c_ola, c_kofi, c_rui]),
       (100, '19:00', 'boxing', c_hoshino, c_ade, 'Sparring basics', 75, array[c_chimdi, c_ade, c_ana, c_zoe]),
-      (75, '17:30', 'volleyball', c_lf, c_maya, 'Sunday volleyball', 120, array[c_chimdi, c_maya, c_lena, c_bea, c_luc, c_max, c_nneka, c_priya]),
+      (75, '17:30', 'volleyball', c_lf, c_maya, 'Sunday volleyball', 120, array[c_chimdi, c_maya, c_lena, c_bea, c_luc, c_max, c_rina, c_priya]),
       (60, '18:30', 'running', c_lf, c_chimdi, 'Plateau Run Club', 60, array[c_chimdi, c_lena, c_maya, c_joel, c_ife]),
       (45, '19:00', 'boxing', c_hoshino, c_chimdi, 'Pads and footwork', 60, array[c_chimdi, c_ade, c_kofi]),
       (35, '07:00', 'running', c_mountroyal, c_chimdi, 'Tempo run', 50, array[c_chimdi, c_rui, c_bea, c_lena]),
