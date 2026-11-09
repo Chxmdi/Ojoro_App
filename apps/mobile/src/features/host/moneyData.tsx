@@ -278,7 +278,7 @@ export type PaymentsMoneyView = Omit<HostMoneyView, 'provider' | 'payments_conne
   payment_account?: HostPaymentAccount | null;
   disputes?: HostDispute[];
   provider_payouts?: HostProviderPayout[];
-  past_payouts: (HostMoneyView['past_payouts'][number] & { provider?: 'none' | 'stripe' })[];
+  past_payouts: HostMoneyView['past_payouts'];
   recent_decisions: (Omit<HostMoneyView['recent_decisions'][number], 'provider'> & { provider?: 'none' | 'stripe' })[];
 };
 

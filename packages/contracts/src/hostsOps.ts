@@ -259,6 +259,10 @@ export interface HostPastPayout {
   note: string | null;
   status: HostPayoutStatus;
   paid_at: string | null;
+  /** Step 8: who pays this week. 'stripe' once a Stripe payout landed for it (PAID only then). */
+  provider: 'none' | 'stripe';
+  /** Step 8: Stripe's payout (`po_…`) when `provider` is 'stripe', else null. */
+  provider_ref: string | null;
   lines: HostMoneyLine[];
 }
 

@@ -19,7 +19,8 @@ functions, map errors by code, one idempotency key per intention). Judgment call
 
 - Schema: `supabase/migrations/20261031030000_payments_enums.sql`, `…030100_payments_schema.sql`,
   `…030200_payments_checkout.sql`, `…030300_payments_webhook.sql`, `…030400_payments_queue.sql`,
-  `…030500_payments_provider_reads.sql`.
+  `…030500_payments_provider_reads.sql`, `…030600_payments_payout_arrival.sql`,
+  `…030700_payments_past_payout_provider.sql`.
 - Edge functions (Deno, `npm:stripe@23.0.0`, API version pinned by the SDK): `supabase/functions/`
   `payments-checkout`, `payments-connect`, `payments-return`, `payments-drain`, `stripe-webhook`;
   shared code `supabase/functions/_shared/stripe*.ts` (logic is pure and unit-tested with vitest).
@@ -146,7 +147,9 @@ Idempotency-Key). A checkout whose page expired: start a new one with a new key.
   `payments_connected` (true when Stripe says `charges_enabled` and `payouts_enabled`),
   `payment_account` (`HostPaymentAccount`, with `can_onboard` for owners), `disputes` (open), and
   `provider_payouts` (last 6 Stripe payouts). Past payouts turn `paid` / `failed` when Stripe pays the
-  matching week.
+  matching week; each `past_payouts` row carries `provider` (`'none'` / `'stripe'`) and `provider_ref`
+  (`po_…` or null), and the app says PAID only for `status = 'paid'` with `provider = 'stripe'`
+  (`…030700_payments_past_payout_provider.sql`).
 - **`host_insights`** (Step 6) reports the same `provider` and `payments_connected`.
 - **`host_payment_account(p_program_id) → HostPaymentAccount`** (hosts).
 - **`host_decision_state`** (refund decisions) reports the refund's `provider` and `refund_status`.

@@ -605,6 +605,12 @@ select is((select status::text from public.host_payouts where program_id = tests
           'paid', 'and turns it PAID');
 select tests.login(1);
 select is(public.host_money_view(tests.id('prog')) #>> '{provider_payouts,0,status}', 'paid', 'hosts see Stripe''s payouts');
+select is((select p ->> 'status' || ' ' || (p ->> 'provider') || ' ' || (p ->> 'provider_ref')
+           from jsonb_array_elements(public.host_money_view(tests.id('prog')) -> 'past_payouts') p
+           where p ->> 'id' = tests.id('po')::text),
+          'paid stripe po_1', 'past payouts say Stripe paid the week (so HostMembership can say PAID)');
+select ok(not exists (select 1 from jsonb_array_elements(public.host_money_view(tests.id('prog')) -> 'past_payouts') p
+                      where p ->> 'provider' is null), 'every past payout says who pays it');
 select is(tests.deliver(tests.evt('payout.failed', '{"id":"po_2","status":"failed","amount":100,"currency":"cad","arrival_date":1}', 'acct_nobody'))
           ->> 'result', 'not_found', 'payouts for other accounts');
 

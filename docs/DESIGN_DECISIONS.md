@@ -806,6 +806,9 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | Disputes | Open disputes (`host_money_view.disputes`) show as one alert line with the amounts and "open Stripe to answer". Not designed; kept to a sentence. |
 | HostRoster | The roster badges are the server's ledger words, which now include Stripe charges. The empty-ledger note for a priced session reads "Players can pay in the app" once the account is ready (from `host_payment_account`), else the step 6 "Payments aren't connected". |
 | Not drawn | No card fields, saved cards, in-app receipt documents, cancel-membership screen beyond what step 6 has, or refund notifications for the buyer (Stripe emails them). |
+| Purchase options are read fresh | `host_purchase_options` has `staleTime: 0` (the app default is 30 s, and the cache is persisted): a host can connect payouts, or the webhook can record a payment, between two looks at the same session, and money words must not lag. The persisted copy still shows offline. |
+| "Paid" without the amount | Once a spot is paid the server drops the session's `amount_cents`, so the Activity block reads "Paid" / "Your spot is paid for." (the amount stays on the receipt in `/pay`). |
+| Past payouts say who paid them | `host_money_view.past_payouts` rows carry `provider` / `provider_ref` (`20261031030700_payments_past_payout_provider.sql`, asked for by the coordinator) so HostMembership's PAID-only-when-Stripe-paid rule works on real data; `payoutWord` unchanged. |
 
 ## Step 8 TRUST
 

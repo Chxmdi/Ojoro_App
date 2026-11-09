@@ -310,7 +310,10 @@ try {
 
     await P.page.getByTestId('pay-return-game').click();
     await P.page.getByTestId('session-pay-title').waitFor({ timeout: 30_000 });
-    await until('activity says paid', async () => /Paid \$8/.test(await text(P.page, 'session-pay-title')), 30_000);
+    // The server drops the session price once it's paid (amount_cents null), so the title is "Paid".
+    await until('activity says paid', async () => /^Paid\b/.test(await text(P.page, 'session-pay-title')), 30_000);
+    assert(/paid for/.test(await text(P.page, 'session-pay')), 'paid sentence on the activity');
+    assert((await P.page.getByTestId('session-pay-button').count()) === 0, 'no PAY once paid');
   });
 
   await step('Host roster shows the real charge in words', async () => {
