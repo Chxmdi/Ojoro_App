@@ -588,6 +588,21 @@ select is(tests.deliver(tests.evt('payout.paid', jsonb_build_object('id', 'po_1'
 select is((select status::text || ' ' || provider || ' ' || provider_ref from public.host_payouts where id = tests.id('po')),
           'paid stripe po_1', 'which turns PAID');
 select is((select amount_cents from public.host_provider_payouts where provider_ref = 'po_1'), 9150::bigint, 'Stripe''s amount is kept');
+-- Stripe's arrival_date is midnight UTC of the arrival day: it matches that day whatever the program's time zone,
+-- and a payout a few days late (weekend, bank holiday) still finds its week.
+insert into public.host_payouts (program_id, period_start, period_end, pays_on, currency, gross_cents, refunds_cents, fee_cents, net_cents)
+values (tests.id('prog'), now() - interval '30 days', now() - interval '23 days', date '2026-01-09', 'CAD', 5000, 0, 400, 4600),
+       (tests.id('prog'), now() - interval '23 days', now() - interval '16 days', date '2026-01-16', 'CAD', 6000, 0, 500, 5500);
+select is(tests.deliver(tests.evt('payout.paid', jsonb_build_object('id', 'po_utc', 'status', 'paid', 'amount', 4600, 'currency', 'cad',
+            'arrival_date', extract(epoch from timestamptz '2026-01-09 00:00:00+00')::bigint), 'acct_test1')) ->> 'payout_id',
+          (select id::text from public.host_payouts where program_id = tests.id('prog') and pays_on = date '2026-01-09'),
+          'midnight UTC of the due day matches that week');
+select is(tests.deliver(tests.evt('payout.paid', jsonb_build_object('id', 'po_late', 'status', 'paid', 'amount', 5500, 'currency', 'cad',
+            'arrival_date', extract(epoch from timestamptz '2026-01-19 00:00:00+00')::bigint), 'acct_test1')) ->> 'payout_id',
+          (select id::text from public.host_payouts where program_id = tests.id('prog') and pays_on = date '2026-01-16'),
+          'a payout three days late (over a weekend) still finds its week');
+select is((select status::text from public.host_payouts where program_id = tests.id('prog') and pays_on = date '2026-01-16'),
+          'paid', 'and turns it PAID');
 select tests.login(1);
 select is(public.host_money_view(tests.id('prog')) #>> '{provider_payouts,0,status}', 'paid', 'hosts see Stripe''s payouts');
 select is(tests.deliver(tests.evt('payout.failed', '{"id":"po_2","status":"failed","amount":100,"currency":"cad","arrival_date":1}', 'acct_nobody'))

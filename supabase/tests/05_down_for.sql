@@ -109,6 +109,15 @@ $$;
 -- Uses running (no seed plans or signals) so seed data can't join the matches.
 select no_plan();
 
+-- Local seed data (seed_places.sql's runs tonight, other samples' Down For signals) has real forming plans
+-- and signals nearby that these signals could rightly match. The assertions here are about the test's own
+-- people, so everyone else's is closed to matching for this transaction only (rolled back with the rest):
+-- forming plans past their deadline, active signals withdrawn.
+update public.plans set deadline_at = now() - interval '1 minute'
+ where status = 'forming' and host_id not in (select tests.u(n) from generate_series(1, 12) n);
+update public.intent_signals set status = 'withdrawn'
+ where status = 'active' and user_id not in (select tests.u(n) from generate_series(1, 12) n);
+
 select tests.login(1);
 select throws_ok($$select public.create_down_for(gen_random_uuid(), 'running', now() + interval '2 hours',
   now() + interval '5 hours', null)$$, 'P0001', 'expiry_required', 'a Down For needs an expiry');
@@ -139,12 +148,6 @@ select is((select count(*)::integer from public.intent_signals where user_id = t
 select throws_ok(format($$insert into public.intent_signals (user_id, sport_id, window_start, window_end, expires_at, radius_km)
   values (%L, 'running', now() + interval '4 hours', now() + interval '7 hours', now() + interval '7 hours', 5)$$, tests.u(1)),
   '23P01', null, 'the table refuses an overlapping active signal');
-
--- Local seed data (seed_places.sql's runs tonight, other samples) has real forming plans nearby that a
--- signal could rightly join. These assertions are about the test's own plan, so other people's forming
--- plans are closed to matching (deadline passed) for this transaction only (rolled back with everything else).
-update public.plans set deadline_at = now() - interval '1 minute'
- where status = 'forming' and host_id not in (select tests.u(n) from generate_series(1, 12) n);
 
 -- Matching: a compatible signal forms a plan with both people in it.
 select tests.login(2);

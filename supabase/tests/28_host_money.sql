@@ -484,7 +484,7 @@ select is(public.host_money_view(tests.id('prog')) ->> 'provider', 'none', 'not 
 select is((public.host_money_view(tests.id('prog')) -> 'members' ->> 'count')::int, 1, 'members');
 select tests.logout();
 insert into public.host_charges (program_id, user_id, kind, pass_id, amount_cents, currency, status, method, paid_at)
-values (tests.id('prog'), tests.u(10), 'pack', tests.id('pack'), 7000, 'CAD', 'paid', 'app', now() - interval '15 days');
+values (tests.id('prog'), tests.u(10), 'pack', tests.id('pack'), 7000, 'CAD', 'paid', 'app', now() - interval '22 days'); -- 12+ days from every other charge, so it has a week of its own whatever the weekday
 select ok(private.host_close_payouts(tests.id('prog')) >= 1, 'finished weeks close into payouts');
 select is(private.host_close_payouts(tests.id('prog')), 0, 'once');
 select is((select gross_cents::text || ' ' || fee_cents || ' ' || net_cents || ' ' || status from public.host_payouts

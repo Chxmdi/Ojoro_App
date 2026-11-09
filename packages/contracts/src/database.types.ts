@@ -11344,7 +11344,14 @@ export type Database = {
       message_kind: 'text' | 'system';
       mission_metric: 'distance_km' | 'runs' | 'hours';
       notification_object:
-        'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event' | 'clan' | 'account';
+        | 'plan'
+        | 'activity'
+        | 'crew'
+        | 'challenge'
+        | 'challenge_event'
+        | 'clan'
+        | 'account'
+        | 'host_program';
       notification_type:
         | 'need_one_more'
         | 'game_on'
@@ -11373,7 +11380,10 @@ export type Database = {
         | 'host_request'
         | 'account_paused'
         | 'account_restored'
-        | 'appeal_decided';
+        | 'appeal_decided'
+        | 'host_refund_failed'
+        | 'host_dispute'
+        | 'host_payouts_paused';
       passport_entry_kind: 'game' | 'challenge';
       payment_checkout_kind: 'drop_in' | 'pack' | 'monthly';
       payment_checkout_status:
@@ -11955,6 +11965,7 @@ export const Constants = {
         'challenge_event',
         'clan',
         'account',
+        'host_program',
       ],
       notification_type: [
         'need_one_more',
@@ -11985,6 +11996,9 @@ export const Constants = {
         'account_paused',
         'account_restored',
         'appeal_decided',
+        'host_refund_failed',
+        'host_dispute',
+        'host_payouts_paused',
       ],
       passport_entry_kind: ['game', 'challenge'],
       payment_checkout_kind: ['drop_in', 'pack', 'monthly'],

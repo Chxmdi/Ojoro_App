@@ -287,8 +287,14 @@ select tests.login(10);
 select is((select tonight_count from public.place_view(tests.id('pitch'))),
   (select count(*)::integer from public.place_tonight(tests.id('pitch'), 'tonight')),
   'place_view counts what TONIGHT HERE lists (Discover''s tonight)');
+-- Tomorrow is the next calendar day, as on Discover: a game a few hours away is tomorrow's after local midnight
+-- (and still tonight's until 4 AM), so count what really starts tomorrow here rather than assume none does.
 select is(
-  (select count(*)::integer from public.place_tonight(tests.id('pitch'), 'tomorrow')), 0, 'tomorrow is empty');
+  (select count(*)::integer from public.place_tonight(tests.id('pitch'), 'tomorrow')),
+  (select count(*)::integer from public.plans p
+    where p.place_id = tests.id('pitch') and p.audience = 'public' and p.status in ('forming', 'game_on')
+      and (p.starts_at at time zone 'America/Toronto')::date = (now() at time zone 'America/Toronto')::date + 1),
+  'tomorrow lists only what starts tomorrow');
 
 -- A sensitive place lists only what you're in.
 select tests.logout();

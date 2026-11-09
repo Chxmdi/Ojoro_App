@@ -14,7 +14,9 @@ Judgment calls: `docs/DESIGN_DECISIONS.md` ("Step 8 TRUST").
   `…040300_trust_user.sql` (account status, appeals, reputation corrections on the reads),
   `…040400_trust_surfaces.sql` (chat pages hide a paused account's messages),
   `…040500_trust_notification_enums.sql` + `…040600_trust_notifications.sql` (notifications),
-  `…040700_trust_account_deletion.sql` (account deletion keeps history; sign-out while paused).
+  `…040700_trust_account_deletion.sql` (account deletion keeps history; sign-out while paused),
+  `…040800_trust_payments_notification_enums.sql` + `…040900_trust_followups.sql` (pauses end on their
+  date, payments notices for hosts, several drop-ins for the deletion placeholder).
 - Client helpers: `packages/contracts/src/trust.ts` (exported from `@ojoro/contracts`): `trustRpcs`
   (app), `staffRpcs` (admin web), `trustIdempotentRpcs`, `trustErrorCodes` (also in `ojoroErrorCodes`),
   the jsonb shapes below as types, constants and word helpers.
@@ -347,8 +349,22 @@ Written by triggers on the trust tables (so staff RPCs, upheld appeals and SQL a
 | `account_restored` | A pause is restored by staff or an upheld appeal | "Your account is back." / "Everything is as you left it." | `/you` |
 | `appeal_decided` | An appeal is upheld or denied | "We agreed with your appeal." or "We looked again and kept our decision." / the staff note, else words for the kind | `/you` |
 
-A pause that ends on its own at `ends_at` sends nothing (no row changes). `data`: `pause_id`, `ends_at`,
-`reason` / `appeal_id`, `kind`, `decision`, `note`.
+A pause that reaches `ends_at` is ended by `private.trust_tick()` (pg_cron `ojoro_trust_tick`, every 5
+minutes, idempotent; audited with no actor), which sends `account_restored`. `data`: `pause_id`,
+`ends_at`, `reason` / `appeal_id`, `kind`, `decision`, `note`.
+
+**Payments notices** (owner decision: program owners and co-hosts; object kind `host_program`, visible
+to the program's hosts only; push-throttled; href `/host/{programId}/payments`). Written by triggers on
+the ledger, so the webhook, the refund queue and SQL all notify:
+
+| Type | When | Title / body |
+|---|---|---|
+| `host_refund_failed` | A refund ends `failed` (Stripe said so, or the queue gave up after 8 tries). Bundled per program. | "A refund to Lena R didn't go through." (or "2 refunds didn't go through.") / "$20.00. Stripe couldn't send it and Ojoro has stopped trying. Sort it out with them, then record it in your ledger." |
+| `host_dispute` | A dispute opens, then is won or lost (one notice per state). | "Lena R disputed a payment." / "$20.00 is held until their bank decides. Answer in your Stripe dashboard."; "You won the dispute with Lena R." / "$20.00 stays in your payout."; "The dispute with Lena R went their way." / "$20.00 comes off your next payout." |
+| `host_payouts_paused` | Stripe turns `payouts_enabled` off. | "Payouts are paused for Plateau Pickup." / "Stripe needs more information. Open payments to finish it." |
+
+The player's name is left out ("a player") across a block or a pause. Amounts: `$20.00` for CAD/USD,
+`20.00 EUR` otherwise.
 
 ## Account deletion
 
@@ -357,7 +373,7 @@ Before the profile goes (`private.prepare_account_deletion`, BEFORE DELETE on pr
 
 - Called off: their forming plans, their games and clan runs still to start; their host programs archived.
 - Kept under the placeholder **Former member** (`FORMER_MEMBER_ID`, a banned Auth user that can't sign
-  in and can't be deleted): every required person column that doesn't cascade (plans, games, results,
+  in and can't be deleted; it may hold several drop-ins for one session, everyone else still one): every required person column that doesn't cascade (plans, games, results,
   Challenge sides, crews, clans, programs, series, leagues…, read from the catalog so later tables are
   covered), Call-Outs that became events, result submissions, and hosts' ledger rows (charges, refund
   requests, refunds). Optional ones become null (audit actors, deciders).
@@ -422,7 +438,6 @@ profile, an unsafe report on a game update) so the queue isn't empty.
 
 ## Not built
 
-- A notification when a pause ends on its own at `ends_at` (needs a scheduled tick).
 - Host / clan moderator roles inside their own communities (PRD §11.1): only Ojoro staff here.
 - Age-aware restrictions (PRD §11.1): no birth date is collected yet.
 - Automated detection (spam scoring, image scanning): reports only.
