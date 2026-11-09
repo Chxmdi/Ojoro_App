@@ -5,7 +5,15 @@
  */
 import type { DiscoverWhen } from '@ojoro/contracts';
 
-import { clock, clockWithPeriod, dayDiff, dayLabel, DEFAULT_TIME_ZONE, floodlitLabel, zonedParts } from '../plans/time';
+import {
+  clock,
+  clockWithPeriod,
+  dayDiff,
+  dayLabel,
+  DEFAULT_TIME_ZONE,
+  floodlitLabel,
+  zonedParts,
+} from '../plans/time';
 
 /* ---------- Rows (documented nullables, contract rule 2) ---------- */
 
@@ -148,7 +156,8 @@ export function searchState(f: Filters): SearchState {
   if (q.length > MAX_QUERY) {
     return { mode: 'invalid', error: `Keep it to ${MAX_QUERY} characters. You have ${q.length}.` };
   }
-  if (!q && !f.sportId && (!f.when || f.when === 'any') && f.kind === 'everything') return { mode: 'browse' };
+  if (!q && !f.sportId && (!f.when || f.when === 'any') && f.kind === 'everything')
+    return { mode: 'browse' };
   const args: SearchArgs = {};
   if (q) args.p_query = q;
   if (f.sportId) args.p_sport_id = f.sportId;
@@ -178,7 +187,11 @@ export function groupedCount(g: Grouped): number {
 }
 
 /** "3 results for “jeanne”" / "No results for “xyz” tonight." */
-export function resultsSummary(count: number, args: SearchArgs, labels: { sport?: string | null; when?: string | null }): string {
+export function resultsSummary(
+  count: number,
+  args: SearchArgs,
+  labels: { sport?: string | null; when?: string | null },
+): string {
   const parts = [
     args.p_query ? `for “${args.p_query}”` : null,
     labels.sport ? `in ${labels.sport.toLowerCase()}` : null,
@@ -194,7 +207,11 @@ export function resultsSummary(count: number, args: SearchArgs, labels: { sport?
 export type StripStatus = 'forming' | 'confirmed' | 'live' | 'full';
 
 /** The ActivityStrip status for a plan status: forming (count), GAME ON, LIVE, FULL. */
-export function stripStatus(status: string | null, count: number | null, capacity: number | null): StripStatus {
+export function stripStatus(
+  status: string | null,
+  count: number | null,
+  capacity: number | null,
+): StripStatus {
   if (status === 'live') return 'live';
   if (status === 'game_on') return 'confirmed';
   if (count !== null && capacity !== null && count >= capacity) return 'full';
@@ -235,7 +252,9 @@ export function nowStrip(item: NowItem): NowStrip {
   if (reasons.length === 0 && item.distance_km !== null) reasons.push(`${item.distance_km} km`);
   const action = item.action === 'waitlist' || item.action === 'watch' ? item.action : 'join';
   const route: Route =
-    item.kind === 'activity' && item.activity_id ? { to: 'activity', id: item.activity_id } : { to: 'plan', id: item.plan_id };
+    item.kind === 'activity' && item.activity_id
+      ? { to: 'activity', id: item.activity_id }
+      : { to: 'plan', id: item.plan_id };
   return {
     key: `${item.kind}-${item.activity_id ?? item.plan_id}`,
     activity: itemTitle(item.title, item.sport_name),
@@ -250,11 +269,19 @@ export function nowStrip(item: NowItem): NowStrip {
 }
 
 /** A plan search result as an ActivityStrip: the time, then the day, place and distance. */
-export function resultStrip(row: SearchRow, now: Date, timeZone: string = DEFAULT_TIME_ZONE): NowStrip {
+export function resultStrip(
+  row: SearchRow,
+  now: Date,
+  timeZone: string = DEFAULT_TIME_ZONE,
+): NowStrip {
   const live = row.effective_status === 'live';
   const startsAt = row.starts_at ?? now.toISOString();
   const day = live ? 'On now' : dayLabel(startsAt, now, timeZone);
-  const place = [day, row.place_name ?? 'Place to be agreed', row.distance_km !== null ? `${row.distance_km} km` : null]
+  const place = [
+    day,
+    row.place_name ?? 'Place to be agreed',
+    row.distance_km !== null ? `${row.distance_km} km` : null,
+  ]
     .filter(Boolean)
     .join(' · ');
   return {
@@ -282,7 +309,10 @@ export function nowSummary(count: number, friendsFree: number | null): string {
       ? 'Nothing starts within the hour near you.'
       : `${count} ${count === 1 ? 'thing starts' : 'things start'} soon.`;
   if (!friendsFree || friendsFree <= 0) return lead;
-  const who = friendsFree === 1 ? "1 person you've played with is" : `${friendsFree} people you've played with are`;
+  const who =
+    friendsFree === 1
+      ? "1 person you've played with is"
+      : `${friendsFree} people you've played with are`;
   return `${lead} ${who} usually free about now.`;
 }
 
@@ -299,7 +329,12 @@ export function pickDemand(
   const on = new Set(nowItems.map((i) => i.sport_id));
   const sorted = [...buckets]
     .filter((b) => b.people_count > 0)
-    .sort((a, b) => Date.parse(a.suggested_start) - Date.parse(b.suggested_start));
+    // Soonest first; at the same start, the one more people want.
+    .sort(
+      (a, b) =>
+        Date.parse(a.suggested_start) - Date.parse(b.suggested_start) ||
+        b.people_count - a.people_count,
+    );
   const free = sorted.find((b) => !on.has(b.sport_id));
   if (free) return { bucket: free, nothingOn: true };
   const first = sorted[0];
@@ -334,7 +369,9 @@ export function demandCopy(
   const verb = n === 1 ? 'wants' : 'want';
   const sport = bucket.sport_name.toLowerCase();
   return {
-    overline: nothingOn ? `NOTHING ON FOR ${bucket.sport_name.toUpperCase()}` : `MORE ${bucket.sport_name.toUpperCase()} WANTED`,
+    overline: nothingOn
+      ? `NOTHING ON FOR ${bucket.sport_name.toUpperCase()}`
+      : `MORE ${bucket.sport_name.toUpperCase()} WANTED`,
     headline: `${who}${where} ${verb} to play ${sport} ${afterWhen(bucket.suggested_start, now, timeZone)}. That's a game.`,
   };
 }
@@ -355,7 +392,8 @@ export function suggestionCopy(
   } else {
     if (s.place_name) facts.push(s.place_name);
     if (s.distance_km !== null) facts.push(`${s.distance_km} km`);
-    if (s.member_count !== null && s.capacity !== null) facts.push(`${s.member_count} of ${s.capacity} in`);
+    if (s.member_count !== null && s.capacity !== null)
+      facts.push(`${s.member_count} of ${s.capacity} in`);
   }
   const reason = s.reason?.trim();
   return {
@@ -387,7 +425,8 @@ export type PersonCard = {
 /** UserMiniCard props from people_to_move_with. Hidden parts stay hidden; Crews isn't shown (M7). */
 export function personCard(p: Person): PersonCard {
   const stats: { value: string; label: string }[] = [];
-  if (p.sessions !== null) stats.push({ value: String(p.sessions), label: p.sessions === 1 ? 'Session' : 'Sessions' });
+  if (p.sessions !== null)
+    stats.push({ value: String(p.sessions), label: p.sessions === 1 ? 'Session' : 'Sessions' });
   if (p.games_with_me) stats.push({ value: String(p.games_with_me), label: 'Games with you' });
   return {
     key: p.user_id,
@@ -457,7 +496,8 @@ export function needsArea(hasArea: boolean | null | undefined, errorCode?: strin
 
 /** The offline line for search results: "Results as of 7:02 PM." or why there are none. */
 export function offlineResultsLine(at: Date | null, hasResults: boolean): string {
-  if (!hasResults || !at) return "You're offline. Search needs a connection; we'll run it when you're back.";
+  if (!hasResults || !at)
+    return "You're offline. Search needs a connection; we'll run it when you're back.";
   const h = at.getHours();
   const time = `${h % 12 === 0 ? 12 : h % 12}:${String(at.getMinutes()).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
   return `You're offline. These results are from ${time}.`;

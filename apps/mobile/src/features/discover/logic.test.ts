@@ -237,6 +237,13 @@ describe('latent demand', () => {
     expect(pickDemand([bucket({ people_count: 0 })], [])).toBeNull();
   });
 
+  it('at the same start, prefers the one more people want', () => {
+    const three = bucket({ sport_id: 'football', sport_name: 'Football', people_count: 3 });
+    const five = bucket({ people_count: 5 });
+    expect(pickDemand([three, five], [])?.bucket).toEqual(five);
+    expect(pickDemand([five, three], [])?.bucket).toEqual(five);
+  });
+
   it('says when, in the local zone', () => {
     expect(afterWhen('2026-10-29T23:00:00Z', NOW, TZ)).toBe('after 7');
     expect(afterWhen('2026-10-29T23:30:00Z', NOW, TZ)).toBe('after 7:30');
