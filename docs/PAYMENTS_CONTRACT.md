@@ -140,6 +140,23 @@ Idempotency-Key). A checkout whose page expired: start a new one with a new key.
   `not_connected`), my `holding` (the pass I hold, like `host_people_passes`), `session` (when
   `p_session_id`: my `state` from the roster's payment status, `amount_cents`, `currency`, `buyable`,
   `reason`), and `open_checkout` (my latest open checkout here, to resume).
+  Once the spot is settled the session also says what was paid and how
+  (`…070000_payments_session_settled.sql`, owner decision: the game screen says "Paid $8", not just
+  "Paid"). `amount_cents` is the price while `due` and **what was paid** once `paid` or `refunded`
+  (null for `member`, `pack`, `free`, `host`). Extra keys, left out when they don't apply (so a `due`
+  session reads exactly as before):
+
+  | Key | When | Value |
+  |---|---|---|
+  | `settled_by` | any state but `due` / `host` | `app` (Stripe), `at_field`, `host_recorded` (paid); `refund`; `pack`; `membership`; `free_pass` (a free pass covers it); `free` (free for me) |
+  | `pass_name` | `pack`, `free` with a pass | the pass that covers it ("10-pack") |
+  | `sessions_left` | `pack` | sessions left on it |
+  | `paid_at` | `paid` | when |
+  | `refund_cents` | `refunded` | what went back |
+
+  The app says "Paid $8" (in the app), "Paid $8 at the field", "Refunded $5" / "$5 of your $8 went
+  back to you", "Covered by your 10-pack", "Member", "Free with Sunday beginners"
+  (`features/payments/logic.ts` `sessionPayView`).
 - **`payment_checkout(p_checkout_id) → PaymentCheckoutState`** (the buyer): `status`, `kind`, program
   and pass names, `session_id`, `amount_cents`, `currency`, `url` (while open), `expires_at`,
   `completed_at`, `charge_id`, `membership_id`. The return screen reads this.

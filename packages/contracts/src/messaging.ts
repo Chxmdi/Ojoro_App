@@ -141,6 +141,8 @@ export type HomeFeedCardKind =
   | 'plan_forming'
   | 'down_for'
   | 'recap'
+  // Polish (GAPS-FEED): a Challenge Event (stage*, situation*, event* columns; COMPETITION_CONTRACT.md).
+  | 'challenge_event'
   | 'caught_up';
 export type ChatMessage = Functions['crew_messages']['Returns'][number];
 export type ChatSuggestion = Functions['chat_suggestions']['Returns'][number];

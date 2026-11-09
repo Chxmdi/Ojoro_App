@@ -2,6 +2,7 @@
  * Home (Main.png, Slice 01 parts): the Ojoro Daily headline, the Down For to show, plans forming
  * near you, your plans and your last recap. Pure rules, no React Native.
  */
+import { eventStrip, type EventRowFacts, type StripModel } from '../challenges/logic';
 import { clock, dayDiff, DEFAULT_TIME_ZONE, dayLabel, zonedParts } from '../plans/time';
 
 export type NearbyDown = {
@@ -225,6 +226,12 @@ export type FeedCard = {
   people: number | null;
   notification_id: string | null;
   href: string | null;
+  /** Polish (GAPS-FEED): challenge_event cards only (older servers leave these out). */
+  stage?: string | null;
+  /** The object's situation where it has one: forming / confirmed / live / after. */
+  situation?: string | null;
+  /** challenge_event cards: the facts the strip draws (my_challenge_events' columns). */
+  event?: unknown;
 };
 
 export type FeedSection = { kind: string; cards: FeedCard[] };
@@ -266,6 +273,8 @@ export function sectionLabel(kind: string): string | null {
       return 'YOUR CREWS';
     case 'plan_forming':
       return 'FORMING NEAR YOU';
+    case 'challenge_event':
+      return 'CHALLENGES';
     default:
       return null;
   }
@@ -317,4 +326,71 @@ export function feedDownFor(
 export function crewSuggestionLine(c: Pick<FeedCard, 'reason' | 'people'>): string {
   if (c.reason) return `${c.reason.charAt(0).toUpperCase()}${c.reason.slice(1)}.`.replace(/\.\.$/, '.');
   return c.people ? `${c.people} of you want in.` : 'Your crew is talking about a game.';
+}
+
+/* ---------- Polish (GAPS-FEED): Challenge Events on Main ---------- */
+
+/** Why a Challenge Event is on your Main (home_feed `event.relation`). */
+export type ChallengeRelation = 'competitor' | 'organizer' | 'your_crew' | 'following' | 'rival' | 'crew' | 'clan';
+
+export type FeedChallenge = EventRowFacts & { relation: ChallengeRelation | string };
+
+const SITUATIONS = ['calm', 'forming', 'confirmed', 'live', 'after'] as const;
+export type FeedSituation = (typeof SITUATIONS)[number];
+
+/** The situation a card's object sits in, when the server gave one we know. */
+export function cardSituation(c: Pick<FeedCard, 'situation'>): FeedSituation | null {
+  return (SITUATIONS as readonly string[]).includes(c.situation ?? '') ? (c.situation as FeedSituation) : null;
+}
+
+/** The event facts of a challenge_event card, or null when they're missing or malformed. */
+export function feedChallenge(c: Pick<FeedCard, 'card' | 'event'>): FeedChallenge | null {
+  if (c.card !== 'challenge_event' || !c.event || typeof c.event !== 'object') return null;
+  const e = c.event as Partial<FeedChallenge>;
+  if (!e.event_id || !e.stage || !e.title || !e.starts_at || !e.a_name || !e.b_name) return null;
+  return {
+    event_id: e.event_id,
+    stage: e.stage,
+    relation: e.relation ?? 'following',
+    format: e.format ?? 'person_vs_person',
+    title: e.title,
+    starts_at: e.starts_at,
+    time_zone: e.time_zone ?? null,
+    a_name: e.a_name,
+    b_name: e.b_name,
+    side_size: e.side_size ?? null,
+    follower_count: e.follower_count ?? null,
+    live_period: e.live_period ?? null,
+    scoring: e.scoring ?? 'time',
+    target: e.target ?? null,
+    winner_side: e.winner_side ?? null,
+    my_side: e.my_side ?? null,
+  };
+}
+
+/** Words for why it's here; competitors and followers need none beyond Compete's own ("You follow"). */
+const RELATION_WORDS: Record<string, string> = {
+  organizer: "You're organizing",
+  your_crew: 'Your crew',
+  rival: 'Your rival',
+  crew: 'From your crew',
+  clan: 'From your clan',
+};
+
+/**
+ * The strip for a challenge_event card: Compete's YOUR EVENTS row ("Chimdi vs Marcus · 5K",
+ * "142 following · build-up", 3 DAYS), with why it's on your Main first when it isn't yours.
+ */
+export function challengeCardModel(c: Pick<FeedCard, 'card' | 'event'>, now: number): StripModel | null {
+  const facts = feedChallenge(c);
+  if (!facts) return null;
+  const model = eventStrip(facts, now);
+  const why = RELATION_WORDS[facts.relation];
+  return why ? { ...model, meta: model.meta ? `${why} · ${model.meta}` : why } : model;
+}
+
+/** The divider: the design's CHALLENGES YOU FOLLOW when every one is followed, else CHALLENGES. */
+export function challengeSectionLabel(cards: readonly Pick<FeedCard, 'card' | 'event'>[]): string {
+  const rows = cards.map(feedChallenge);
+  return rows.length > 0 && rows.every((r) => r?.relation === 'following') ? 'CHALLENGES YOU FOLLOW' : 'CHALLENGES';
 }

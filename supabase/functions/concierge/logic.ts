@@ -68,7 +68,11 @@ export interface Candidate {
 }
 
 export interface CandidateSet {
-  parse: { minutes: number | null; sport_id: string | null; social: boolean };
+  /**
+   * `off_topic`: the rules read the text as clearly not about moving (`private.concierge_off_topic`,
+   * conservative). Only the rules answer uses it; the model still decides on the AI path.
+   */
+  parse: { minutes: number | null; sport_id: string | null; social: boolean; off_topic?: boolean };
   rows: Candidate[];
 }
 
@@ -349,8 +353,23 @@ export function parseDecision(text: string | null): Decision | null {
 
 // Answers --------------------------------------------------------------------------------------------------
 
-/** What concierge_suggest would say: the matched rows in order, the rules reason as the WHY. */
+/**
+ * What concierge_suggest would say: the matched rows in order, the rules reason as the WHY. Text the
+ * rules read as clearly not about moving gets the "not about moving" answer, never a match.
+ */
 export function rulesAnswer(set: CandidateSet, reason: FallbackReason): ConciergeAnswer {
+  if (set.parse.off_topic === true) {
+    return {
+      source: 'rules',
+      fallback_reason: reason,
+      outcome: 'not_movement',
+      best: null,
+      why: null,
+      more: [],
+      start: 'down_for',
+      sport_id: null,
+    };
+  }
   const matched = set.rows.filter((r) => r.matched);
   const best = matched[0] ?? null;
   return {

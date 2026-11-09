@@ -8891,6 +8891,7 @@ export type Database = {
           capacity: number;
           card: string;
           crew_id: string;
+          event: Json;
           href: string;
           member_count: number;
           notification_id: string;
@@ -8901,8 +8902,10 @@ export type Database = {
           plan_id: string;
           position: number;
           reason: string;
+          situation: string;
           sport_id: string;
           sport_name: string;
+          stage: Database['public']['Enums']['challenge_stage'];
           starts_at: string;
           title: string;
         }[];
@@ -11383,7 +11386,9 @@ export type Database = {
         | 'appeal_decided'
         | 'host_refund_failed'
         | 'host_dispute'
-        | 'host_payouts_paused';
+        | 'host_payouts_paused'
+        | 'challenge_reply'
+        | 'challenge_mention';
       passport_entry_kind: 'game' | 'challenge';
       payment_checkout_kind: 'drop_in' | 'pack' | 'monthly';
       payment_checkout_status:
@@ -11999,6 +12004,8 @@ export const Constants = {
         'host_refund_failed',
         'host_dispute',
         'host_payouts_paused',
+        'challenge_reply',
+        'challenge_mention',
       ],
       passport_entry_kind: ['game', 'challenge'],
       payment_checkout_kind: ['drop_in', 'pack', 'monthly'],

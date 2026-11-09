@@ -44,6 +44,8 @@ export function leadingFor(row: Pick<NotificationFacts, 'type' | 'actor_names'>)
     case 'crew_poll':
     case 'crew_plan':
     case 'mention':
+    case 'challenge_reply': // Polish (GAPS-FEED): the crowd under a Challenge Event.
+    case 'challenge_mention':
       return { kind: 'icon', icon: 'chat' };
     case 'game_on':
     case 'waitlist_promoted':

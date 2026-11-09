@@ -2,7 +2,7 @@ import { opacity } from '@ojoro/design-tokens';
 import { Platform, Pressable, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { FocusRing, noBrowserOutline, useFocusVisible, usePressScale } from './pressFeedback';
+import { FocusRing, noBrowserOutline, useFocusVisible, usePressScale, WebHitSlop } from './pressFeedback';
 import { reactionCount, reactionLabel, type Reaction } from './ReactionBar.logic';
 import { Text } from './Text';
 
@@ -105,6 +105,7 @@ function ReactionButton({
             {reactionCount(reaction.count)}
           </Text>
         </View>
+        <WebHitSlop insets={HIT_SLOP} />
         {focus.focusVisible ? <FocusRing /> : null}
       </Animated.View>
     </Pressable>

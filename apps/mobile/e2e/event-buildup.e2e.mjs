@@ -242,6 +242,7 @@ try {
     await until(async () => (await view(z, eventId)).my_backing === null, 'backing not stopped');
   });
 
+  let zComment = null;
   await step('ADD TO THE CROWD posts a comment once', async () => {
     const body = `E2E comment ${randomUUID().slice(0, 8)}`;
     await Z.page.getByTestId('event-comment-input').fill(body);
@@ -249,6 +250,7 @@ try {
     await Z.page.getByText(body).waitFor();
     const rows = await z.call('challenge_comments', { p_event_id: eventId });
     assert(rows.filter((r) => r.body === body).length === 1, 'comment not stored exactly once');
+    zComment = rows.find((r) => r.body === body).id;
   });
 
   await step("a competitor's post reaches the spectator's feed", async () => {
@@ -256,6 +258,48 @@ try {
     await y.call('post_challenge_update', { p_event_id: eventId, p_kind: 'statement', p_body: body, p_idempotency_key: key() });
     await Z.page.getByText(body).waitFor({ timeout: 20_000 });
     await Z.page.getByText(`COMPETITOR · ${y.first.toUpperCase()}`).first().waitFor();
+  });
+
+  // Polish (GAPS-FEED): the followed event on Home, and replies and mentions in the crowd.
+  await step('Home shows the followed event in its stage, in words, and opens it', async () => {
+    await open(Z.page, '/', 'feed-end');
+    const strip = Z.page.getByTestId(`feed-challenge-${eventId}`);
+    await strip.waitFor({ timeout: 60_000 });
+    const text = await strip.innerText();
+    assert(text.includes(`${x.first} vs ${y.first} · 5K`), `strip title: ${text}`);
+    assert(/ACCEPTED/.test(text) && /You follow · Accepted/.test(text), `strip words: ${text}`);
+    if (process.env.E2E_SHOTS) {
+      await strip.scrollIntoViewIfNeeded();
+      await Z.page.screenshot({ path: join(process.env.E2E_SHOTS, 'home-challenge.png') });
+    }
+    await strip.click();
+    await Z.page.getByTestId('event-buildup').first().waitFor({ timeout: 60_000 });
+    assert(new URL(Z.page.url()).pathname === path, `opened ${Z.page.url()}`);
+  });
+
+  await step('a reply and an @mention reach the spectator once each, and open the event', async () => {
+    const handle = `e2e_${z.id.slice(0, 8)}`;
+    const { error } = await admin.from('profiles').update({ handle }).eq('id', z.id);
+    assert(!error, `handle: ${error?.message}`);
+    await y.call('comment_on_challenge', {
+      p_event_id: eventId,
+      p_body: 'Not a chance.',
+      p_idempotency_key: key(),
+      p_parent_id: zComment,
+    });
+    await x.call('comment_on_challenge', { p_event_id: eventId, p_body: `Watch this, @${handle}`, p_idempotency_key: key() });
+    const rows = (await z.call('my_notifications', { p_limit: 50 })).filter((r) => r.object_id === eventId);
+    const reply = rows.filter((r) => r.type === 'challenge_reply');
+    const mention = rows.filter((r) => r.type === 'challenge_mention');
+    assert(reply.length === 1 && reply[0].title === `${y.name} replied to your comment.`, `reply: ${JSON.stringify(reply)}`);
+    assert(mention.length === 1 && mention[0].title === `${x.name} mentioned you.`, `mention: ${JSON.stringify(mention)}`);
+    assert(reply[0].href === path && mention[0].href === path, 'not linked to the event');
+    await open(Z.page, '/updates', 'updates-end');
+    await Z.page.getByText(reply[0].title).first().waitFor();
+    if (process.env.E2E_SHOTS) await Z.page.screenshot({ path: join(process.env.E2E_SHOTS, 'updates-challenge.png') });
+    await Z.page.getByText(mention[0].title).first().click();
+    await Z.page.getByTestId('event-buildup').first().waitFor({ timeout: 60_000 });
+    assert(new URL(Z.page.url()).pathname === path, `opened ${Z.page.url()}`);
   });
 
   await step('report and block are one tap from the header', async () => {
@@ -287,7 +331,7 @@ try {
       .update({ starts_at: startsAt, check_in_opens_at: new Date(Date.now() - 40 * 60_000).toISOString() })
       .eq('id', eventId);
     await open(X.page, path, 'event-today');
-    await X.page.getByText('ALMOST TIME.').waitFor();
+    await X.page.getByText('ALMOST TIME.').first().waitFor();
     await X.page.getByText('They lock the moment the race goes live.', { exact: false }).waitFor();
     await X.page.getByTestId('today-check-in').click();
     await X.page.getByTestId('today-checkin-a').getByText('CHECKED IN').waitFor();

@@ -1,7 +1,7 @@
 import { opacity } from '@ojoro/design-tokens';
 import { Platform, Pressable, View, type TextStyle } from 'react-native';
 
-import { FocusRing, useFocusVisible, noBrowserOutline } from './pressFeedback';
+import { FocusRing, useFocusVisible, noBrowserOutline, WebHitSlop } from './pressFeedback';
 import { Text } from './Text';
 
 export type TextButtonProps = {
@@ -71,6 +71,7 @@ export function TextButton({
           {children}
         </Text>
       </View>
+      <WebHitSlop insets={HIT_SLOP} />
       {focus.focusVisible ? <FocusRing shape="square" /> : null}
     </Pressable>
   );

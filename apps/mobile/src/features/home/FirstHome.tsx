@@ -38,7 +38,8 @@ import { signalLine, type WindowId } from '../downfor/logic';
 import { useNow, useOnline } from '../plans/data';
 import { AsOf, OfflineBanner, routes } from '../plans/parts';
 import { DEFAULT_TIME_ZONE } from '../plans/time';
-import { useCreateFromDemand, useFurtherOut, useLatentDemand, useMyPlans, useMySportIds } from './data';
+import { ChallengeBlock } from './ChallengeCard';
+import { useCreateFromDemand, useFurtherOut, useHomeFeed, useLatentDemand, useMyPlans, useMySportIds } from './data';
 import {
   dayOverline,
   demandBand,
@@ -72,6 +73,7 @@ export function FirstHome({ density, densityUpdatedAt }: { density: HomeDensity;
   const catalog = useSports();
   const signals = useMySignals(userId);
   const mine = useMyPlans(userId);
+  const feed = useHomeFeed(userId !== null);
   const withdraw = useWithdrawDownFor();
   const fromDemand = useCreateFromDemand();
   const [sheet, setSheet] = useState<SheetPreset | null>(null);
@@ -177,6 +179,9 @@ export function FirstHome({ density, densityUpdatedAt }: { density: HomeDensity;
             ))}
           </View>
         ) : null}
+
+        {/* Challenge Events you're in, follow, or that involve your people (home_feed). */}
+        <ChallengeBlock cards={feed.data ?? []} now={now} />
 
         {/* People want this */}
         {bucket && band ? (

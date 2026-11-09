@@ -127,14 +127,37 @@ export interface PurchaseHolding {
   provider: 'stripe' | 'none';
 }
 
+/**
+ * How my spot was settled (`…070000_payments_session_settled.sql`): paid in the app, at the field or
+ * recorded by the host, refunded, or covered by a pack, a membership, a free pass, or a free session.
+ */
+export type PurchaseSettledBy =
+  | Database['public']['Enums']['host_charge_method']
+  | 'refund'
+  | 'pack'
+  | 'membership'
+  | 'free_pass'
+  | 'free';
+
 export interface PurchaseSession {
   session_id: string;
   /** The roster's payment state for me (host, member, pack, paid, free, due, refunded). */
   state: Database['public']['Enums']['host_payment_state'] | null;
+  /** The price while `due`; what was paid once `paid` or `refunded`; null otherwise. */
   amount_cents: number | null;
   currency: string;
   buyable: boolean;
   reason: PurchaseReason | null;
+  /** Left out while due (and for hosts). */
+  settled_by?: PurchaseSettledBy;
+  /** The pack or free pass that covers it. */
+  pass_name?: string;
+  /** Pack only. */
+  sessions_left?: number;
+  /** Paid only. */
+  paid_at?: string;
+  /** Refunded only: what went back. */
+  refund_cents?: number;
 }
 
 export interface HostPurchaseOptions {

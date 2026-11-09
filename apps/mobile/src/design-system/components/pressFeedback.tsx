@@ -102,6 +102,33 @@ export function FocusRing({ shape = 'round' }: { shape?: 'round' | 'square' }) {
   );
 }
 
+export type HitSlopInsets = { top?: number; bottom?: number; left?: number; right?: number };
+
+/**
+ * `hitSlop` on the web. React Native Web ignores `hitSlop`, so a small control
+ * whose visible box is under 44pt (TextButton, Comment actions, reactions) was
+ * only as big as it looks in a browser. This is the reference's
+ * `::after { inset: -6px -4px }`: a transparent box that reaches past the
+ * control by the same insets, so clicks there land on the Pressable. Put it
+ * inside the control's (relative) box. Renders nothing on iOS and Android,
+ * where `hitSlop` already does this.
+ */
+export function WebHitSlop({ insets }: { insets: HitSlopInsets }) {
+  if (Platform.OS !== 'web') return null;
+  return (
+    <View
+      aria-hidden
+      className="absolute"
+      style={{
+        top: -(insets.top ?? 0),
+        bottom: -(insets.bottom ?? 0),
+        left: -(insets.left ?? 0),
+        right: -(insets.right ?? 0),
+      }}
+    />
+  );
+}
+
 /** The web reference's `Check`: 16 box, 2.2 stroke, square caps. Hidden from screen readers. */
 export function Check({ color, size = 16 }: { color?: string; size?: number }) {
   const text = useThemeColor('text');

@@ -58,6 +58,8 @@ describe('leadingFor', () => {
       ['crew_poll', { kind: 'icon', icon: 'chat' }],
       ['crew_plan', { kind: 'icon', icon: 'chat' }],
       ['mention', { kind: 'icon', icon: 'chat' }],
+      ['challenge_reply', { kind: 'icon', icon: 'chat' }],
+      ['challenge_mention', { kind: 'icon', icon: 'chat' }],
       ['game_on', { kind: 'icon', icon: 'check' }],
       ['waitlist_promoted', { kind: 'icon', icon: 'check' }],
       ['check_in_open', { kind: 'icon', icon: 'clock' }],

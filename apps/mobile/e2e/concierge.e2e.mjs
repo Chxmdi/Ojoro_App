@@ -295,6 +295,36 @@ await step('a prompt injection never reaches the model and shows no money or exc
   assert(!(await membersOf()).includes(planId), 'the injection joined a plan');
 });
 
+// Without a key the function answers from the rules. Text that clearly isn't about moving gets the
+// "not about moving" answer, and no real request is ever turned away (private.concierge_off_topic).
+const OFF_TOPIC = ['write me a poem', "what's the weather", 'tell me a joke', 'help me with my math homework'];
+const REAL = ['run', '5k tomorrow', 'anyone for footy', 'bike ride later', 'hoops?', 'gym', "what's the weather like for a ride"];
+await step('no key: off-topic text gets "not about moving"; short real requests never do', async () => {
+  if (functionUp?.fallback_reason !== 'no_key') {
+    console.log('     (skipped: the function has a key, so the model decides)');
+    return;
+  }
+  for (const text of OFF_TOPIC) {
+    const { data, error } = await seeker.client.functions.invoke('concierge', { body: { text } });
+    assert(!error, `${text}: ${error?.message}`);
+    assert(data.source === 'rules' && data.outcome === 'not_movement', `"${text}" answered ${data.outcome}`);
+    assert(data.best === null && data.more.length === 0 && data.start === 'down_for', `"${text}" shape ${JSON.stringify(data)}`);
+  }
+  for (const text of REAL) {
+    const { data, error } = await seeker.client.functions.invoke('concierge', { body: { text } });
+    assert(!error, `${text}: ${error?.message}`);
+    assert(data.outcome !== 'not_movement', `"${text}" was turned away`);
+  }
+  const bike = (await seeker.client.functions.invoke('concierge', { body: { text: 'bike ride later' } })).data;
+  assert(bike.outcome === 'match' && bike.best?.plan_id === planId, `bike ride: ${bike.outcome} ${bike.best?.plan_id}`);
+  // And on screen, through the real function (no stubbed answer).
+  await ask(S.page, "what's the weather tomorrow", 'concierge-empty');
+  const text = await byTestId(S.page, 'concierge-empty').innerText();
+  assert(/TELL OJORO WHAT YOU WANT TO DO/.test(text) && /SAY YOU'RE DOWN/.test(text), `panel: ${text}`);
+  assert(!/BEST MATCH/.test(text), 'a best match for the weather');
+  await shot(S.page, 'concierge-not-movement-rules');
+});
+
 await step('with the function unreachable, the app still answers from the rules', async () => {
   await S.page.route('**/functions/v1/concierge', (route) => route.abort());
   await ask(S.page, 'got 90 minutes for a bike ride');

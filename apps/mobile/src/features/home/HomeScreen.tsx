@@ -2,7 +2,8 @@
  * Home (Main.png). Step 4: the Ojoro Daily headline (TONIGHT.) and Down For lead, then the ranked,
  * finite action feed from `home_feed()` (needs you, your plans, your crews, plans forming near you,
  * your last recap), ending with YOU'RE CAUGHT UP. The bell in the header is `unread_count()`.
- * Challenge Events (M6) and CrewMomentum (step 6) are not built. A quiet area
+ * Challenge Events you compete in, follow or that involve your people show as strips, each in its
+ * stage's situation (Polish GAPS-FEED). CrewMomentum (step 6) is not built. A quiet area
  * (`home_density().low_density`) gets FirstHome instead.
  */
 import type { NotificationRow as NotificationFacts } from '@ojoro/contracts';
@@ -52,10 +53,12 @@ import {
   usePlansNearby,
   useRecap,
 } from './data';
+import { ChallengeCard } from './ChallengeCard';
 import { FirstHome } from './FirstHome';
 import {
   bestMove,
   cardToNearby,
+  challengeSectionLabel,
   crewSuggestionLine,
   dailyBody,
   dailyHeadline,
@@ -290,7 +293,8 @@ function MainHome({ hasArea }: { hasArea: boolean }) {
         {/* The action feed, in rank order. */}
         {sections.map((section) => {
           if (section.kind === 'down_for') return null;
-          const label = sectionLabel(section.kind);
+          const label =
+            section.kind === 'challenge_event' ? challengeSectionLabel(section.cards) : sectionLabel(section.kind);
           return (
             <View
               key={`${section.kind}-${section.cards[0]?.position ?? 0}`}
@@ -419,6 +423,8 @@ function FeedCardView({
     }
     case 'recap':
       return <RecapCard card={card} now={now} timeZone={timeZone} onOpen={onOpen} />;
+    case 'challenge_event':
+      return <ChallengeCard card={card} now={now} />;
     default:
       return null;
   }

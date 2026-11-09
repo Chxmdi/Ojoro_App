@@ -242,6 +242,23 @@ describe('rulesAnswer', () => {
     const a = rulesAnswer({ parse: { minutes: null, sport_id: 'tennis', social: false }, rows: [run] }, 'error');
     expect(a).toMatchObject({ outcome: 'nothing_fits', best: null, start: 'down_for', sport_id: 'tennis', more: [] });
   });
+  it('says "not about moving" when the rules read the text as off-topic, never a match', () => {
+    const a = rulesAnswer({ ...SET, parse: { ...SET.parse, off_topic: true } }, 'no_key');
+    expect(a).toEqual({
+      source: 'rules',
+      fallback_reason: 'no_key',
+      outcome: 'not_movement',
+      best: null,
+      why: null,
+      more: [],
+      start: 'down_for',
+      sport_id: null,
+    });
+  });
+  it('matches as before when off_topic is false or missing (older servers)', () => {
+    expect(rulesAnswer({ ...SET, parse: { ...SET.parse, off_topic: false } }, 'no_key').outcome).toBe('match');
+    expect(rulesAnswer(SET, 'no_key').outcome).toBe('match');
+  });
 });
 
 describe('aiAnswer', () => {
@@ -278,6 +295,20 @@ describe('runConcierge', () => {
     expect(a).toMatchObject({ source: 'rules', fallback_reason: 'no_key' });
     expect(JSON.stringify(record.mock.calls)).not.toContain('90 minutes');
     expect(record.mock.calls[0]?.[0]).toMatchObject({ source: 'rules', fallback_reason: 'no_key', candidates: 3, has_text: true });
+  });
+
+  it('without a key, off-topic text gets the not-about-moving answer, logged as such', async () => {
+    const { d, record } = deps({ candidates: async () => ({ ...SET, parse: { minutes: null, sport_id: null, social: false, off_topic: true } }) });
+    const a = await runConcierge(d, 'write me a poem');
+    expect(a).toMatchObject({ source: 'rules', fallback_reason: 'no_key', outcome: 'not_movement', best: null, more: [] });
+    expect(record.mock.calls[0]?.[0]).toMatchObject({ outcome: 'not_movement', why_source: 'rules' });
+    expect(JSON.stringify(record.mock.calls)).not.toContain('poem');
+  });
+
+  it('with Claude, off-topic only changes the fallback: the model still decides', async () => {
+    const c = client(async () => reply(MATCH));
+    const { d } = deps({ c, candidates: async () => ({ ...SET, parse: { ...SET.parse, off_topic: true } }) });
+    expect((await runConcierge(d, 'weather for my run')).outcome).toBe('match');
   });
 
   it('with Claude: the pick and its WHY, other ideas after it', async () => {

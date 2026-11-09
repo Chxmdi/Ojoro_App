@@ -310,9 +310,11 @@ try {
 
     await P.page.getByTestId('pay-return-game').click();
     await P.page.getByTestId('session-pay-title').waitFor({ timeout: 30_000 });
-    // The server drops the session price once it's paid (amount_cents null), so the title is "Paid".
-    await until('activity says paid', async () => /^Paid\b/.test(await text(P.page, 'session-pay-title')), 30_000);
-    assert(/paid for/.test(await text(P.page, 'session-pay')), 'paid sentence on the activity');
+    // Once paid the server keeps the amount and how it was settled: the game says what was paid.
+    await until('activity says Paid $8', async () => (await text(P.page, 'session-pay-title')) === 'Paid $8', 30_000);
+    assert(/paid for through Stripe/.test(await text(P.page, 'session-pay')), 'paid sentence on the activity');
+    const after = await player.call('host_purchase_options', { p_program_id: program.id, p_session_id: session.session_id ?? session.id });
+    assert(after.session.amount_cents === 800 && after.session.settled_by === 'app', `session after payment ${JSON.stringify(after.session)}`);
     assert((await P.page.getByTestId('session-pay-button').count()) === 0, 'no PAY once paid');
   });
 
@@ -352,6 +354,27 @@ try {
   await step('A completed checkout cannot be paid again: the pass page says what I hold', async () => {
     await open(P.page, `/pay/program/${program.id}`, 'pay-holding');
     assert(/You hold a pass here/.test(await text(P.page, 'pay-holding')), 'holding row');
+  });
+
+  await step('Another session in the program: the game says the 10-pack covers it', async () => {
+    // Any later session of the daily series (the service role reads them, whatever today's week holds).
+    const { data: later, error } = await admin
+      .from('host_sessions')
+      .select('activity_id, starts_at')
+      .eq('program_id', program.id)
+      .eq('status', 'scheduled')
+      .neq('activity_id', session.object_id)
+      .gt('starts_at', new Date().toISOString())
+      .order('starts_at')
+      .limit(1);
+    if (error) throw new Error(error.message);
+    assert(later?.length, 'no second upcoming session in the series');
+    const next = later[0];
+    await player.call('join_waitlist', { p_activity_id: next.activity_id, p_idempotency_key: key() });
+    await open(P.page, `/activity/${next.activity_id}`, 'session-pay-title');
+    await until('covered by the pack', async () => (await text(P.page, 'session-pay-title')) === `Covered by your ${packName}`, 30_000);
+    assert((await P.page.getByTestId('session-pay-button').count()) === 0, 'no PAY when the pack covers it');
+    await shot(P.page, 'activity-covered-by-pack');
   });
 } catch (error) {
   exitCode = 1;

@@ -865,3 +865,18 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | Shared parse | `concierge_suggest` was redefined on `private.concierge_parse` (same contract, same analytics) so the stub and the AI path read text identically. |
 | SDK pinned and statically imported | `npm:@anthropic-ai/sdk@1.3.0` in `deno.json`. The Edge Runtime can't resolve a dynamic npm import, so the import is static; a client is only built when a key is set. Supabase is reached with plain fetch (no supabase-js in the function). |
 | Offline evaluation before the key goes on | 48 synthetic cases over seeded candidates, scored for usefulness, safety, latency and calibration through the same `runConcierge`; a dry run with a mock client runs in `pnpm test`, the live run is the owner's (it costs money). Its first dry run found a WHY echoing a street number from the person's text, so numbers the person typed no longer count as facts and street words / postal codes are rejected. |
+
+## Polish RELEASE
+
+| Decision | Why |
+|---|---|
+| The O is the app mark | The design system has no logo file ("set the name in the display face until one exists"); the O (`Graphic kind="o"`) is the brand's one mark. Icon: brand-white O on brand-oxblood, the Welcome ground. The ring uses strokeWidth 6 on the 48 grid (Graphic's prop, twice the default) so it holds at 29pt. Colours are read from tokens.json by the script; no new colour. |
+| Splash on oxblood, root view on white | The splash hands over to Welcome (confirmed situation, oxblood) without a flash; the native root view behind every screen is the calm ground so transitions and the keyboard never show oxblood behind a calm screen. |
+| Art rendered by a script, not committed by hand | `apps/mobile/scripts/build-app-icons.mjs` renders SVG in headless Chromium (Playwright, already used by the e2e suites), so the repo takes no image dependency; output is byte-identical between runs, and it fails if `app.config.ts` colours drift from the tokens. |
+| Variant ids by `EXPO_PUBLIC_APP_ENV` | Development and preview builds get `.dev` / `.preview` ids and names so testers keep the store app; the variable already existed, so `eas.json` carries only `EXPO_PUBLIC_*` names. All variants keep the `ojoro` scheme (Supabase redirects and `PAYMENTS_RETURN_ORIGINS` already use it). |
+| `userInterfaceStyle: 'light'` | Ojoro has situations, not light/dark; native controls following the system's dark mode would sit wrong on calm screens. |
+| Phone only | No iPad layouts exist (designs are 390pt), and a tablet build needs iPad screenshots and review. |
+| No camera, motion or "always location" strings | The app picks photos from the system picker and reads location only when in use; the plugins' default strings for the rest are removed so review sees only what is used. Android storage, media and background-location permissions are blocked for the same reason. |
+| `fingerprint` runtime policy, no `expo-updates` yet | `appVersion` would let an update reach a binary with different native code whenever the version isn't bumped (build numbers are remote). Installing `expo-updates` is a new dependency, left to the owner (checklist step 9). |
+| `allowBackup: false` | The Supabase session lives in AsyncStorage; it shouldn't be restored onto another device from a cloud backup. |
+| Store privacy answers declare Fitness and in-app messages | Personal bests and attendance are exercise data; chat is "Emails or Text Messages" in Apple's taxonomy. Over-declaring is safer than a rejection; push tokens are not declared until `expo-notifications` is in. |

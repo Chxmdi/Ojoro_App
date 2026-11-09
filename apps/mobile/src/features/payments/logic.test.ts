@@ -77,13 +77,40 @@ describe('sessionPayView', () => {
   });
   it('says how a spot is covered, in words', () => {
     expect(sessionPayView(session({ state: 'host' }), true)).toBeNull();
-    expect(sessionPayView(session({ state: 'member', buyable: false }), true)?.title).toMatch(/membership/);
-    expect(sessionPayView(session({ state: 'pack', buyable: false }), true)?.title).toMatch(/pack/);
-    expect(sessionPayView(session({ state: 'free', buyable: false }), true)?.title).toMatch(/Free/);
+    const member = sessionPayView(session({ state: 'member', amount_cents: null, buyable: false, settled_by: 'membership' }), true);
+    expect(member?.title).toBe('Member');
+    expect(member?.body).toMatch(/membership/);
+    expect(sessionPayView(session({ state: 'pack', buyable: false }), true)?.title).toBe('Covered by your pack');
+    expect(
+      sessionPayView(session({ state: 'pack', amount_cents: null, buyable: false, settled_by: 'pack', pass_name: '10-pack', sessions_left: 4 }), true)
+        ?.title,
+    ).toBe('Covered by your 10-pack');
+    expect(sessionPayView(session({ state: 'free', buyable: false }), true)?.title).toBe('Free for you');
+    expect(
+      sessionPayView(session({ state: 'free', amount_cents: null, settled_by: 'free_pass', pass_name: 'Sunday beginners' }), true)?.title,
+    ).toBe('Free with Sunday beginners');
+    expect(sessionPayView(session({ state: 'free', settled_by: 'free_pass' }), true)?.title).toBe('Free for you');
     expect(sessionPayView(session({ state: 'paid', buyable: false }), true)?.title).toBe('Paid $8');
     expect(sessionPayView(session({ state: 'paid', amount_cents: null }), true)?.title).toBe('Paid');
     expect(sessionPayView(session({ state: 'refunded' }), true)?.body).toBe('$8 went back to you.');
     expect(sessionPayView(session({ state: 'refunded', amount_cents: null }), true)?.body).toMatch(/went back/);
+    expect(sessionPayView(session({ state: 'refunded', amount_cents: null }), true)?.title).toBe('Refunded');
+  });
+  it('says what was paid and how, once settled', () => {
+    const app = sessionPayView(session({ state: 'paid', buyable: false, reason: 'nothing_to_pay', settled_by: 'app' }), true);
+    expect(app).toEqual({ title: 'Paid $8', body: 'Your spot is paid for through Stripe.', cta: null });
+    const field = sessionPayView(session({ state: 'paid', buyable: false, settled_by: 'at_field' }), true);
+    expect(field?.title).toBe('Paid $8 at the field');
+    expect(field?.body).toBe('Your spot is paid for. The host recorded it.');
+    expect(sessionPayView(session({ state: 'paid', settled_by: 'host_recorded' }), true)?.title).toBe('Paid $8');
+    expect(sessionPayView(session({ state: 'paid' }), true)?.body).toBe('Your spot is paid for.');
+    const partial = sessionPayView(session({ state: 'refunded', settled_by: 'refund', refund_cents: 500 }), true);
+    expect(partial?.title).toBe('Refunded $5');
+    expect(partial?.body).toBe('$5 of your $8 went back to you.');
+    expect(sessionPayView(session({ state: 'refunded', refund_cents: 800 }), true)?.body).toBe('$8 went back to you.');
+    expect(sessionPayView(session({ state: 'refunded', amount_cents: null, refund_cents: 800 }), true)?.body).toBe(
+      '$8 went back to you.',
+    );
   });
   it('explains why it cannot be paid in the app', () => {
     const v = sessionPayView(session({ buyable: false, reason: 'not_connected' }), false);

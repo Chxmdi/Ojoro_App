@@ -47,22 +47,53 @@ export type SessionPayView = {
   cta: string | null;
 };
 
-/** The pay block on a priced host session, from `host_purchase_options(…).session`. */
+/**
+ * The pay block on a priced host session, from `host_purchase_options(…).session`. Once a spot is
+ * settled it says what was paid and how ("Paid $8", "Covered by your 10-pack", "Member").
+ */
 export function sessionPayView(s: PurchaseSession, connected: boolean): SessionPayView | null {
   const amount = s.amount_cents != null ? formatMoney(s.amount_cents, s.currency) : null;
   switch (s.state) {
     case 'host':
       return null;
     case 'member':
-      return { title: 'Covered by your membership', body: 'Nothing to pay for this one.', cta: null };
+      return { title: 'Member', body: 'Covered by your membership. Nothing to pay for this one.', cta: null };
     case 'pack':
-      return { title: 'Covered by your pack', body: 'This session comes off your pack when you check in.', cta: null };
+      return {
+        title: s.pass_name ? `Covered by your ${s.pass_name}` : 'Covered by your pack',
+        body: 'This session comes off your pack when you check in.',
+        cta: null,
+      };
     case 'free':
-      return { title: 'Free for you', body: 'Nothing to pay for this one.', cta: null };
+      return {
+        title: s.settled_by === 'free_pass' && s.pass_name ? `Free with ${s.pass_name}` : 'Free for you',
+        body: 'Nothing to pay for this one.',
+        cta: null,
+      };
     case 'paid':
-      return { title: amount ? `Paid ${amount}` : 'Paid', body: 'Your spot is paid for.', cta: null };
-    case 'refunded':
-      return { title: 'Refunded', body: amount ? `${amount} went back to you.` : 'Your payment went back to you.', cta: null };
+      return {
+        title: amount ? (s.settled_by === 'at_field' ? `Paid ${amount} at the field` : `Paid ${amount}`) : 'Paid',
+        body:
+          s.settled_by === 'app'
+            ? 'Your spot is paid for through Stripe.'
+            : s.settled_by === 'at_field' || s.settled_by === 'host_recorded'
+              ? 'Your spot is paid for. The host recorded it.'
+              : 'Your spot is paid for.',
+        cta: null,
+      };
+    case 'refunded': {
+      const back = s.refund_cents != null ? formatMoney(s.refund_cents, s.currency) : amount;
+      const partial = s.refund_cents != null && s.amount_cents != null && s.refund_cents < s.amount_cents;
+      return {
+        title: back ? `Refunded ${back}` : 'Refunded',
+        body: back
+          ? partial && amount
+            ? `${back} of your ${amount} went back to you.`
+            : `${back} went back to you.`
+          : 'Your payment went back to you.',
+        cta: null,
+      };
+    }
     case 'due':
     case null:
       break;

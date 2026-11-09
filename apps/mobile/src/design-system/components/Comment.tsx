@@ -9,7 +9,7 @@ import {
   respectLabel,
   respectWord,
 } from './Comment.logic';
-import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
+import { FocusRing, noBrowserOutline, useFocusVisible, WebHitSlop } from './pressFeedback';
 import { Text } from './Text';
 
 export type CommentProps = {
@@ -149,6 +149,7 @@ function CommentAction({
           {label}
         </Text>
       </View>
+      <WebHitSlop insets={HIT_SLOP} />
       {focus.focusVisible ? <FocusRing shape="square" /> : null}
     </Pressable>
   );
