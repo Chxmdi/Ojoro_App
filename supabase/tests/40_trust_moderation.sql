@@ -720,5 +720,14 @@ select throws_ok(format($$insert into public.host_charges (program_id, user_id, 
                          values (%L, %L, %L, 'drop_in', 800, 'CAD', 'paid', 'app', now())$$, tests.id('dprog2'), tests.u(9), tests.id('dsess2')),
                  '23505', null, 'everyone else still has one drop-in per session');
 
+-- The placeholder stays readable by Supabase Auth (listing users scans every row): a real ban date, and the
+-- empty-string tokens Auth's own users have.
+select ok((select banned_until > now() + interval '100 years' and banned_until <> 'infinity'
+             and confirmation_token = '' and recovery_token = '' and email_change = '' and phone_change = ''
+             and email_change_token_new = '' and phone_change_token = '' and reauthentication_token = ''
+             and email_change_token_current = ''
+           from auth.users where id = 'f0000000-0000-4000-8000-000000000000'),
+          'the Former member placeholder is readable by Auth and can never sign in');
+
 select * from finish();
 rollback;
