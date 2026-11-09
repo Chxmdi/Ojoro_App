@@ -113,6 +113,9 @@ export function usePurchaseOptions(programId: string | null | undefined, session
       })) as unknown as HostPurchaseOptions,
     retry: retryNetwork,
     enabled: !!programId,
+    // Money state is read fresh on every open: a host may have just connected payouts, or the
+    // webhook may have just recorded a payment. The persisted copy still shows while offline.
+    staleTime: 0,
   });
 }
 

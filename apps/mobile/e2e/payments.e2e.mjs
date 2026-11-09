@@ -111,7 +111,8 @@ function stripeHelper(...args) {
     .trim();
 }
 
-const STRIPE_HOSTS = /^https?:\/\/([a-z0-9-]+\.)*stripe\.com\//i;
+// stripe-mock's fixtures point Account Links at *.stripe.me; real Stripe uses *.stripe.com.
+const STRIPE_HOSTS = /^https?:\/\/([a-z0-9-]+\.)*stripe\.(com|me)\//i;
 
 async function browserAs(browser, person) {
   const storageState = {
