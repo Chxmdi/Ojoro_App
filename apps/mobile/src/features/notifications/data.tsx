@@ -47,7 +47,10 @@ export function useUnreadCount(enabled = true) {
 
 /** `notifications:{me}`: new and bundled rows refetch the list and the bell (and Home's needs-you cards). */
 export function useNotificationsRealtime(userId: string | null) {
-  useRealtimeRefetch(userId ? notificationsSubscription(userId) : null, [notificationKeys.all, ['home', 'feed']]);
+  useRealtimeRefetch(userId ? notificationsSubscription(userId) : null, [
+    notificationKeys.all,
+    ['home', 'feed'],
+  ]);
 }
 
 /** Opening Updates: everything up to the newest row rendered becomes read. Safe to repeat. */
@@ -90,7 +93,8 @@ async function currentProposalId(activityId: string): Promise<string> {
       .limit(1),
   );
   const first = rows[0];
-  if (!first) throw new OjoroCallError({ kind: 'ojoro', code: 'notification_not_found', detail: null });
+  if (!first)
+    throw new OjoroCallError({ kind: 'ojoro', code: 'notification_not_found', detail: null });
   return first.id;
 }
 
@@ -131,7 +135,10 @@ export function useRowAction() {
       if (v.activityId) void qc.invalidateQueries({ queryKey: ['activity', v.activityId] });
     },
   });
-  const tap = (input: Omit<RowActionInput, 'key'>, options?: Parameters<typeof mutation.mutate>[1]) => {
+  const tap = (
+    input: Omit<RowActionInput, 'key'>,
+    options?: Parameters<typeof mutation.mutate>[1],
+  ) => {
     if (busy.current.has(input.id)) return false;
     busy.current.add(input.id);
     mutation.mutate(
@@ -179,7 +186,9 @@ export function useSetPrefs() {
       if (previous) {
         qc.setQueryData<Prefs>(notificationKeys.prefs, {
           ...previous,
-          ...(change.p_quiet_hours_enabled !== undefined ? { quiet_hours_enabled: change.p_quiet_hours_enabled } : null),
+          ...(change.p_quiet_hours_enabled !== undefined
+            ? { quiet_hours_enabled: change.p_quiet_hours_enabled }
+            : null),
           ...(change.p_quiet_start !== undefined ? { quiet_start: change.p_quiet_start } : null),
           ...(change.p_quiet_end !== undefined ? { quiet_end: change.p_quiet_end } : null),
           ...(change.p_show_details !== undefined ? { show_details: change.p_show_details } : null),
@@ -220,7 +229,16 @@ export function useSetType() {
 }
 
 export type MutedObject = {
-  object_kind: 'plan' | 'activity' | 'crew' | 'challenge' | 'challenge_event' | 'clan';
+  object_kind:
+    | 'plan'
+    | 'activity'
+    | 'crew'
+    | 'challenge'
+    | 'challenge_event'
+    | 'clan'
+    // Step 8: hosts' payments notices, and your own account notices.
+    | 'host_program'
+    | 'account';
   object_id: string;
   until: string | null;
   name: string | null;
@@ -241,13 +259,17 @@ export function useMutes(userId: string | null) {
       );
       const now = Date.now();
       const live = rows.filter((r) => !r.until || Date.parse(r.until) > now);
-      const ids = (kind: string) => live.filter((r) => r.object_kind === kind).map((r) => r.object_id);
-      const [plans, games, crews, clans] = await Promise.all([
+      const ids = (kind: string) =>
+        live.filter((r) => r.object_kind === kind).map((r) => r.object_id);
+      const [plans, games, crews, clans, programs] = await Promise.all([
         ids('plan').length
           ? supabase.from('plan_cards').select('id, title, sport_name').in('id', ids('plan'))
           : Promise.resolve({ data: [], error: null }),
         ids('activity').length
-          ? supabase.from('activity_cards').select('id, title, sport_name').in('id', ids('activity'))
+          ? supabase
+              .from('activity_cards')
+              .select('id, title, sport_name')
+              .in('id', ids('activity'))
           : Promise.resolve({ data: [], error: null }),
         ids('crew').length
           ? supabase.from('crews').select('id, name').in('id', ids('crew'))
@@ -255,14 +277,37 @@ export function useMutes(userId: string | null) {
         ids('clan').length
           ? supabase.from('clans').select('id, name').in('id', ids('clan'))
           : Promise.resolve({ data: [], error: null }),
+        ids('host_program').length
+          ? supabase.from('host_programs').select('id, name').in('id', ids('host_program'))
+          : Promise.resolve({ data: [], error: null }),
       ]);
       const names = new Map<string, string>();
-      for (const p of checkRows(plans as { data: { id: string | null; title: string | null; sport_name: string | null }[] | null; error: unknown }))
+      for (const p of checkRows(
+        plans as {
+          data: { id: string | null; title: string | null; sport_name: string | null }[] | null;
+          error: unknown;
+        },
+      ))
         if (p.id) names.set(p.id, p.title ?? p.sport_name ?? '');
-      for (const g of checkRows(games as { data: { id: string | null; title: string | null; sport_name: string | null }[] | null; error: unknown }))
+      for (const g of checkRows(
+        games as {
+          data: { id: string | null; title: string | null; sport_name: string | null }[] | null;
+          error: unknown;
+        },
+      ))
         if (g.id) names.set(g.id, g.title ?? g.sport_name ?? '');
-      for (const c of checkRows(crews as { data: { id: string; name: string }[] | null; error: unknown })) names.set(c.id, c.name);
-      for (const c of checkRows(clans as { data: { id: string; name: string }[] | null; error: unknown })) names.set(c.id, c.name);
+      for (const c of checkRows(
+        crews as { data: { id: string; name: string }[] | null; error: unknown },
+      ))
+        names.set(c.id, c.name);
+      for (const c of checkRows(
+        clans as { data: { id: string; name: string }[] | null; error: unknown },
+      ))
+        names.set(c.id, c.name);
+      for (const p of checkRows(
+        programs as { data: { id: string; name: string }[] | null; error: unknown },
+      ))
+        names.set(p.id, p.name);
       return live.map((r) => ({
         object_kind: r.object_kind,
         object_id: r.object_id,
