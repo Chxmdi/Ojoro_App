@@ -93,7 +93,7 @@ export function HostRequestsScreen({ programId, sessionId }: { programId: string
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline={overline} fallback={`/host/${programId}` as Href} />
+      <ScreenHeader heading={false} overline={overline} fallback={`/host/${programId}` as Href} />
       {view.isPending && !v ? (
         <LoadingState label="Loading requests" kinds={['text', 'strip', 'strip']} />
       ) : !v ? (

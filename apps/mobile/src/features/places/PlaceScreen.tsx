@@ -189,7 +189,7 @@ function PlaceBody({
     <View testID="place-screen">
       <Image alt={heroAlt(place)} ratio="4:3">
         {/* Full `text`, not muted: muted stone over the photo's scrim measured 2.98:1 (WCAG 1.4.3). */}
-        <Text variant="overline" testID="place-overline">
+        <Text variant="overline" tone="text" testID="place-overline">
           {placeOverline(place)}
         </Text>
         <Text variant="display-md" role="heading" aria-level={1} testID="place-name">

@@ -98,6 +98,7 @@ export function ClanScreen({ id }: { id: string }) {
   return (
     <Screen situation="calm" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={clan ? clanOverline(clan) : 'CLAN'}
         fallback={'/you' as Href}
         right={
@@ -235,7 +236,7 @@ function Identity({ id, clan, online }: { id: string; clan: ClanView; online: bo
             accessible
             accessibilityLabel={`${s.value} ${s.label.toLowerCase()}`}
           >
-            <DisplayText size="sm" style={tabular}>
+            <DisplayText size="sm" style={tabular} role="none">
               {grouped(s.value)}
             </DisplayText>
             <Text variant="caption" muted>
@@ -372,9 +373,9 @@ function RunRow({
               YOU'RE DOWN
             </Text>
           ) : (
+            // The commit (56pt): only NotificationRow's compact row action may be 44pt (DESIGN_DECISIONS, Polish A11Y-SCREENS).
             <Button
-              variant="secondary"
-              compact
+              variant="commit"
               loading={join.isPending && join.variables === run.run_id}
               disabled={!online}
               accessibilityLabel={`I'm down: ${run.title}`}
@@ -433,7 +434,7 @@ function Mission({ id, clan }: { id: string; clan: ClanView }) {
       testID="clan-mission"
     >
       <Text variant="overline">{missionOverline(m.starts_on)}</Text>
-      <DisplayText size="md">{missionHeadline(m.title)}</DisplayText>
+      <DisplayText size="md" aria-level={2}>{missionHeadline(m.title)}</DisplayText>
       <Progress value={bar.value} max={bar.max} label={bar.label} />
       <Text variant="body-sm" style={tabular}>
         {missionLine(m)}
@@ -521,17 +522,20 @@ function WhoRunsIt({ id }: { id: string }) {
                 {content}
               </View>
             ) : (
-              <Pressable
-                key={p.user_id}
-                role="link"
-                accessibilityLabel={`${p.display_name}, ${p.role}${meta ? `, ${meta}` : ''}`}
-                accessibilityHint={`Opens ${p.display_name}'s profile, where you can report or block`}
-                onPress={() => router.push(`/profile/${p.user_id}` as Href)}
-                className={cls}
-                testID={`clan-role-${p.user_id}`}
-              >
-                {content}
-              </Pressable>
+              // A link can't sit straight in a list (axe aria-required-children): it gets its own item.
+              <View key={p.user_id} role="listitem">
+                <Pressable
+                  role="link"
+                  // The visible words in visual order (WCAG 2.5.3): name, meta, role badge.
+                  accessibilityLabel={`${p.display_name}${meta ? `, ${meta}` : ''}, ${roleWord(p.role)}`}
+                  accessibilityHint={`Opens ${p.display_name}'s profile, where you can report or block`}
+                  onPress={() => router.push(`/profile/${p.user_id}` as Href)}
+                  className={cls}
+                  testID={`clan-role-${p.user_id}`}
+                >
+                  {content}
+                </Pressable>
+              </View>
             );
           })}
         </View>

@@ -123,6 +123,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
   return (
     <Screen situation="calm" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={v ? sessionOverline(v.starts_at, tz, now) : 'SESSION'}
         fallback={`/host/${programId}` as Href}
         right={v ? <IconButton icon="share" label="Share session link" onPress={() => void share()} testID="roster-share" /> : undefined}
@@ -279,7 +280,9 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
                       avatarSize="sm"
                       leading={
                         <View className="w-[28px]" accessibilityLabel={positionWord(i + 1)}>
-                          <DisplayText size="xs">{String(i + 1)}</DisplayText>
+                          <DisplayText size="xs" role="none">
+                            {String(i + 1)}
+                          </DisplayText>
                         </View>
                       }
                       meta={rosterMeta(r, tz, now)}

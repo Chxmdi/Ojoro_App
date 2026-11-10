@@ -53,7 +53,7 @@ import {
   useVoteTime,
   type PlanCard,
 } from './data';
-import { AsOf, ErrorState, OfflineBanner, PlanSkeleton, routes, TopBar } from './parts';
+import { AsOf, ErrorState, MAIN_LANDMARK, OfflineBanner, PlanSkeleton, routes, TopBar } from './parts';
 import {
   displayStatus,
   distanceKm,
@@ -105,7 +105,7 @@ export function PlanScreen({ id }: { id: string }) {
   } else body = <PlanBody plan={plan} userId={userId} dataUpdatedAt={card.dataUpdatedAt} />;
 
   return (
-    <Situation id="forming" className="flex-1" style={{ paddingTop: insets.top }}>
+    <Situation id="forming" className="flex-1" style={{ paddingTop: insets.top }} {...MAIN_LANDMARK}>
       {plan ? null : <TopBar title="PLAN" onBack={goBack} />}
       {body}
     </Situation>

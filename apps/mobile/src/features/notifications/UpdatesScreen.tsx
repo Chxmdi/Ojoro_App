@@ -169,7 +169,7 @@ export function UpdatesScreen() {
             ) : null}
 
             <View className="items-center gap-space-2 pt-space-4" role="region" aria-label="End" testID="updates-end">
-              <Text variant="display-sm" role="heading" className="text-center">
+              <Text variant="display-sm" role="heading" aria-level={2} className="text-center">
                 {rows.length === 0 ? 'NOTHING YET.' : "YOU'RE CAUGHT UP."}
               </Text>
               {rows.length === 0 ? (

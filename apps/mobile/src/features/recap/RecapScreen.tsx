@@ -85,6 +85,7 @@ export function RecapScreen({ id }: { id: string }) {
   return (
     <Screen situation="after" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={recap ? `RECAP · ${dateLabel(recap.occurred_at, tz)}` : 'RECAP'}
         fallback="/"
         right={

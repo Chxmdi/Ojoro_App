@@ -5,7 +5,7 @@
 import type { OjoroError } from '@ojoro/contracts';
 import type { Href } from 'expo-router';
 import type { ReactNode } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import {
   Button,
@@ -36,6 +36,9 @@ export const routes = {
   recap: (activityId: string) => `/activity/${activityId}/recap` as Href,
 };
 
+/** The web `main` landmark for plan screens drawn on a Situation rather than a Screen (axe `region`). */
+export const MAIN_LANDMARK = Platform.OS === 'web' ? ({ role: 'main' } as const) : null;
+
 /* ---------- Top bar ---------- */
 
 /** Back, a centred overline, and up to two actions (Plan.png header). */
@@ -60,7 +63,7 @@ export function TopBar({
       <View className="min-w-touch flex-row">
         {onBack ? <IconButton icon={backIcon} label={backLabel} onPress={onBack} /> : null}
       </View>
-      <Text variant="overline" tone="text" className="flex-1 text-center" numberOfLines={2} {...(heading ? { role: 'heading' as const } : null)}>
+      <Text variant="overline" tone="text" className="flex-1 text-center" {...(heading ? { role: 'heading' as const } : null)}>
         {title}
       </Text>
       <View className="min-w-touch flex-row justify-end">{right}</View>

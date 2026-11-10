@@ -146,6 +146,8 @@ a {
   align-items: baseline;
   gap: var(--space-2);
   text-decoration: none;
+  /* A 44px target (the wordmark alone is 25px tall). */
+  padding-block: 10px;
 }
 .nav {
   display: flex;
@@ -224,7 +226,8 @@ main {
 }
 dl.facts {
   display: grid;
-  grid-template-columns: max-content 1fr;
+  /* minmax(0, …): at large text a long term or value wraps instead of pushing the page sideways. */
+  grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
   gap: var(--space-2) var(--space-5);
   margin: 0;
 }
@@ -233,6 +236,7 @@ dl.facts dt {
 }
 dl.facts dd {
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 /* Buttons --------------------------------------------------------------------------------------- */
@@ -356,10 +360,17 @@ table.data td {
 table.data tbody tr:hover {
   background: var(--surface-raised);
 }
-table.data td a.row-link {
+a.row-link {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
+  display: inline-flex;
+  /* WCAG 2.2 AA target size (2.5.8): 24px. The staff tool is a desktop tool; 44pt is the app's rule. */
+  min-height: 24px;
+  align-items: center;
+}
+/* A link on its own line (not inside running text): also a 24px target. */
+a.standalone-link {
   display: inline-flex;
   min-height: 24px;
   align-items: center;

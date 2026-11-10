@@ -20,6 +20,7 @@ import {
   Screen,
   Skeleton,
   Strip,
+  StripList,
   Text,
   Toast,
   useToast,
@@ -231,7 +232,8 @@ function Suggestions({
         />
       )}
       {moreOpen ? (
-        <View role="list" aria-label="More ideas" testID="more-ideas">
+        // StripList: each idea in its own list item on the web (axe aria-required-children).
+        <StripList aria-label="More ideas" testID="more-ideas">
           {others.map(({ r, i }) => (
             <Strip
               key={r.plan_id ?? `${r.sport_id}-${r.starts_at}`}
@@ -247,7 +249,7 @@ function Suggestions({
               testID={`idea-${i}`}
             />
           ))}
-        </View>
+        </StripList>
       ) : null}
     </View>
   );

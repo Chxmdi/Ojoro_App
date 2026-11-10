@@ -167,7 +167,7 @@ export function HostSeriesScreen({ programId, seriesId }: { programId: string; s
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline="SERIES" fallback={`/host/${programId}` as Href} />
+      <ScreenHeader heading={false} overline="SERIES" fallback={`/host/${programId}` as Href} />
       {series.isPending && !loaded ? (
         <LoadingState label="Loading the series" kinds={['text', 'strip', 'strip', 'strip']} />
       ) : !loaded || !form || !base ? (
@@ -356,7 +356,7 @@ export function HostSeriesScreen({ programId, seriesId }: { programId: string; s
                       key={s.session_id}
                       leading={
                         <View>
-                          <DisplayText size="xs" muted={row.skipped}>
+                          <DisplayText size="xs" muted={row.skipped} role="none">
                             {row.day}
                           </DisplayText>
                           <Text variant="caption" muted>

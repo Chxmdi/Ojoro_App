@@ -70,7 +70,7 @@ function VerifyingBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: 
 
   return (
     <Screen situation="after" scroll gutter={false}>
-      <StageHeader overline={finished} onMore={() => reportBlock.open(eventReportTarget(row))} />
+      <StageHeader heading={false} overline={finished} onMore={() => reportBlock.open(eventReportTarget(row))} />
       <View className="gap-space-8 px-space-5 pb-space-10 pt-space-6" testID={disputed ? 'event-disputed' : 'event-verifying'}>
         <View className="gap-space-4">
           <DisplayText size="xl" accessibilityRole="header" testID="verifying-headline">
@@ -187,7 +187,7 @@ function Checks({
         <View className="flex-row items-end justify-between gap-space-4">
           <View accessible accessibilityLabel={`${sideName(f, 'a')}, ${showValue(v.a_value, f.scoring)}, not final`}>
             <Text variant="label">{sideName(f, 'a').toUpperCase()}</Text>
-            <DisplayText size="md" style={{ fontVariant: ['tabular-nums'] }} testID="verifying-a">
+            <DisplayText size="md" style={{ fontVariant: ['tabular-nums'] }} role="none" testID="verifying-a">
               {showValue(v.a_value, f.scoring)}
             </DisplayText>
           </View>
@@ -197,7 +197,7 @@ function Checks({
             accessibilityLabel={`${sideName(f, 'b')}, ${showValue(v.b_value, f.scoring)}, not final`}
           >
             <Text variant="label">{sideName(f, 'b').toUpperCase()}</Text>
-            <DisplayText size="md" style={{ fontVariant: ['tabular-nums'] }} testID="verifying-b">
+            <DisplayText size="md" style={{ fontVariant: ['tabular-nums'] }} role="none" testID="verifying-b">
               {showValue(v.b_value, f.scoring)}
             </DisplayText>
           </View>

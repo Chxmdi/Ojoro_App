@@ -144,20 +144,23 @@ function Poster({ clash, now }: { clash: ClashView; now: Date }) {
   return (
     <View className="gap-space-5 px-space-5 pb-space-6 pt-space-4" role="region" accessible accessibilityLabel={s.spoken} testID="clash-poster">
       <View className="gap-space-1">
-        <DisplayText size="lg" accessibilityRole="header">
+        {/* One heading for the poster (h2 under the CLASH overline); VS, the second side and the score are text. */}
+        <DisplayText size="lg" aria-level={2}>
           {first.poster}
         </DisplayText>
         <View className="flex-row items-center gap-space-3">
           <Rule />
-          <DisplayText size="sm">VS</DisplayText>
+          <DisplayText size="sm" role="none">
+            VS
+          </DisplayText>
           <Rule />
         </View>
-        <DisplayText size="lg" style={{ textAlign: 'right' }}>
+        <DisplayText size="lg" style={{ textAlign: 'right' }} role="none">
           {second.poster}
         </DisplayText>
       </View>
       <View className="flex-row items-end justify-between gap-space-3 border-t border-line pt-space-4">
-        <DisplayText size="hero" style={{ fontVariant: ['tabular-nums'] }} testID="clash-score">
+        <DisplayText size="hero" style={{ fontVariant: ['tabular-nums'] }} role="none" testID="clash-score">
           {s.score}
         </DisplayText>
         <View className="shrink items-end gap-space-1">

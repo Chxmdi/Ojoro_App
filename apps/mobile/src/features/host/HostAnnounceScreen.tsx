@@ -80,6 +80,7 @@ export function HostAnnounceScreen({ programId }: { programId: string }) {
   return (
     <Screen situation="calm" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline="ANNOUNCEMENT"
         fallback={home}
         right={<IconButton icon="close" label="Discard" onPress={() => goBack(home)} testID="host-announce-discard" />}

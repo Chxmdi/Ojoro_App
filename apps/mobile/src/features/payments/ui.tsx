@@ -156,7 +156,7 @@ export function PassRow({
     <View className="gap-space-3 border-b border-line py-space-4" testID={`pay-pass-${pass.id}`}>
       <View className="flex-row items-start gap-space-4">
         <View className="w-[88px]">
-          <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }}>
+          <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }} role="none">
             {passPrice(pass)}
           </DisplayText>
         </View>

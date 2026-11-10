@@ -45,7 +45,8 @@ export default function Welcome() {
 
   return (
     <Screen situation="confirmed" contentClassName="justify-between pt-space-6">
-      <DisplayText size="xs" accessibilityRole="header" style={{ letterSpacing: 0.06 * 24 }}>
+      {/* The wordmark, not a heading: the promise below is the screen's h1. */}
+      <DisplayText size="xs" role="none" style={{ letterSpacing: 0.06 * 24 }}>
         OJORO
       </DisplayText>
 

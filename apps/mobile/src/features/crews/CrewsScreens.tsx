@@ -52,7 +52,7 @@ export function CrewsScreen() {
   }, []);
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline="CREWS" fallback="/" />
+      <ScreenHeader heading={false} overline="CREWS" fallback="/" />
       <View className="gap-space-6 px-space-5 pb-space-10 pt-space-4" testID="crews-screen">
         <DisplayText size="md" accessibilityRole="header">
           YOUR CREWS

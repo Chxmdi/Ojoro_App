@@ -93,6 +93,7 @@ export function HostSeasonScreen({ programId, leagueId }: { programId: string; l
   return (
     <Screen situation="calm" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={mine ? seasonOverline(mine.league, mine.round) : 'LEAGUE'}
         fallback={`/host/${programId}` as Href}
         right={mine ? <IconButton icon="share" label="Share the standings" onPress={() => void share()} testID="season-share" /> : undefined}
@@ -272,13 +273,15 @@ function ResultBlock({
     <View className="gap-space-4 bg-surface-raised p-space-5" role="region" aria-label="Result to confirm" testID={`season-result-${item.fixture_id}`}>
       <Text variant="overline">{confirmedState ? 'RESULT CONFIRMED' : 'RESULT TO CONFIRM'}</Text>
       <View className="flex-row items-center gap-space-3">
-        <Text variant="title" className="flex-1">
+        {/* min-w-0 lets a long team name break at large text instead of running off the edge. */}
+        <Text variant="title" className="min-w-0 flex-1">
           {item.home.name}
         </Text>
-        <DisplayText size="md" accessibilityLabel={score.spoken} style={{ fontVariant: ['tabular-nums'] }}>
+        {/* Not a heading (one h1 per screen); `img` carries the spoken score ("4 to 2"). */}
+        <DisplayText size="md" accessibilityLabel={score.spoken} style={{ fontVariant: ['tabular-nums'] }} role="img">
           {score.shown}
         </DisplayText>
-        <Text variant="title" className="flex-1 text-right">
+        <Text variant="title" className="min-w-0 flex-1 text-right">
           {item.away.name}
         </Text>
       </View>
@@ -385,7 +388,7 @@ function RoundSection({
         return (
           <View key={m.key} className="gap-[10px] border-b border-line py-space-4" testID={`season-fixture-${m.key}`}>
             <View className="flex-row items-baseline gap-space-3">
-              <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }}>
+              <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }} role="none">
                 {m.time}
               </DisplayText>
               {m.pitch ? (

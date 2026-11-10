@@ -68,7 +68,7 @@ export function HostHomeScreen({ programId }: { programId: string }) {
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline={home ? `HOSTING · ${home.name.toUpperCase()}` : 'HOSTING'} fallback={'/you' as Href} />
+      <ScreenHeader heading={false} overline={home ? `HOSTING · ${home.name.toUpperCase()}` : 'HOSTING'} fallback={'/you' as Href} />
       {!home ? null : (
         <View className="gap-space-10 px-space-5 pb-space-10 pt-space-4" testID="host-home">
           {!online ? <OfflineNote dataUpdatedAt={program.dataUpdatedAt} extra="Changes wait until you're back." /> : null}
@@ -169,7 +169,7 @@ export function HostHomeScreen({ programId }: { programId: string }) {
             <View className="flex-row gap-space-3">
               {stats.map((s) => (
                 <View key={s.key} className="flex-1">
-                  <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }}>
+                  <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }} role="none">
                     {s.value.shown}
                   </DisplayText>
                   <Text variant="caption" muted>

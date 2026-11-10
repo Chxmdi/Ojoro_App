@@ -193,7 +193,9 @@ function IncomingBlock({ card }: { card: IncomingCard }) {
     <Situation id="calm" testID="compete-incoming">
       <View className="gap-space-3 px-space-5 py-space-6" role="region" aria-label="Incoming call-out">
         <Text variant="overline">{card.overline}</Text>
-        <DisplayText size="md">{card.headline}</DisplayText>
+        <DisplayText size="md" aria-level={2}>
+          {card.headline}
+        </DisplayText>
         <Text variant="body">{card.line}</Text>
         <View className="flex-row flex-wrap items-center gap-space-2">
           <Button variant="primary" href={href} accessibilityLabel={card.accessibilityLabel} testID="compete-reply">

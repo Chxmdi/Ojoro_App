@@ -16,6 +16,7 @@ import {
   PlaceMiniCard,
   Skeleton,
   Strip,
+  StripList,
   Text,
   UserMiniCard,
 } from '@/design-system';
@@ -74,7 +75,7 @@ export function OjoroNow(p: OjoroNowProps) {
   return (
     <Band situation="forming" accessibilityLabel="Ojoro Now" testID="ojoro-now">
       <Text variant="overline">OJORO NOW · WITHIN THE HOUR</Text>
-      <Text variant="display-xl" role="heading">
+      <Text variant="display-xl" role="heading" aria-level={2}>
         RIGHT NOW.
       </Text>
       {p.loading ? (
@@ -97,7 +98,8 @@ export function OjoroNow(p: OjoroNowProps) {
           ) : null}
           {p.offlineAt ? <AsOf at={p.offlineAt} what="Showing what was on" /> : null}
           {p.strips.length > 0 ? (
-            <View role="list" aria-label="Starting soon" testID="ojoro-now-list">
+            // StripList puts each strip in its own list item on the web (axe aria-required-children).
+            <StripList aria-label="Starting soon" testID="ojoro-now-list">
               {p.strips.map((s) => (
                 <ActivityStrip
                   key={s.key}
@@ -110,7 +112,7 @@ export function OjoroNow(p: OjoroNowProps) {
                   onPress={() => p.onOpen(s)}
                 />
               ))}
-            </View>
+            </StripList>
           ) : null}
         </>
       )}

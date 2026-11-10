@@ -161,10 +161,10 @@ function InsightsBody({
 
       <View className="gap-space-2" role="region" aria-label="Ojoro hours">
         <Text variant="overline">{`LAST ${data.days} DAYS`}</Text>
-        <DisplayText size="xl" style={{ fontVariant: ['tabular-nums'] }} testID="insights-hours">
+        <DisplayText size="xl" style={{ fontVariant: ['tabular-nums'] }} role="none" testID="insights-hours">
           {countText(data.ojoro_hours)}
         </DisplayText>
-        <Text variant="title" accessibilityRole="header">
+        <Text variant="title" role="heading" aria-level={2}>
           Ojoro hours at your sessions
         </Text>
         <Text variant="body-sm" muted>

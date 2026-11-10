@@ -6,10 +6,10 @@
  */
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
-import { Linking, Platform, Share, View } from 'react-native';
+import { Linking, Platform, Share, useWindowDimensions, View, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, GameOnPoster, IconButton, Situation, Text, useToast } from '@/design-system';
+import { Button, GameOnPoster, IconButton, Screen, Text, useToast } from '@/design-system';
 import { track } from '@/lib/analytics';
 import { useAuth } from '@/lib/auth';
 import { ojoroErrorOf } from '@/lib/rpc';
@@ -27,6 +27,16 @@ import { ErrorState, PlanSkeleton, routes } from './parts';
 import { directionsUrl, displayStatus, gameOnNote, gameOnOverline, icsEvent, type RosterRow } from './planLogic';
 import { planTitle, planWhen } from './time';
 
+/**
+ * The two secondary actions share a row, each at least as wide as its label: on the web
+ * `min-width: fit-content` makes the row wrap when the label grows (React Native Web sets
+ * `min-width: 0` on every view); native has no fit-content, so at large text each takes the row.
+ */
+function halfAtMost(fontScale: number): ViewStyle | undefined {
+  if (Platform.OS === 'web') return { minWidth: 'fit-content' as unknown as number };
+  return fontScale > 1.3 ? { flexBasis: '100%' } : undefined;
+}
+
 export function GameOnScreen({ id, celebrate }: { id: string; celebrate: boolean }) {
   const insets = useSafeAreaInsets();
   const card = usePlanCard(id);
@@ -39,16 +49,20 @@ export function GameOnScreen({ id, celebrate }: { id: string; celebrate: boolean
   );
 
   return (
-    <Situation id="confirmed" className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      {card.isPending ? <PlanSkeleton label="Loading the game" /> : null}
-      {card.isError && !plan ? <ErrorState error={ojoroErrorOf(card.error)} onRetry={() => void card.refetch()} /> : null}
-      {plan ? <GameOn plan={plan} celebrate={celebrate} /> : null}
-    </Situation>
+    // Screen: the confirmed ground, the web `main` landmark, and scrolling at large text.
+    <Screen situation="confirmed" scroll gutter={false} contentClassName="grow">
+      <View className="grow" style={{ paddingBottom: insets.bottom }}>
+        {card.isPending ? <PlanSkeleton label="Loading the game" /> : null}
+        {card.isError && !plan ? <ErrorState error={ojoroErrorOf(card.error)} onRetry={() => void card.refetch()} /> : null}
+        {plan ? <GameOn plan={plan} celebrate={celebrate} /> : null}
+      </View>
+    </Screen>
   );
 }
 
 function GameOn({ plan, celebrate }: { plan: PlanCard; celebrate: boolean }) {
   const id = plan.id;
+  const { fontScale } = useWindowDimensions();
   const router = useRouter();
   const toast = useToast();
   const auth = useAuth();
@@ -126,9 +140,10 @@ function GameOn({ plan, celebrate }: { plan: PlanCard; celebrate: boolean }) {
   };
 
   return (
-    <View className="flex-1" testID="game-on">
+    <View className="grow" testID="game-on">
       <View className="flex-row items-center justify-between pl-space-5 pr-space-2 pt-space-2">
-        <Text variant="overline" className="shrink" testID="game-on-overline">
+        {/* The screen's h1; the poster's GAME ON is its h2. */}
+        <Text variant="overline" className="shrink" role="heading" aria-level={1} testID="game-on-overline">
           {overline}
         </Text>
         <IconButton icon="close" label="Close" onPress={close} />
@@ -157,13 +172,14 @@ function GameOn({ plan, celebrate }: { plan: PlanCard; celebrate: boolean }) {
         >
           OPEN THE GAME
         </Button>
-        <View className="flex-row gap-space-2">
-          <View className="flex-1">
+        {/* Side by side; at large text they stack instead of running off the edge. */}
+        <View className="flex-row flex-wrap gap-space-2">
+          <View className="grow basis-[160px]" style={halfAtMost(fontScale)}>
             <Button variant="secondary" block onPress={() => void addToCalendar()}>
               ADD TO CALENDAR
             </Button>
           </View>
-          <View className="flex-1">
+          <View className="grow basis-[160px]" style={halfAtMost(fontScale)}>
             <Button variant="secondary" block onPress={() => void directions()}>
               DIRECTIONS
             </Button>

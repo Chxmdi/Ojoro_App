@@ -69,6 +69,7 @@ export function CheckInScreen({ id }: { id: string }) {
   return (
     <Screen situation="confirmed" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={`CHECK-IN · ${clockWithPeriod(now, tz)}`}
         fallback={`/activity/${id}` as Href}
       />

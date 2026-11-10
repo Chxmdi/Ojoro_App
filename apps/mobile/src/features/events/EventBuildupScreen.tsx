@@ -766,8 +766,10 @@ function CrowdComments({
   const count = row.comment_count ?? 0;
 
   return (
-    <View className="gap-space-4" role="region" aria-label="The crowd">
-      <View className="flex-row items-center justify-between gap-space-3">
+    // "The crowd's comments": CrowdSupport above is already the region called The crowd (axe landmark-unique).
+    <View className="gap-space-4" role="region" aria-label="The crowd's comments">
+      {/* Wraps at large text: MUTE COMMENTS drops under the count instead of running off the edge. */}
+      <View className="flex-row flex-wrap items-center justify-between gap-space-3">
         <Text
           variant="label"
           testID="event-comments-count"

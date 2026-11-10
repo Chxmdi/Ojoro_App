@@ -150,7 +150,7 @@ function ResultBody({ eventId, row, dataUpdatedAt }: { eventId: string; row: Eve
             <Text variant="label" muted>
               PREDICTIONS
             </Text>
-            {crowd.headline ? <DisplayText size="sm">{crowd.headline}</DisplayText> : null}
+            {crowd.headline ? <DisplayText size="sm" aria-level={2}>{crowd.headline}</DisplayText> : null}
             <Text variant="body">{crowd.line}</Text>
           </View>
 
@@ -232,7 +232,7 @@ function LinkRow({
   const body = (
     <View className="min-h-touch flex-row items-center gap-space-4 border-b border-line py-space-5">
       <View className="w-[80px]">
-        <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }}>
+        <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }} role="none">
           {lead}
         </DisplayText>
       </View>

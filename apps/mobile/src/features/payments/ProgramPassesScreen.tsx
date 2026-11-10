@@ -36,7 +36,7 @@ export function ProgramPassesScreen({ programId, sessionId }: { programId: strin
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline="PASSES" fallback={(sessionId ? '/' : '/pay') as Href} />
+      <ScreenHeader heading={false} overline="PASSES" fallback={(sessionId ? '/' : '/pay') as Href} />
       {options.isPending ? (
         <LoadingState label="Loading passes" kinds={['text', 'strip', 'strip']} />
       ) : !o ? (

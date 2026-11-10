@@ -421,19 +421,22 @@ function DownForRow({
   const pending = join.isPending && join.variables === row.signal_id;
   return (
     <View
-      className="min-h-[64px] flex-row items-center gap-space-3 border-b border-line py-space-2"
+      className="min-h-[64px] flex-row flex-wrap items-center gap-space-3 border-b border-line py-space-2"
       testID={`crew-down-for-${row.signal_id}`}
     >
       <Avatar name={row.display_name} size="md" />
-      <View className="flex-1">
+      {/* basis 140: at large text the 56pt I'M DOWN wraps under the words instead of running off the edge. */}
+      <View className="grow basis-[140px]">
         <Text variant="title-sm">{title}</Text>
         <Text variant="caption" muted>
           {meta}
         </Text>
       </View>
       {open ? (
+        // The commit (56pt): only NotificationRow's compact row action may be 44pt (DESIGN_DECISIONS, Polish A11Y-SCREENS).
         <Button
-          variant="secondary"
+          variant="commit"
+          className="ml-auto"
           loading={pending}
           disabled={!online}
           accessibilityLabel={`I'm down: ${title}`}
@@ -494,7 +497,7 @@ function RitualSection({ id, crew, online }: { id: string; crew: CrewHome; onlin
           <Text variant="overline">RITUAL</Text>
           {ritual.status === 'paused' ? <Badge>PAUSED</Badge> : null}
         </View>
-        <DisplayText size="sm">{ritualHeadline(ritual)}</DisplayText>
+        <DisplayText size="sm" aria-level={2}>{ritualHeadline(ritual)}</DisplayText>
         <Text variant="body-sm">{ritualLine(ritual)}</Text>
         {week.kind === 'skipped' || week.kind === 'later' ? (
           <Text variant="body-sm" muted testID="crew-ritual-week-note">
@@ -578,7 +581,7 @@ function RitualSection({ id, crew, online }: { id: string; crew: CrewHome; onlin
         testID="crew-ritual-suggestion"
       >
         <Text variant="overline">MAKE THIS A RITUAL</Text>
-        <DisplayText size="sm">{suggestion.title}</DisplayText>
+        <DisplayText size="sm" aria-level={2}>{suggestion.title}</DisplayText>
         <Text variant="body-sm">{suggestion.body}</Text>
         <View className="self-start">
           <Button

@@ -86,6 +86,7 @@ export function AfterScreen({ id }: { id: string }) {
   return (
     <Screen situation="after" scroll gutter={false}>
       <ScreenHeader
+        heading={false}
         overline={card ? afterOverline(card.after_closes_at, now, tz) : 'AFTER'}
         fallback={`/activity/${id}` as Href}
       />
@@ -336,14 +337,14 @@ function ResultCard({
               >
                 <View>
                   <Text variant="label">{teamA.toUpperCase()}</Text>
-                  <DisplayText size="lg">{String(proposal.team_a_score)}</DisplayText>
+                  <DisplayText size="lg" role="none">{String(proposal.team_a_score)}</DisplayText>
                 </View>
                 <Text variant="display-sm" muted>
                   –
                 </Text>
                 <View className="items-end">
                   <Text variant="label">{teamB.toUpperCase()}</Text>
-                  <DisplayText size="lg">{String(proposal.team_b_score)}</DisplayText>
+                  <DisplayText size="lg" role="none">{String(proposal.team_b_score)}</DisplayText>
                 </View>
               </View>
 

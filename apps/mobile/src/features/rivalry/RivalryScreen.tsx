@@ -210,7 +210,8 @@ function MeetingRow({
   return (
     <Pressable
       role="link"
-      accessibilityLabel={`${date}, ${title}. ${badge.text === 'DRAW' ? 'Draw' : `${badge.text} won`}. ${line}. See the result.`}
+      // The visible words in visual order (WCAG 2.5.3): date, title, line, then the badge.
+      accessibilityLabel={`${date}, ${title}${line ? `, ${line}` : ''}, ${badge.text === 'DRAW' ? 'draw' : `${badge.text} won`}. See the result.`}
       onPress={() => {
         track('cta_tapped', { cta: 'rivalry_meeting', event_id: meeting.event_id });
         router.push(eventHref(meeting.event_id));
@@ -219,7 +220,7 @@ function MeetingRow({
       testID={`rivalry-meeting-${meeting.event_id}`}
     >
       <View className="w-[80px]">
-        <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }}>
+        <DisplayText size="xs" style={{ fontVariant: ['tabular-nums'] }} role="none">
           {date}
         </DisplayText>
       </View>
@@ -380,10 +381,10 @@ function SignalMark() {
 /** The after-ground heading for the rematch states the Rematch component doesn't cover. */
 function RematchHead({ lastTime, children }: { lastTime: string; children: string }) {
   return (
-    <Situation id="after" className="gap-space-5 p-space-6 pb-space-4" role="region">
+    <Situation id="after" className="gap-space-5 p-space-6 pb-space-4" role="region" aria-label="Rematch">
       <Text variant="overline">{`LAST TIME · ${lastTime}`}</Text>
       <View className="flex-row items-center justify-between gap-space-3">
-        <DisplayText size="lg" className="shrink">
+        <DisplayText size="lg" className="shrink" aria-level={2}>
           REMATCH?
         </DisplayText>
         <SignalMark />

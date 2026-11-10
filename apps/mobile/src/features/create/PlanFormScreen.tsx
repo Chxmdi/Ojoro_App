@@ -173,7 +173,7 @@ export function PlanFormScreen({
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <TopBar title={activity ? 'CREATE · ACTIVITY' : 'CREATE · QUICK PLAN'} onBack={leave} />
+      <TopBar heading={false} title={activity ? 'CREATE · ACTIVITY' : 'CREATE · QUICK PLAN'} onBack={leave} />
       <View className="gap-space-8 px-space-5 pb-space-10 pt-space-4" testID="plan-form">
         <View className="gap-space-3">
           <DisplayText size="lg" accessibilityRole="header">

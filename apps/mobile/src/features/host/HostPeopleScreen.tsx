@@ -102,7 +102,7 @@ export function HostPeopleScreen({ programId }: { programId: string }) {
 
   return (
     <Screen situation="calm" scroll gutter={false}>
-      <ScreenHeader overline={c ? `PEOPLE · ${c.played_count}` : 'PEOPLE'} fallback={`/host/${programId}` as Href} />
+      <ScreenHeader heading={false} overline={c ? `PEOPLE · ${c.played_count}` : 'PEOPLE'} fallback={`/host/${programId}` as Href} />
       <View className="gap-space-8 px-space-5 pb-space-10 pt-space-4" testID="host-people">
         {!online ? (
           <OfflineNote dataUpdatedAt={people.dataUpdatedAt} extra="Notes and tags save when you're back." />
@@ -279,7 +279,7 @@ function PersonDetail({
           <View className="flex-row gap-space-3">
             {personStats(p, timeZone).map((s) => (
               <View key={s.label} className="flex-1" accessible accessibilityLabel={`${s.value} ${s.label}`}>
-                <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }}>
+                <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }} role="none">
                   {s.value}
                 </DisplayText>
                 <Text variant="caption" muted>

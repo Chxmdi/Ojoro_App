@@ -41,7 +41,7 @@ import {
   useTimeZone,
   type PlanCard,
 } from './data';
-import { ErrorState, InlineError, routes, TopBar } from './parts';
+import { ErrorState, InlineError, MAIN_LANDMARK, routes, TopBar } from './parts';
 import {
   candidateReason,
   displayStatus,
@@ -71,7 +71,7 @@ export function PullInScreen({ id }: { id: string }) {
   );
 
   return (
-    <Situation id="forming" className="flex-1" style={{ paddingTop: insets.top }}>
+    <Situation id="forming" className="flex-1" style={{ paddingTop: insets.top }} {...MAIN_LANDMARK}>
       {plan ? <PullIn plan={plan} userId={userId} /> : null}
       {card.isError && !plan ? <ErrorState error={ojoroErrorOf(card.error)} onRetry={() => void card.refetch()} /> : null}
     </Situation>
@@ -184,7 +184,9 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
             Nobody you've played with is free to invite yet. People with Pull Me In on show here too.
           </Text>
         ) : (
-          <ScrollView style={{ maxHeight: 320 }} role="list">
+          <ScrollView style={{ maxHeight: 320 }}>
+            {/* The list role sits on the content, not the ScrollView: on the web its items must be the list's own children. */}
+            <View role="list">
             {list.map((c) => {
               const on = picked.includes(c.user_id);
               return (
@@ -212,6 +214,7 @@ function PullIn({ plan, userId }: { plan: PlanCard; userId: string | null }) {
                 </View>
               );
             })}
+            </View>
           </ScrollView>
         )}
       </View>

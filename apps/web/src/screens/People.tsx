@@ -450,7 +450,10 @@ export function Person({ id, online }: { id: string; staff: Staff; online: boole
                   compact
                 />
                 <p className="body-sm">
-                  <a href={formatRoute({ name: 'audit', params: { user: id, action: 'all' } })}>
+                  <a
+                    className="standalone-link"
+                    href={formatRoute({ name: 'audit', params: { user: id, action: 'all' } })}
+                  >
                     Everything about them in the audit log
                   </a>
                 </p>

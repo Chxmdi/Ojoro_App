@@ -238,7 +238,7 @@ function NextPayout({ view }: { view: HostMoneyView }) {
   return (
     <View className="gap-space-3" role="region" aria-label="Next payout" testID="host-next-payout">
       <Text variant="overline">{payoutOverline(p.pays_on)}</Text>
-      <DisplayText size="xl" accessibilityRole="header" style={{ fontVariant: ['tabular-nums'] }} testID="host-payout-net">
+      <DisplayText size="xl" role="none" style={{ fontVariant: ['tabular-nums'] }} testID="host-payout-net">
         {formatMoney(p.net_cents, p.currency)}
       </DisplayText>
       <Text variant="body">{`${payoutSourceSentence(p)} ${payoutLands(p.pays_on, view.payments_connected)}`}</Text>
@@ -478,7 +478,7 @@ function Passes({ programId, view }: { programId: string; view: HostMoneyView })
         view.passes.map((p) => (
           <View key={p.id} className="flex-row items-start gap-space-4 border-b border-line py-space-4" testID={`host-pass-${p.id}`}>
             <View className="w-[72px]">
-              <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }}>
+              <DisplayText size="sm" style={{ fontVariant: ['tabular-nums'] }} role="none">
                 {passPriceLabel(p)}
               </DisplayText>
             </View>

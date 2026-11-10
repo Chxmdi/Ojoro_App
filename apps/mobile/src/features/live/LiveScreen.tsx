@@ -201,15 +201,20 @@ function LiveBody({
 
   return (
     <View className="gap-space-8 px-space-5 pb-space-10 pt-space-6" testID="live-screen">
-      <LiveScoreHeader
-        overline={liveOverline(row)}
-        a={sides.a}
-        b={sides.b}
-        updatedAt={anchors.updatedAt ?? anchors.startedAt ?? now}
-        loggedBy={loggedByLabel(row)}
-        offline={!online}
-        testID="live-score"
-      />
+      {/* The overline is drawn here, not by LiveScoreHeader, so it can be the screen's h1 (same look, same gap). */}
+      <View className="gap-space-4">
+        <Text variant="overline" role="heading" aria-level={1} testID="live-overline">
+          {liveOverline(row)}
+        </Text>
+        <LiveScoreHeader
+          a={sides.a}
+          b={sides.b}
+          updatedAt={anchors.updatedAt ?? anchors.startedAt ?? now}
+          loggedBy={loggedByLabel(row)}
+          offline={!online}
+          testID="live-score"
+        />
+      </View>
 
       {live && (row.can_log_score || row.can_post) ? (
         <View className="flex-row flex-wrap gap-space-3" testID="live-host-actions">

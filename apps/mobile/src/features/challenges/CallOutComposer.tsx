@@ -127,7 +127,7 @@ export function CallOutComposer(params: ComposerParams) {
 
   return (
     <Screen situation="live" scroll gutter={false}>
-      <TopBar title="CALL OUT" onBack={() => goBack('/compete' as Href)} backIcon="close" backLabel="Close" />
+      <TopBar heading={false} title="CALL OUT" onBack={() => goBack('/compete' as Href)} backIcon="close" backLabel="Close" />
       <View className="gap-space-8 px-space-5 pb-space-10 pt-space-4" testID="call-out-composer">
         <View className="gap-space-3">
           <DisplayText size="lg" accessibilityRole="header">

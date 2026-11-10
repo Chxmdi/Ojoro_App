@@ -96,7 +96,6 @@ function CodeForm({ phone, sentAt: initialSentAt }: { phone: string; sentAt: num
           <TextButton
             onPress={() => router.replace('/phone')}
             accessibilityLabel="Change number"
-            accessibilityHint="Goes back to enter the phone number"
             className="self-start"
           >
             CHANGE NUMBER

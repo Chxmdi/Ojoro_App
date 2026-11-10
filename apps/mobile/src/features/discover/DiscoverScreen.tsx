@@ -190,7 +190,8 @@ export function DiscoverScreen() {
   return (
     <Screen situation="calm" scroll>
       <View className="gap-space-4 pb-space-6 pt-space-4">
-        <View className="flex-row items-center justify-between gap-space-3">
+        {/* Wraps at large text so MAP drops under the title instead of running off the edge. */}
+        <View className="flex-row flex-wrap items-center justify-between gap-space-3">
           <Text variant="display-lg" role="heading" className="shrink">
             DISCOVER
           </Text>
