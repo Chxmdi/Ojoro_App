@@ -27,6 +27,10 @@ const WORDS: Record<string, string> = {
   idempotency_key_reused: "That didn't go through. Try again.",
   account_paused: "This account is paused, so it can't use the admin tool.",
   permission_denied: "This account can't do that.",
+  account_delete_staff:
+    "Staff accounts can't be deleted here. Ask an Ojoro admin to remove your staff role first.",
+  account_delete_blocked: 'Something you host still has money moving. Settle it first, then delete.',
+  account_delete_failed: "We couldn't delete your account. Nothing was deleted. Try again.",
   network: "You're offline or the server didn't answer. Check the connection and try again.",
   unknown: 'Something went wrong on our side. Try again.',
 };

@@ -2,7 +2,7 @@ import type { SituationId } from '@ojoro/design-tokens';
 import { useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import type { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Situation, statusBarStyle } from '../Situation';
@@ -19,6 +19,9 @@ export type ScreenProps = {
   children?: ReactNode;
 };
 
+/** The web `main` landmark (axe `region`: every screen's content sits in a landmark). Native has none. */
+const MAIN = Platform.OS === 'web' ? ({ role: 'main' } as const) : null;
+
 /**
  * A screen root: the situation's ground edge to edge, top safe-area padding,
  * the status bar style for that ground, and the `space-5` phone gutter.
@@ -34,12 +37,10 @@ export function Screen({
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const focused = useIsFocused();
-  const contentClasses = [gutter ? 'px-space-5' : null, contentClassName]
-    .filter(Boolean)
-    .join(' ');
+  const contentClasses = [gutter ? 'px-space-5' : null, contentClassName].filter(Boolean).join(' ');
 
   return (
-    <Situation id={situation} className="flex-1" style={{ paddingTop: insets.top }}>
+    <Situation id={situation} className="flex-1" style={{ paddingTop: insets.top }} {...MAIN}>
       {focused ? <StatusBar style={statusBarStyle(situation)} /> : null}
       {scroll ? (
         <ScrollView

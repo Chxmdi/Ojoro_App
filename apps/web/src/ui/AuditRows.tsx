@@ -56,7 +56,10 @@ export function AuditRows({
                   )}
                   {e.target_user ? (
                     <div className="caption">
-                      <a href={formatRoute({ name: 'person', id: e.target_user.id })}>
+                      <a
+                        className="row-link"
+                        href={formatRoute({ name: 'person', id: e.target_user.id })}
+                      >
                         {e.target_user.display_name ?? 'Person'}
                       </a>
                     </div>

@@ -536,7 +536,7 @@ function UnavailableProfile({ userId }: { userId: string }) {
 
 /** The You header's more button: privacy, blocked people, sign out. Not designed. */
 function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area' | '/settings/notifications' | '/pay') => {
+  const go = (href: '/settings/privacy' | '/settings/blocked' | '/settings/area' | '/settings/notifications' | '/settings/account' | '/pay') => {
     onClose();
     router.push(href);
   };
@@ -597,6 +597,14 @@ function SettingsSheet({ visible, onClose }: { visible: boolean; onClose: () => 
           trailing="chevron"
           onPress={() => go('/pay')}
           testID="settings-payments"
+        />
+        <Strip
+          title="Account"
+          titleVariant="title-sm"
+          meta="Your phone number, and deleting your account"
+          trailing="chevron"
+          onPress={() => go('/settings/account')}
+          testID="settings-account"
         />
       </StripList>
     </Sheet>

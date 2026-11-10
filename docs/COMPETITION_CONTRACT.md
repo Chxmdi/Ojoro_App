@@ -469,7 +469,7 @@ rules apply; `notification_object` adds `challenge_event`; `'challenge'` is a ca
 
 Words, e.g. "Marcus T called you out." / "5K · Mount Royal loop · Sat 9:00"; "3 new posts in Marcus T vs
 Chimdi O" / "Marcus T, Ade B and an Ojoro update · bundled"; "Chimdi O wins." / "5K · 22:48 – 23:31".
-"Ade B replied to your comment." / "Ade B and 1 more replied to you." / "Ade B mentioned you.", body "Chimdi O vs Marcus T · 5K. Open the crowd to reply."; both go away when the comment is deleted and are push-throttled like chat mentions (`private.push_throttled_types`). A pass is never notified. `challenge_posts` pushes are throttled like other threshold types. Mute an
+"Ade B replied to your comment." / "Ade B and 1 more replied to you." / "Ade B mentioned you.", body "Chimdi O vs Marcus T · 5K. Open the crowd to reply."; both go away when the comment is deleted and are push-throttled like chat mentions (`private.push_throttled_types`). One push switch covers both: `set_notification_type` with either type sets both (Settings → Notifications: "Replies and mentions"). A pass is never notified. `challenge_posts` pushes are throttled like other threshold types. Mute an
 event with `mute_object('challenge_event', id)`.
 
 ## Realtime

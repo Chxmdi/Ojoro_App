@@ -46,7 +46,10 @@ const flag = (name) => {
 const ONLY = flag('only');
 const ONLY_APP = flag('app');
 const OUT = resolve(flag('out') ?? process.env.A11Y_OUT ?? 'a11y-out');
-const APP = (process.env.APP_URL ?? process.env.E2E_APP_URL ?? 'http://localhost:8100').replace(/\/$/, '');
+const APP = (process.env.APP_URL ?? process.env.E2E_APP_URL ?? 'http://localhost:8100').replace(
+  /\/$/,
+  '',
+);
 const ADMIN = (process.env.ADMIN_URL ?? 'http://127.0.0.1:5174').replace(/\/$/, '');
 const SUPABASE_URL = process.env.SUPABASE_URL ?? 'http://127.0.0.1:54321';
 const DB = process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres';
@@ -110,9 +113,11 @@ const ids = {
     sql(`select r.activity_id from public.recaps r join public.attendance t on t.activity_id = r.activity_id
          and t.user_id = '${C}' where r.finalized_at is not null order by r.occurred_at desc limit 1`) ||
     activityOf(`'complete'`),
-  session: sql(`select id from public.host_sessions where series_id = 'c6000000-0000-4000-8000-000000000011'
+  session:
+    sql(`select id from public.host_sessions where series_id = 'c6000000-0000-4000-8000-000000000011'
                 and starts_at > now() order by starts_at limit 1`),
-  beginners: sql(`select id from public.host_sessions where series_id = 'c6000000-0000-4000-8000-000000000013'
+  beginners:
+    sql(`select id from public.host_sessions where series_id = 'c6000000-0000-4000-8000-000000000013'
                   and starts_at > now() order by starts_at limit 1`),
 };
 
@@ -196,8 +201,21 @@ const ROUTES = [
 // Runs in the page. Returns names, targets, headings and colour findings.
 function domChecks() {
   const INTERACTIVE_ROLES = new Set([
-    'button', 'link', 'checkbox', 'switch', 'radio', 'tab', 'menuitem', 'slider', 'combobox',
-    'textbox', 'searchbox', 'spinbutton', 'option', 'menuitemcheckbox', 'menuitemradio',
+    'button',
+    'link',
+    'checkbox',
+    'switch',
+    'radio',
+    'tab',
+    'menuitem',
+    'slider',
+    'combobox',
+    'textbox',
+    'searchbox',
+    'spinbutton',
+    'option',
+    'menuitemcheckbox',
+    'menuitemradio',
   ]);
   const hidden = (el) => {
     for (let e = el; e; e = e.parentElement) {
@@ -218,7 +236,11 @@ function domChecks() {
     if (label && label.trim()) return label.trim();
     const by = el.getAttribute('aria-labelledby');
     if (by) {
-      const t = by.split(/\s+/).map((id) => document.getElementById(id)?.textContent ?? '').join(' ').trim();
+      const t = by
+        .split(/\s+/)
+        .map((id) => document.getElementById(id)?.textContent ?? '')
+        .join(' ')
+        .trim();
       if (t) return t;
     }
     if (el.id) {
@@ -228,7 +250,8 @@ function domChecks() {
     if (el.closest('label')?.textContent?.trim()) return el.closest('label').textContent.trim();
     const alt = el.getAttribute('alt') || el.getAttribute('title');
     if (alt) return alt;
-    if (el.tagName === 'INPUT' && ['submit', 'button'].includes(el.type) && el.value) return el.value;
+    if (el.tagName === 'INPUT' && ['submit', 'button'].includes(el.type) && el.value)
+      return el.value;
     // Text content, skipping aria-hidden descendants; images with labels count.
     const parts = [];
     const walk = (n) => {
@@ -236,7 +259,10 @@ function domChecks() {
       else if (n.nodeType === 1) {
         if (n.getAttribute('aria-hidden') === 'true') return;
         const l = n.getAttribute('aria-label');
-        if (l && n !== el) { parts.push(l); return; }
+        if (l && n !== el) {
+          parts.push(l);
+          return;
+        }
         n.childNodes.forEach(walk);
       }
     };
@@ -247,13 +273,17 @@ function domChecks() {
   const seen = new Set();
   const interactive = [];
   document
-    .querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, [role], [tabindex]')
+    .querySelectorAll(
+      'a[href], button, input:not([type=hidden]), select, textarea, [role], [tabindex]',
+    )
     .forEach((el) => {
       const role = el.getAttribute('role');
       const tab = el.getAttribute('tabindex');
       const native = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName);
       const isInteractive =
-        (role && INTERACTIVE_ROLES.has(role)) || (native && !role) || (tab !== null && Number(tab) >= 0);
+        (role && INTERACTIVE_ROLES.has(role)) ||
+        (native && !role) ||
+        (tab !== null && Number(tab) >= 0);
       if (!isInteractive || seen.has(el) || hidden(el)) return;
       if (el.disabled && el.tagName !== 'BUTTON') return;
       seen.add(el);
@@ -271,7 +301,9 @@ function domChecks() {
     if (r.width === 0 && r.height === 0) continue;
     if (!n) names.push(`no name: ${describe(el)}`);
     else if (!role && !native) names.push(`focusable, no role: ${describe(el)}`);
-    const isText = ['textbox', 'searchbox'].includes(role) || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName);
+    const isText =
+      ['textbox', 'searchbox'].includes(role) ||
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName);
     // Inline links inside running text are exempt (WCAG 2.5.8); flag them separately.
     const inline = role === 'link' && getComputedStyle(el).display === 'inline';
     // The hit area is the element plus anything inside it that reaches past it (the web stand-in
@@ -281,21 +313,31 @@ function domChecks() {
       if (getComputedStyle(c).position !== 'absolute') return;
       const cr = c.getBoundingClientRect();
       if (cr.width === 0 || cr.height === 0) return;
-      hl = Math.min(hl, cr.left); ht = Math.min(ht, cr.top); hr = Math.max(hr, cr.right); hb = Math.max(hb, cr.bottom);
+      hl = Math.min(hl, cr.left);
+      ht = Math.min(ht, cr.top);
+      hr = Math.max(hr, cr.right);
+      hb = Math.max(hb, cr.bottom);
     });
     const hw = hr - hl;
     const hh = hb - ht;
     const small = isText ? hh < 44 : hw < 43.5 || hh < 43.5;
-    if (small) targets.push(`${inline ? 'inline ' : ''}${describe(el)}${hw !== r.width || hh !== r.height ? ` (hit ${Math.round(hw)}×${Math.round(hh)})` : ''}`);
+    if (small)
+      targets.push(
+        `${inline ? 'inline ' : ''}${describe(el)}${hw !== r.width || hh !== r.height ? ` (hit ${Math.round(hw)}×${Math.round(hh)})` : ''}`,
+      );
     if (/^I['’]M DOWN$/i.test((el.innerText || '').trim()) && r.height < 55.5)
-      commits.push(`I'M DOWN ${Math.round(r.width)}×${Math.round(r.height)}${n !== (el.innerText || '').trim() ? ` (label "${n.slice(0, 40)}")` : ''}`);
+      commits.push(
+        `I'M DOWN ${Math.round(r.width)}×${Math.round(r.height)}${n !== (el.innerText || '').trim() ? ` (label "${n.slice(0, 40)}")` : ''}`,
+      );
   }
 
   // Headings.
   const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6,[role=heading]')]
     .filter((h) => !hidden(h))
     .map((h) => {
-      const level = /^H[1-6]$/.test(h.tagName) ? Number(h.tagName[1]) : Number(h.getAttribute('aria-level') ?? 2);
+      const level = /^H[1-6]$/.test(h.tagName)
+        ? Number(h.tagName[1])
+        : Number(h.getAttribute('aria-level') ?? 2);
       return { level, text: (h.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 40) };
     });
   const headingIssues = [];
@@ -306,7 +348,9 @@ function domChecks() {
     if (h1 > 1) headingIssues.push(`${h1} h1s`);
     for (let i = 1; i < headings.length; i++)
       if (headings[i].level > headings[i - 1].level + 1)
-        headingIssues.push(`skip h${headings[i - 1].level}→h${headings[i].level} at "${headings[i].text}"`);
+        headingIssues.push(
+          `skip h${headings[i - 1].level}→h${headings[i].level} at "${headings[i].text}"`,
+        );
   }
 
   // Possible colour-only status marks: small, no text, no name, not hidden, with a fill.
@@ -326,7 +370,15 @@ function domChecks() {
     colour.push(`${Math.round(r.width)}×${Math.round(r.height)} ${bg} radius ${s.borderRadius}`);
   });
 
-  return { names, targets, commits, headings, headingIssues, colour, interactive: interactive.length };
+  return {
+    names,
+    targets,
+    commits,
+    headings,
+    headingIssues,
+    colour,
+    interactive: interactive.length,
+  };
 }
 
 // Runs in the page: watches style mutations and animations for `ms` under reduced motion.
@@ -349,7 +401,12 @@ async function motionCheck(ms) {
       runs.set(el, r);
     }
   });
-  obs.observe(document.body, { attributes: true, attributeFilter: ['style'], attributeOldValue: true, subtree: true });
+  obs.observe(document.body, {
+    attributes: true,
+    attributeFilter: ['style'],
+    attributeOldValue: true,
+    subtree: true,
+  });
   const anims = new Map();
   const start = performance.now();
   while (performance.now() - start < ms) {
@@ -357,9 +414,12 @@ async function motionCheck(ms) {
       const t = an.effect?.getTiming?.() ?? {};
       const d = typeof t.duration === 'number' ? t.duration : 0;
       const it = t.iterations ?? 1;
-      if (d > 120 || it === Infinity) {
+      // Skip Expo's dev-only fast-refresh indicator (not part of the app).
+      const devOnly = /__expo_fast_refresh/.test(an.effect?.target?.className?.toString?.() ?? '');
+      if (!devOnly && (d > 120 || it === Infinity)) {
         const target = an.effect?.target;
-        const key = `${an.constructor.name} ${an.animationName ?? an.transitionProperty ?? ''} ${Math.round(d)}ms × ${it} on ${target?.tagName?.toLowerCase() ?? '?'}[${target?.getAttribute?.('aria-label') ?? target?.getAttribute?.('role') ?? ''}]`;
+        const where = `${target?.getAttribute?.('aria-label') ?? target?.getAttribute?.('role') ?? ''} "${(target?.innerText ?? '').replace(/\s+/g, ' ').slice(0, 30)}" .${(target?.className?.toString?.() ?? '').slice(0, 40)}`;
+        const key = `${an.constructor.name} ${an.animationName ?? an.transitionProperty ?? ''} ${Math.round(d)}ms × ${it} on ${target?.tagName?.toLowerCase() ?? '?'}[${where}]`;
         anims.set(key, true);
       }
     }
@@ -381,8 +441,15 @@ async function motionCheck(ms) {
   document.querySelectorAll('*').forEach((el) => {
     const s = getComputedStyle(el);
     if (s.transitionDuration && s.transitionDuration !== '0s') {
-      const longest = Math.max(...s.transitionDuration.split(',').map((v) => parseFloat(v) * (v.includes('ms') ? 1 : 1000)));
-      if (longest > 120) transitions.add(`transition ${longest}ms (${s.transitionProperty}) on ${el.tagName.toLowerCase()}`);
+      const longest = Math.max(
+        ...s.transitionDuration
+          .split(',')
+          .map((v) => parseFloat(v) * (v.includes('ms') ? 1 : 1000)),
+      );
+      if (longest > 120)
+        transitions.add(
+          `transition ${longest}ms (${s.transitionProperty}) on ${el.tagName.toLowerCase()}`,
+        );
     }
   });
   return { animations: [...anims.keys()], jsRuns, transitions: [...transitions].slice(0, 10) };
@@ -401,7 +468,11 @@ async function largeTextCheck() {
   const sizes = leaves.map((el) => {
     const s = getComputedStyle(el);
     const factor = el.closest('[role=img]') ? 1 : /anton|druk/i.test(s.fontFamily) ? 1.3 : 2;
-    return [parseFloat(s.fontSize), s.lineHeight === 'normal' ? null : parseFloat(s.lineHeight), factor];
+    return [
+      parseFloat(s.fontSize),
+      s.lineHeight === 'normal' ? null : parseFloat(s.lineHeight),
+      factor,
+    ];
   });
   leaves.forEach((el, i) => {
     const [fs, lh, factor] = sizes[i];
@@ -422,7 +493,8 @@ async function largeTextCheck() {
     range.selectNodeContents(el);
     return range.getBoundingClientRect();
   };
-  const label = (el) => (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+  const label = (el) =>
+    (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40);
   const clipped = [];
   const truncated = [];
   const boxes = [];
@@ -431,8 +503,9 @@ async function largeTextCheck() {
     const r = textRect(el);
     if (r.width === 0 || r.height === 0) continue;
     const s = getComputedStyle(el);
-    if (s.textOverflow === 'ellipsis' || s.webkitLineClamp !== 'none' && s.webkitLineClamp) {
-      if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) truncated.push(`"${label(el)}"`);
+    if (s.textOverflow === 'ellipsis' || (s.webkitLineClamp !== 'none' && s.webkitLineClamp)) {
+      if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)
+        truncated.push(`"${label(el)}"`);
       boxes.push({ el, r: el.getBoundingClientRect() });
       continue;
     }
@@ -443,34 +516,70 @@ async function largeTextCheck() {
       const oy = ps.overflowY;
       if (ox === 'visible' && oy === 'visible') continue;
       const pr = p.getBoundingClientRect();
-      const cutX = ox !== 'visible' && ox !== 'auto' && ox !== 'scroll' && (r.left < pr.left - 1 || r.right > pr.right + 1);
-      const cutY = oy !== 'visible' && oy !== 'auto' && oy !== 'scroll' && (r.top < pr.top - 1 || r.bottom > pr.bottom + 1);
+      const cutX =
+        ox !== 'visible' &&
+        ox !== 'auto' &&
+        ox !== 'scroll' &&
+        (r.left < pr.left - 1 || r.right > pr.right + 1);
+      const cutY =
+        oy !== 'visible' &&
+        oy !== 'auto' &&
+        oy !== 'scroll' &&
+        (r.top < pr.top - 1 || r.bottom > pr.bottom + 1);
       if (cutX || cutY) {
-        clipped.push(`"${label(el)}" ${cutX ? 'x' : ''}${cutY ? 'y' : ''} by ${p.tagName.toLowerCase()}[${p.getAttribute('role') ?? ''}] ${Math.round(pr.width)}×${Math.round(pr.height)}`);
+        clipped.push(
+          `"${label(el)}" ${cutX ? 'x' : ''}${cutY ? 'y' : ''} by ${p.tagName.toLowerCase()}[${p.getAttribute('role') ?? ''}] ${Math.round(pr.width)}×${Math.round(pr.height)}`,
+        );
         break;
       }
       if (ox === 'auto' || ox === 'scroll' || oy === 'auto' || oy === 'scroll') break;
     }
   }
+  // Overlap uses each text element's own box (its line boxes, not the glyph extents, which run past
+  // a tight display line height on purpose), only between boxes in the same scroll container
+  // (content scrolling under a fixed bar isn't an overlap), and skips visually hidden text.
+  const scroller = (el) => {
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      const ps = getComputedStyle(p);
+      if (/(auto|scroll)/.test(ps.overflowY + ps.overflowX) || ps.position === 'fixed') return p;
+    }
+    return document.documentElement;
+  };
+  const srOnly = (el) => {
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    return (
+      r.width <= 1 ||
+      r.height <= 1 ||
+      s.clipPath === 'inset(50%)' ||
+      s.clip === 'rect(0px, 0px, 0px, 0px)'
+    );
+  };
+  const owned = boxes
+    .filter((b) => !srOnly(b.el))
+    .map((b) => ({
+      el: b.el,
+      s: scroller(b.el),
+      r: getComputedStyle(b.el).display === 'inline' ? b.r : b.el.getBoundingClientRect(),
+    }));
   const overlaps = [];
-  for (let i = 0; i < boxes.length; i++) {
-    for (let j = i + 1; j < boxes.length; j++) {
-      const A = boxes[i];
-      const B = boxes[j];
-      if (A.el.contains(B.el) || B.el.contains(A.el)) continue;
+  for (let i = 0; i < owned.length && overlaps.length <= 40; i++) {
+    for (let j = i + 1; j < owned.length; j++) {
+      const A = owned[i];
+      const B = owned[j];
+      if (A.s !== B.s || A.el.contains(B.el) || B.el.contains(A.el)) continue;
       const w = Math.min(A.r.right, B.r.right) - Math.max(A.r.left, B.r.left);
       const h = Math.min(A.r.bottom, B.r.bottom) - Math.max(A.r.top, B.r.top);
-      if (w > 4 && h > 4) {
-        // Ignore layers stacked on purpose (one fully transparent or behind a sheet).
-        const ta = getComputedStyle(A.el).position;
-        const tb = getComputedStyle(B.el).position;
-        if (ta === 'fixed' || tb === 'fixed') continue;
+      if (w > 4 && h > 0.3 * Math.min(A.r.height, B.r.height))
         overlaps.push(`"${label(A.el)}" × "${label(B.el)}" (${Math.round(w)}×${Math.round(h)})`);
-        if (overlaps.length > 40) break;
-      }
     }
   }
-  return { clipped, truncated, overlaps, horizontalScroll: document.documentElement.scrollWidth > window.innerWidth + 1 };
+  return {
+    clipped,
+    truncated,
+    overlaps,
+    horizontalScroll: document.documentElement.scrollWidth > window.innerWidth + 1,
+  };
 }
 
 // Driver ----------------------------------------------------------------------------------------------
@@ -480,7 +589,9 @@ async function settle(page) {
   await sleep(1200);
   while (Date.now() < until) {
     const busy = await page
-      .evaluate(() => document.querySelectorAll('[aria-busy=true], [aria-label*="Loading" i]').length)
+      .evaluate(
+        () => document.querySelectorAll('[aria-busy=true], [aria-label*="Loading" i]').length,
+      )
       .catch(() => 0);
     if (!busy) break;
     await sleep(400);
@@ -500,7 +611,11 @@ async function gotoWithRetry(page, url) {
   return false;
 }
 
-const slug = (r) => `${r.app}${r.path}`.replace(/[^a-z0-9]+/gi, '_').replace(/_+$/, '').slice(0, 80);
+const slug = (r) =>
+  `${r.app}${r.path}`
+    .replace(/[^a-z0-9]+/gi, '_')
+    .replace(/_+$/, '')
+    .slice(0, 80);
 
 async function auditRoute(browser, route, sessions) {
   const session = route.as ? sessions[route.as] : null;
@@ -519,8 +634,11 @@ async function auditRoute(browser, route, sessions) {
     if (!(await gotoWithRetry(page, url))) throw new Error('page did not load');
     await settle(page);
     if (route.report) {
-      const href = await page.evaluate(() =>
-        [...document.querySelectorAll('a[href*="#/reports/"]')].map((x) => x.getAttribute('href'))[0],
+      const href = await page.evaluate(
+        () =>
+          [...document.querySelectorAll('a[href*="#/reports/"]')].map((x) =>
+            x.getAttribute('href'),
+          )[0],
       );
       if (href) {
         url = new URL(href, `${ADMIN}/`).toString();
@@ -532,7 +650,10 @@ async function auditRoute(browser, route, sessions) {
     await page.addScriptTag({ path: AXE_PATH });
     const axe = await page.evaluate(async () => {
       const res = await window.axe.run(document, {
-        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] },
+        runOnly: {
+          type: 'tag',
+          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'],
+        },
         resultTypes: ['violations'],
       });
       return res.violations.map((v) => ({
@@ -540,7 +661,14 @@ async function auditRoute(browser, route, sessions) {
         impact: v.impact,
         nodes: v.nodes.length,
         help: v.help,
-        targets: v.nodes.slice(0, 4).map((n) => `${n.target.join(' ')} ${(n.failureSummary ?? '').split('\n')[1]?.trim() ?? ''}`.slice(0, 200)),
+        targets: v.nodes
+          .slice(0, 4)
+          .map((n) =>
+            `${n.target.join(' ')} ${(n.failureSummary ?? '').split('\n')[1]?.trim() ?? ''}`.slice(
+              0,
+              200,
+            ),
+          ),
       }));
     });
     result.axe = axe;
@@ -576,11 +704,27 @@ function summarize(r) {
 }
 
 function table(rows) {
-  const cols = ['route', 'axe', 'names', 'targets', 'commit', 'headings', 'colour', 'motion', 'clip200', 'overlap200', 'trunc200'];
+  const cols = [
+    'route',
+    'axe',
+    'names',
+    'targets',
+    'commit',
+    'headings',
+    'colour',
+    'motion',
+    'clip200',
+    'overlap200',
+    'trunc200',
+  ];
   const lines = [
     `| ${cols.join(' | ')} |`,
     `|${cols.map(() => '---').join('|')}|`,
-    ...rows.map((s) => (s.error ? `| ${s.route} | ERROR: ${s.error} |` : `| ${cols.map((c) => String(s[c])).join(' | ')} |`)),
+    ...rows.map((s) =>
+      s.error
+        ? `| ${s.route} | ERROR: ${s.error} |`
+        : `| ${cols.map((c) => String(s[c])).join(' | ')} |`,
+    ),
   ];
   return lines.join('\n');
 }
@@ -595,14 +739,28 @@ function details(results) {
       continue;
     }
     const list = (title, items) => {
-      if (items?.length) out.push(`**${title}** (${items.length})\n${items.slice(0, 25).map((i) => `- ${i}`).join('\n')}`);
+      if (items?.length)
+        out.push(
+          `**${title}** (${items.length})\n${items
+            .slice(0, 25)
+            .map((i) => `- ${i}`)
+            .join('\n')}`,
+        );
     };
-    list('axe', r.axe.map((v) => `${v.id} [${v.impact}] ×${v.nodes}: ${v.help}\n${v.targets.map((t) => `  - \`${t}\``).join('\n')}`));
+    list(
+      'axe',
+      r.axe.map(
+        (v) =>
+          `${v.id} [${v.impact}] ×${v.nodes}: ${v.help}\n${v.targets.map((t) => `  - \`${t}\``).join('\n')}`,
+      ),
+    );
     list('Names / roles', r.names);
     list('Targets under 44', r.targets);
     list('Commit under 56', r.commits);
     list('Headings', r.headingIssues);
-    out.push(`Heading outline: ${r.headings.map((h) => `h${h.level} ${h.text}`).join(' · ') || '(none)'}`);
+    out.push(
+      `Heading outline: ${r.headings.map((h) => `h${h.level} ${h.text}`).join(' · ') || '(none)'}`,
+    );
     list('Possible colour-only marks', r.colour);
     list('Motion under reduced motion', [...r.motion.animations, ...r.motion.jsRuns]);
     list('Declared transitions over 120ms', r.motion.transitions);

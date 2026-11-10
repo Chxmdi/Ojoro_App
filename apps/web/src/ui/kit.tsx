@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { ago } from '../lib/format';
 import { Icon, type IconName } from './Icon';
@@ -194,12 +194,28 @@ export function Toast({
   action?: { label: string; onPress: () => void };
   onDismiss: () => void;
 }) {
+  // WCAG 2.2.1: a toast with an action doesn't vanish while the pointer or keyboard focus is on
+  // it; the 10 s clock starts again when both leave.
+  const [held, setHeld] = useState({ hover: false, focus: false });
+  const paused = held.hover || held.focus;
   useEffect(() => {
+    if (paused) return;
     const t = setTimeout(onDismiss, 10_000);
     return () => clearTimeout(t);
-  }, [message, onDismiss]);
+  }, [message, onDismiss, paused]);
   return (
-    <div className="toast" role="status" aria-live="polite">
+    <div
+      className="toast"
+      role="status"
+      aria-live="polite"
+      onMouseEnter={() => setHeld((h) => ({ ...h, hover: true }))}
+      onMouseLeave={() => setHeld((h) => ({ ...h, hover: false }))}
+      onFocus={() => setHeld((h) => ({ ...h, focus: true }))}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null))
+          setHeld((h) => ({ ...h, focus: false }));
+      }}
+    >
       <span>{message}</span>
       {action ? (
         <button type="button" className="btn btn-small" onClick={action.onPress}>

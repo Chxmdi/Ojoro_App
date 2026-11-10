@@ -343,6 +343,16 @@ export function cardSituation(c: Pick<FeedCard, 'situation'>): FeedSituation | n
   return (SITUATIONS as readonly string[]).includes(c.situation ?? '') ? (c.situation as FeedSituation) : null;
 }
 
+/**
+ * The ground a challenge strip sits on (owner decision): accepted and build-up strips on calm ground,
+ * as Main.png draws them; the stages Main.png doesn't show keep their own situation (event day and
+ * almost time confirmed, live, after) on the strip's root.
+ */
+export function challengeStripSituation(c: Pick<FeedCard, 'situation' | 'stage'>): FeedSituation {
+  if (c.stage === 'accepted' || c.stage === 'days') return 'calm';
+  return cardSituation(c) ?? 'calm';
+}
+
 /** The event facts of a challenge_event card, or null when they're missing or malformed. */
 export function feedChallenge(c: Pick<FeedCard, 'card' | 'event'>): FeedChallenge | null {
   if (c.card !== 'challenge_event' || !c.event || typeof c.event !== 'object') return null;

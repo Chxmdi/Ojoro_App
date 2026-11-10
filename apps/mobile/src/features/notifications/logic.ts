@@ -219,6 +219,12 @@ export const TYPE_SETTINGS: readonly { type: NotificationType; label: string; de
   { type: 'crew_poll', label: 'Crew polls', description: 'Your crew is picking a time.' },
   { type: 'crew_plan', label: 'Crew plans', description: 'Your crew made a plan.' },
   { type: 'mention', label: 'Mentions', description: 'Someone mentions you in a chat.' },
+  // One switch for both Challenge comment types; the server sets challenge_mention with it.
+  {
+    type: 'challenge_reply',
+    label: 'Replies and mentions',
+    description: "Someone replies to you or mentions you in a Challenge's comments.",
+  },
   { type: 'check_in_open', label: 'Check-in', description: 'Check-in for your game is about to open.' },
   { type: 'live', label: 'Live', description: 'A game you follow goes live.' },
   { type: 'result_to_confirm', label: 'Scores to confirm', description: 'A score from your game needs you.' },

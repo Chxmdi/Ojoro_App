@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   cardSituation,
+  challengeStripSituation,
   challengeCardModel,
   challengeSectionLabel,
   feedChallenge,
@@ -126,6 +127,17 @@ describe('challenge cards on Main', () => {
     expect(
       challengeCardModel(card({}, { stage: 'complete', winner_side: 'a' }), NOW)!.trailing,
     ).toMatchObject({ word: 'FINAL' });
+  });
+
+  it('build-up strips on calm ground, the rest in their own situation', () => {
+    expect(challengeStripSituation(card({ stage: 'accepted', situation: 'forming' }))).toBe('calm');
+    expect(challengeStripSituation(card({ stage: 'days', situation: 'forming' }))).toBe('calm');
+    expect(challengeStripSituation(card({ stage: 'today', situation: 'confirmed' }))).toBe(
+      'confirmed',
+    );
+    expect(challengeStripSituation(card({ stage: 'live', situation: 'live' }))).toBe('live');
+    expect(challengeStripSituation(card({ stage: 'complete', situation: 'after' }))).toBe('after');
+    expect(challengeStripSituation(card({ stage: 'live', situation: null }))).toBe('calm');
   });
 
   it('only known situations', () => {

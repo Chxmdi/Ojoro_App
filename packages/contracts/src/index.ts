@@ -34,3 +34,5 @@ export * from './payments';
 // Step 8 (AI Movement Concierge: the `concierge` Edge Function) client contract helpers
 // (docs/CONCIERGE_CONTRACT.md).
 export * from './concierge';
+// Polish: deleting your own account (the `account-delete` Edge Function) (docs/TRUST_CONTRACT.md).
+export * from './account';

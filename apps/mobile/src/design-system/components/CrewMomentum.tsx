@@ -77,7 +77,12 @@ export function CrewMomentum({
           <AvatarCluster people={members} total={memberCount} max={CREW_CLUSTER_MAX} size="md" />
         </View>
       </View>
-      <MomentumMeter weeks={weeks} streak={streak} streakText={streakText} label={model.rhythmLabel} />
+      <MomentumMeter
+        weeks={weeks}
+        streak={streak}
+        streakText={streakText}
+        label={model.rhythmLabel}
+      />
       {next ? (
         <View className="flex-row items-center gap-space-3 border-t border-line pt-space-3">
           <Text variant="label" muted>

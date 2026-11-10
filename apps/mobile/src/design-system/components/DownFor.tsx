@@ -80,7 +80,9 @@ export function DownFor({
     <View role="article" className="gap-space-4">
       <View accessible accessibilityLabel={model.accessibilityLabel} className="gap-space-4">
         <Text variant="overline">DOWN FOR</Text>
-        <DisplayText size={model.questionSize} aria-level={2}>{model.question}</DisplayText>
+        <DisplayText size={model.questionSize} aria-level={2}>
+          {model.question}
+        </DisplayText>
         <Text variant="body" muted>
           {where}
         </Text>

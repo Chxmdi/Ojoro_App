@@ -1,6 +1,6 @@
 import type { SituationId } from '@ojoro/design-tokens';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 
 import { Situation } from '../Situation';
 import { useThemeColor } from '../useThemeColor';
@@ -35,45 +35,51 @@ export function TabBar({ state, descriptors, navigation, insets, items }: TabBar
   const activeRoute = state.routes[state.index];
   const activeSituation = (activeRoute && items[activeRoute.name]?.situation) ?? 'calm';
 
+  // On the web the bar sits in a `nav` landmark, so everything on a tab screen is inside a
+  // landmark (the screen's own content is `main`, see Screen). Native has no landmarks.
+  const landmark =
+    Platform.OS === 'web' ? ({ role: 'navigation', 'aria-label': 'Tabs' } as const) : null;
   return (
-    <Situation
-      id={activeSituation}
-      role="tablist"
-      className="flex-row items-stretch border-t border-line px-space-1"
-      style={{ paddingBottom: insets.bottom }}
-    >
-      {state.routes.map((route, index) => {
-        const item = items[route.name];
-        if (!item) return null;
-        const selected = index === state.index;
-        const descriptor = descriptors[route.key];
+    <View {...landmark}>
+      <Situation
+        id={activeSituation}
+        role="tablist"
+        className="flex-row items-stretch border-t border-line px-space-1"
+        style={{ paddingBottom: insets.bottom }}
+      >
+        {state.routes.map((route, index) => {
+          const item = items[route.name];
+          if (!item) return null;
+          const selected = index === state.index;
+          const descriptor = descriptors[route.key];
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
-          if (!selected && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
-          }
-        };
-        const onLongPress = () => {
-          navigation.emit({ type: 'tabLongPress', target: route.key });
-        };
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!selected && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
+          };
+          const onLongPress = () => {
+            navigation.emit({ type: 'tabLongPress', target: route.key });
+          };
 
-        return (
-          <TabBarButton
-            key={route.key}
-            item={item}
-            selected={selected}
-            testID={descriptor?.options.tabBarButtonTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-          />
-        );
-      })}
-    </Situation>
+          return (
+            <TabBarButton
+              key={route.key}
+              item={item}
+              selected={selected}
+              testID={descriptor?.options.tabBarButtonTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+            />
+          );
+        })}
+      </Situation>
+    </View>
   );
 }
 

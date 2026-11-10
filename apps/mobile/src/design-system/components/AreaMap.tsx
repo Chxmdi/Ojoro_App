@@ -34,6 +34,7 @@ import {
 } from './AreaMap.logic';
 import { Button } from './Button';
 import { Icon } from './Icon';
+import { listItems } from './listItems';
 import { LiveIndicator } from './LiveIndicator';
 import { useOverlayReducedMotion } from './Overlay';
 import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
@@ -294,15 +295,17 @@ export function AreaMapList({
           {emptyText ?? emptyLine(period)}
         </Text>
       ) : (
-        rows.map((p) => (
-          <ListRow
-            key={p.id}
-            point={p}
-            selected={p.id === selectedId}
-            onPress={onSelect ? () => onSelect(p.id) : undefined}
-            period={period}
-          />
-        ))
+        listItems(
+          rows.map((p) => (
+            <ListRow
+              key={p.id}
+              point={p}
+              selected={p.id === selectedId}
+              onPress={onSelect ? () => onSelect(p.id) : undefined}
+              period={period}
+            />
+          )),
+        )
       )}
     </View>
   );

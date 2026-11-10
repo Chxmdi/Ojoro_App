@@ -14,6 +14,7 @@ import { hostOpsErrorCodes } from './hostsOps';
 import { passportErrorCodes } from './passport';
 import { trustErrorCodes } from './trust';
 import { paymentsErrorCodes } from './payments';
+import { accountErrorCodes } from './account';
 
 type PublicSchema = Database['public'];
 export type RpcName = keyof PublicSchema['Functions'];
@@ -230,6 +231,8 @@ export const ojoroErrorCodes = [
   ...trustErrorCodes,
   // Step 8: Payments (payments.ts, docs/PAYMENTS_CONTRACT.md)
   ...paymentsErrorCodes,
+  // Polish: deleting your own account (account.ts, docs/TRUST_CONTRACT.md)
+  ...accountErrorCodes,
 ] as const;
 
 export type OjoroErrorCode = (typeof ojoroErrorCodes)[number];

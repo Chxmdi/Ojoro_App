@@ -7126,6 +7126,9 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      account_delete: { Args: { p_source?: string; p_user_id: string }; Returns: Json };
+      account_deletion_check: { Args: Record<PropertyKey, never>; Returns: Json };
+      account_deletion_preflight: { Args: { p_user_id: string }; Returns: Json };
       act_on_notification: {
         Args: { p_id: string };
         Returns: {

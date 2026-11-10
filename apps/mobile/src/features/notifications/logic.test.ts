@@ -187,7 +187,9 @@ describe('settings', () => {
     const types = TYPE_SETTINGS.map((t) => t.type);
     expect(new Set(types).size).toBe(types.length);
     expect(types).not.toContain('challenge_response');
-    expect(types).toHaveLength(15);
+    expect(types).toHaveLength(16);
+    expect(types).toContain('challenge_reply');
+    expect(types).not.toContain('challenge_mention');
   });
   it('reads push_off', () => {
     expect(pushOn(null, 'mention')).toBe(true);

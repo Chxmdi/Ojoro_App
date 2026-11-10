@@ -198,6 +198,11 @@ export const analyticsEvents = {
   pausedScreenViewed: 'paused_screen_viewed',
   appealOpened: 'appeal_opened',
   appealSent: 'appeal_sent',
+  // Polish: deleting your own account. The server records account_deleted (no user id, only the
+  // source); the client sends the screen open, the confirm tap and a blocked answer, never who.
+  accountDeleteOpened: 'account_delete_opened',
+  accountDeleteConfirmed: 'account_delete_confirmed',
+  accountDeleteBlocked: 'account_delete_blocked',
 } as const;
 
 export type AnalyticsEvent =

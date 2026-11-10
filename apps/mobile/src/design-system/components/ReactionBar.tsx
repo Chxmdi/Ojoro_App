@@ -2,7 +2,13 @@ import { opacity } from '@ojoro/design-tokens';
 import { Platform, Pressable, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { FocusRing, noBrowserOutline, useFocusVisible, usePressScale, WebHitSlop } from './pressFeedback';
+import {
+  FocusRing,
+  noBrowserOutline,
+  useFocusVisible,
+  usePressScale,
+  WebHitSlop,
+} from './pressFeedback';
 import { reactionCount, reactionLabel, type Reaction } from './ReactionBar.logic';
 import { Text } from './Text';
 

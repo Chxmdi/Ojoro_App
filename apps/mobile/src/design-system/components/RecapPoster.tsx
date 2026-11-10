@@ -96,7 +96,12 @@ export function RecapPoster({
         </View>
         <View className="flex-row flex-wrap items-center gap-space-3">
           {showRunItBack ? (
-            <Button variant="primary" onPress={onRunItBack} loading={!!runItBackLoading} testID="recap-run-it-back">
+            <Button
+              variant="primary"
+              onPress={onRunItBack}
+              loading={!!runItBackLoading}
+              testID="recap-run-it-back"
+            >
               RUN IT BACK
             </Button>
           ) : null}

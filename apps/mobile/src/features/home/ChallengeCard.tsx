@@ -1,7 +1,7 @@
 /**
  * A Challenge Event on Home (Polish GAPS-FEED): Compete's YOUR EVENTS strip (day, "Chimdi vs Marcus ·
- * 5K", "142 following · Build-up", 3 DAYS / TODAY / LIVE / FINAL), set in its stage's situation on
- * the strip's own root, so a live event turns live inside the calm feed. The stage is in words (the
+ * 5K", "142 following · Build-up", 3 DAYS / TODAY / LIVE / FINAL). Accepted and build-up strips sit
+ * on calm ground as in Main.png; event day, live and final set their situation on the strip's root. The stage is in words (the
  * badge and the meta line), never colour only. Opens /event/[id].
  */
 import type { Href } from 'expo-router';
@@ -11,7 +11,7 @@ import { Badge, Divider, LiveIndicator, Situation, Strip } from '@/design-system
 import { track } from '@/lib/analytics';
 
 import {
-  cardSituation,
+  challengeStripSituation,
   challengeCardModel,
   challengeSectionLabel,
   type FeedCard,
@@ -28,7 +28,7 @@ export function ChallengeCard({
 }) {
   const model = challengeCardModel(card, now.getTime());
   if (!model) return null;
-  const situation = cardSituation(card) ?? 'calm';
+  const situation = challengeStripSituation(card);
   return (
     <Situation
       id={situation}

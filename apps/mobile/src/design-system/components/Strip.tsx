@@ -4,6 +4,7 @@ import { Pressable, View, type GestureResponderEvent, type ViewProps } from 'rea
 
 import { useThemeColor } from '../useThemeColor';
 import { Icon } from './Icon';
+import { listItems } from './listItems';
 import { FocusRing, useFocusVisible } from './pressFeedback';
 import {
   STRIP_LEADING_WIDTH,
@@ -183,6 +184,10 @@ export function Strip({
 export type StripListProps = ViewProps;
 
 /** A run of strips with no gaps between rows, read as a list. */
-export function StripList(props: StripListProps) {
-  return <View role="list" {...props} />;
+export function StripList({ children, ...props }: StripListProps) {
+  return (
+    <View role="list" {...props}>
+      {listItems(children)}
+    </View>
+  );
 }

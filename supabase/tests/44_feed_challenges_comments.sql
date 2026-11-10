@@ -565,6 +565,20 @@ update public.notifications set pushed_at = tests.noon() where recipient_id = te
 select is((select reason from private.would_send((select id from public.notifications where recipient_id = tests.u(3)
                                                    and type = 'challenge_reply'), tests.noon() + interval '10 minutes')), 'rate_limited', 'then it waits');
 
+-- One switch for both: turning either off turns off both; the throttled row is then type_off.
+select tests.login(3);
+select ok((select 'challenge_reply' = any (push_off) and 'challenge_mention' = any (push_off)
+           from public.set_notification_type('challenge_reply', false)), 'one switch turns both off');
+select ok((select not ('challenge_reply' = any (push_off)) and not ('challenge_mention' = any (push_off))
+           from public.set_notification_type('challenge_mention', true)), 'and both on');
+select (public.set_notification_type('challenge_reply', false)).push_off;
+select tests.logout();
+select is((select reason from private.would_send((select id from public.notifications where recipient_id = tests.u(3)
+                                                   and type = 'challenge_reply'), tests.noon() + interval '2 hours')), 'type_off',
+          'switched off: no push');
+select is((select push from public.notification_settings where user_id = tests.u(3) and type = 'live'), null,
+          'other types are untouched');
+
 -- Feed: blocks, pauses, live and final -----------------------------------------------------------------------------
 select tests.block(3, 2);
 select is(tests.has_card(3, tests.id('ev1')), false, 'a block with a competitor hides it from a follower');

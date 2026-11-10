@@ -3,6 +3,8 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { Button, DisplayText, Divider, Situation, Text, TextButton } from '@/design-system';
+import { DeleteAccountView } from '@/features/account/DeleteAccountView';
+import { useAuth } from '@/lib/auth';
 import { track } from '@/lib/analytics';
 import { signOutWithPush } from '@/lib/push';
 
@@ -18,12 +20,24 @@ import { useAccountStatus } from './useAccountStatus';
 export function PausedScreen({ status }: { status: AccountStatus }) {
   const view = pausedView(status);
   const [appealing, setAppealing] = useState(false);
+  // Deleting works while paused (docs/TRUST_CONTRACT.md, "Deleting your own account").
+  const [deleting, setDeleting] = useState(false);
+  const auth = useAuth();
 
   useEffect(() => {
     track('paused_screen_viewed', { has_end: status.pause?.ends_at != null });
   }, [status.pause?.ends_at]);
 
   if (!view || !status.pause) return null;
+  if (deleting && auth.status === 'signed-in') {
+    return (
+      <Situation id="calm" className="flex-1" testID="paused-delete">
+        <ScrollView contentContainerClassName="px-space-5 py-space-7">
+          <DeleteAccountView userId={auth.session.user.id} onCancel={() => setDeleting(false)} />
+        </ScrollView>
+      </Situation>
+    );
+  }
   return (
     <Situation id="calm" className="flex-1" testID="paused-screen">
       <ScrollView contentContainerClassName="flex-grow justify-center gap-space-5 px-space-5 py-space-7">
@@ -70,6 +84,9 @@ export function PausedScreen({ status }: { status: AccountStatus }) {
             </Button>
           ) : null}
           <TextButton onPress={() => void signOutWithPush()}>SIGN OUT</TextButton>
+          <TextButton onPress={() => setDeleting(true)} testID="paused-delete-account">
+            DELETE ACCOUNT
+          </TextButton>
         </View>
       </ScrollView>
       <AppealSheet
