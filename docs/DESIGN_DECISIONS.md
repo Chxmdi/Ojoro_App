@@ -924,6 +924,7 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | Typing DELETE is checked on the server too | The function refuses a body without `confirm: 'DELETE'`, so a stray or replayed call can't delete. |
 | Opening a deletion while paused goes through the paused screen | A paused account sees only the paused screen, so it gets its own DELETE ACCOUNT button there; `account_deletion_check` uses `require_uid_any`. |
 | The web page is its own Vite entry at `/delete-account/` | A real path works on any static host (the staff tool is a hash router). Its client keeps the session in memory only, under its own key, so it never shares or creates the staff tool's session, and `shouldCreateUser: false` means it never makes accounts. |
+| Deleting unlinks analytics, to null | Owner decision: part of deletion. Nothing in the database reads `analytics_events`; anonymous events already use a null `user_id`, and the Former member placeholder would merge every deleted person into one. Their id is also stripped from other people's payloads (opponents, invitees). Runs after the cascade so events it emits are covered. |
 | The clan link asks before joining | `/clan/join/<code>` fills in the code and waits for JOIN THE CLAN (like Join a crew), so opening a forwarded link never joins by itself. Already in → it just opens the clan. |
 
 ## Polish A11Y

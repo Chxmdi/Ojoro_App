@@ -406,7 +406,9 @@ Function `supabase/functions/account-delete` (logic in `logic.ts`); contract hel
   checks the blockers again in the same transaction (raising `account_delete_staff` /
   `account_delete_blocked`, which the function answers like the preflight), writes one `trust_audit` row
   (`action = 'account_self_deleted'`, no actor, no target, no subject: `detail = { source, owned_programs }`),
-  emits `account_deleted` with no user id, and deletes the Auth user (the cascade above).
+  emits `account_deleted` with no user id, deletes the Auth user (the cascade above), then unlinks their
+  analytics (`private.unlink_analytics`, `20261031080100`): `analytics_events.user_id` → null on their rows
+  and their id stripped from every payload (keys holding it dropped, array elements removed, any depth).
   Answers: 200 `{ status: 'deleted' | 'already_deleted' }` (a token whose user is gone, or a repeat:
   idempotent), 400 `invalid_argument` (`confirm`), 401 `not_authenticated`, 403 `account_delete_staff`,
   409 `account_delete_blocked` (`details` = first kind, body also carries `blockers`). Both preflight and

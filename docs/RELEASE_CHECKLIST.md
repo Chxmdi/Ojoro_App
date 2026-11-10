@@ -130,6 +130,19 @@ real data.
 
 9. Staff access to the admin tool (`apps/web`) follows `docs/TRUST_CONTRACT.md` (`private.staff_members`).
 
+10. Account deletion (`docs/TRUST_CONTRACT.md`, "Deleting your own account"). Deploy the function (it is
+    also covered by the deploy-all above; it needs no secrets beyond the built-in Supabase ones and keeps
+    `verify_jwt` on), then check it answers a signed-out call with 401:
+
+    ```bash
+    npx -y supabase@2.122.0 functions deploy account-delete
+    curl -s -o /dev/null -w '%{http_code}\n' -X POST https://<ref>.supabase.co/functions/v1/account-delete   # 401
+    ```
+
+    Host `apps/web` (`pnpm --filter @ojoro/web build` → `apps/web/dist`, with `VITE_SUPABASE_URL` and
+    `VITE_SUPABASE_PUBLISHABLE_KEY` of the hosted project) so that `https://<web host>/delete-account/` is
+    public. Open it signed out: it must show "Delete your account" with no staff sign-in.
+
 ## 5. Stripe (test mode)
 
 The functions refuse live keys today; this is the test-mode setup (`docs/PAYMENTS_CONTRACT.md`,
@@ -235,6 +248,14 @@ Then in App Store Connect: listing from `docs/store/LISTING.md`, App Privacy fro
 `docs/store/PRIVACY.md`, age rating from `docs/store/AGE_RATING.md`, screenshots, review notes with the
 test phone number, then Submit for Review. In Play Console: the same for the listing, promote the
 internal release to closed testing (and production once allowed).
+
+Account deletion links (needed for both reviews):
+
+- **Google Play**: Play Console → App content → Data safety → "Data deletion": answer that users can request
+  deletion, and give `https://<web host>/delete-account/` as the account deletion URL. Say in-app deletion
+  is at You → menu → Account → Delete account.
+- **App Store**: in the review notes, write where deletion is in the app (You → menu → Account → Delete
+  account; type DELETE to confirm) and add the same web URL.
 
 ## Regenerating things
 
