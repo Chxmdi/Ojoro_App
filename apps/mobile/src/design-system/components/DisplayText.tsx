@@ -21,10 +21,14 @@ export type DisplayTextProps = Omit<TextProps, 'variant' | 'tone' | 'children'> 
 };
 
 /**
- * Uppercase display type in the condensed face. Always a heading for screen
- * readers (`role="heading"` replaces the web `as="h2"`; levels aren't needed
- * in RN). Pair it with a body line underneath. Scales with dynamic type up to
- * 1.3× and wraps, never truncates (see Text).
+ * Uppercase display type in the condensed face. A heading for screen readers
+ * by default (`role="heading"` replaces the web `as="h2"`). iOS and Android
+ * have no heading levels; on the web, `aria-level` picks the element (h1–h6,
+ * default h1), so a screen's title stays 1 and design-system objects inside a
+ * page (posters, cards, sheets) pass 2. Display type that is a number, a score
+ * or "VS" inside a heading block passes `role="none"`. Pair it with a body line
+ * underneath. Scales with dynamic type up to 1.3× and wraps, never truncates
+ * (see Text).
  */
 export function DisplayText({ size = 'lg', muted, posterWidth, style, ...rest }: DisplayTextProps) {
   const poster = size === 'hero' && posterWidth !== undefined ? posterHeroSize(posterWidth) : null;

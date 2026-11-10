@@ -74,7 +74,7 @@ export function RecapPoster({
           </View>
           <View className="gap-space-2">
             {draw ? null : <Graphic kind="crown" size={40} color={signal} />}
-            <DisplayText size="hero" posterWidth={width}>
+            <DisplayText size="hero" posterWidth={width} aria-level={2}>
               {model.headline}
             </DisplayText>
           </View>
@@ -82,7 +82,7 @@ export function RecapPoster({
             <View className="flex-row flex-wrap gap-x-space-8 gap-y-space-4 border-t border-line pt-space-4">
               {stats.map((s) => (
                 <View key={`${s.label}-${s.value}`}>
-                  <DisplayText size="sm" style={tabular}>
+                  <DisplayText size="sm" role="none" style={tabular}>
                     {s.value}
                   </DisplayText>
                   <Text variant="label" muted>

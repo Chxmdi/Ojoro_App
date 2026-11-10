@@ -60,7 +60,7 @@ export function Goal({
       <Divider label={label} />
       {headline ? (
         <>
-          <Text variant="display-sm" role="heading">
+          <Text variant="display-sm" role="heading" aria-level={2}>
             {headline}
           </Text>
           {body ? (

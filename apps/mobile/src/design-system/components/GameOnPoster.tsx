@@ -138,7 +138,7 @@ export function GameOnPoster({
             <View className="gap-space-5" onLayout={onPosterLayout}>
               <Text variant="overline">{model.overline}</Text>
               <Animated.View style={[styles.heroOrigin, heroStyle]}>
-                <DisplayText size="hero" posterWidth={width}>
+                <DisplayText size="hero" posterWidth={width} aria-level={2}>
                   {model.hero.join('\n')}
                 </DisplayText>
               </Animated.View>

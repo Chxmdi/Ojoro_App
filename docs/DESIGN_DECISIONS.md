@@ -891,3 +891,22 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | The model still sees candidates for off-topic text | The flag only changes the rules answer. With a key, Claude decides (it already answers `not_movement` for chat), so a mis-read by the heuristic never hides a game from the AI path. |
 | The app's own fallback says "nothing fits" for off-topic text | `concierge_suggest` returns rows only (its contract), so for off-topic text it returns none and the app, when the function is unreachable, shows NOTHING FITS YET with Down For. Changing the return shape would break its callers; this only happens when the function itself is down. |
 | footy, futbol, bball are sport words | Common ways to ask ("anyone for footy") that read no sport before; adding them to `concierge_parse` makes the rules match football / basketball. |
+
+## Polish GAPS-FEED
+
+| Decision | Why |
+|---|---|
+| Challenge Events on Main are a new `home_feed` card, `challenge_event`, with three new columns (`stage`, `situation`, `event`) | The strip needs the stage, the sides and the counts in one read. Changing the return type means `drop function` + `create`; existing callers read named columns, so nothing else changes. |
+| Who gets the card: competitors, organizers, a side's crew, followers, then a rival, crew-mate or clan-mate of a competitor | The brief's "involves their crew/clan/rival". Visibility is `authz.can_see_challenge_event` (audience, blocks and pauses with any competitor), so a participants-only event never reaches a crew-mate outside the sides. |
+| Window: within 14 days, live, verifying, or final for 48 h; never called off; at most 4 | Keeps the feed finite and mixed. Called-off events already notify competitors and followers (`challenge_milestone`). |
+| Rank: live first for the people in it (950), event day 880, verifying 860, build-up 450–640 (sooner first), final 310–320 (just above the recap) | Urgent things lead, as with `your_plan`. Live events sit above your plans because they're happening now. |
+| A competitor still sees their own event when the other side is blocked or paused | Same as `my_challenge_events` and the event page: they may need to check in, confirm or call it off. |
+| Each strip sits in its stage's situation on its own root (forming / confirmed / live / after), on a full-bleed band | The brief asks for the situation; Main.png draws the followed strips on calm ground. This is an unresolved PNG difference: the build-up strip reads as a stone band, like PLAN FORMING. The stage is also in words (badge, meta), never colour only. |
+| The strip is Compete's YOUR EVENTS row (`eventStrip`), with "Your rival", "From your crew" or "From your clan" first when it isn't yours | Reuses the existing pattern; no new DS component. The heading is CHALLENGES YOU FOLLOW (the design's words) when every one is followed, else CHALLENGES. |
+| FirstHome also lists your Challenge Events (from `home_feed`) | An event you're in or follow shouldn't disappear because your area is quiet. |
+| `challenge_reply` and `challenge_mention` never need you; action `open` | Unlike chat mentions, which need you while unread: a crowd comment isn't a request. As needs-you rows they would also replace the event's own strip on Main (one card per object). |
+| Mentions come from `@handle` in the body only; no `p_mention_ids` | Adding a parameter to `comment_on_challenge` would change its signature for existing callers. The composer has no mention picker yet. |
+| MUTE COMMENTS also mutes reply and mention notifications for that event | It's the person saying they don't want the crowd. `mute_object('challenge_event')` and push settings still apply through `would_send`. |
+| A reply that also @mentions the parent's author notifies once, as a reply | One thing happened to that person. |
+| The rows go away when the comment is deleted | The latest `data.comment_id` of the bundle is checked in `notification_feed`, so a deleted comment doesn't leave a pointer to nothing. |
+| No settings switch for the two types | Settings → Notifications lists only the Step 4 types (no Challenge types there yet); push is still switchable per type through `set_notification_type` if the screen grows. |

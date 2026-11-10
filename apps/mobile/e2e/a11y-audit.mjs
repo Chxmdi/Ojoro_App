@@ -23,6 +23,8 @@
 //
 // It prints a per-route table, and writes report.json, report.md and screenshots (normal and 200%)
 // into --out (default A11Y_OUT or ./a11y-out). Exit code 0 always: this is an audit, not a gate.
+/* global getComputedStyle, CSS, MutationObserver, performance */
+// The check functions below run inside the page (page.evaluate), where these browser globals exist.
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -31,7 +33,6 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const root = join(here, '..', '..', '..');
 const require = createRequire(join(here, '..', 'package.json'));
 const { createClient } = require('@supabase/supabase-js');
 const { chromium } = require('playwright');
@@ -530,7 +531,6 @@ async function auditRoute(browser, route, sessions) {
     result.finalUrl = page.url().replace(base, '');
     await page.addScriptTag({ path: AXE_PATH });
     const axe = await page.evaluate(async () => {
-      // eslint-disable-next-line no-undef
       const res = await window.axe.run(document, {
         runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] },
         resultTypes: ['violations'],

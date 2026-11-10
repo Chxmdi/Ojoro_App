@@ -35,7 +35,7 @@ export function FeedEnd({ title, message, size = 'md', children, testID }: FeedE
       style={{ gap: layout.gap, paddingTop: layout.paddingTop }}
     >
       <Graphic kind="o" size={layout.mark} />
-      <Text variant="display-sm" role="heading" className="text-center">
+      <Text variant="display-sm" role="heading" aria-level={2} className="text-center">
         {title}
       </Text>
       {message ? (

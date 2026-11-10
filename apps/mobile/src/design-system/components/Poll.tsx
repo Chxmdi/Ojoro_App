@@ -34,7 +34,7 @@ export function Poll({ question, options, voted, closes, closed, onVote, testID 
   return (
     <View testID={testID} className="gap-space-3">
       <View className="flex-row items-baseline justify-between gap-space-3">
-        <Text variant="display-sm" role="heading" className="shrink">
+        <Text variant="display-sm" role="heading" aria-level={2} className="shrink">
           {question}
         </Text>
         {model.closesLine ? (

@@ -54,7 +54,7 @@ export function RunItBack({
     <Situation id="after" role="region" className="gap-space-4 p-space-6">
       <View accessible accessibilityLabel={model.accessibilityLabel} className="gap-space-4">
         <Text variant="overline">{model.overline}</Text>
-        <DisplayText size="xl">{model.question.join('\n')}</DisplayText>
+        <DisplayText size="xl" aria-level={2}>{model.question.join('\n')}</DisplayText>
         <Text variant="body">
           {'Same crew, same spot: '}
           <RNText style={{ fontFamily: uiFamily(700) }}>{suggested}</RNText>.

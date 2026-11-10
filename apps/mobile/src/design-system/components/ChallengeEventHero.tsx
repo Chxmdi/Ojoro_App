@@ -121,6 +121,7 @@ export function ChallengeEventHero({
     <View
       accessible
       role="heading"
+      aria-level={2}
       accessibilityLabel={versusLabel(a.name, b.name)}
       className="gap-space-1"
     >
@@ -137,7 +138,7 @@ export function ChallengeEventHero({
   if (stage === 'complete') {
     body = (
       <>
-        <DisplayText size="hero" posterWidth={width}>
+        <DisplayText size="hero" posterWidth={width} aria-level={2}>
           {winnerHeadline(winner, a.name)}
         </DisplayText>
         {result ? <Text variant="numeric">{result}</Text> : null}
@@ -159,7 +160,7 @@ export function ChallengeEventHero({
           className="flex-row justify-between gap-space-4 border-t border-line pt-space-4"
         >
           <View className="flex-1">
-            <DisplayText size="lg" style={tabular}>
+            <DisplayText size="lg" role="none" style={tabular}>
               {a.progress ?? ''}
             </DisplayText>
             <Text variant="label" muted>
@@ -167,7 +168,7 @@ export function ChallengeEventHero({
             </Text>
           </View>
           <View className="flex-1 items-end">
-            <DisplayText size="lg" style={[tabular, { textAlign: 'right' }]}>
+            <DisplayText size="lg" role="none" style={[tabular, { textAlign: 'right' }]}>
               {b.progress ?? ''}
             </DisplayText>
             <Text variant="label" muted style={{ textAlign: 'right' }}>
@@ -182,13 +183,15 @@ export function ChallengeEventHero({
     body = (
       <>
         {spec.head ? (
-          <DisplayText size="hero" posterWidth={width} className="mb-space-3">
+          <DisplayText size="hero" posterWidth={width} aria-level={2} className="mb-space-3">
             {spec.head}
           </DisplayText>
         ) : null}
         {names}
         <View className="flex-row flex-wrap items-end justify-between gap-space-4 border-t border-line pt-space-4">
-          <DisplayText size="sm">{discipline}</DisplayText>
+          <DisplayText size="sm" role="none">
+            {discipline}
+          </DisplayText>
           {counting ? (
             <Countdown {...(countdown ?? {})} />
           ) : when ? (

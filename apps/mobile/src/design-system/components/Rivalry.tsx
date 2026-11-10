@@ -97,8 +97,10 @@ export function Rivalry({ a, b, record, history, next, testID }: RivalryProps) {
           <Text variant="overline">{rivalryOverline(record)}</Text>
           <View className="flex-row items-end justify-between gap-space-4">
             <View className="shrink">
-              <DisplayText size="sm">{a.name.toUpperCase()}</DisplayText>
-              <DisplayText size="hero" posterWidth={width} style={tabular}>
+              <DisplayText size="sm" aria-level={2}>
+                {a.name.toUpperCase()}
+              </DisplayText>
+              <DisplayText size="hero" posterWidth={width} role="none" style={tabular}>
                 {String(r.a)}
               </DisplayText>
             </View>
@@ -112,12 +114,13 @@ export function Rivalry({ a, b, record, history, next, testID }: RivalryProps) {
               }}
             />
             <View className="shrink items-end">
-              <DisplayText size="sm" style={{ textAlign: 'right' }}>
+              <DisplayText size="sm" aria-level={2} style={{ textAlign: 'right' }}>
                 {b.name.toUpperCase()}
               </DisplayText>
               <DisplayText
                 size="hero"
                 posterWidth={width}
+                role="none"
                 style={[tabular, { textAlign: 'right' }]}
               >
                 {String(r.b)}

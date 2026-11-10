@@ -184,6 +184,7 @@ function SheetPanel({
             ref={titleRef}
             accessible
             role="heading"
+            aria-level={2}
             accessibilityLabel={title}
             className="flex-1"
             {...programmaticFocus}

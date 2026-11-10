@@ -68,6 +68,7 @@ export function CrewMomentum({
           accessible
           accessibilityLabel={model.accessibilityLabel}
           role="heading"
+          aria-level={2}
         >
           <Text variant="overline">{model.overline}</Text>
           <Text variant="display-md">{crew}</Text>

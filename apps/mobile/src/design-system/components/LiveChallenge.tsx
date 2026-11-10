@@ -151,14 +151,16 @@ function Lane({ c, unit, target }: { c: LiveCompetitor; unit: string; target: nu
   return (
     <View accessible accessibilityLabel={laneLabel(c, unit, target)} className="gap-space-2">
       <View className="flex-row flex-wrap items-end gap-space-3">
-        <DisplayText size="sm">{c.name.toUpperCase()}</DisplayText>
+        <DisplayText size="sm" aria-level={3}>
+          {c.name.toUpperCase()}
+        </DisplayText>
         {c.checkedIn ? (
           <View className="mb-space-1">
             <VerificationBadge level="checked-in" />
           </View>
         ) : null}
         <View className="ml-auto flex-row items-baseline gap-space-2">
-          <DisplayText size="lg" style={tabular}>
+          <DisplayText size="lg" role="none" style={tabular}>
             {formatValue(c.value)}
           </DisplayText>
           <Text variant="label" muted>

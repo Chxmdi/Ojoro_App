@@ -66,7 +66,7 @@ export function Rematch({
       <View accessible accessibilityLabel={model.accessibilityLabel} className="gap-space-5">
         <Text variant="overline">{model.overline}</Text>
         <View className="flex-row items-center justify-between gap-space-3">
-          <DisplayText size="lg" className="shrink">
+          <DisplayText size="lg" aria-level={2} className="shrink">
             REMATCH?
           </DisplayText>
           <SignalMark />

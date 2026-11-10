@@ -428,9 +428,10 @@ always a last `caught_up` card ("YOU'RE CAUGHT UP." / "Go do something.").
 | `plan_forming` | Forming plans you can join near you (`private.opportunities`, 7 days) | `im_down` |
 | `down_for` | The sport most people near you are down for (`people`), unless you're down for it | `down_for` (`create_down_for`) |
 | `recap` | Your latest recap from the last 7 days | `run_it_back` |
+| `challenge_event` | Polish (GAPS-FEED): Challenge Events you compete in, organize or follow, or that involve your crew (a side), a rival, a crew-mate or a clan-mate. `authz.can_see_challenge_event` (audience, blocks and pauses with any competitor). Upcoming within 14 days, live, verifying, or final in the last 48 h; never called off; at most 4. `href` `/event/{id}`, `reason` e.g. "Build-up · you follow" | `open` |
 | `caught_up` | Always last | `none` |
 
-Upcoming Challenge Events are M6: nothing is returned for them. Ojoro Daily (TONIGHT. + the best move)
+Three columns end every row (Polish GAPS-FEED): `stage*` (`challenge_stage`, challenge cards only), `situation*` (the object's situation where it has one: `forming`, `confirmed`, `live`, `after`; set it on the card's root) and `event*` (challenge cards: `event_id`, `stage`, `relation` (`competitor` / `organizer` / `your_crew` / `following` / `rival` / `crew` / `clan`), `format`, `title`, `starts_at`, `time_zone`, `a_name`, `b_name`, `my_side`, `side_size`, `follower_count`, `scoring`, `target`, `unit`, `live_period`, `winner_side`: the columns of `my_challenge_events`). Migration `20261031060200_home_feed_challenges.sql`, tests `44_feed_challenges_comments.sql`. Ojoro Daily (TONIGHT. + the best move)
 stays as built in Step 3 (`home_density`, `ojoro_now`); the bell is `unread_count()`.
 
 ## Changes to Slice 01 objects

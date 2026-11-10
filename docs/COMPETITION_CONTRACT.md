@@ -464,10 +464,12 @@ rules apply; `notification_object` adds `challenge_event`; `'challenge'` is a ca
 | `challenge_posts` | A competitor/organizer post or a milestone (bundled per event, `data.system` for Ojoro's) | Competitors and followers (not quiet), not the author | `/event/{id}` | never | `open` |
 | `challenge_milestone` | `data.milestone`: `today` (event-day reminder), `live`, `result`, `called_off` | Competitors and followers (not quiet) | `/event/{id}` | never | `open` |
 | `challenge_to_confirm` | A result was submitted | The other captain | `/event/{id}` | the submission is pending and you haven't confirmed | `confirm_challenge` (open; CONFIRM is on Verifying) |
+| `challenge_reply` | Polish (GAPS-FEED): someone replies to your comment (bundled per event: `challenge_reply:{event}`, `data.comment_id`, `data.parent_id`) | The parent comment's author, unless it's you, a block either way, or you follow with MUTE COMMENTS | `/event/{id}` | never | `open` |
+| `challenge_mention` | Polish (GAPS-FEED): `@handle` in a comment (≤ 10, case-insensitive; bundled per event: `challenge_mention:{event}`) | Mentioned people who can see the event, no block, not muting comments; a reply's parent author is told once, as a reply | `/event/{id}` | never | `open` |
 
 Words, e.g. "Marcus T called you out." / "5K · Mount Royal loop · Sat 9:00"; "3 new posts in Marcus T vs
 Chimdi O" / "Marcus T, Ade B and an Ojoro update · bundled"; "Chimdi O wins." / "5K · 22:48 – 23:31".
-A pass is never notified. `challenge_posts` pushes are throttled like other threshold types. Mute an
+"Ade B replied to your comment." / "Ade B and 1 more replied to you." / "Ade B mentioned you.", body "Chimdi O vs Marcus T · 5K. Open the crowd to reply."; both go away when the comment is deleted and are push-throttled like chat mentions (`private.push_throttled_types`). A pass is never notified. `challenge_posts` pushes are throttled like other threshold types. Mute an
 event with `mute_object('challenge_event', id)`.
 
 ## Realtime
@@ -547,6 +549,6 @@ rows.
 Device/GPS verification and "watch connected" (M10), organizer review tooling (only the service-role
 function), ladders, seasons, Ojoro Clash and best-of series (PRD §9.15; rematches link through the
 rivalry), Clan-vs-Clan, cooperative, relay, handicap and other formats (person vs person and crew vs
-crew only), challenge template safety allowlist beyond the scoring kinds, reply and mention
-notifications for comments, comment pinning, media in posts, Challenge Events on Home (`home_feed`),
+crew only), challenge template safety allowlist beyond the scoring kinds, comment pinning, media in posts
+(reply and mention notifications and Challenge Events on Home were added in the polish round),
 Passport entries and personal bests for challenges (M8), external web share pages.

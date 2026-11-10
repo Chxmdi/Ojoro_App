@@ -100,7 +100,7 @@ function ModalPanel({
       style={[shadow['shadow-sheet'], styles.panel]}
       {...web}
     >
-      <Text variant="display-sm" role="heading" nativeID={titleId}>
+      <Text variant="display-sm" role="heading" aria-level={2} nativeID={titleId}>
         {title}
       </Text>
       <Text variant="body" muted nativeID={bodyId}>

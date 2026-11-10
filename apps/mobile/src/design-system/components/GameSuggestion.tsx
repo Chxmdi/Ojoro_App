@@ -55,7 +55,7 @@ export function GameSuggestion({
       className="gap-space-3 border-t-[3px] border-text p-space-5"
     >
       <Text variant="overline">{overline}</Text>
-      <Text variant="display-sm" role="heading">
+      <Text variant="display-sm" role="heading" aria-level={2}>
         {title}
       </Text>
       <Text variant="body-sm">{body}</Text>

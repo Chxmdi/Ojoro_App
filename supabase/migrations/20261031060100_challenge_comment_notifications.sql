@@ -549,5 +549,3 @@ revoke all on function private.comments_muted(uuid, uuid) from public, anon, aut
 revoke all on function private.notification_feed(uuid) from public, anon, authenticated;
 revoke all on function private.generic_copy(public.notification_type) from public, anon, authenticated;
 revoke all on function private.push_throttled_types() from public, anon, authenticated;
-revoke all on function public.comment_on_challenge(uuid, text, uuid, uuid, uuid) from public, anon;
-grant execute on function public.comment_on_challenge(uuid, text, uuid, uuid, uuid) to authenticated, service_role;

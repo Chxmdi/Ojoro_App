@@ -86,18 +86,24 @@ export function CallOutPoster({
           <Badge tone={model.badgeTone}>{model.status}</Badge>
         </View>
         <View className="gap-space-2">
-          <DisplayText size="xl">{model.challenger}</DisplayText>
+          <DisplayText size="xl" aria-level={2}>
+            {model.challenger}
+          </DisplayText>
           <View className="flex-row items-center gap-space-3">
             <Rule />
-            <DisplayText size="sm">VS</DisplayText>
+            <DisplayText size="sm" role="none">
+              VS
+            </DisplayText>
             <Rule />
           </View>
-          <DisplayText size="xl" style={{ textAlign: 'right' }}>
+          <DisplayText size="xl" role="none" style={{ textAlign: 'right' }}>
             {model.opponent}
           </DisplayText>
         </View>
         <View className="flex-row flex-wrap items-baseline justify-between gap-space-3 border-t border-line pt-space-4">
-          <DisplayText size="md">{discipline}</DisplayText>
+          <DisplayText size="md" role="none">
+            {discipline}
+          </DisplayText>
           {when ? (
             <Text variant="body-sm" muted>
               {when}

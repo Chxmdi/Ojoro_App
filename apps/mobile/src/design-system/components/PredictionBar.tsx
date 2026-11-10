@@ -94,7 +94,7 @@ export function PredictionBar({
   return (
     <View testID={testID} className="gap-space-3" {...group}>
       <View className="flex-row flex-wrap items-center gap-space-3">
-        <Text variant="display-sm" role="heading" className="shrink">
+        <Text variant="display-sm" role="heading" aria-level={2} className="shrink">
           {question ?? PREDICTION_QUESTION}
         </Text>
         {locked ? <Badge>LOCKED</Badge> : null}
