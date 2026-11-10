@@ -10,9 +10,8 @@
  * asks staff to sign in; a staff account (+1 555 555 0191, seeded moderator) is told it can't be deleted
  * here and nothing happens; a throwaway account deletes itself through the real phone-code UI.
  *
- * The throwaway uses +1 555 555 0199, the one test-code number that isn't a seeded person (the
- * auth-onboarding e2e deletes and recreates it on every run too). It is made here with the local admin
- * API if missing, and given a finished game with a partner (+1 555 555 9955) to check the history stays
+ * The throwaway uses +1 555 555 0192, a test-code number of its own (supabase/config.toml), made here
+ * with the local admin API if missing, and given a finished game with a partner (+1 555 555 9955) to check the history stays
  * under "Former member". Needs `supabase functions serve` and psql.
  */
 import { execSync } from 'node:child_process';
@@ -82,7 +81,7 @@ const assert = (c, m) => {
 };
 
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
-const throwaway = await ensureUser('+15555550199', 'Web Delete');
+const throwaway = await ensureUser('+15555550192', 'Web Delete');
 const partner = await ensureUser('+15555559955', 'Web Partner');
 const activityId = sql(`
 with p as (
@@ -141,7 +140,7 @@ await step('a staff account is refused, and nothing is deleted', async () => {
 });
 
 await step('a person deletes their account with a phone code and DELETE', async () => {
-  await signInHere('5555550199');
+  await signInHere('5555550192');
   const button = page.getByRole('button', { name: 'Delete my account' });
   await button.waitFor({ timeout: T });
   assert(await button.isDisabled(), 'disabled until DELETE');

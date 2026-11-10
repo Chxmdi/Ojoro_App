@@ -302,6 +302,9 @@ max_frequency = "5s"
 # Step 8 staff (supabase/seed_trust.sql, docs/TRUST_CONTRACT.md): Ojoro Staff (admin), Ojoro Moderator.
 15555550190 = "123456"
 15555550191 = "123456"
+# A throwaway for the public delete-account page e2e (apps/web/e2e/delete-account.e2e.mjs). Not seeded:
+# the e2e makes it and deletes it on every run.
+15555550192 = "123456"
 
 # Configure logged in session timeouts.
 # [auth.sessions]

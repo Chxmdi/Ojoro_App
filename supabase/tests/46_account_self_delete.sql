@@ -213,6 +213,11 @@ select is(tests.kinds(6), '{}', 'a cash-only program does not block');
 
 -- Deleting -------------------------------------------------------------------------------------------------------------
 select tests.keep('game', tests.connect(7, 8));
+-- u7's analytics: their own rows, and their id inside other people's payloads (top level, arrays, nested).
+insert into private.analytics_events (name, user_id, payload) values
+  ('test_mine', tests.u(7), '{"kind": "x"}'),
+  ('test_theirs', tests.u(8), jsonb_build_object('opponent', tests.u(7), 'kind', 'y',
+     'people', jsonb_build_array(tests.u(7), tests.u(9)), 'nested', jsonb_build_object('by', tests.u(7), 'n', 2)));
 -- Only rows this file writes count (the local database keeps rows from real deletions).
 create temp table before_run as
   select (select coalesce(max(id), 0) from private.trust_audit) as audit_id,
@@ -228,6 +233,14 @@ select is(public.account_delete(tests.u(7), 'web') ->> 'status', 'already_delete
 select is(public.account_deletion_preflight(tests.u(7)) ->> 'status', 'already_deleted', 'preflight agrees');
 select tests.logout();
 select is((select count(*)::integer from auth.users where id = tests.u(7)), 0, 'the Auth user is gone');
+select is((select count(*)::integer from private.analytics_events where user_id = tests.u(7)), 0, 'no analytics row is theirs any more');
+select is((select count(*)::integer from private.analytics_events where payload::text like '%' || tests.u(7)::text || '%'), 0,
+          'and their id is in no payload');
+select is((select user_id from private.analytics_events where name = 'test_mine'), null, 'their events stay, unlinked');
+select is((select payload from private.analytics_events where name = 'test_theirs'),
+          jsonb_build_object('kind', 'y', 'people', jsonb_build_array(tests.u(9)), 'nested', jsonb_build_object('n', 2)),
+          'other people''s events keep everything but their id');
+select is((select user_id from private.analytics_events where name = 'test_theirs'), tests.u(8), 'and stay linked to their own person');
 select is((select host_id from public.activities where id = tests.id('game')), private.former_member(),
           'the game they hosted stays, by Former member');
 select is((select count(*)::integer from public.attendance where activity_id = tests.id('game') and user_id = tests.u(8)), 1,
