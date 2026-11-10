@@ -91,7 +91,7 @@ confirm." stays.
 | Timeouts | 8 s, SDK `maxRetries: 0`, request aborted; the rules answer (`timeout`). |
 | Refusals | `fallbacks: "default"` (beta `server-side-fallback-2026-07-01`) lets the API retry a policy decline on its default fallback model; a final `refusal` → rules. |
 | Logging | `concierge_ai_record` keeps an allow-list (`source`, `fallback_reason`, `outcome`, `kind`, `sport_id`, `start`, `model`, `why_source`, `candidates`, `matched_candidates`, `picked_rank`, `latency_ms`, `minutes`, `has_text`, `social`), strings cut to 40 chars, as `concierge_ai_decided` in `private.analytics_events`. The function's console log has the same facts. **The text is held in memory for the request only; never stored or logged** (nor the WHY, nor the key). `private.concierge_ai_calls` keeps only user + time, rows older than a day dropped. |
-| Always works | No key, SDK can't load, any error → rules answer. Function unreachable → the app calls `concierge_suggest`. |
+| Always works | No key, SDK can't load, any error → rules answer (clearly off-topic text → `not_movement`, see Off-topic text). Function unreachable → the app calls `concierge_suggest`. |
 
 ## Model
 
@@ -108,13 +108,35 @@ version `2026-10-21`; no sampling parameters are sent). Change the model in `log
 ## Database
 
 **`concierge_candidates(p_text text = null, p_limit int = 6) → jsonb`** (authenticated, `stable`, not
-logged): `{ parse: { minutes, sport_id, social }, rows: [Suggestion + matched] }`. Rows matching the
+logged): `{ parse: { minutes, sport_id, social, off_topic }, rows: [Suggestion + matched] }`. Rows matching the
 parse first, in `concierge_suggest`'s order (the `matched = true` rows are exactly what the stub
 returns); when a sport was read and fewer than `p_limit` (≤ 8) match, the same search without the
 sport fills up (`matched = false`). `invalid_argument` (`text`) over 500 characters.
 
 **`private.concierge_parse(text)`**: the stub's reading of the text (minutes, sport, "meet people"),
 now shared by `concierge_suggest` (redefined on it; same contract and analytics) and the candidates.
+Aliases (Polish): `footy` / `futbol` → football, `bball` → basketball.
+
+### Off-topic text, rules path (Polish GAPS-SMALL, `…070100_concierge_off_topic.sql`)
+
+**`private.concierge_off_topic(text) → boolean`**: the rules' reading of "this clearly isn't about
+moving". Conservative: true only when the text has a clear off-topic signal (poem, haiku, story,
+joke, weather / forecast, news, recipe, homework, code / python / javascript / sql, translate,
+summarize, cover letter, password, "prompt", "instructions", "what time is it", "who are you",
+"who is the best…") **and** nothing about moving: no minutes, sport or "meet people" from
+`concierge_parse`, and none of a broad list of movement words (play, game, pickup, match, court,
+park, gym, workout, walk, hike, swim, yoga, team, crew, challenge, I'M DOWN, sports Ojoro doesn't
+list yet like padel or golf, a few French words…). "run", "5k tomorrow", "anyone for footy",
+"is the weather ok for a run" are never off-topic; "hello" isn't either (no signal, so it searches as
+before). Tests: `supabase/tests/45_concierge_off_topic.sql`.
+
+- `concierge_candidates` returns `parse.off_topic`; the rows are unchanged (the model still decides).
+- The function's rules answer (`rulesAnswer`: no key, injection, rate limit, timeout, refusal,
+  invalid output, error) with `off_topic: true` is `outcome: 'not_movement'`, `best: null`,
+  `more: []`, `start: 'down_for'`, `sport_id: null`, so the app shows its "not about moving" panel.
+- `concierge_suggest` returns no rows for off-topic text unless `p_sport_id` or `p_minutes` is
+  passed; `concierge_suggested` carries `off_topic`. The app's own fallback (function unreachable)
+  then shows "nothing fits" with Down For (it can't tell the two apart from rows alone).
 
 **`concierge_ai_gate(p_user_id) → jsonb { allowed, reason ('per_minute'|'per_day'|null), retry_after_seconds }`**
 and **`concierge_ai_record(p_user_id, p_payload jsonb)`**: service role only (revoked from

@@ -178,7 +178,8 @@ explicit `p_sport_id` / `p_minutes` (15–480) win. With minutes: plans no longe
 in the next 6 hours. BEST MATCH = row 1 ("Why: " + `reason` + "."), "2 MORE IDEAS" = rows 2–3. Buttons:
 `plan` → I'M DOWN = `im_down(plan_id)`; `demand` → MAKE IT HAPPEN = `create_from_demand`. Copy stays
 "Ojoro suggests. Nothing is sent or joined until you confirm." Errors: `invalid_argument` (minutes),
-`sport_unknown`.
+`sport_unknown`. Text that clearly isn't about moving ("write me a poem", "what's the weather") returns no rows
+unless a sport or minutes are passed (`private.concierge_off_topic`, docs/CONCIERGE_CONTRACT.md).
 
 ## Discover
 
@@ -273,7 +274,7 @@ Server events in `private.analytics_events` (no client copies):
 | `plan_created` | matching formed the plan | as Slice 01 (`source: down_for`) |
 | `demand_plan_created` | `create_from_demand` succeeded | `plan_id`, `sport_id`, `plan_created`, `member_count` |
 | `surprise_me_served` | `surprise_me` | `found` |
-| `concierge_suggested` | `concierge_suggest` | `has_text`, `minutes`, `sport_id`, `social`, `count` (never the text) |
+| `concierge_suggested` | `concierge_suggest` | `has_text`, `minutes`, `sport_id`, `social`, `count`, `off_topic` (never the text) |
 | `discover_searched` | `discover_search` | `query_length`, `sport_id`, `when`, `results` (never the text) |
 
 Client UI events stay in `@ojoro/analytics` (taps: `make_it_happen_tapped`, `surprise_me_tapped`,

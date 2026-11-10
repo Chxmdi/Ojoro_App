@@ -807,7 +807,7 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | HostRoster | The roster badges are the server's ledger words, which now include Stripe charges. The empty-ledger note for a priced session reads "Players can pay in the app" once the account is ready (from `host_payment_account`), else the step 6 "Payments aren't connected". |
 | Not drawn | No card fields, saved cards, in-app receipt documents, cancel-membership screen beyond what step 6 has, or refund notifications for the buyer (Stripe emails them). |
 | Purchase options are read fresh | `host_purchase_options` has `staleTime: 0` (the app default is 30 s, and the cache is persisted): a host can connect payouts, or the webhook can record a payment, between two looks at the same session, and money words must not lag. The persisted copy still shows offline. |
-| "Paid" without the amount | Once a spot is paid the server drops the session's `amount_cents`, so the Activity block reads "Paid" / "Your spot is paid for." (the amount stays on the receipt in `/pay`). |
+| "Paid" without the amount (superseded, see Polish GAPS-SMALL) | Once a spot is paid the server drops the session's `amount_cents`, so the Activity block reads "Paid" / "Your spot is paid for." (the amount stays on the receipt in `/pay`). |
 | Past payouts say who paid them | `host_money_view.past_payouts` rows carry `provider` / `provider_ref` (`20261031030700_payments_past_payout_provider.sql`, asked for by the coordinator) so HostMembership's PAID-only-when-Stripe-paid rule works on real data; `payoutWord` unchanged. |
 
 ## Step 8 TRUST
@@ -880,3 +880,14 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | `fingerprint` runtime policy, no `expo-updates` yet | `appVersion` would let an update reach a binary with different native code whenever the version isn't bumped (build numbers are remote). Installing `expo-updates` is a new dependency, left to the owner (checklist step 9). |
 | `allowBackup: false` | The Supabase session lives in AsyncStorage; it shouldn't be restored onto another device from a cloud backup. |
 | Store privacy answers declare Fitness and in-app messages | Personal bests and attendance are exercise data; chat is "Emails or Text Messages" in Apple's taxonomy. Over-declaring is safer than a rejection; push tokens are not declared until `expo-notifications` is in. |
+
+## Polish GAPS-SMALL
+
+| Decision | Why |
+|---|---|
+| The game says what was paid | Owner decision. `host_purchase_options(…).session` keeps `amount_cents` once `paid` / `refunded` and adds `settled_by`, `pass_name`, `sessions_left`, `paid_at`, `refund_cents`, each left out when it doesn't apply, so a `due` session reads byte-for-byte as before (Step 8 tests unchanged). Words: "Paid $8" + "Your spot is paid for through Stripe.", "Paid $8 at the field" when the host marked it at the field, "Refunded $5" + "$5 of your $8 went back to you.", "Covered by your 10-pack", "Free with <pass>", "Free for you". |
+| Members read "Member" | The owner's example. The body keeps the reason ("Covered by your membership. Nothing to pay for this one."), so the state is still said in words, not a badge alone. |
+| Off-topic is decided by the rules only when it is obvious | `private.concierge_off_topic` needs both a clear off-topic word or phrase and no movement signal at all (no sport, minutes or "meet people" read, none of a broad movement word list). A false "not about moving" turns a real person away, a missed one only shows a game they didn't ask for, so the list errs towards searching. "hello" still searches. |
+| The model still sees candidates for off-topic text | The flag only changes the rules answer. With a key, Claude decides (it already answers `not_movement` for chat), so a mis-read by the heuristic never hides a game from the AI path. |
+| The app's own fallback says "nothing fits" for off-topic text | `concierge_suggest` returns rows only (its contract), so for off-topic text it returns none and the app, when the function is unreachable, shows NOTHING FITS YET with Down For. Changing the return shape would break its callers; this only happens when the function itself is down. |
+| footy, futbol, bball are sport words | Common ways to ask ("anyone for footy") that read no sport before; adding them to `concierge_parse` makes the rules match football / basketball. |
