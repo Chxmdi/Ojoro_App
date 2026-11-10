@@ -260,7 +260,7 @@ function PassportBody({
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View className="flex-1" accessible accessibilityLabel={`${value} ${label}`}>
-      <DisplayText size="sm" style={tabular}>
+      <DisplayText size="sm" style={tabular} role="none">
         {value}
       </DisplayText>
       <Text variant="caption" muted>
@@ -503,7 +503,8 @@ function Stamps({ view, self }: { view: PassportView; self: boolean }) {
 function StampTile({ stamp, tz, tilt }: { stamp: StampRow; tz: string; tilt: boolean }) {
   const props = stampProps(stamp, tz);
   const href = stampHref(stamp);
-  const label = `${props.title}, ${props.place}, ${props.date}. ${stampLine(stamp)}.`;
+  // The visible words first, top to bottom (WCAG 2.5.3), then the line about the game.
+  const label = `${props.kind}, ${props.title}, ${props.place}, ${props.date}. ${stampLine(stamp)}.`;
   return (
     <StampLink href={href} kind={stamp.kind} label={label} testID={`stamp-${stamp.entry_id}`}>
       <PassportStamp {...props} tilt={tilt} />
@@ -513,7 +514,7 @@ function StampTile({ stamp, tz, tilt }: { stamp: StampRow; tz: string; tilt: boo
 
 function milestoneLabel(m: PassportView['milestones'][number], tz: string): string {
   const p = stampProps(m, tz);
-  return `${p.title}, ${p.place}, ${p.date}.`;
+  return `${p.kind}, ${p.title}, ${p.place}, ${p.date}.`;
 }
 
 /** A stamp that opens its Recap or Result when there is one to open; otherwise one plain element. */

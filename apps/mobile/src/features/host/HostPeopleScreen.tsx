@@ -223,9 +223,8 @@ function PersonRow({
       >
         <Avatar name={person.display_name} size="md" />
         <View className="flex-1 gap-space-1">
-          <Text variant="title-sm" numberOfLines={1}>
-            {person.display_name}
-          </Text>
+          {/* Wraps at large text instead of truncating the name. */}
+          <Text variant="title-sm">{person.display_name}</Text>
           <Text variant="caption" muted style={{ fontVariant: ['tabular-nums'] }}>
             {meta}
           </Text>

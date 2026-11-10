@@ -136,7 +136,8 @@ function PlaceHeader({ right }: { right: ReactNode }) {
           <Icon name="back" />
         </Pressable>
       </View>
-      <Text variant="overline" className="flex-1 text-center" accessibilityRole="header">
+      {/* Not a heading: the place's name below is the screen's h1. */}
+      <Text variant="overline" className="flex-1 text-center">
         PLACE
       </Text>
       <View className="w-[88px] flex-row justify-end">{right}</View>
@@ -187,7 +188,8 @@ function PlaceBody({
   return (
     <View testID="place-screen">
       <Image alt={heroAlt(place)} ratio="4:3">
-        <Text variant="overline" muted testID="place-overline">
+        {/* Full `text`, not muted: muted stone over the photo's scrim measured 2.98:1 (WCAG 1.4.3). */}
+        <Text variant="overline" testID="place-overline">
           {placeOverline(place)}
         </Text>
         <Text variant="display-md" role="heading" aria-level={1} testID="place-name">

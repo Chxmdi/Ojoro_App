@@ -349,7 +349,7 @@ function ProfileBody({
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <View className="flex-1" accessible accessibilityLabel={`${value} ${label}`}>
-      <DisplayText size="sm" style={tabular}>
+      <DisplayText size="sm" style={tabular} role="none">
         {value}
       </DisplayText>
       <Text variant="caption" muted>
@@ -419,14 +419,14 @@ function PassportBlock({
     <Pressable
       onPress={() => router.push(href)}
       accessibilityRole="link"
-      accessibilityLabel={`Passport: ${lines.join(' ')}`}
+      // Named by what it shows (PASSPORT, the headline, the stamps, OPEN PASSPORT), in order.
       accessibilityHint="Opens the Passport"
       testID="passport-block"
       className="-mx-space-5"
     >
       <Situation id="after" className="px-space-5" style={{ paddingVertical: 28, gap: 20 }}>
         <Text variant="overline">PASSPORT</Text>
-        <DisplayText size="md" style={tabular}>
+        <DisplayText size="md" style={tabular} aria-level={2}>
           {lines.join('\n')}
         </DisplayText>
         {milestones.length > 0 ? (

@@ -45,8 +45,11 @@ export function TopBar({
   backLabel = 'Back',
   backIcon = 'back',
   right,
+  heading = true,
 }: {
   title: string;
+  /** False when the screen draws its own title (one h1 per screen); see ScreenHeader. */
+  heading?: boolean;
   onBack?: (() => void) | undefined;
   backLabel?: string;
   backIcon?: 'back' | 'close';
@@ -57,7 +60,7 @@ export function TopBar({
       <View className="min-w-touch flex-row">
         {onBack ? <IconButton icon={backIcon} label={backLabel} onPress={onBack} /> : null}
       </View>
-      <Text variant="overline" tone="text" className="flex-1 text-center" numberOfLines={2} role="heading">
+      <Text variant="overline" tone="text" className="flex-1 text-center" numberOfLines={2} {...(heading ? { role: 'heading' as const } : null)}>
         {title}
       </Text>
       <View className="min-w-touch flex-row justify-end">{right}</View>

@@ -31,10 +31,16 @@ export function ScreenHeader({
   overline,
   right,
   fallback,
+  heading = true,
 }: {
   overline: string;
   right?: ReactNode;
   fallback?: Href;
+  /**
+   * The overline is the screen's heading (h1 on the web) unless the screen draws its own title:
+   * then pass `false` and it is plain text, so each screen has one h1.
+   */
+  heading?: boolean;
 }) {
   return (
     <View className="flex-row items-center justify-between px-space-2 pt-space-2">
@@ -47,7 +53,11 @@ export function ScreenHeader({
       >
         <Icon name="back" />
       </Pressable>
-      <Text variant="overline" className="shrink text-center" accessibilityRole="header">
+      <Text
+        variant="overline"
+        className="shrink text-center"
+        {...(heading ? { accessibilityRole: 'header' as const } : null)}
+      >
         {overline}
       </Text>
       {right ?? <View className="size-[44px]" />}

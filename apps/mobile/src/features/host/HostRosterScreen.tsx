@@ -159,7 +159,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
                   setShowAll(true);
                 }}
                 disabled={!checkInOpen || actionsOff}
-                accessibilityLabel={checkInMode ? 'Done checking people in' : 'Check people in'}
+                accessibilityLabel={checkInMode ? 'Done checking people in' : 'Check-in: check people in'}
                 testID="roster-check-in"
               >
                 {checkInMode ? 'DONE' : 'CHECK-IN'}
@@ -189,7 +189,7 @@ export function HostRosterScreen({ programId, sessionId }: { programId: string; 
                         compact
                         disabled={actionsOff}
                         loading={markPaid.isPending && markPaid.variables?.userId === r.user_id}
-                        accessibilityLabel={`Mark ${r.display_name} paid at the field`}
+                        accessibilityLabel={`Mark ${firstName(r.display_name)} paid: ${r.display_name}, at the field`}
                         onPress={() => {
                           const intent = `paid:${r.user_id}`;
                           markPaid.mutate(

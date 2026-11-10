@@ -102,8 +102,11 @@ export function StageHeader({
   shareLabel = 'Share',
   onMore,
   moreLabel = 'Report or block',
+  heading = true,
 }: {
   overline: string;
+  /** False when the screen draws its own title (one h1 per screen); see ScreenHeader. */
+  heading?: boolean;
   onShare?: (() => void) | undefined;
   shareLabel?: string;
   onMore?: (() => void) | undefined;
@@ -120,7 +123,12 @@ export function StageHeader({
       >
         <Icon name="back" />
       </Pressable>
-      <Text variant="overline" className="shrink text-center" accessibilityRole="header" testID="stage-overline">
+      <Text
+        variant="overline"
+        className="shrink text-center"
+        {...(heading ? { accessibilityRole: 'header' as const } : null)}
+        testID="stage-overline"
+      >
         {overline}
       </Text>
       <View className="flex-row">

@@ -1,11 +1,13 @@
 import '../global.css';
 
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useMemo } from 'react';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ToastProvider, useOjoroFonts } from '@/design-system';
+import { pageTitle } from '@/features/auth/pageTitle';
 import { RouteGuard } from '@/features/auth/RouteGuard';
 import { GateContext, useGateState } from '@/features/auth/useGate';
 import { PausedGate } from '@/features/safety/PausedScreen';
@@ -32,6 +34,7 @@ export default function RootLayout() {
         <AuthProvider>
           <ToastProvider>
             <PushRegistration />
+            {Platform.OS === 'web' ? <DocumentTitle /> : null}
             {/* A paused account sees only why, and how to appeal (docs/TRUST_CONTRACT.md). */}
             <PausedGate>
               <GatedStack />
@@ -74,5 +77,14 @@ function GatedStack() {
 function PushRegistration() {
   const auth = useAuth();
   usePushRegistration(auth.status === 'signed-in' ? auth.session.user.id : null);
+  return null;
+}
+
+/** The web document title for the current route (features/auth/pageTitle.ts). */
+function DocumentTitle() {
+  const pathname = usePathname();
+  useEffect(() => {
+    document.title = pageTitle(pathname);
+  }, [pathname]);
   return null;
 }
