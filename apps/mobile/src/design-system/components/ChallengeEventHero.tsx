@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { View, type TextStyle } from 'react-native';
+import { Platform, View, type TextStyle } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { haptics } from '../haptics';
@@ -80,6 +80,17 @@ function useStageFade(stage: ChallengeStage) {
     opacity.value = withTiming(1, { duration: REDUCED_MOTION_FADE });
   }, [stage, opacity]);
   return useAnimatedStyle(() => ({ opacity: opacity.value }));
+}
+
+/**
+ * The hero's landmark. Native keeps `banner` (no landmark semantics there). On the web a `banner`
+ * inside the screen's `main` is invalid (axe `landmark-banner-is-top-level`), so it is a named
+ * `region` instead ("Chimdi versus Marcus").
+ */
+function heroLandmark(a: string, b: string) {
+  return Platform.OS === 'web'
+    ? ({ role: 'region', 'aria-label': versusLabel(a, b) } as const)
+    : ({ role: 'banner' } as const);
 }
 
 /**
@@ -205,7 +216,12 @@ export function ChallengeEventHero({
   }
 
   return (
-    <Situation id={spec.situation} testID={testID} role="banner" className="p-space-6">
+    <Situation
+      id={spec.situation}
+      testID={testID}
+      {...heroLandmark(a.name, b.name)}
+      className="p-space-6"
+    >
       <Animated.View style={fade}>
         <View className="gap-space-5" onLayout={onLayout}>
           {spec.over ? <Text variant="overline">{spec.over}</Text> : null}

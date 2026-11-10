@@ -183,7 +183,7 @@ select is(tests.kinds(4), '{dispute_open,refund_pending,payout_pending}', 'dispu
 select is(private.account_deletion_blockers(tests.u(4)) -> 0 ->> 'program_name', 'Alpha Pickup', 'naming the program');
 select tests.as_service();
 select is(public.account_deletion_preflight(tests.u(4)) ->> 'status', 'blocked', 'preflight: blocked');
-select is(public.account_delete(tests.u(4), 'app') ->> 'status', 'blocked', 'the delete refuses too');
+select throws_ok($$select public.account_delete(tests.u(4), 'app')$$, 'P0001', 'account_delete_blocked', 'the delete refuses too');
 select tests.logout();
 select is((select count(*)::integer from public.profiles where id = tests.u(4)), 1, 'and nothing was deleted');
 
@@ -213,8 +213,13 @@ select is(tests.kinds(6), '{}', 'a cash-only program does not block');
 
 -- Deleting -------------------------------------------------------------------------------------------------------------
 select tests.keep('game', tests.connect(7, 8));
+-- Only rows this file writes count (the local database keeps rows from real deletions).
+create temp table before_run as
+  select (select coalesce(max(id), 0) from private.trust_audit) as audit_id,
+         (select coalesce(max(id), 0) from private.analytics_events) as event_id;
+grant select on before_run to service_role;
 select tests.as_service();
-select is(public.account_delete(tests.u(3), 'app') ->> 'status', 'blocked', 'staff: blocked at the delete as well');
+select throws_ok($$select public.account_delete(tests.u(3), 'app')$$, 'P0001', 'account_delete_staff', 'staff: refused at the delete as well');
 select throws_ok($$select public.account_delete('f0000000-0000-4000-8000-000000000000', 'app')$$, 'P0001', 'invalid_argument',
                  'the placeholder cannot be deleted');
 select is(public.account_deletion_preflight(tests.u(7)) ->> 'status', 'ready', 'u7 is ready');
@@ -228,11 +233,12 @@ select is((select host_id from public.activities where id = tests.id('game')), p
 select is((select count(*)::integer from public.attendance where activity_id = tests.id('game') and user_id = tests.u(8)), 1,
           'the other player keeps it');
 select is((select count(*)::integer from private.trust_audit where action = 'account_self_deleted'
-            and detail = '{"source": "web", "owned_programs": 0}'::jsonb and actor_id is null and target_user_id is null
+            and id > (select audit_id from before_run) and detail = '{"source": "web", "owned_programs": 0}'::jsonb and actor_id is null and target_user_id is null
             and subject_id is null), 1, 'one audit row, with no one''s id in it');
 select is((select count(*)::integer from private.trust_audit where action = 'account_self_deleted'
             and detail::text like '%' || tests.u(7)::text || '%'), 0, 'not even in the detail');
 select is((select count(*)::integer from private.analytics_events where name = 'account_deleted' and user_id is null
+            and id > (select event_id from before_run)
             and payload = '{"source": "web"}'::jsonb), 1, 'an analytics event without the person');
 
 -- u4, now settled, can delete too; the program is archived and kept.

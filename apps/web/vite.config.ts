@@ -8,5 +8,12 @@ export default defineConfig({
   envPrefix: 'VITE_',
   server: { port: 5174, strictPort: true },
   preview: { port: 5174, strictPort: true },
-  build: { outDir: 'dist', emptyOutDir: true, sourcemap: true },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
+    // Two pages: the staff tool (index.html, staff only) and the public account deletion page
+    // (delete-account/index.html → /delete-account/), which needs no staff session.
+    rollupOptions: { input: { main: 'index.html', deleteAccount: 'delete-account/index.html' } },
+  },
 });

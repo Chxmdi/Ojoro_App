@@ -910,3 +910,31 @@ The app side of Stripe payments (test mode only). Participant payment isn't desi
 | A reply that also @mentions the parent's author notifies once, as a reply | One thing happened to that person. |
 | The rows go away when the comment is deleted | The latest `data.comment_id` of the bundle is checked in `notification_feed`, so a deleted comment doesn't leave a pointer to nothing. |
 | One switch, "Replies and mentions", covers both types | Owner decision. `set_notification_type` (20261031060300) sets `challenge_reply` and `challenge_mention` together whichever is passed, so `push_off` and `would_send` treat them as one; the Settings row uses `challenge_reply`. |
+
+## Polish ACCOUNT
+
+| Decision | Why |
+|---|---|
+| Deleting is undesigned; built from Settings patterns | HANDOFF.md lists account deletion as not designed. One display line, WHAT GOES / WHAT STAYS dividers with plain lines, blockers as an error block (alert icon + heavier rule, never colour), the typed DELETE, one DELETE MY ACCOUNT button, and KEEP MY ACCOUNT. The same lines (`accountDeletionGoes` / `accountDeletionStays` in contracts) are on the web page. |
+| Settings → Account is a new small screen | The brief's path. It shows the masked phone ("+1 ••• ••• 0100") so the person knows which account, and one strip to Delete account. Linked from the You menu sheet under Passes and payments. |
+| The function deletes through SQL, not the Auth Admin API | `account_delete` checks blockers, audits and deletes the Auth user in one transaction, so a dispute or charge arriving mid-request can't slip through. Deleting `auth.users` cascades identities and sessions as the Admin API would. |
+| Photos are removed from Storage first | Storage objects can't be deleted from SQL. Removing them before the database means a Storage failure leaves the account intact to retry; deleting after would orphan files a retry could no longer find. |
+| Only Stripe programs block on payouts | "Money still pending a payout" means money really moving. Programs without Stripe hold nothing in Ojoro (their weeks stay `scheduled` forever with no provider), so they never block. Owners only: co-hosts aren't paid. |
+| The audit row has no ids | The brief asks for no personal data. A user id stays linkable to a person through other logs, so the row keeps only `source` and `owned_programs`; the analytics event has no user id either. |
+| Typing DELETE is checked on the server too | The function refuses a body without `confirm: 'DELETE'`, so a stray or replayed call can't delete. |
+| Opening a deletion while paused goes through the paused screen | A paused account sees only the paused screen, so it gets its own DELETE ACCOUNT button there; `account_deletion_check` uses `require_uid_any`. |
+| The web page is its own Vite entry at `/delete-account/` | A real path works on any static host (the staff tool is a hash router). Its client keeps the session in memory only, under its own key, so it never shares or creates the staff tool's session, and `shouldCreateUser: false` means it never makes accounts. |
+| The clan link asks before joining | `/clan/join/<code>` fills in the code and waits for JOIN THE CLAN (like Join a crew), so opening a forwarded link never joins by itself. Already in → it just opens the clan. |
+
+## Polish A11Y
+
+| Decision | Why |
+|---|---|
+| Design-system headings carry `aria-level` (web) | React Native Web renders every `role="heading"` as an `h1`, so a screen read as a stack of h1s (up to 9 on Result). iOS and Android have no levels, so this changes nothing there. `DisplayText` stays level 1 by default (a screen's title); headings inside design-system objects (posters, cards, Poll, Goal, Modal and Sheet titles, FeedEnd, DownFor, CrewMomentum, Rivalry names) are level 2, and numbers, scores and "VS" inside a heading block are `role="none"`. |
+| `Screen` is the web `main` landmark; `TabBar` sits in a `nav` | axe `region`: every screen's content was outside any landmark. Native has no landmarks, so both are web-only props. |
+| `WebHitSlop` for TextButton, Comment actions and reactions | React Native Web ignores `hitSlop`, so these 32–36pt-tall controls were only as big as they look in a browser. A transparent box with the same insets as `hitSlop` (the reference's `::after { inset: -6px -4px }`) restores 44pt on the web; it renders nothing on iOS and Android. |
+| `role="list"` children are wrapped in `listitem` on the web | `StripList` and the AreaMap list put links and buttons straight inside the `ul` RN Web renders (axe `aria-required-children`). `listItems()` wraps each child on the web only; native children are untouched. |
+| ChallengeEventHero is a named `region` on the web, `banner` on native | A `banner` inside `main` is invalid on the web (axe `landmark-banner-is-top-level`). Rivalry, Rematch and RunItBack `region`s get names for the same reason (axe `aria-allowed-role` / `landmark-unique`). |
+| Comment actions wrap | At 200% text the action row pushed MUTE COMMENTS / 3 REPLIES past the edge; it now wraps. |
+| The staff tool's Toast waits while hovered or focused | WCAG 2.2.1: a toast with an action (UNDO) vanished after 10 s even while someone was reaching for it. The clock restarts when pointer and focus leave. |
+| Audit large-text check scales display type to 1.3× | `apps/mobile/e2e/a11y-audit.mjs` emulates native font scale 200% by scaling text styles; display type is capped at 1.3× as `Text` caps it natively (`maxFontSizeMultiplier`), avatar initials don't scale. Tab labels and the commit label are also capped at 1.3× natively but are scaled 2× by the audit, so their truncation rows are expected. |

@@ -205,7 +205,6 @@ const messages: Record<OjoroErrorCode | 'permission_denied' | 'network' | 'unkno
   // Polish: deleting your own account (docs/TRUST_CONTRACT.md)
   account_delete_staff: "Staff accounts can't be deleted here. Ask an Ojoro admin to remove your staff role first.",
   account_delete_blocked: "Something you host still has money moving. Settle it first, then delete.",
-  account_delete_failed: "We couldn't delete your account. Nothing was deleted. Try again.",
   permission_denied: "You can't do that here.",
   network: "You're offline. We'll try again when you're back.",
   unknown: "That didn't work. Try again.",

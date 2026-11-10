@@ -5,12 +5,12 @@
 // POST { confirm: 'DELETE', source?: 'app' | 'web' } with the person's JWT →
 //   200 { status: 'deleted' | 'already_deleted' }
 //   403 account_delete_staff · 409 account_delete_blocked (+ blockers) · 401 not_authenticated ·
-//   400 invalid_argument (confirm) · 503 account_delete_failed.
+//   400 invalid_argument (confirm) · 503 unknown (Storage; nothing deleted) · 500 unknown.
 //
 // The service role key is used here only, server side, after Auth confirms who the JWT belongs to. Plain
 // fetch (no supabase-js). The logic is in ./logic.ts.
 
-import { type AccountDeleteDeps, type WhoAmI, bearer, errorAnswer, runAccountDelete } from './logic.ts';
+import { type AccountDeleteDeps, type Preflight, type WhoAmI, bearer, errorAnswer, runAccountDelete } from './logic.ts';
 
 declare const Deno: {
   env: { get(name: string): string | undefined };
@@ -39,15 +39,20 @@ Deno.serve(async (req) => {
   const anon = Deno.env.get('SUPABASE_ANON_KEY');
   const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if (!base || !anon || !service) {
-    const a = errorAnswer('account_delete_failed', 'not_configured', 503);
+    const a = errorAnswer('unknown', 'not_configured', 503);
     return json(a.body, a.status);
   }
   const asService = { apikey: service, Authorization: `Bearer ${service}`, 'Content-Type': 'application/json' };
 
+  class RpcError extends Error {
+    constructor(readonly code: string | null) {
+      super(code ?? 'rpc');
+    }
+  }
   async function rpc<T>(name: string, args: unknown): Promise<T> {
     const res = await fetch(`${base}/rest/v1/rpc/${name}`, { method: 'POST', headers: asService, body: JSON.stringify(args) });
-    const body = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(`rpc ${name} ${res.status}`);
+    const body = (await res.json().catch(() => null)) as { code?: string; message?: string } | null;
+    if (!res.ok) throw new RpcError(body?.code === 'P0001' ? (body.message ?? null) : null);
     return body as T;
   }
 
@@ -71,7 +76,19 @@ Deno.serve(async (req) => {
       });
       if (!res.ok) throw new Error(`storage ${res.status}`);
     },
-    remove: (userId, source) => rpc('account_delete', { p_user_id: userId, p_source: source }),
+    async remove(userId, source) {
+      try {
+        return await rpc('account_delete', { p_user_id: userId, p_source: source });
+      } catch (e) {
+        // Something blocked it between the preflight and the delete: answer with what, as the preflight would.
+        if (e instanceof RpcError && (e.code === 'account_delete_blocked' || e.code === 'account_delete_staff')) {
+          const pre = await rpc<Preflight>('account_deletion_preflight', { p_user_id: userId });
+          const blockers = pre.blockers.length > 0 ? pre.blockers : [{ kind: 'staff' as const, program_id: null, program_name: null }];
+          return { status: 'blocked', blockers };
+        }
+        throw e;
+      }
+    },
     log,
   };
 
@@ -81,7 +98,7 @@ Deno.serve(async (req) => {
     return json(a.body, a.status);
   } catch (e) {
     log('account_delete_error', { type: e instanceof Error ? e.name : 'unknown' });
-    const a = errorAnswer('account_delete_failed', null, 500);
+    const a = errorAnswer('unknown', null, 500);
     return json(a.body, a.status);
   }
 });

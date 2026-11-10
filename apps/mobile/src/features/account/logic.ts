@@ -20,7 +20,7 @@ export function deleteFailure(status: number, body: unknown): DeleteFailure {
   if (status === 0) return { error: { kind: 'network', code: 'network', detail: null }, blockers: [] };
   const parsed = paymentsFunctionError(body);
   if (parsed) return { error: toOjoroError(parsed), blockers: blockersOf(body) };
-  return { error: { kind: 'ojoro', code: 'account_delete_failed', detail: null }, blockers: [] };
+  return { error: { kind: 'unknown', code: 'unknown', detail: null }, blockers: [] };
 }
 
 /** "+1 ••• ••• 0100": enough to know which account, not the whole number on screen. */

@@ -62,7 +62,13 @@ export function Rematch({
     onAccept?.();
   };
   return (
-    <Situation id="after" testID={testID} role="region" className="gap-space-5 p-space-6">
+    <Situation
+      id="after"
+      testID={testID}
+      role="region"
+      aria-label="Rematch"
+      className="gap-space-5 p-space-6"
+    >
       <View accessible accessibilityLabel={model.accessibilityLabel} className="gap-space-5">
         <Text variant="overline">{model.overline}</Text>
         <View className="flex-row items-center justify-between gap-space-3">

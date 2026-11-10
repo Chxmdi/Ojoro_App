@@ -6,7 +6,8 @@
 //   - Who is deleting comes only from the caller's JWT, re-checked with Auth. The body never names a user.
 //   - The body must say { confirm: 'DELETE' } (what the person typed), so a stray call deletes nothing.
 //   - Staff accounts are refused (account_delete_staff); a host with money still moving or an open dispute
-//     is refused with what to do first (account_delete_blocked + blockers).
+//     is refused with what to do first (account_delete_blocked + blockers). Both are raised by the
+//     database too (account_delete), so a blocker that appears mid-request still stops it.
 //   - Idempotent: a person already deleted (a retry after a dropped answer) gets status 'already_deleted'.
 //   - Their own photo files go from Storage before the database deletion, so a failure leaves the account
 //     in place to retry. Logs carry the step and status only, never ids, names, phones or tokens.
@@ -100,7 +101,7 @@ export async function runAccountDelete(deps: AccountDeleteDeps, jwt: string | nu
     for (const part of chunk(pre.storage_paths, STORAGE_BATCH)) await deps.removeFiles(MOMENTS_BUCKET, part);
   } catch {
     log('account_delete', { status: 'storage_failed', source });
-    return errorAnswer('account_delete_failed', 'storage', 503);
+    return errorAnswer('unknown', 'storage', 503);
   }
 
   const done = await deps.remove(who.id, source);

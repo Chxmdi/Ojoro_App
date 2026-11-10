@@ -105,7 +105,11 @@ export function ChatMessage({
         onAccessibilityAction: (e: AccessibilityActionEvent) => {
           if (e.nativeEvent.actionName === 'more') onMore();
         },
-        ...(Platform.OS === 'web' ? null : { accessibilityHint: 'Long press for more options' }),
+        // The web has no accessibility actions and a keyboard can't long-press: there the message
+        // is a button that opens the same options on click or Enter (axe: focusable, no role).
+        ...(Platform.OS === 'web'
+          ? { role: 'button' as const, onPress: onMore }
+          : { accessibilityHint: 'Long press for more options' }),
       }
     : null;
 

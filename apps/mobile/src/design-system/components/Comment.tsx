@@ -82,7 +82,8 @@ export function Comment({
           </View>
           <Text variant="body-sm">{body}</Text>
         </View>
-        <View className="flex-row gap-space-2">
+        {/* Wraps at large text sizes instead of pushing the last action off the edge. */}
+        <View className="flex-row flex-wrap gap-space-2">
           <CommentAction
             label="REPLY"
             accessibilityLabel={`Reply to ${author}`}

@@ -51,7 +51,7 @@ export function RunItBack({
 }: RunItBackProps) {
   const model = runItBackModel({ activity, crew, lastDate, count, suggested });
   return (
-    <Situation id="after" role="region" className="gap-space-4 p-space-6">
+    <Situation id="after" role="region" aria-label="Run it back" className="gap-space-4 p-space-6">
       <View accessible accessibilityLabel={model.accessibilityLabel} className="gap-space-4">
         <Text variant="overline">{model.overline}</Text>
         <DisplayText size="xl" aria-level={2}>

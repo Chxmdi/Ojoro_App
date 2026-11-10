@@ -8,7 +8,7 @@ export const accountDeleteFunction = 'account-delete' as const;
 /** What the person types to confirm; the function refuses anything else. */
 export const accountDeleteConfirmWord = 'DELETE' as const;
 
-export const accountErrorCodes = ['account_delete_staff', 'account_delete_blocked', 'account_delete_failed'] as const;
+export const accountErrorCodes = ['account_delete_staff', 'account_delete_blocked'] as const;
 
 export type AccountDeletionBlockerKind = 'staff' | 'dispute_open' | 'refund_pending' | 'payout_pending';
 
@@ -66,8 +66,9 @@ export const accountDeletionGoes = [
 
 export const accountDeletionStays = [
   'Games, results and Challenges you were part of, so other people keep theirs',
-  'Crews, clans and programs you started, for the people still in them',
-  'Payments in a host’s records',
+  'Crews and clans you started, for the people still in them',
+  'Programs you run, archived: nothing new is scheduled',
+  'What you paid a host, in their records',
 ] as const;
 
 export const formerMemberName = 'Former member' as const;

@@ -24,7 +24,7 @@ describe('deleteFailure', () => {
   });
 
   it('anything else is a failure that deleted nothing', () => {
-    expect(deleteFailure(502, 'gateway').error.code).toBe('account_delete_failed');
+    expect(deleteFailure(502, 'gateway').error.code).toBe('unknown');
   });
 });
 

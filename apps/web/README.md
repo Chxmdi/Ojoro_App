@@ -11,6 +11,12 @@ service-role key in this app: `src/lib/env.ts` refuses to start with one.
 
 Judgment calls: `docs/DESIGN_DECISIONS.md`, "Step 8 ADMIN".
 
+**Public page: `/delete-account/`** (`delete-account/index.html`, `src/deleteAccount/`). The account deletion
+web link Google Play asks for: how to delete in the app, and a phone-code sign-in that calls the
+`account-delete` Edge Function. It is its own Vite entry with its own in-memory session, needs no staff
+session and shows nothing of the staff tool (`docs/TRUST_CONTRACT.md`, "Deleting your own account").
+E2E: `ADMIN_URL=http://localhost:5174 node apps/web/e2e/delete-account.e2e.mjs`.
+
 ## Run it
 
 ```bash

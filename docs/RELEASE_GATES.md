@@ -56,10 +56,12 @@ Ready in the repo (Polish RELEASE, November 2026). The owner's steps are in `doc
 
 ## First store submission (blocks App Store / Google Play review)
 
-- [ ] **In-app account deletion** (App Store guideline 5.1.1(v); Google Play account deletion policy, which
-      also needs a web page for requests). Today the only path is deleting the Auth user from the dashboard
-      or Admin API (`docs/TRUST_CONTRACT.md`, "Account deletion"); the database side is ready. Needs an
-      Edge Function or RPC the person calls for themself, an entry in You / settings, and a web form.
+- [x] **In-app account deletion** (App Store guideline 5.1.1(v); Google Play account deletion policy, which
+      also needs a web page for requests). Done: You → menu → Account → Delete account in the app (also on
+      the paused screen), the `account-delete` Edge Function, and the public page `/delete-account/` in
+      `apps/web` (`docs/TRUST_CONTRACT.md`, "Deleting your own account"). Left for release: deploy the
+      function and host `apps/web` so `https://<web host>/delete-account/` is public, then put that URL in
+      the Play Console Data safety form and the App Store review notes.
 - [ ] Privacy policy, terms and support URLs live (`docs/store/LISTING.md`, `docs/store/PRIVACY.md`). The
       Welcome screen already says "By continuing you agree to the Terms and Privacy Policy" without links.
 - [ ] Minimum age decided and written in the Terms (`docs/store/PRIVACY.md`, question 1).

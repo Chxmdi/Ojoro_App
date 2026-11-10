@@ -17,7 +17,7 @@
 --   * public.account_deletion_preflight(uid) / public.account_delete(uid, source): service role only. The
 --     function re-checks the caller's JWT with Auth, reads the preflight (blockers + their own photo files to
 --     remove from Storage), removes the files, then deletes. account_delete locks the Auth user, checks the
---     blockers again in the same transaction, writes one trust_audit row with no personal data (no user id,
+--     blockers again in the same transaction (raising account_delete_staff / account_delete_blocked), writes one trust_audit row with no personal data (no user id,
 --     no name, no phone: the source and counts), and deletes the Auth user. Already gone → 'already_deleted'
 --     (idempotent: a retry after a dropped answer succeeds).
 
@@ -110,7 +110,8 @@ begin
 end;
 $$;
 
--- Service role: delete. Returns { status: 'deleted' | 'already_deleted' | 'blocked', blockers }.
+-- Service role: delete. Returns { status: 'deleted' | 'already_deleted' }; raises account_delete_staff or
+-- account_delete_blocked (detail: the first blocker's kind) when something stops it.
 create or replace function public.account_delete(p_user_id uuid, p_source text default 'app')
 returns jsonb
 language plpgsql
@@ -131,8 +132,10 @@ begin
     return jsonb_build_object('status', 'already_deleted', 'blockers', '[]'::jsonb);
   end if;
   v_blockers := private.account_deletion_blockers(p_user_id);
-  if jsonb_array_length(v_blockers) > 0 then
-    return jsonb_build_object('status', 'blocked', 'blockers', v_blockers);
+  if v_blockers @> '[{"kind": "staff"}]'::jsonb then
+    perform private.fail('account_delete_staff');
+  elsif jsonb_array_length(v_blockers) > 0 then
+    perform private.fail('account_delete_blocked', v_blockers -> 0 ->> 'kind');
   end if;
   select count(*) into v_programs from public.host_program_hosts h where h.user_id = p_user_id and h.role = 'owner';
   -- No personal data: no user id, name or phone. Only how it was asked for and what it touched.

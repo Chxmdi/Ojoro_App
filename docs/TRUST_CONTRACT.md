@@ -385,6 +385,42 @@ Before the profile goes (`private.prepare_account_deletion`, BEFORE DELETE on pr
 
 `unregister_push_token` works while paused (signing out always cleans up the device).
 
+### Deleting your own account
+
+Self-serve (App Store 5.1.1(v), Google Play). Migration `20261031080000_account_self_delete.sql`; Edge
+Function `supabase/functions/account-delete` (logic in `logic.ts`); contract helpers
+`packages/contracts/src/account.ts`. Works while paused.
+
+- **`account_deletion_check() → { can_delete, blockers[] }`** (signed in, paused allowed): what stops the
+  caller's deletion. Each blocker is `{ kind, program_id, program_name }`, in the order to fix them:
+  `staff` (an admin removes the staff role first), then for programs the caller **owns**: `dispute_open`,
+  `refund_pending` (a Stripe refund still `pending`), `payout_pending` (the program has a Stripe account and
+  money not yet paid out: Stripe charges paid since the last closed week, a closed week `scheduled` /
+  `failed` with net above zero, or a Stripe payout `pending` / `in_transit`). Programs without Stripe hold no
+  money in Ojoro: their scheduled weeks are records only and never block. Words: `accountBlockerSentence`.
+- **`account-delete` Edge Function**: `POST { confirm: 'DELETE', source?: 'app' | 'web' }` with the
+  person's JWT. The user is only ever the JWT's, re-checked with Auth (`/auth/v1/user`); the body never
+  names one. The service role is used inside the function only. Steps: `account_deletion_preflight(uid)`
+  (blockers + their own `moments` files), remove those files from Storage (a failure stops here, nothing
+  deleted, 503 `unknown` with detail `storage`), then `account_delete(uid, source)`, which locks the Auth user,
+  checks the blockers again in the same transaction (raising `account_delete_staff` /
+  `account_delete_blocked`, which the function answers like the preflight), writes one `trust_audit` row
+  (`action = 'account_self_deleted'`, no actor, no target, no subject: `detail = { source, owned_programs }`),
+  emits `account_deleted` with no user id, and deletes the Auth user (the cascade above).
+  Answers: 200 `{ status: 'deleted' | 'already_deleted' }` (a token whose user is gone, or a repeat:
+  idempotent), 400 `invalid_argument` (`confirm`), 401 `not_authenticated`, 403 `account_delete_staff`,
+  409 `account_delete_blocked` (`details` = first kind, body also carries `blockers`). Both preflight and
+  delete are `service_role` only.
+- **App**: You → menu → Account (`/settings/account`, masked phone) → Delete account
+  (`/settings/delete-account`): what goes, what stays as "Former member", blockers in words, type DELETE,
+  DELETE MY ACCOUNT. On success the device signs out locally. The paused screen has DELETE ACCOUNT too.
+- **Web**: `apps/web` `/delete-account/` (its own page entry, `delete-account/index.html`): how to delete in
+  the app, then phone → code (never creates an account) → the same check and function with
+  `source: 'web'`. Its session lives in memory only and is never the staff tool's; the staff tool's routes
+  stay staff-only.
+- Analytics (client): `account_delete_opened`, `account_delete_confirmed`, `account_delete_blocked`
+  {kinds}. Server: `account_deleted` {source}, no user id.
+
 ## Rate limits
 
 Every limit raises a `*_rate_limited` code with the limit in `detail`. Existing ones are unchanged;

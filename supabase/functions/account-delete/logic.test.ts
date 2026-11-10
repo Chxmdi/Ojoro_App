@@ -78,7 +78,7 @@ describe('account-delete', () => {
     });
     const r = await runAccountDelete(d, 'jwt', ok);
     expect(r.status).toBe(503);
-    expect((r.body as { error: { message: string } }).error.message).toBe('account_delete_failed');
+    expect((r.body as { error: { message: string } }).error.message).toBe('unknown');
     expect(d.remove).not.toHaveBeenCalled();
   });
 

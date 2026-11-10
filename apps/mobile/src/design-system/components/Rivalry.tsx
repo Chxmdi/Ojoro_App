@@ -87,7 +87,14 @@ export function Rivalry({ a, b, record, history, next, testID }: RivalryProps) {
   const cells = formCells(history, a.name, b.name);
   const [width, onLayout] = usePosterWidth();
   return (
-    <Situation id="live" testID={testID} role="region" className="p-space-6">
+    <Situation
+      id="live"
+      testID={testID}
+      role="region"
+      // A web region needs a name (axe `landmark-unique` / `aria-allowed-role`); native ignores it.
+      {...(Platform.OS === 'web' ? { 'aria-label': `Rivalry, ${a.name} and ${b.name}` } : null)}
+      className="p-space-6"
+    >
       <View className="gap-space-5" onLayout={onLayout}>
         <View
           accessible
