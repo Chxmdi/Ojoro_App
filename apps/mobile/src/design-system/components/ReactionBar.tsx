@@ -11,6 +11,7 @@ import {
 } from './pressFeedback';
 import { reactionCount, reactionLabel, type Reaction } from './ReactionBar.logic';
 import { Text } from './Text';
+import { WEB_SPACE } from './webSpace';
 
 export {
   REACTIONS,
@@ -106,6 +107,7 @@ function ReactionButton({
         >
           <Text variant="label-sm" tone={mine ? 'on-signal' : 'text'}>
             {reaction.label}
+            {WEB_SPACE}
           </Text>
           <Text variant="numeric" tone={mine ? 'on-signal' : 'text'} style={countStyle}>
             {reactionCount(reaction.count)}

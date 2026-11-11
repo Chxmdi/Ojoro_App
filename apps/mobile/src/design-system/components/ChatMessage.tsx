@@ -17,6 +17,7 @@ import {
 } from './ChatMessage.logic';
 import { Icon } from './Icon';
 import { Text } from './Text';
+import { WEB_SPACE } from './webSpace';
 import { TextButton } from './TextButton';
 
 export {
@@ -146,6 +147,7 @@ export function ChatMessage({
           {grouped ? null : (
             <Text variant="caption" muted>
               You
+              {WEB_SPACE}
             </Text>
           )}
           {content}
@@ -188,7 +190,12 @@ export function ChatMessage({
         <Avatar name={fullName ?? author} {...(src ? { src } : null)} size="sm" />
       )}
       <View className="min-w-0 flex-1 gap-[2px]">
-        {grouped ? null : <Text variant="title-sm">{author}</Text>}
+        {grouped ? null : (
+          <Text variant="title-sm">
+            {author}
+            {WEB_SPACE}
+          </Text>
+        )}
         {content}
       </View>
     </Box>
@@ -201,9 +208,11 @@ function ReplyQuote({ reply }: { reply: ChatReply }) {
     <View className="mb-space-1 border-l-2 border-line-strong pl-space-2">
       <Text variant="caption" muted numberOfLines={1} style={{ fontFamily: uiFamily(600) }}>
         {reply.author}
+        {WEB_SPACE}
       </Text>
       <Text variant="caption" muted numberOfLines={1}>
         {replySnippet(reply.body)}
+        {WEB_SPACE}
       </Text>
     </View>
   );

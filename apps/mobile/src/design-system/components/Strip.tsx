@@ -5,6 +5,7 @@ import { Pressable, View, type GestureResponderEvent, type ViewProps } from 'rea
 import { useThemeColor } from '../useThemeColor';
 import { Icon } from './Icon';
 import { listItems } from './listItems';
+import { WEB_SPACE } from './webSpace';
 import { FocusRing, useFocusVisible } from './pressFeedback';
 import {
   STRIP_LEADING_WIDTH,
@@ -103,6 +104,7 @@ export function Strip({
           {leadingIsText ? (
             <Text variant="display-xs" style={{ fontVariant: ['tabular-nums'] }}>
               {leading}
+              {WEB_SPACE}
             </Text>
           ) : (
             leading
@@ -110,10 +112,14 @@ export function Strip({
         </View>
       ) : null}
       <View className="min-w-0 flex-1" style={{ gap: layout.bodyGap }}>
-        <Text variant={titleVariant}>{title}</Text>
+        <Text variant={titleVariant}>
+          {title}
+          {WEB_SPACE}
+        </Text>
         {meta ? (
           <Text variant="body-sm" muted>
             {meta}
+            {WEB_SPACE}
           </Text>
         ) : null}
       </View>

@@ -100,6 +100,9 @@ export function Avatar({ name, src, size = 'md', empty, isNew = false }: AvatarP
             allowFontScaling={false}
             importantForAccessibility="no"
             accessibilityElementsHidden
+            // The web ignores the two props above: hide the initials there too, so a named row
+            // around the avatar doesn't read "LR" (axe label-content-name-mismatch).
+            aria-hidden
             style={{ fontSize: px, lineHeight: px, letterSpacing: 0 }}
           >
             {initials(name)}

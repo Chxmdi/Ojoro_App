@@ -6,6 +6,7 @@ import { Pressable, View } from 'react-native';
 import { useThemeColor } from '../useThemeColor';
 import { Avatar } from './Avatar';
 import { Button } from './Button';
+import { WEB_SPACE } from './webSpace';
 import { Divider } from './Divider';
 import { Graphic, type GraphicKind } from './Graphic';
 import { Icon, type IconName } from './Icon';
@@ -85,15 +86,24 @@ export function NotificationRow({
     <>
       <Leading icon={icon} graphic={graphic} person={person} tone={tone} />
       <View className="min-w-0 flex-1 gap-[2px]">
-        <Text variant="title-sm">{title}</Text>
+        <Text variant="title-sm">
+          {title}
+          {WEB_SPACE}
+        </Text>
         {body ? (
           <Text variant="body-sm" muted>
             {body}
+            {WEB_SPACE}
           </Text>
         ) : null}
         {time || unread ? (
           <View className="flex-row flex-wrap items-center gap-space-2">
-            {unread ? <Text variant="label-sm">NEW</Text> : null}
+            {unread ? (
+              <Text variant="label-sm">
+                NEW
+                {WEB_SPACE}
+              </Text>
+            ) : null}
             {time ? (
               <Text variant="caption" muted>
                 {time}

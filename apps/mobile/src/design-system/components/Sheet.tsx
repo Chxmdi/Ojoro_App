@@ -114,6 +114,9 @@ function SheetOverlay({ visible = false, onClose, situation, ...panel }: SheetPr
       animationType="none"
       onRequestClose={onClose}
       onShow={() => moveFocus(titleRef)}
+      // On the web, Modal's own wrapper is a role="dialog" too; name it after the sheet (axe
+      // aria-dialog-name). Native Modal has no role and ignores this.
+      {...(Platform.OS === 'web' ? { 'aria-label': panel.title } : null)}
       statusBarTranslucent
       navigationBarTranslucent
     >

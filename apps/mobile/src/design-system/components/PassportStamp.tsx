@@ -10,6 +10,7 @@ import {
   stampModel,
 } from './PassportStamp.logic';
 import { Text } from './Text';
+import { WEB_SPACE } from './webSpace';
 
 export { stampModel, STAMP_SIZE } from './PassportStamp.logic';
 
@@ -81,16 +82,20 @@ export function PassportStamp({ title, place, date, kind, tilt }: PassportStampP
         <Rings />
         <Text variant="label-sm" tone="signal" className="text-center">
           {model.kind}
+          {WEB_SPACE}
         </Text>
         <Text variant="display-xs" tone="signal" className="text-center">
           {title}
+          {WEB_SPACE}
         </Text>
         <View className="h-[2px] w-[48px] bg-signal" />
         <Text variant="label-sm" tone="signal" className="text-center">
           {place}
+          {WEB_SPACE}
         </Text>
         <Text variant="caption" tone="signal" className="text-center">
           {date}
+          {WEB_SPACE}
         </Text>
       </View>
     </Situation>

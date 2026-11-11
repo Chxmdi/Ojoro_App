@@ -43,7 +43,7 @@ describe('ChatMessage logic', () => {
         time: '2:14 PM',
         body: 'Anyone up for Saturday morning instead?',
       }),
-    ).toBe('Lena, 2:14 PM. Anyone up for Saturday morning instead?');
+    ).toBe('Lena. Anyone up for Saturday morning instead? 2:14 PM.');
     expect(chatMessageLabel({ author: 'Ade', body: 'In' })).toBe('Ade. In.');
     expect(
       chatMessageLabel({

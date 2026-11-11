@@ -25,8 +25,10 @@ export function groupSpoken(title: string, count?: number | undefined): string {
 }
 
 /**
- * The row read as one item, unread first: "Unread. Basketball needs one
- * more. Sat 10:00 · Parc La Fontaine · 7 / 8. 4 min ago".
+ * The row read as one item, in visual order with the visible words (NEW
+ * reads "New"): "Basketball needs one more. Sat 10:00 · Parc La Fontaine ·
+ * 7 / 8. New. 4 min ago". The label contains what the row shows, so voice
+ * control ("tap Basketball…") and the web's label-in-name check both match.
  */
 export function notificationLabel(p: {
   title: string;
@@ -35,7 +37,7 @@ export function notificationLabel(p: {
   unread?: boolean | undefined;
 }): string {
   const end = (s: string) => (/[.!?…]$/.test(s) ? s : `${s}.`);
-  return [p.unread ? 'Unread.' : null, end(p.title), p.body ? end(p.body) : null, p.time]
+  return [end(p.title), p.body ? end(p.body) : null, p.unread ? 'New.' : null, p.time]
     .filter(Boolean)
     .join(' ');
 }

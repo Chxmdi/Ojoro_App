@@ -53,9 +53,12 @@ export function replySnippet(body: string, max = 80): string {
 }
 
 /**
- * The message read as one item: "Lena, 2:14 PM. Replying to Ade: In, if it's
- * before 11. Thursday's going to be a washout." Yours start "You"; status
- * words come last ("Not sent.").
+ * The message read as one item, in the order it shows: "Lena. Thursday's
+ * going to be a washout. 2:14 PM." The name and the words come first, as on
+ * screen, so the label contains what the message shows (voice control, the
+ * web's label-in-name check); the time, which isn't drawn on the message,
+ * follows. Replies read "Replying to Ade: In, if it's before 11." before the
+ * words. Yours start "You"; status words come last ("Not sent.").
  */
 export function chatMessageLabel(p: {
   author: string;
@@ -66,14 +69,15 @@ export function chatMessageLabel(p: {
   replyTo?: ChatReply | undefined;
   status?: ChatMessageStatus | undefined;
 }): string {
-  const who = [p.own ? 'You' : p.author, p.time].filter(Boolean).join(', ');
-  if (p.deleted) return `${who}. ${deletedText(Boolean(p.own))}`;
+  const who = p.own ? 'You' : p.author;
+  const end = (s: string) => (/[.!?…]$/.test(s) ? s : `${s}.`);
+  const time = p.time ? ` ${end(p.time)}` : '';
+  if (p.deleted) return `${who}. ${deletedText(Boolean(p.own))}${time}`;
   const reply = p.replyTo
-    ? ` Replying to ${p.replyTo.author}: ${replySnippet(p.replyTo.body)}`
+    ? ` Replying to ${p.replyTo.author}: ${end(replySnippet(p.replyTo.body))}`
     : '';
   const status = p.own ? statusText(p.status) : null;
-  const body = /[.!?…]$/.test(p.body.trim()) ? p.body.trim() : `${p.body.trim()}.`;
-  return `${who}.${reply}${reply && !/[.!?…]$/.test(reply) ? '.' : ''} ${body}${status ? ` ${status}` : ''}`;
+  return `${who}.${reply} ${end(p.body.trim())}${time}${status ? ` ${status}` : ''}`;
 }
 
 /** The composer can send when there's something to send and a connection. */

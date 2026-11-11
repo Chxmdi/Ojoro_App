@@ -1,5 +1,10 @@
 import { textStyles, type TextStyleName } from '@ojoro/design-tokens';
-import { Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
+import {
+  Platform,
+  Text as RNText,
+  type TextProps as RNTextProps,
+  type TextStyle,
+} from 'react-native';
 
 import { DISPLAY_FAMILY, uiFamily } from '../fonts';
 
@@ -53,11 +58,21 @@ export function Text({ variant = 'body', tone, muted, className, style, ...rest 
   const spec = textStyles[variant];
   const isDisplay = spec.family === 'display';
   const colour = toneClasses[tone ?? (muted || spec.muted ? 'muted' : 'text')];
+  // The web has no font scale, so it drops `maxFontSizeMultiplier`. Keep the cap as a data
+  // attribute (`data-max-font-scale`) so the accessibility audit's 200% text check scales this
+  // text the way iOS and Android do.
+  const cap =
+    rest.allowFontScaling === false
+      ? 1
+      : (rest.maxFontSizeMultiplier ?? (isDisplay ? DISPLAY_MAX_SCALE : undefined));
+  const web =
+    Platform.OS === 'web' && cap !== undefined ? { dataSet: { maxFontScale: String(cap) } } : null;
   return (
     <RNText
       className={[colour, className].filter(Boolean).join(' ')}
       style={[variantStyles[variant], style]}
       {...(isDisplay ? { maxFontSizeMultiplier: DISPLAY_MAX_SCALE } : null)}
+      {...web}
       {...rest}
     />
   );

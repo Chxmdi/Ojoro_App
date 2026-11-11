@@ -1,6 +1,5 @@
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
-import { haptics } from '../haptics';
 import { AvatarCluster } from './AvatarCluster';
 import type { Person } from './AvatarCluster.logic';
 import { Button } from './Button';
@@ -53,8 +52,6 @@ export function CrewMomentum({
 }: CrewMomentumProps) {
   const model = crewMomentumModel({ crew, memberCount, weeks, next, canJoin: !!onDown, joined });
   const isJoined = model.join === 'joined';
-  const pressed =
-    Platform.OS === 'web' ? { 'aria-pressed': isJoined } : { 'aria-selected': isJoined };
   return (
     <View
       testID={testID}
@@ -84,27 +81,28 @@ export function CrewMomentum({
         label={model.rhythmLabel}
       />
       {next ? (
-        <View className="flex-row items-center gap-space-3 border-t border-line pt-space-3">
+        // Wraps at large text: the commit button drops under NEXT and the plan instead of
+        // squeezing them.
+        <View className="flex-row flex-wrap items-center gap-space-3 border-t border-line pt-space-3">
           <Text variant="label" muted>
             NEXT
           </Text>
-          <Text variant="title-sm" className="flex-1">
+          <Text variant="title-sm" className="min-w-[120px] flex-1">
             {next}
           </Text>
           {model.join === 'open' || model.join === 'joined' ? (
+            // The commit button (56pt, its haptic and pressed state built in): this I'M DOWN joins
+            // the next plan directly, like the one on a plan.
             <Button
-              variant="secondary"
-              {...pressed}
+              variant="commit"
+              committed={isJoined}
               loading={!!joining}
               accessibilityLabel={isJoined ? `You're down for ${next}` : `I'm down for ${next}`}
               onPress={() => {
                 if (isJoined) return;
-                void haptics.imDownAccepted();
                 onDown?.();
               }}
-            >
-              {isJoined ? "YOU'RE DOWN" : "I'M DOWN"}
-            </Button>
+            />
           ) : null}
         </View>
       ) : null}

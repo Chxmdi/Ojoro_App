@@ -59,6 +59,8 @@ function ModalOverlay({ visible = false, situation, ...panel }: ModalProps) {
       animationType="none"
       onRequestClose={panel.onCancel}
       onShow={() => moveFocus(cancelRef)}
+      // On the web, Modal's own wrapper is a role="dialog" too; name it after the dialog.
+      {...(Platform.OS === 'web' ? { 'aria-label': panel.title } : null)}
       statusBarTranslucent
       navigationBarTranslucent
     >

@@ -40,6 +40,11 @@ import { useOverlayReducedMotion } from './Overlay';
 import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
 import { Text } from './Text';
 
+/** Map text doesn't scale with system text size (see the map labels below). */
+const MAP_TEXT_SCALE = 1;
+/** Hidden from the web's accessibility tree (native already reads the button's label only). */
+const WEB_HIDDEN = Platform.OS === 'web' ? ({ 'aria-hidden': true } as const) : null;
+
 export {
   DEFAULT_PERIOD,
   DISC_MAX,
@@ -245,7 +250,7 @@ export function AreaMap({
 
 export type AreaMapViewToggleProps = {
   view: AreaMapView;
-  /** The map's title, for the spoken label ("Show map of central Montréal as a list"). */
+  /** The map's title, for the spoken label ("Show as list: Map of central Montréal"). */
   title: string;
   onChange: (view: AreaMapView) => void;
 };
@@ -257,7 +262,8 @@ export function AreaMapViewToggle({ view, title, onChange }: AreaMapViewTogglePr
     <Button
       variant="secondary"
       compact
-      accessibilityLabel={view === 'map' ? `Show ${name} as a list` : `Show ${name} as a map`}
+      // Starts with the visible words (label in name), then says which map.
+      accessibilityLabel={view === 'map' ? `Show as list: ${name}` : `Show as map: ${name}`}
       onPress={() => onChange(view === 'map' ? 'list' : 'map')}
       testID="area-map-toggle"
     >
@@ -439,6 +445,9 @@ export function SchematicMap({
           accessibilityElementsHidden
           importantForAccessibility="no-hide-descendants"
           numberOfLines={1}
+          // Map text is placed by fixed geometry, so it doesn't grow with system text size (it
+          // would run into the marks around it). SHOW AS LIST is the text view that scales.
+          maxFontSizeMultiplier={MAP_TEXT_SCALE}
           style={{
             position: 'absolute',
             left: l.x - l.width / 2,
@@ -555,14 +564,17 @@ function Marker({
       ]}
       testID={`area-map-marker-${point.id}`}
     >
+      {/* The mark is drawn shorthand ("5", "WANT VOLLEYBALL"); the button's label says it in full,
+          so the web hides the drawn words (the label still starts with the place's name). */}
       <View
         style={{ minWidth: HIT_MIN, minHeight: HIT_MIN }}
         className="items-center justify-center"
+        {...WEB_HIDDEN}
       >
         <Primary model={model} selected={selected} />
       </View>
       {model.forming ? (
-        <View className="mt-space-1">
+        <View className="mt-space-1" {...WEB_HIDDEN}>
           <FormingPill figure={model.forming} />
         </View>
       ) : null}
@@ -627,16 +639,29 @@ function Primary({ model, selected }: { model: MarkerModel; selected: boolean })
         </Svg>
       )}
       {big || model.kind === 'wanting' ? (
-        <Text variant="display-xs" style={{ fontVariant: ['tabular-nums'] }}>
+        <Text
+          variant="display-xs"
+          maxFontSizeMultiplier={MAP_TEXT_SCALE}
+          style={{ fontVariant: ['tabular-nums'] }}
+        >
           {model.figure}
         </Text>
       ) : (
-        <Text variant="numeric" style={{ fontSize: 13, lineHeight: 16 }}>
+        <Text
+          variant="numeric"
+          maxFontSizeMultiplier={MAP_TEXT_SCALE}
+          style={{ fontSize: 13, lineHeight: 16 }}
+        >
           {model.figure}
         </Text>
       )}
       {model.word ? (
-        <Text variant="label-sm" muted style={{ textAlign: 'center' }}>
+        <Text
+          variant="label-sm"
+          muted
+          maxFontSizeMultiplier={MAP_TEXT_SCALE}
+          style={{ textAlign: 'center' }}
+        >
           {model.word}
         </Text>
       ) : null}
@@ -651,10 +676,15 @@ function FormingPill({ figure }: { figure: string }) {
       className="flex-row items-center gap-space-2 rounded-pill bg-signal px-space-3"
       style={{ height: PILL_HEIGHT }}
     >
-      <Text variant="label-sm" tone="on-signal">
+      <Text variant="label-sm" tone="on-signal" maxFontSizeMultiplier={MAP_TEXT_SCALE}>
         FORMING
       </Text>
-      <Text variant="numeric" tone="on-signal" style={{ fontSize: 13, lineHeight: 16 }}>
+      <Text
+        variant="numeric"
+        tone="on-signal"
+        maxFontSizeMultiplier={MAP_TEXT_SCALE}
+        style={{ fontSize: 13, lineHeight: 16 }}
+      >
         {figure}
       </Text>
     </View>

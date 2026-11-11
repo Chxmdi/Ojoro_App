@@ -59,7 +59,7 @@ export function ActivityStrip({
       }
       href={href}
       onPress={onPress}
-      accessibilityLabel={activityStripLabel({ activity, time, place, status })}
+      accessibilityLabel={activityStripLabel({ activity, time, place, status, count, capacity })}
     />
   );
 }

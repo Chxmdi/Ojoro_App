@@ -13,7 +13,8 @@
 // For each route it records:
 //   axe        axe-core violations (WCAG 2.2 A/AA + best-practice), by rule id and node count
 //   names      interactive elements without an accessible name, or focusable without a role
-//   targets    interactive elements smaller than 44 × 44 (I'M DOWN commit buttons below 56 tall)
+//   targets    interactive elements smaller than 44 × 44 in the app (I'M DOWN commit buttons below 56
+//              tall), 24 × 24 in the staff tool (WCAG 2.2 AA 2.5.8; it is a desktop tool)
 //   headings   none, no h1, more than one h1, or skipped levels
 //   colour     small text-less, label-less coloured marks (possible colour-only status: review)
 //   motion     with prefers-reduced-motion: reduce, any CSS/WAAPI animation or transition over
@@ -199,7 +200,7 @@ const ROUTES = [
 
 // In-page checks ------------------------------------------------------------------------------------
 // Runs in the page. Returns names, targets, headings and colour findings.
-function domChecks() {
+function domChecks(minTarget) {
   const INTERACTIVE_ROLES = new Set([
     'button',
     'link',
@@ -320,7 +321,7 @@ function domChecks() {
     });
     const hw = hr - hl;
     const hh = hb - ht;
-    const small = isText ? hh < 44 : hw < 43.5 || hh < 43.5;
+    const small = isText ? hh < minTarget : hw < minTarget - 0.5 || hh < minTarget - 0.5;
     if (small)
       targets.push(
         `${inline ? 'inline ' : ''}${describe(el)}${hw !== r.width || hh !== r.height ? ` (hit ${Math.round(hw)}×${Math.round(hh)})` : ''}`,
@@ -467,7 +468,17 @@ async function largeTextCheck() {
   // count badges don't scale. Body and UI text scale to 2×.
   const sizes = leaves.map((el) => {
     const s = getComputedStyle(el);
-    const factor = el.closest('[role=img]') ? 1 : /anton|druk/i.test(s.fontFamily) ? 1.3 : 2;
+    // The design-system Text writes its native cap as data-max-font-scale (display 1.3, avatar
+    // initials and map text 1); anything else scales to 2. Images' text doesn't scale.
+    const capped = el.closest('[data-max-font-scale]');
+    const cap = capped ? Number(capped.getAttribute('data-max-font-scale')) : NaN;
+    const factor = el.closest('[role=img]')
+      ? 1
+      : Number.isFinite(cap)
+        ? Math.min(2, cap)
+        : /anton|druk/i.test(s.fontFamily)
+          ? 1.3
+          : 2;
     return [
       parseFloat(s.fontSize),
       s.lineHeight === 'normal' ? null : parseFloat(s.lineHeight),
@@ -500,7 +511,19 @@ async function largeTextCheck() {
   const boxes = [];
   for (const el of leaves) {
     if (!vis(el)) continue;
-    const r = textRect(el);
+    // Horizontal extent from the glyphs; vertical from the element's line boxes. A display face's
+    // glyphs run past its tight line height by design, so the font height would flag every
+    // headline in a fixed-height poster as clipped.
+    const glyphs = textRect(el);
+    const box = getComputedStyle(el).display === 'inline' ? glyphs : el.getBoundingClientRect();
+    const r = {
+      left: glyphs.left,
+      right: glyphs.right,
+      top: box.top,
+      bottom: box.bottom,
+      width: glyphs.width,
+      height: box.height,
+    };
     if (r.width === 0 || r.height === 0) continue;
     const s = getComputedStyle(el);
     if (s.textOverflow === 'ellipsis' || (s.webkitLineClamp !== 'none' && s.webkitLineClamp)) {
@@ -672,7 +695,9 @@ async function auditRoute(browser, route, sessions) {
       }));
     });
     result.axe = axe;
-    Object.assign(result, await page.evaluate(domChecks));
+    // The app's rule is 44pt (CLAUDE.md). The staff tool is a desktop, pointer-first tool: WCAG 2.2
+    // AA 2.5.8's 24px minimum applies there.
+    Object.assign(result, await page.evaluate(domChecks, route.app === 'admin' ? 24 : 44));
     result.motion = await page.evaluate(motionCheck, 2500);
     await page.screenshot({ path: join(OUT, 'shots', `${slug(route)}.png`), fullPage: false });
     result.text200 = await page.evaluate(largeTextCheck);
@@ -755,7 +780,7 @@ function details(results) {
       ),
     );
     list('Names / roles', r.names);
-    list('Targets under 44', r.targets);
+    list(`Targets under ${r.app === 'admin' ? 24 : 44}`, r.targets);
     list('Commit under 56', r.commits);
     list('Headings', r.headingIssues);
     out.push(

@@ -19,7 +19,7 @@ describe('NotificationRow logic', () => {
         time: '4 min ago',
         unread: true,
       }),
-    ).toBe('Unread. Basketball needs one more. Sat 10:00 · Parc La Fontaine · 7 / 8. 4 min ago');
+    ).toBe('Basketball needs one more. Sat 10:00 · Parc La Fontaine · 7 / 8. New. 4 min ago');
     expect(notificationLabel({ title: 'Lena joined Thursday FC' })).toBe(
       'Lena joined Thursday FC.',
     );

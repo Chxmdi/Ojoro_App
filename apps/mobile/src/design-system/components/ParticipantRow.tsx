@@ -16,6 +16,7 @@ import {
 import { FocusRing, noBrowserOutline, useFocusVisible } from './pressFeedback';
 import { textOf } from './Strip.logic';
 import { Text } from './Text';
+import { WEB_SPACE } from './webSpace';
 import { VerificationBadge } from './VerificationBadge';
 
 export {
@@ -105,10 +106,14 @@ export function ParticipantRow({
       {leading != null && leading !== false ? <View className="shrink-0">{leading}</View> : null}
       <Avatar name={person.name} {...(person.src ? { src: person.src } : null)} size={avatarSize} />
       <View className="min-w-0 flex-1">
-        <Text variant="title-sm">{person.name}</Text>
+        <Text variant="title-sm">
+          {person.name}
+          {WEB_SPACE}
+        </Text>
         {meta ? (
           <Text variant="caption" muted>
             {meta}
+            {WEB_SPACE}
           </Text>
         ) : null}
       </View>

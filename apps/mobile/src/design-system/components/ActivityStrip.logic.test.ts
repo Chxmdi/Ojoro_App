@@ -20,10 +20,31 @@ describe('activityTag', () => {
 });
 
 describe('activityStripLabel', () => {
-  it('reads activity, time, place and status like the web', () => {
+  it('reads in visual order with the visible tag words', () => {
     expect(
-      activityStripLabel({ activity: 'Pickup football', time: '7:30', place: 'Jeanne-Mance Park', status: 'full' }),
-    ).toBe('Pickup football, 7:30, Jeanne-Mance Park, full');
-    expect(activityStripLabel({ activity: 'Run', time: '6:30', place: 'Canal' })).toBe('Run, 6:30, Canal, forming');
+      activityStripLabel({
+        activity: 'Pickup football',
+        time: '7:30',
+        place: 'Jeanne-Mance Park',
+        status: 'full',
+      }),
+    ).toBe('7:30, Pickup football, Jeanne-Mance Park, FULL');
+    expect(
+      activityStripLabel({
+        activity: 'Pickup football',
+        time: '7:30',
+        place: 'Jeanne-Mance Park',
+        status: 'confirmed',
+      }),
+    ).toBe('7:30, Pickup football, Jeanne-Mance Park, GAME ON');
+    expect(
+      activityStripLabel({ activity: 'Sparring', time: 'NOW', place: 'Hoshino', status: 'live' }),
+    ).toBe('NOW, Sparring, Hoshino, LIVE');
+    expect(
+      activityStripLabel({ activity: 'Run', time: '6:30', place: 'Canal', count: 5, capacity: 8 }),
+    ).toBe('6:30, Run, Canal, 5 / 8, forming');
+    expect(activityStripLabel({ activity: 'Run', time: '6:30', place: 'Canal' })).toBe(
+      '6:30, Run, Canal, forming',
+    );
   });
 });

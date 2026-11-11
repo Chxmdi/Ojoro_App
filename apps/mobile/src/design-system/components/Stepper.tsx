@@ -131,7 +131,9 @@ export function Stepper({
         <Text
           variant="title-sm"
           // The adjustable value carries the label; don't read it twice.
-          {...(isWeb ? { 'aria-hidden': true } : { accessible: false, importantForAccessibility: 'no' as const })}
+          {...(isWeb
+            ? { 'aria-hidden': true }
+            : { accessible: false, importantForAccessibility: 'no' as const })}
         >
           {label}
         </Text>
@@ -141,13 +143,31 @@ export function Stepper({
           </Text>
         ) : null}
       </View>
-      <StepButton glyph="−" name={words.decrease} reason={words.decreaseReason} enabled={lower} onPress={() => go(-1)} />
-      <View {...valueA11y} style={{ minWidth: 40 }} className="items-center">
+      <StepButton
+        glyph="−"
+        name={words.decrease}
+        reason={words.decreaseReason}
+        enabled={lower}
+        onPress={() => go(-1)}
+      />
+      {/* The value is the focusable spin button on the web (arrow keys step it): 44pt square like
+          the − and + buttons beside it, so every focus stop in the row is a full target. */}
+      <View
+        {...valueA11y}
+        style={{ minWidth: 44, minHeight: 44 }}
+        className="items-center justify-center"
+      >
         <Text variant="display-sm" style={{ fontVariant: ['tabular-nums'], textAlign: 'center' }}>
           {format(current)}
         </Text>
       </View>
-      <StepButton glyph="+" name={words.increase} reason={words.increaseReason} enabled={higher} onPress={() => go(1)} />
+      <StepButton
+        glyph="+"
+        name={words.increase}
+        reason={words.increaseReason}
+        enabled={higher}
+        onPress={() => go(1)}
+      />
     </View>
   );
 }
