@@ -40,6 +40,13 @@ select tests.u(n), '00000000-0000-0000-0000-000000000000', 'authenticated', 'aut
 from generate_series(1, 12) n;
 update public.profile_private set area_lat = 45.52, area_lng = -73.58, discovery_radius_km = 5
  where user_id in (select tests.u(n) from generate_series(1, 12) n);
+-- The local seed has forming plans and Down Fors near this area whose times follow the clock; on a fresh
+-- reset they fill Home before the Challenge cards these tests look for. Close everyone else's to Home for
+-- this transaction only (rolled back with the rest).
+update public.plans set deadline_at = now() - interval '1 minute'
+ where status = 'forming' and host_id not in (select tests.u(n) from generate_series(1, 12) n);
+update public.intent_signals set status = 'withdrawn'
+ where status = 'active' and user_id not in (select tests.u(n) from generate_series(1, 12) n);
 
 insert into public.places (id, slug, name, area, city, lat, lng, sport_ids)
 values ('00000000-0000-4000-9100-000000000001', 'test-pitch', 'Test Pitch', 'Plateau', 'Montréal',
